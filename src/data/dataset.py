@@ -1,0 +1,235 @@
+import re
+import random
+import logging
+from pathlib import Path
+from typing import Optional
+
+import jsonlines
+from datasets import load_dataset
+
+logger = logging.getLogger(__name__)
+
+
+def load_gsm8k(
+    split: str = "train",
+    n_problems: int = 500,
+    seed: int = 42,
+    cache_dir: Optional[str] = None,
+) -> list[dict]:
+    logger.info(f"Loading GSM8K split='{split}' n={n_problems} seed={seed}")
+    raw = load_dataset("openai/gsm8k", "main", cache_dir=cache_dir)
+    data = list(raw[split])
+    random.seed(seed)
+    random.shuffle(data)
+    if n_problems > 0:
+        data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        gold = _extract_gsm8k_gold(item["answer"])
+        problems.append({
+            "problem_id": i,
+            "question": item["question"],
+            "answer_raw": item["answer"],
+            "gold_answer": gold,
+            "source": "gsm8k",
+            "level": "",
+            "problem_type": "",
+        })
+    logger.info(f"Loaded {len(problems)} GSM8K problems")
+    return problems
+
+
+def _extract_gsm8k_gold(answer_text: str) -> str:
+    match = re.search(r"####\s*([\-\d,\.]+)", answer_text)
+    if match:
+        return match.group(1).replace(",", "").strip()
+    lines = [ln.strip() for ln in answer_text.strip().split("\n") if ln.strip()]
+    return lines[-1] if lines else ""
+
+
+def load_math500(
+    split: str = "test",
+    n_problems: int = -1,
+    seed: int = 42,
+    cache_dir: Optional[str] = None,
+) -> list[dict]:
+    logger.info(f"Loading MATH500 split='{split}' n={n_problems}")
+    raw = load_dataset("hendrycks/competition_math", cache_dir=cache_dir)
+    data = list(raw[split])
+    random.seed(seed)
+    random.shuffle(data)
+    target = min(500, len(data)) if n_problems <= 0 else n_problems
+    data = data[:target]
+    problems = []
+    for i, item in enumerate(data):
+        problems.append({
+            "problem_id": i,
+            "question": item["problem"],
+            "gold_answer": item["solution"],
+            "source": "math500",
+            "level": item.get("level", ""),
+            "problem_type": item.get("type", ""),
+        })
+    logger.info(f"Loaded {len(problems)} MATH500 problems")
+    return problems
+
+
+def load_aime(
+    year: int = 2024,
+    n_problems: int = -1,
+) -> list[dict]:
+    logger.info(f"Loading AIME {year}")
+    raw = load_dataset("Maxwell-Jia/AIME_1983_2024")
+    data = [item for item in raw["train"] if str(item.get("Year", "")) == str(year)]
+    if n_problems > 0:
+        data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        problems.append({
+            "problem_id": i,
+            "question": item["Problem"],
+            "gold_answer": str(item["Answer"]),
+            "source": f"aime_{year}",
+            "level": "competition",
+            "problem_type": "aime",
+        })
+    logger.info(f"Loaded {len(problems)} AIME {year} problems")
+    return problems
+
+
+def format_prompt(problem: dict, model_name: str) -> str:
+    question = problem["question"]
+    system = (
+        "You are a helpful math assistant. Solve the following problem step by step. "
+        "Show your reasoning clearly. Put your final answer in \\boxed{}."
+    )
+    model_lower = model_name.lower()
+    if any(k in model_lower for k in ["qwen", "deepseek", "instruct"]):
+        return (
+            f"<|im_start|>system\n{system}<|im_end|>\n"
+            f"<|im_start|>user\n{question}<|im_end|>\n"
+            f"<|im_start|>assistant\n"
+        )
+    return f"System: {system}\n\nProblem: {question}\n\nSolution:"
+
+
+def extract_boxed_answer(text: str) -> Optional[str]:
+    depth = 0
+    start = None
+    i = 0
+    while i < len(text):
+        if text[i:i + 7] == r"\boxed{":
+            if start is None:
+                start = i + 7
+                depth = 1
+                i += 7
+                continue
+        if start is not None:
+            if text[i] == "{":
+                depth += 1
+            elif text[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    return text[start:i].strip()
+        i += 1
+    pattern = r"\\boxed\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}"
+    matches = re.findall(pattern, text)
+    return matches[-1].strip() if matches else None
+
+
+def extract_numeric_answer(text: str) -> Optional[str]:
+    boxed = extract_boxed_answer(text)
+    if boxed:
+        return boxed
+    for pat in [
+        r"(?:the answer is|answer:|=)\s*([\-\+]?\d[\d,\.]*(?:/\d+)?)",
+        r"([\-\+]?\d[\d,\.]*(?:/\d+)?)\s*$",
+    ]:
+        m = re.search(pat, text.strip(), re.IGNORECASE | re.MULTILINE)
+        if m:
+            return m.group(1).replace(",", "").strip()
+    return None
+
+
+def normalize_answer(answer: Optional[str]) -> str:
+    if answer is None:
+        return ""
+    answer = answer.strip().replace(",", "")
+    answer = re.sub(r"\s+", " ", answer)
+    try:
+        val = float(answer)
+        if val == int(val) and abs(val) < 1e15:
+            return str(int(val))
+        return f"{val:.8f}".rstrip("0").rstrip(".")
+    except (ValueError, OverflowError):
+        pass
+    return answer.lower().strip()
+
+
+def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
+    if pred is None:
+        return False
+    pred_n = normalize_answer(pred)
+    gold_n = normalize_answer(gold)
+    if pred_n == gold_n:
+        return True
+    try:
+        return abs(float(pred_n) - float(gold_n)) < tol
+    except (ValueError, TypeError):
+        pass
+    frac_pat = r"^([\-\+]?\d+)\s*/\s*(\d+)$"
+    pm = re.match(frac_pat, pred_n)
+    gm = re.match(frac_pat, gold_n)
+    if pm and gm:
+        try:
+            pv = int(pm.group(1)) / int(pm.group(2))
+            gv = int(gm.group(1)) / int(gm.group(2))
+            return abs(pv - gv) < tol
+        except ZeroDivisionError:
+            pass
+    return False
+
+
+def save_problems_cache(problems: list[dict], path: str) -> None:
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    with jsonlines.open(path, mode="w") as writer:
+        writer.write_all(problems)
+    logger.info(f"Cached {len(problems)} problems to {path}")
+
+
+def load_problems_cache(path: str) -> list[dict]:
+    with jsonlines.open(path) as reader:
+        problems = list(reader)
+    logger.info(f"Loaded {len(problems)} problems from cache {path}")
+    return problems
+
+
+def get_calibration_dataset(cfg: dict) -> list[dict]:
+    cal = cfg["calibration"]
+    name = cal.get("dataset", "gsm8k").lower()
+    split = cal.get("split", "train")
+    n = cal.get("n_problems", 500)
+    seed = cal.get("seed", 42)
+    if name == "gsm8k":
+        return load_gsm8k(split=split, n_problems=n, seed=seed)
+    elif name == "math500":
+        return load_math500(split=split, n_problems=n, seed=seed)
+    else:
+        raise ValueError(f"Unsupported calibration dataset: {name}")
+
+
+def get_inference_dataset(cfg: dict) -> list[dict]:
+    ds = cfg["dataset"]
+    name = ds["name"].lower()
+    split = ds.get("split", "test")
+    n = ds.get("n_problems", -1)
+    seed = ds.get("seed", 42)
+    if name == "gsm8k":
+        return load_gsm8k(split=split, n_problems=n, seed=seed)
+    elif name == "math500":
+        return load_math500(split=split, n_problems=n, seed=seed)
+    elif name.startswith("aime"):
+        year = int(name.split("_")[-1]) if "_" in name else 2024
+        return load_aime(year=year, n_problems=n)
+    else:
+        raise ValueError(f"Unknown inference dataset: {name}")
