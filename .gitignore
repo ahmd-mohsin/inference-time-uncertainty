@@ -1,0 +1,11 @@
+# Logs
+*.log
+logs/
+
+# Markdown
+*.md
+
+# Python bytecode
+*.pyc
+*.pyo
+__pycache__/

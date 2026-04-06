@@ -1,0 +1,96 @@
+model:
+  name: "Qwen/Qwen2.5-Math-7B-Instruct"
+  short_name: "qwen2.5-math-7b"
+  dtype: "float16"
+  device: "cuda"
+  max_new_tokens: 1024
+  trust_remote_code: true
+  attn_implementation: "flash_attention_2"
+
+calibration:
+  dataset: "gsm8k"
+  split: "train"
+  n_problems: 500
+  seed: 42
+  temperature: 0.8
+  k_continuations: 3
+  continuation_length: 12
+
+  entropy_threshold_range:
+    min: 0.1
+    max: 4.0
+    n_steps: 40
+
+  disagreement_threshold_range:
+    min: 0.05
+    max: 0.95
+    n_steps: 40
+
+  metric: "auroc"
+  min_trigger_rate: 0.005
+  max_trigger_rate: 0.15
+
+decoding:
+  min_tokens_before_trigger: 20
+
+semantic_load_zone:
+  math_operators:
+    - "="
+    - "+"
+    - "-"
+    - "*"
+    - "/"
+    - "^"
+    - "**"
+    - "≤"
+    - "≥"
+    - "≠"
+    - "∈"
+    - "∪"
+    - "∩"
+    - "\\leq"
+    - "\\geq"
+    - "\\neq"
+    - "\\in"
+    - "\\frac"
+    - "\\sqrt"
+    - "\\sum"
+    - "\\prod"
+    - "\\int"
+    - "\\times"
+    - "\\cdot"
+    - "\\implies"
+    - "\\equiv"
+  transition_phrases:
+    - "therefore"
+    - "thus"
+    - "hence"
+    - "so"
+    - "we get"
+    - "we have"
+    - "we obtain"
+    - "we find"
+    - "it follows"
+    - "this gives"
+    - "this means"
+    - "which gives"
+    - "which means"
+    - "this implies"
+    - "substituting"
+    - "simplifying"
+    - "expanding"
+    - "factoring"
+    - "solving"
+    - "combining"
+    - "rearranging"
+  context_window: 5
+
+output:
+  dir: "data/calibration_outputs"
+  thresholds_file: "data/calibration_outputs/learned_thresholds.json"
+  token_data_file: "data/calibration_outputs/token_data_{model_short_name}.jsonl"
+  figures_dir: "data/calibration_outputs/figures"
+
+logging:
+  level: "INFO"
+  log_file: "logs/calibration_{model_short_name}.log"
