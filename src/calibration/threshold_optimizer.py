@@ -82,6 +82,14 @@ class ThresholdOptimizer:
             [int(not r["is_correct_step"]) for r in zone_records], dtype=np.float64
         )
 
+        nan_mask = np.isfinite(entropies)
+        entropies = entropies[nan_mask]
+        labels = labels[nan_mask]
+
+        if len(entropies) == 0:
+            logger.warning("All entropy values are nan/inf — returning default tau_e=1.5")
+            return {"tau_e": 1.5, "entropy_auroc_full": 0.5, "entropy_trigger_rate": 0.0}
+
         if labels.sum() == 0 or labels.sum() == len(labels):
             logger.warning("All-same labels in zone — using median entropy")
             tau = float(np.median(entropies))

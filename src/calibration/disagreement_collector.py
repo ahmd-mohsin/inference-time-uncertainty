@@ -135,11 +135,6 @@ class DisagreementDataCollector:
                     logger.debug(f"Disagreement failed at pos {pos}: {e}")
 
             generated_ids.append(next_id)
-            partial_text = self.tokenizer.decode(
-                generated_ids, skip_special_tokens=True
-            )
-            pred = extract_numeric_answer(partial_text)
-            is_correct_step = pred is not None and answers_match(pred, gold)
 
             records.append(
                 DisagreementTokenRecord(
@@ -150,7 +145,7 @@ class DisagreementDataCollector:
                     in_semantic_zone=in_zone,
                     token_id=next_id,
                     token_str=token_str,
-                    is_correct_step=is_correct_step,
+                    is_correct_step=False,
                     final_answer_correct=False,
                     entropy_triggered=entropy_triggered,
                 )
@@ -169,5 +164,6 @@ class DisagreementDataCollector:
             final_correct = answers_match(final_pred, gold)
             for r in records:
                 r.final_answer_correct = final_correct
+                r.is_correct_step = final_correct
 
         return records

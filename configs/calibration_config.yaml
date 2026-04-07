@@ -3,7 +3,7 @@ model:
   short_name: "qwen2.5-math-7b"
   dtype: "float16"
   device: "cuda"
-  max_new_tokens: 1024
+  max_new_tokens: 4096
   trust_remote_code: true
   attn_implementation: "flash_attention_2"
 

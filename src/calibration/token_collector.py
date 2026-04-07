@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Optional
 
 import torch
-import torch.nn.functional as F
 from tqdm import tqdm
 import jsonlines
 
@@ -62,18 +61,33 @@ class TokenDataCollector:
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         all_records: list[TokenRecord] = []
 
+        n_correct = 0
+        n_incorrect = 0
+
         with jsonlines.open(save_path, mode="w") as writer:
             for problem in tqdm(problems, desc="Collecting token data"):
                 try:
                     records = self._collect_problem(problem)
                     all_records.extend(records)
                     writer.write_all([asdict(r) for r in records])
+                    if records:
+                        if records[0].final_answer_correct:
+                            n_correct += 1
+                        else:
+                            n_incorrect += 1
                 except Exception as e:
                     logger.warning(f"Skipping problem {problem['problem_id']}: {e}")
 
         logger.info(
-            f"Collected {len(all_records)} token records from {len(problems)} problems"
+            f"Collected {len(all_records)} token records from {len(problems)} problems "
+            f"(correct={n_correct}, incorrect={n_incorrect})"
         )
+        if n_correct == 0 or n_incorrect == 0:
+            logger.warning(
+                "All problems have the same final_answer_correct value. "
+                "Label variance is zero — threshold optimization will use median fallback. "
+                "Consider using a harder dataset split or a weaker model."
+            )
         logger.info(f"Saved to {save_path}")
         return all_records
 
@@ -87,7 +101,6 @@ class TokenDataCollector:
             max_length=2048,
         )["input_ids"].to(self.device)
 
-        prompt_len = prompt_ids.shape[1]
         generated_ids: list[int] = []
         all_logits: list[torch.Tensor] = []
 
@@ -114,32 +127,21 @@ class TokenDataCollector:
             if next_id == eos_id:
                 break
 
-        full_generated_text = self.tokenizer.decode(
-            generated_ids, skip_special_tokens=True
-        )
-        pred_answer = extract_numeric_answer(full_generated_text)
+        full_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
+        pred_answer = extract_numeric_answer(full_text)
         final_correct = answers_match(pred_answer, problem["gold_answer"])
 
-        step_labels = self._label_steps(
-            generated_ids=generated_ids,
-            gold=problem["gold_answer"],
-            final_correct=final_correct,
-        )
-
         records: list[TokenRecord] = []
-        decoded_so_far = self.tokenizer.decode(
-            prompt_ids[0], skip_special_tokens=True
-        )
+        decoded_so_far = self.tokenizer.decode(prompt_ids[0], skip_special_tokens=True)
 
-        for pos, (token_id, logits_t, is_correct) in enumerate(
-            zip(generated_ids, all_logits, step_labels)
-        ):
+        for pos, (token_id, logits_t) in enumerate(zip(generated_ids, all_logits)):
             token_str = self.tokenizer.decode([token_id], skip_special_tokens=False)
             in_zone = self.zone_classifier.is_in_zone(decoded_so_far, token_str)
 
-            entropy = compute_entropy(logits_t).item()
-            margin = compute_logit_margin(logits_t).item()
-            top_probs = compute_top_probs(logits_t, k=2)
+            logits_clean = torch.nan_to_num(logits_t, nan=0.0, posinf=1e4, neginf=-1e4)
+            entropy = compute_entropy(logits_clean).item()
+            margin = compute_logit_margin(logits_clean).item()
+            top_probs = compute_top_probs(logits_clean, k=2)
 
             records.append(
                 TokenRecord(
@@ -152,33 +154,10 @@ class TokenDataCollector:
                     in_semantic_zone=in_zone,
                     token_id=token_id,
                     token_str=token_str,
-                    is_correct_step=is_correct,
+                    is_correct_step=final_correct,
                     final_answer_correct=final_correct,
                 )
             )
             decoded_so_far += token_str
 
         return records
-
-    def _label_steps(
-        self,
-        generated_ids: list[int],
-        gold: str,
-        final_correct: bool,
-    ) -> list[bool]:
-        n = len(generated_ids)
-        if not final_correct:
-            return [False] * n
-
-        labels = [True] * n
-        partial_text = ""
-        for pos, token_id in enumerate(generated_ids):
-            token_str = self.tokenizer.decode([token_id], skip_special_tokens=False)
-            partial_text += token_str
-            pred = extract_numeric_answer(partial_text)
-            if pred is not None and answers_match(pred, gold):
-                for i in range(pos):
-                    labels[i] = False
-                return labels
-
-        return [True] * n
