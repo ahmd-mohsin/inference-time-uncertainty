@@ -1,9 +1,9 @@
 import logging
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Optional
 
 import torch
+import torch.nn.functional as F
 from tqdm import tqdm
 import jsonlines
 
@@ -60,7 +60,6 @@ class TokenDataCollector:
         problems = get_calibration_dataset(self.cfg)
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         all_records: list[TokenRecord] = []
-
         n_correct = 0
         n_incorrect = 0
 
@@ -84,9 +83,8 @@ class TokenDataCollector:
         )
         if n_correct == 0 or n_incorrect == 0:
             logger.warning(
-                "All problems have the same final_answer_correct value. "
-                "Label variance is zero — threshold optimization will use median fallback. "
-                "Consider using a harder dataset split or a weaker model."
+                "All problems have the same final_answer_correct value — "
+                "label variance is zero. Consider using a harder dataset or weaker model."
             )
         logger.info(f"Saved to {save_path}")
         return all_records
@@ -101,31 +99,22 @@ class TokenDataCollector:
             max_length=2048,
         )["input_ids"].to(self.device)
 
-        generated_ids: list[int] = []
-        all_logits: list[torch.Tensor] = []
+        output = self.model.generate(
+            input_ids=prompt_ids,
+            max_new_tokens=self.max_new_tokens,
+            do_sample=False,
+            temperature=1.0,
+            output_scores=True,
+            return_dict_in_generate=True,
+            pad_token_id=self.tokenizer.pad_token_id,
+            eos_token_id=self.tokenizer.eos_token_id,
+        )
 
-        current_ids = prompt_ids.clone()
-        past = None
-        eos_id = self.tokenizer.eos_token_id
+        generated_ids = output.sequences[0, prompt_ids.shape[1]:].tolist()
+        scores = output.scores
 
-        for _ in range(self.max_new_tokens):
-            out = self.model(
-                input_ids=current_ids if past is None else current_ids[:, -1:],
-                past_key_values=past,
-                use_cache=True,
-            )
-            past = out.past_key_values
-            logits_t = out.logits[:, -1, :].squeeze(0).clone()
-            all_logits.append(logits_t)
-
-            next_id = logits_t.argmax(dim=-1).item()
-            generated_ids.append(next_id)
-            current_ids = torch.cat(
-                [current_ids, torch.tensor([[next_id]], device=self.device)],
-                dim=1,
-            )
-            if next_id == eos_id:
-                break
+        if not generated_ids:
+            return []
 
         full_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
         pred_answer = extract_numeric_answer(full_text)
@@ -134,30 +123,30 @@ class TokenDataCollector:
         records: list[TokenRecord] = []
         decoded_so_far = self.tokenizer.decode(prompt_ids[0], skip_special_tokens=True)
 
-        for pos, (token_id, logits_t) in enumerate(zip(generated_ids, all_logits)):
+        for pos, (token_id, logits_t) in enumerate(zip(generated_ids, scores)):
+            logits_clean = torch.nan_to_num(
+                logits_t.squeeze(0), nan=0.0, posinf=1e4, neginf=-1e4
+            )
             token_str = self.tokenizer.decode([token_id], skip_special_tokens=False)
             in_zone = self.zone_classifier.is_in_zone(decoded_so_far, token_str)
 
-            logits_clean = torch.nan_to_num(logits_t, nan=0.0, posinf=1e4, neginf=-1e4)
             entropy = compute_entropy(logits_clean).item()
             margin = compute_logit_margin(logits_clean).item()
             top_probs = compute_top_probs(logits_clean, k=2)
 
-            records.append(
-                TokenRecord(
-                    problem_id=problem["problem_id"],
-                    position=pos,
-                    entropy=entropy,
-                    logit_margin=margin,
-                    top1_prob=top_probs[0].item(),
-                    top2_prob=top_probs[1].item() if top_probs.shape[-1] > 1 else 0.0,
-                    in_semantic_zone=in_zone,
-                    token_id=token_id,
-                    token_str=token_str,
-                    is_correct_step=final_correct,
-                    final_answer_correct=final_correct,
-                )
-            )
+            records.append(TokenRecord(
+                problem_id=problem["problem_id"],
+                position=pos,
+                entropy=entropy,
+                logit_margin=margin,
+                top1_prob=top_probs[0].item(),
+                top2_prob=top_probs[1].item() if top_probs.shape[-1] > 1 else 0.0,
+                in_semantic_zone=in_zone,
+                token_id=token_id,
+                token_str=token_str,
+                is_correct_step=final_correct,
+                final_answer_correct=final_correct,
+            ))
             decoded_so_far += token_str
 
         return records

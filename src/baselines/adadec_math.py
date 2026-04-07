@@ -7,7 +7,6 @@ import torch.nn.functional as F
 
 from src.uncertainty.semantic_zone import SemanticLoadZoneClassifier
 from src.uncertainty.entropy_filter import compute_entropy
-from src.uncertainty.disagreement import _clone_past_key_values
 
 logger = logging.getLogger(__name__)
 
@@ -45,42 +44,53 @@ class AdaDecGenerator:
         self.lookahead_beam_size = lookahead_beam_size
         self.max_new_tokens = cfg["model"]["max_new_tokens"]
         self.eos_token_id = tokenizer.eos_token_id
+        self.pad_token_id = tokenizer.pad_token_id or tokenizer.eos_token_id
         self.device = cfg["model"]["device"]
         self.min_tokens = cfg.get("decoding", {}).get("min_tokens_before_trigger", 20)
 
     @torch.no_grad()
     def generate(self, prompt_ids: torch.Tensor) -> AdaDecResult:
         t_start = time.time()
-        current_ids = prompt_ids.clone()
-        past = None
+
+        base_out = self.model.generate(
+            input_ids=prompt_ids,
+            max_new_tokens=self.max_new_tokens,
+            do_sample=False,
+            output_scores=True,
+            return_dict_in_generate=True,
+            pad_token_id=self.pad_token_id,
+            eos_token_id=self.eos_token_id,
+        )
+
         prompt_len = prompt_ids.shape[1]
+        base_ids = base_out.sequences[0, prompt_len:].tolist()
+        scores = base_out.scores
+
         generated_ids: list[int] = []
         n_pauses = 0
+        current_seq = prompt_ids.clone()
+        decoded_so_far = self.tokenizer.decode(prompt_ids[0], skip_special_tokens=True)
 
-        for step in range(self.max_new_tokens):
-            out = self.model(
-                input_ids=current_ids if past is None else current_ids[:, -1:],
-                past_key_values=past,
-                use_cache=True,
+        for pos, (token_id, logits_t) in enumerate(zip(base_ids, scores)):
+            logits_clean = torch.nan_to_num(
+                logits_t.squeeze(0), nan=0.0, posinf=1e4, neginf=-1e4
             )
-            past = out.past_key_values
-            logits = out.logits[:, -1, :]
-            greedy_id = logits.argmax(dim=-1).item()
-            greedy_str = self.tokenizer.decode([greedy_id], skip_special_tokens=False)
-            decoded = self.tokenizer.decode(current_ids[0], skip_special_tokens=True)
-            in_zone = self.zone_classifier.is_in_zone(decoded, greedy_str)
-            entropy = compute_entropy(logits.squeeze()).item()
+            token_str = self.tokenizer.decode([token_id], skip_special_tokens=False)
+            in_zone = self.zone_classifier.is_in_zone(decoded_so_far, token_str)
+            entropy = compute_entropy(logits_clean).item()
 
-            if step >= self.min_tokens and in_zone and entropy > self.tau_e:
+            if pos >= self.min_tokens and in_zone and entropy > self.tau_e:
                 n_pauses += 1
-                chosen_id = self._lookahead_rerank(current_ids, past, logits)
+                chosen_id = self._lookahead_rerank(current_seq, logits_clean)
             else:
-                chosen_id = greedy_id
+                chosen_id = token_id
 
-            current_ids = torch.cat(
-                [current_ids, torch.tensor([[chosen_id]], device=self.device)], dim=1
-            )
             generated_ids.append(chosen_id)
+            chosen_str = self.tokenizer.decode([chosen_id], skip_special_tokens=False)
+            decoded_so_far += chosen_str
+            current_seq = torch.cat(
+                [current_seq, torch.tensor([[chosen_id]], device=self.device)], dim=1
+            )
             if chosen_id == self.eos_token_id:
                 break
 
@@ -101,55 +111,32 @@ class AdaDecGenerator:
         )
 
     @torch.no_grad()
-    def _lookahead_rerank(
-        self,
-        current_ids: torch.Tensor,
-        past,
-        logits: torch.Tensor,
-    ) -> int:
-        _, top_ids = F.softmax(logits, dim=-1).topk(self.lookahead_beam_size, dim=-1)
-        candidates = top_ids[0].tolist()
+    def _lookahead_rerank(self, current_seq: torch.Tensor, logits: torch.Tensor) -> int:
+        _, top_ids = F.softmax(logits, dim=-1).topk(self.lookahead_beam_size)
+        candidates = top_ids.tolist()
         best_id = candidates[0]
         best_score = float("-inf")
 
         for cand_id in candidates:
-            score = self._score_candidate(
-                current_ids=current_ids,
-                past=_clone_past_key_values(past),
-                candidate_id=cand_id,
+            cand_input = torch.cat(
+                [current_seq, torch.tensor([[cand_id]], device=self.device)], dim=1
             )
-            if score > best_score:
-                best_score = score
+            out = self.model.generate(
+                input_ids=cand_input,
+                max_new_tokens=self.lookahead_length,
+                do_sample=False,
+                output_scores=True,
+                return_dict_in_generate=True,
+                pad_token_id=self.pad_token_id,
+                eos_token_id=self.eos_token_id,
+            )
+            new_ids = out.sequences[0, cand_input.shape[1]:].tolist()
+            total_lp = sum(
+                F.log_softmax(s.squeeze(0), dim=-1)[tid].item()
+                for s, tid in zip(out.scores, new_ids)
+            )
+            if total_lp > best_score:
+                best_score = total_lp
                 best_id = cand_id
 
         return best_id
-
-    @torch.no_grad()
-    def _score_candidate(
-        self,
-        current_ids: torch.Tensor,
-        past,
-        candidate_id: int,
-    ) -> float:
-        cand_tensor = torch.tensor([[candidate_id]], device=self.device)
-        out = self.model(input_ids=cand_tensor, past_key_values=past, use_cache=True)
-        cur_past = out.past_key_values
-        cur_ids = torch.cat([current_ids, cand_tensor], dim=1)
-        total_lp = 0.0
-
-        for _ in range(self.lookahead_length):
-            out = self.model(
-                input_ids=cur_ids[:, -1:],
-                past_key_values=cur_past,
-                use_cache=True,
-            )
-            cur_past = out.past_key_values
-            next_id = out.logits[:, -1, :].argmax(dim=-1).item()
-            total_lp += F.log_softmax(out.logits[:, -1, :], dim=-1)[0, next_id].item()
-            cur_ids = torch.cat(
-                [cur_ids, torch.tensor([[next_id]], device=self.device)], dim=1
-            )
-            if next_id == self.eos_token_id:
-                break
-
-        return total_lp
