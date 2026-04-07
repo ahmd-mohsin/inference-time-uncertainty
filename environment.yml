@@ -33,3 +33,4 @@ dependencies:
     - wandb==0.17.7
     - python-dotenv==1.0.1
     - einops==0.8.0
+    - flash-attn==2.6.3

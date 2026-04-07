@@ -39,13 +39,7 @@ class TokenRecord:
 
 
 class TokenDataCollector:
-    def __init__(
-        self,
-        model,
-        tokenizer,
-        zone_classifier: SemanticLoadZoneClassifier,
-        cfg: dict,
-    ):
+    def __init__(self, model, tokenizer, zone_classifier, cfg):
         self.model = model
         self.tokenizer = tokenizer
         self.zone_classifier = zone_classifier
@@ -55,11 +49,11 @@ class TokenDataCollector:
         self.max_new_tokens = cfg["model"]["max_new_tokens"]
 
     @torch.no_grad()
-    def collect(self, save_path: str) -> list[TokenRecord]:
+    def collect(self, save_path):
         logger.info("Phase 1a — Collecting token data on calibration dataset")
         problems = get_calibration_dataset(self.cfg)
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
-        all_records: list[TokenRecord] = []
+        all_records = []
         n_correct = 0
         n_incorrect = 0
 
@@ -82,28 +76,21 @@ class TokenDataCollector:
             f"(correct={n_correct}, incorrect={n_incorrect})"
         )
         if n_correct == 0 or n_incorrect == 0:
-            logger.warning(
-                "All problems have the same final_answer_correct value — "
-                "label variance is zero. Consider using a harder dataset or weaker model."
-            )
+            logger.warning("All problems have same label — consider harder dataset or weaker model")
         logger.info(f"Saved to {save_path}")
         return all_records
 
     @torch.no_grad()
-    def _collect_problem(self, problem: dict) -> list[TokenRecord]:
+    def _collect_problem(self, problem):
         prompt = format_prompt(problem, self.model_name)
         prompt_ids = self.tokenizer(
-            prompt,
-            return_tensors="pt",
-            truncation=True,
-            max_length=2048,
+            prompt, return_tensors="pt", truncation=True, max_length=2048
         )["input_ids"].to(self.device)
 
         output = self.model.generate(
             input_ids=prompt_ids,
             max_new_tokens=self.max_new_tokens,
             do_sample=False,
-            temperature=1.0,
             output_scores=True,
             return_dict_in_generate=True,
             pad_token_id=self.tokenizer.pad_token_id,
@@ -120,7 +107,7 @@ class TokenDataCollector:
         pred_answer = extract_numeric_answer(full_text)
         final_correct = answers_match(pred_answer, problem["gold_answer"])
 
-        records: list[TokenRecord] = []
+        records = []
         decoded_so_far = self.tokenizer.decode(prompt_ids[0], skip_special_tokens=True)
 
         for pos, (token_id, logits_t) in enumerate(zip(generated_ids, scores)):
@@ -129,7 +116,6 @@ class TokenDataCollector:
             )
             token_str = self.tokenizer.decode([token_id], skip_special_tokens=False)
             in_zone = self.zone_classifier.is_in_zone(decoded_so_far, token_str)
-
             entropy = compute_entropy(logits_clean).item()
             margin = compute_logit_margin(logits_clean).item()
             top_probs = compute_top_probs(logits_clean, k=2)
