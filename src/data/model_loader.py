@@ -43,10 +43,15 @@ class ModelLoader:
 
         dtype = self._resolve_dtype()
 
+        if self.device.startswith("cuda"):
+            # Normalize "cuda" -> "cuda:0" so all layers land on one GPU
+            device_map = self.device if ":" in self.device else "cuda:0"
+        else:
+            device_map = "auto"
         kwargs = {
             "torch_dtype": dtype,
             "trust_remote_code": self.trust_remote_code,
-            "device_map": "auto",
+            "device_map": device_map,
         }
 
         if self.attn_impl == "flash_attention_2":
