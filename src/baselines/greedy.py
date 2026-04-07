@@ -27,31 +27,22 @@ class GreedyGenerator:
         self.tokenizer = tokenizer
         self.max_new_tokens = cfg["model"]["max_new_tokens"]
         self.eos_token_id = tokenizer.eos_token_id
-        self.device = cfg["model"]["device"]
+        self.pad_token_id = tokenizer.pad_token_id or tokenizer.eos_token_id
 
     @torch.no_grad()
     def generate(self, prompt_ids: torch.Tensor) -> GreedyResult:
         t_start = time.time()
-        current_ids = prompt_ids.clone()
-        past = None
         prompt_len = prompt_ids.shape[1]
-        generated_ids: list[int] = []
 
-        for _ in range(self.max_new_tokens):
-            out = self.model(
-                input_ids=current_ids if past is None else current_ids[:, -1:],
-                past_key_values=past,
-                use_cache=True,
-            )
-            past = out.past_key_values
-            next_id = out.logits[:, -1, :].argmax(dim=-1).item()
-            current_ids = torch.cat(
-                [current_ids, torch.tensor([[next_id]], device=self.device)], dim=1
-            )
-            generated_ids.append(next_id)
-            if next_id == self.eos_token_id:
-                break
+        out = self.model.generate(
+            input_ids=prompt_ids,
+            max_new_tokens=self.max_new_tokens,
+            do_sample=False,
+            pad_token_id=self.pad_token_id,
+            eos_token_id=self.eos_token_id,
+        )
 
+        generated_ids = out[0, prompt_len:].tolist()
         generated_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
         total = len(generated_ids)
 

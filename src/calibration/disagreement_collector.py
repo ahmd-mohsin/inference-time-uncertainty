@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 
 import torch
+import torch.nn.functional as F
 from tqdm import tqdm
 import jsonlines
 
@@ -14,10 +15,7 @@ from src.data.dataset import (
 )
 from src.uncertainty.entropy_filter import compute_entropy
 from src.uncertainty.semantic_zone import SemanticLoadZoneClassifier
-from src.uncertainty.disagreement import (
-    SemanticDisagreementDetector,
-    _clone_past_key_values,
-)
+from src.uncertainty.disagreement import SemanticDisagreementDetector
 
 logger = logging.getLogger(__name__)
 
@@ -74,8 +72,7 @@ class DisagreementDataCollector:
                     logger.warning(f"Skipping problem {problem['problem_id']}: {e}")
 
         logger.info(
-            f"Collected {len(all_records)} disagreement records "
-            f"from {len(problems)} problems"
+            f"Collected {len(all_records)} disagreement records from {len(problems)} problems"
         )
         logger.info(f"Saved to {save_path}")
         return all_records
@@ -90,30 +87,39 @@ class DisagreementDataCollector:
             max_length=2048,
         )["input_ids"].to(self.device)
 
-        gold = problem["gold_answer"]
-        eos_id = self.tokenizer.eos_token_id
+        output = self.model.generate(
+            input_ids=prompt_ids,
+            max_new_tokens=self.max_new_tokens,
+            do_sample=False,
+            temperature=1.0,
+            output_scores=True,
+            return_dict_in_generate=True,
+            pad_token_id=self.tokenizer.pad_token_id,
+            eos_token_id=self.tokenizer.eos_token_id,
+        )
 
-        current_ids = prompt_ids.clone()
-        past = None
-        generated_ids: list[int] = []
+        generated_ids = output.sequences[0, prompt_ids.shape[1]:].tolist()
+        scores = output.scores
+        full_sequence = output.sequences
+
+        if not generated_ids:
+            return []
+
+        full_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
+        pred_answer = extract_numeric_answer(full_text)
+        final_correct = answers_match(pred_answer, problem["gold_answer"])
+
         records: list[DisagreementTokenRecord] = []
+        decoded_so_far = self.tokenizer.decode(prompt_ids[0], skip_special_tokens=True)
+        prompt_len = prompt_ids.shape[1]
 
-        for pos in range(self.max_new_tokens):
-            out = self.model(
-                input_ids=current_ids if past is None else current_ids[:, -1:],
-                past_key_values=past,
-                use_cache=True,
+        for pos, (token_id, logits_t) in enumerate(zip(generated_ids, scores)):
+            logits_clean = torch.nan_to_num(
+                logits_t.squeeze(0), nan=0.0, posinf=1e4, neginf=-1e4
             )
-            past = out.past_key_values
-            logits = out.logits[:, -1, :]
-            next_id = logits.argmax(dim=-1).item()
-
-            token_str = self.tokenizer.decode([next_id], skip_special_tokens=False)
-            decoded_so_far = self.tokenizer.decode(
-                current_ids[0], skip_special_tokens=True
-            )
+            token_str = self.tokenizer.decode([token_id], skip_special_tokens=False)
             in_zone = self.zone_classifier.is_in_zone(decoded_so_far, token_str)
-            entropy = compute_entropy(logits.squeeze()).item()
+            entropy = compute_entropy(logits_clean).item()
 
             entropy_triggered = (
                 pos >= self.min_tokens
@@ -123,47 +129,30 @@ class DisagreementDataCollector:
 
             disagreement_score = 0.0
             if entropy_triggered:
+                prefix_ids = full_sequence[:, :prompt_len + pos]
                 try:
                     drec = self.detector.compute(
                         model=self.model,
-                        input_ids=current_ids,
-                        past_key_values=_clone_past_key_values(past),
+                        input_ids=prefix_ids,
+                        past_key_values=None,
                         position=pos,
                     )
                     disagreement_score = drec.disagreement_score
                 except Exception as e:
                     logger.debug(f"Disagreement failed at pos {pos}: {e}")
 
-            generated_ids.append(next_id)
-
-            records.append(
-                DisagreementTokenRecord(
-                    problem_id=problem["problem_id"],
-                    position=pos,
-                    entropy=entropy,
-                    disagreement_score=disagreement_score,
-                    in_semantic_zone=in_zone,
-                    token_id=next_id,
-                    token_str=token_str,
-                    is_correct_step=False,
-                    final_answer_correct=False,
-                    entropy_triggered=entropy_triggered,
-                )
-            )
-
-            current_ids = torch.cat(
-                [current_ids, torch.tensor([[next_id]], device=self.device)],
-                dim=1,
-            )
-            if next_id == eos_id:
-                break
-
-        if records:
-            final_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
-            final_pred = extract_numeric_answer(final_text)
-            final_correct = answers_match(final_pred, gold)
-            for r in records:
-                r.final_answer_correct = final_correct
-                r.is_correct_step = final_correct
+            records.append(DisagreementTokenRecord(
+                problem_id=problem["problem_id"],
+                position=pos,
+                entropy=entropy,
+                disagreement_score=disagreement_score,
+                in_semantic_zone=in_zone,
+                token_id=token_id,
+                token_str=token_str,
+                is_correct_step=final_correct,
+                final_answer_correct=final_correct,
+                entropy_triggered=entropy_triggered,
+            ))
+            decoded_so_far += token_str
 
         return records
