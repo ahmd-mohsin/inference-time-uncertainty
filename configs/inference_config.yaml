@@ -17,6 +17,10 @@ decoding:
   min_tokens_before_trigger: 20
   max_entropy_triggers_per_problem: 8
 
+  ptcs_k_probes: 5
+  ptcs_noise_std: 0.01
+  ptcs_divergence_threshold: 0.05
+
 dataset:
   name: "math500"
   split: "test"
@@ -27,8 +31,9 @@ output:
   dir: "data/inference_outputs"
   predictions_file: "data/inference_outputs/predictions_{model_short_name}_{decoding_mode}.jsonl"
   metrics_file: "data/inference_outputs/metrics_{model_short_name}_{decoding_mode}.json"
-  detail_log_file: "data/inference_outputs/detail_{model_short_name}_{decoding_mode}.jsonl"
   log_detail: false
+  detail_log_file: "logs/detail_{model_short_name}_{decoding_mode}.jsonl"
 
 logging:
   level: "INFO"
+  log_file: "logs/inference_{model_short_name}_{decoding_mode}.log"
