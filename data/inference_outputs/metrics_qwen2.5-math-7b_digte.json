@@ -1,0 +1,23 @@
+{
+  "decoding_mode": "digte",
+  "n_problems": 500,
+  "accuracy": 0.71,
+  "accuracy_with_boxed": 0.7298969072164948,
+  "mean_tokens": 736.008,
+  "median_tokens": 576.0,
+  "std_tokens": 560.1360477026988,
+  "mean_wall_time": 13.099197405338288,
+  "total_wall_time": 6549.598702669144,
+  "mean_entropy_trigger_rate": 0.0065718090285546114,
+  "mean_expansion_trigger_rate": 0.0021262360331464024,
+  "mean_expansion_tokens": 54.23,
+  "expansion_overhead_pct": 7.954202100977151,
+  "accuracy_by_level": {
+    "2": 0.8666666666666667,
+    "4": 0.6796875,
+    "3": 0.8095238095238095,
+    "5": 0.5298507462686567,
+    "1": 0.7906976744186046
+  },
+  "accuracy_by_type": {}
+}

@@ -54,21 +54,26 @@ def load_math500(
     cache_dir: Optional[str] = None,
 ) -> list[dict]:
     logger.info(f"Loading MATH500 split='{split}' n={n_problems}")
-    raw = load_dataset("HuggingFaceH4/MATH-500", split="test", cache_dir=cache_dir)
-    data = list(raw)
+    raw = load_dataset("HuggingFaceH4/MATH-500", cache_dir=cache_dir)
+    data = list(raw[split])
     random.seed(seed)
     random.shuffle(data)
-    target = min(500, len(data)) if n_problems <= 0 else n_problems
-    data = data[:target]
+    if n_problems > 0:
+        data = data[:n_problems]
     problems = []
     for i, item in enumerate(data):
+        level_raw = item.get("level", "")
+        level_num = ""
+        m = re.search(r"\d+", str(level_raw))
+        if m:
+            level_num = m.group(0)
         problems.append({
             "problem_id": i,
             "question": item["problem"],
             "gold_answer": item["answer"],
             "source": "math500",
-            "level": str(item.get("level", "")),
-            "problem_type": item.get("subject", ""),
+            "level": level_num,
+            "problem_type": item.get("type", ""),
         })
     logger.info(f"Loaded {len(problems)} MATH500 problems")
     return problems
@@ -151,6 +156,17 @@ def extract_numeric_answer(text: str) -> Optional[str]:
     return None
 
 
+def _normalize_latex(s: str) -> str:
+    s = s.strip()
+    s = re.sub(r"\s+", "", s)
+    s = s.replace("\\left", "").replace("\\right", "")
+    s = s.replace("\\!", "").replace("\\,", "").replace("\\ ", "")
+    s = s.replace("\\circ", "").replace("^\\circ", "").replace("°", "")
+    s = s.replace("{", "").replace("}", "")
+    s = s.lower()
+    return s
+
+
 def normalize_answer(answer: Optional[str]) -> str:
     if answer is None:
         return ""
@@ -158,6 +174,8 @@ def normalize_answer(answer: Optional[str]) -> str:
     answer = re.sub(r"\s+", " ", answer)
     answer = re.sub(r"^x\s*\\in\s*", "", answer).strip()
     answer = re.sub(r"^x\s*=\s*", "", answer).strip()
+    answer = re.sub(r"\^\\circ", "", answer)
+    answer = re.sub(r"\\circ", "", answer)
     answer = answer.replace(",", "").replace("\\,", "")
     try:
         val = float(answer)
@@ -167,16 +185,6 @@ def normalize_answer(answer: Optional[str]) -> str:
     except (ValueError, OverflowError):
         pass
     return answer.lower().strip()
-
-
-def _normalize_latex(s: str) -> str:
-    s = s.strip()
-    s = re.sub(r"\s+", "", s)
-    s = s.replace("\\left", "").replace("\\right", "")
-    s = s.replace("\\!", "").replace("\\,", "").replace("\\ ", "")
-    s = s.replace("{", "").replace("}", "")
-    s = s.lower()
-    return s
 
 
 def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
@@ -216,7 +224,7 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
         return True
 
     try:
-        from sympy import simplify, sympify, latex
+        from sympy import simplify, sympify
         p_expr = sympify(pred_l.replace("^", "**"))
         g_expr = sympify(gold_l.replace("^", "**"))
         if simplify(p_expr - g_expr) == 0:
