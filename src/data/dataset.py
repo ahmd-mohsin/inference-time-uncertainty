@@ -54,8 +54,8 @@ def load_math500(
     cache_dir: Optional[str] = None,
 ) -> list[dict]:
     logger.info(f"Loading MATH500 split='{split}' n={n_problems}")
-    raw = load_dataset("hendrycks/competition_math", cache_dir=cache_dir)
-    data = list(raw[split])
+    raw = load_dataset("HuggingFaceH4/MATH-500", split="test", cache_dir=cache_dir)
+    data = list(raw)
     random.seed(seed)
     random.shuffle(data)
     target = min(500, len(data)) if n_problems <= 0 else n_problems
@@ -65,10 +65,10 @@ def load_math500(
         problems.append({
             "problem_id": i,
             "question": item["problem"],
-            "gold_answer": item["solution"],
+            "gold_answer": item["answer"],
             "source": "math500",
-            "level": item.get("level", ""),
-            "problem_type": item.get("type", ""),
+            "level": str(item.get("level", "")),
+            "problem_type": item.get("subject", ""),
         })
     logger.info(f"Loaded {len(problems)} MATH500 problems")
     return problems
