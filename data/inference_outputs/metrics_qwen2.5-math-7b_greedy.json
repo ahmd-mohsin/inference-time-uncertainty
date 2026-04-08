@@ -1,0 +1,31 @@
+{
+  "decoding_mode": "greedy",
+  "n_problems": 500,
+  "accuracy": 0.71,
+  "accuracy_with_boxed": 0.7298969072164948,
+  "mean_tokens": 685.674,
+  "median_tokens": 516.5,
+  "std_tokens": 548.8195402170006,
+  "mean_wall_time": 9.55846788263321,
+  "total_wall_time": 4779.233941316605,
+  "mean_entropy_trigger_rate": 0.0,
+  "mean_expansion_trigger_rate": 0.0,
+  "mean_expansion_tokens": 0.0,
+  "expansion_overhead_pct": 0.0,
+  "accuracy_by_level": {
+    "2": 0.8666666666666667,
+    "4": 0.6796875,
+    "3": 0.8095238095238095,
+    "5": 0.5298507462686567,
+    "1": 0.7906976744186046
+  },
+  "accuracy_by_type": {
+    "Precalculus": 0.4642857142857143,
+    "Algebra": 0.8709677419354839,
+    "Geometry": 0.5609756097560976,
+    "Number Theory": 0.8709677419354839,
+    "Intermediate Algebra": 0.5360824742268041,
+    "Counting & Probability": 0.7105263157894737,
+    "Prealgebra": 0.7926829268292683
+  }
+}

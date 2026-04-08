@@ -12,7 +12,7 @@ from src.uncertainty.disagreement import SemanticDisagreementDetector
 
 logger = logging.getLogger(__name__)
 
-DELIBERATION_MARKER = "[VERIFY: resolve the following step before continuing]"
+_CONTINUATION_PROMPT = " Let me verify this step carefully and continue: "
 
 
 @dataclass
@@ -65,11 +65,14 @@ class DIGTEGenerator:
         dec_cfg = cfg.get("decoding", {})
         self.max_new_tokens = cfg["model"]["max_new_tokens"]
         self.expansion_delta_l = dec_cfg.get("expansion_delta_l", 50)
-        self.expansion_marker = dec_cfg.get("expansion_marker", DELIBERATION_MARKER)
-        self.marker_ids = tokenizer.encode(self.expansion_marker, add_special_tokens=False)
+        self.continuation_temperature = dec_cfg.get("continuation_temperature", 1.2)
         self.eos_token_id = tokenizer.eos_token_id
         self.pad_token_id = tokenizer.pad_token_id or tokenizer.eos_token_id
         self.device = cfg["model"]["device"]
+
+        self._continuation_ids = tokenizer.encode(
+            _CONTINUATION_PROMPT, add_special_tokens=False
+        )
 
     @torch.no_grad()
     def generate(self, prompt_ids: torch.Tensor) -> GenerationResult:
@@ -120,61 +123,78 @@ class DIGTEGenerator:
 
             if entropy_triggered:
                 n_entropy_triggers += 1
-                try:
-                    drec = self.disagreement_detector.compute(
-                        model=self.model,
-                        input_ids=current_seq,
-                        past_key_values=None,
-                        position=tokens_used,
-                    )
-                    disagreement_score = drec.disagreement_score
+                budget_for_expansion = remaining - len(self._continuation_ids) - 1
+                if budget_for_expansion > 5:
+                    try:
+                        drec = self.disagreement_detector.compute(
+                            model=self.model,
+                            input_ids=current_seq,
+                            past_key_values=None,
+                            position=tokens_used,
+                        )
+                        disagreement_score = drec.disagreement_score
 
-                    if self.disagreement_detector.should_expand(drec) and remaining > len(self.marker_ids) + 1:
-                        n_expansion_triggers += 1
-                        expansion_triggered = True
-                        exp_ids = self._expand_in_place(current_seq, remaining)
-                        generated_ids.extend(exp_ids)
-                        expansion_tokens_added = len(exp_ids)
-                        total_expansion_tokens += expansion_tokens_added
-                        tokens_used += expansion_tokens_added
-                        remaining -= expansion_tokens_added
+                        if self.disagreement_detector.should_expand(drec):
+                            n_expansion_triggers += 1
+                            expansion_triggered = True
 
-                        for eid in exp_ids:
-                            etok = self.tokenizer.decode([eid], skip_special_tokens=False)
-                            decoded_so_far += etok
-                            current_seq = torch.cat(
-                                [current_seq, torch.tensor([[eid]], device=self.device)], dim=1
+                            exp_ids = self._expand_from_current(
+                                current_seq=current_seq,
+                                remaining=budget_for_expansion,
                             )
 
-                        if any(t == self.eos_token_id for t in exp_ids) or remaining <= 0:
-                            if self.log_detail:
-                                trace.append(StepTrace(
-                                    position=tokens_used, token_id=token_id, token_str=token_str,
-                                    entropy=entropy_val, in_semantic_zone=in_zone,
-                                    entropy_triggered=entropy_triggered, disagreement_score=disagreement_score,
-                                    expansion_triggered=expansion_triggered, expansion_tokens=expansion_tokens_added,
-                                    latency_ms=(time.time() - step_t) * 1000,
-                                ))
-                            break
-                except Exception as e:
-                    logger.debug(f"DIGTE check failed at pos {pos}: {e}")
+                            generated_ids.extend(exp_ids)
+                            expansion_tokens_added = len(exp_ids)
+                            total_expansion_tokens += expansion_tokens_added
+                            tokens_used += expansion_tokens_added
+                            remaining -= expansion_tokens_added
+
+                            for eid in exp_ids:
+                                etok = self.tokenizer.decode(
+                                    [eid], skip_special_tokens=False
+                                )
+                                decoded_so_far += etok
+                                current_seq = torch.cat(
+                                    [
+                                        current_seq,
+                                        torch.tensor([[eid]], device=self.device),
+                                    ],
+                                    dim=1,
+                                )
+
+                            if (
+                                any(t == self.eos_token_id for t in exp_ids)
+                                or remaining <= 0
+                            ):
+                                break
+
+                    except Exception as e:
+                        logger.debug(f"DIGTE expansion failed at pos {pos}: {e}")
 
             generated_ids.append(token_id)
             decoded_so_far += token_str
             current_seq = torch.cat(
-                [current_seq, torch.tensor([[token_id]], device=self.device)], dim=1
+                [current_seq, torch.tensor([[token_id]], device=self.device)],
+                dim=1,
             )
             tokens_used += 1
             remaining -= 1
 
             if self.log_detail:
-                trace.append(StepTrace(
-                    position=tokens_used - 1, token_id=token_id, token_str=token_str,
-                    entropy=entropy_val, in_semantic_zone=in_zone,
-                    entropy_triggered=entropy_triggered, disagreement_score=disagreement_score,
-                    expansion_triggered=expansion_triggered, expansion_tokens=expansion_tokens_added,
-                    latency_ms=(time.time() - step_t) * 1000,
-                ))
+                trace.append(
+                    StepTrace(
+                        position=tokens_used - 1,
+                        token_id=token_id,
+                        token_str=token_str,
+                        entropy=entropy_val,
+                        in_semantic_zone=in_zone,
+                        entropy_triggered=entropy_triggered,
+                        disagreement_score=disagreement_score,
+                        expansion_triggered=expansion_triggered,
+                        expansion_tokens=expansion_tokens_added,
+                        latency_ms=(time.time() - step_t) * 1000,
+                    )
+                )
 
             if token_id == self.eos_token_id or remaining <= 0:
                 break
@@ -197,24 +217,25 @@ class DIGTEGenerator:
         )
 
     @torch.no_grad()
-    def _expand_in_place(
+    def _expand_from_current(
         self,
         current_seq: torch.Tensor,
         remaining: int,
     ) -> list[int]:
-        marker_tensor = torch.tensor([self.marker_ids], device=self.device)
-        expand_input = torch.cat([current_seq, marker_tensor], dim=1)
-        delta = min(self.expansion_delta_l, remaining - len(self.marker_ids))
+        cont_tensor = torch.tensor([self._continuation_ids], device=self.device)
+        expand_input = torch.cat([current_seq, cont_tensor], dim=1)
 
+        delta = min(self.expansion_delta_l, remaining - len(self._continuation_ids))
         if delta <= 0:
-            return list(self.marker_ids)
+            return list(self._continuation_ids)
 
         out = self.model.generate(
             input_ids=expand_input,
             max_new_tokens=delta,
-            do_sample=False,
+            do_sample=True,
+            temperature=self.continuation_temperature,
             pad_token_id=self.pad_token_id,
             eos_token_id=self.eos_token_id,
         )
         new_ids = out[0, expand_input.shape[1]:].tolist()
-        return list(self.marker_ids) + new_ids
+        return list(self._continuation_ids) + new_ids
