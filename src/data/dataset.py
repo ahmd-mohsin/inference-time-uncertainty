@@ -154,8 +154,11 @@ def extract_numeric_answer(text: str) -> Optional[str]:
 def normalize_answer(answer: Optional[str]) -> str:
     if answer is None:
         return ""
-    answer = answer.strip().replace(",", "")
+    answer = answer.strip()
     answer = re.sub(r"\s+", " ", answer)
+    answer = re.sub(r"^x\s*\\in\s*", "", answer).strip()
+    answer = re.sub(r"^x\s*=\s*", "", answer).strip()
+    answer = answer.replace(",", "").replace("\\,", "")
     try:
         val = float(answer)
         if val == int(val) and abs(val) < 1e15:
@@ -166,17 +169,31 @@ def normalize_answer(answer: Optional[str]) -> str:
     return answer.lower().strip()
 
 
+def _normalize_latex(s: str) -> str:
+    s = s.strip()
+    s = re.sub(r"\s+", "", s)
+    s = s.replace("\\left", "").replace("\\right", "")
+    s = s.replace("\\!", "").replace("\\,", "").replace("\\ ", "")
+    s = s.replace("{", "").replace("}", "")
+    s = s.lower()
+    return s
+
+
 def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
     if pred is None:
         return False
+
     pred_n = normalize_answer(pred)
     gold_n = normalize_answer(gold)
+
     if pred_n == gold_n:
         return True
+
     try:
         return abs(float(pred_n) - float(gold_n)) < tol
     except (ValueError, TypeError):
         pass
+
     frac_pat = r"^([\-\+]?\d+)\s*/\s*(\d+)$"
     pm = re.match(frac_pat, pred_n)
     gm = re.match(frac_pat, gold_n)
@@ -187,6 +204,26 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
             return abs(pv - gv) < tol
         except ZeroDivisionError:
             pass
+
+    pred_l = _normalize_latex(pred)
+    gold_l = _normalize_latex(gold)
+    if pred_l == gold_l:
+        return True
+
+    pred_l2 = _normalize_latex(pred_n)
+    gold_l2 = _normalize_latex(gold_n)
+    if pred_l2 == gold_l2:
+        return True
+
+    try:
+        from sympy import simplify, sympify, latex
+        p_expr = sympify(pred_l.replace("^", "**"))
+        g_expr = sympify(gold_l.replace("^", "**"))
+        if simplify(p_expr - g_expr) == 0:
+            return True
+    except Exception:
+        pass
+
     return False
 
 

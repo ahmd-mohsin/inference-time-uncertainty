@@ -1,0 +1,20 @@
+{
+  "qwen2.5-math-7b": {
+    "tau_e": 0.2,
+    "tau_d": 0.3038461538461538,
+    "entropy_auroc": 0.6275765358043492,
+    "entropy_trigger_rate": 0.12723424943518175,
+    "entropy_auroc_full": 0.6275765358043492,
+    "disagreement_auroc": 0.4774301436642099,
+    "disagreement_trigger_rate": 0.2998192498870312,
+    "disagreement_auroc_full": 0.4774301436642099,
+    "n_token_records": 156900,
+    "n_disagreement_records": 156900,
+    "calibration_time_sec": 10343.1,
+    "signal_comparison": {
+      "entropy_auroc": 0.6275765358043492,
+      "neg_margin_auroc": 0.6219480552059077,
+      "neg_top1_auroc": 0.6236321383912711
+    }
+  }
+}
