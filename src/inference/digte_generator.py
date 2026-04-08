@@ -1,10 +1,8 @@
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Optional
 
 import torch
-import torch.nn.functional as F
 
 from src.uncertainty.entropy_filter import EntropyPreFilter, compute_entropy
 from src.uncertainty.semantic_zone import SemanticLoadZoneClassifier
@@ -13,6 +11,7 @@ from src.uncertainty.disagreement import SemanticDisagreementDetector
 logger = logging.getLogger(__name__)
 
 _CONTINUATION_PROMPT = " Let me verify this step carefully and continue: "
+_MAX_ENTROPY_TRIGGERS_PER_PROBLEM = 8
 
 
 @dataclass
@@ -44,6 +43,18 @@ class GenerationResult:
     trace: list[StepTrace] = field(default_factory=list)
 
 
+def _is_garbage_token(tok: str) -> bool:
+    for c in tok:
+        cp = ord(c)
+        is_ascii_ext = cp < 0x0100
+        is_greek = 0x0370 <= cp <= 0x03FF
+        is_math_sym = 0x2200 <= cp <= 0x22FF
+        is_arrows = 0x2190 <= cp <= 0x21FF
+        if not (is_ascii_ext or is_greek or is_math_sym or is_arrows):
+            return True
+    return False
+
+
 class DIGTEGenerator:
     def __init__(
         self,
@@ -64,8 +75,9 @@ class DIGTEGenerator:
 
         dec_cfg = cfg.get("decoding", {})
         self.max_new_tokens = cfg["model"]["max_new_tokens"]
-        self.expansion_delta_l = dec_cfg.get("expansion_delta_l", 50)
-        self.continuation_temperature = dec_cfg.get("continuation_temperature", 1.2)
+        self.expansion_delta_l = dec_cfg.get("expansion_delta_l", 30)
+        self.continuation_temperature = dec_cfg.get("continuation_temperature", 0.3)
+        self.max_triggers = dec_cfg.get("max_entropy_triggers_per_problem", _MAX_ENTROPY_TRIGGERS_PER_PROBLEM)
         self.eos_token_id = tokenizer.eos_token_id
         self.pad_token_id = tokenizer.pad_token_id or tokenizer.eos_token_id
         self.device = cfg["model"]["device"]
@@ -111,11 +123,14 @@ class DIGTEGenerator:
             token_str = self.tokenizer.decode([token_id], skip_special_tokens=False)
             in_zone = self.zone_classifier.is_in_zone(decoded_so_far, token_str)
 
+            trigger_budget_remaining = n_entropy_triggers < self.max_triggers
+
             entropy_triggered, entropy_val = self.entropy_filter.should_trigger(
                 logits=logits_clean.unsqueeze(0),
                 position=tokens_used,
                 in_semantic_zone=in_zone,
             )
+            entropy_triggered = entropy_triggered and trigger_budget_remaining
 
             disagreement_score = 0.0
             expansion_triggered = False
@@ -229,13 +244,38 @@ class DIGTEGenerator:
         if delta <= 0:
             return list(self._continuation_ids)
 
-        out = self.model.generate(
-            input_ids=expand_input,
-            max_new_tokens=delta,
-            do_sample=True,
-            temperature=self.continuation_temperature,
-            pad_token_id=self.pad_token_id,
-            eos_token_id=self.eos_token_id,
-        )
+        temperature = self.continuation_temperature
+
+        if temperature < 0.05:
+            out = self.model.generate(
+                input_ids=expand_input,
+                max_new_tokens=delta,
+                do_sample=False,
+                pad_token_id=self.pad_token_id,
+                eos_token_id=self.eos_token_id,
+                repetition_penalty=1.05,
+            )
+        else:
+            out = self.model.generate(
+                input_ids=expand_input,
+                max_new_tokens=delta,
+                do_sample=True,
+                temperature=temperature,
+                top_p=0.95,
+                top_k=40,
+                pad_token_id=self.pad_token_id,
+                eos_token_id=self.eos_token_id,
+                repetition_penalty=1.05,
+            )
+
         new_ids = out[0, expand_input.shape[1]:].tolist()
-        return list(self._continuation_ids) + new_ids
+
+        clean_ids = []
+        for tid in new_ids:
+            tok = self.tokenizer.decode([tid], skip_special_tokens=False)
+            if _is_garbage_token(tok):
+                logger.debug(f"Stopping expansion at garbage token: {repr(tok)}")
+                break
+            clean_ids.append(tid)
+
+        return list(self._continuation_ids) + clean_ids

@@ -12,9 +12,10 @@ decoding:
   thresholds_file: "data/calibration_outputs/learned_thresholds.json"
   k_continuations: 3
   continuation_length: 12
-  continuation_temperature: 1.2
-  expansion_delta_l: 50
+  continuation_temperature: 0.3
+  expansion_delta_l: 30
   min_tokens_before_trigger: 20
+  max_entropy_triggers_per_problem: 8
 
 dataset:
   name: "math500"
@@ -23,12 +24,11 @@ dataset:
   seed: 42
 
 output:
-  dir: "results"
-  predictions_file: "results/predictions_{model_short_name}_{decoding_mode}.jsonl"
-  metrics_file: "results/metrics_{model_short_name}_{decoding_mode}.json"
+  dir: "data/inference_outputs"
+  predictions_file: "data/inference_outputs/predictions_{model_short_name}_{decoding_mode}.jsonl"
+  metrics_file: "data/inference_outputs/metrics_{model_short_name}_{decoding_mode}.json"
+  detail_log_file: "data/inference_outputs/detail_{model_short_name}_{decoding_mode}.jsonl"
   log_detail: false
-  detail_log_file: "logs/detail_{model_short_name}_{decoding_mode}.jsonl"
 
 logging:
   level: "INFO"
-  log_file: "logs/inference_{model_short_name}_{decoding_mode}.log"
