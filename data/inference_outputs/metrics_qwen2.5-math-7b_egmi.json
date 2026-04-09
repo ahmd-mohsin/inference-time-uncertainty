@@ -1,0 +1,17 @@
+{
+  "decoding_mode": "egmi",
+  "n_problems": 0,
+  "accuracy": 0.0,
+  "accuracy_with_boxed": 0.0,
+  "mean_tokens": 0.0,
+  "median_tokens": 0.0,
+  "std_tokens": 0.0,
+  "mean_wall_time": 0.0,
+  "total_wall_time": 0.0,
+  "mean_entropy_trigger_rate": 0.0,
+  "mean_expansion_trigger_rate": 0.0,
+  "mean_expansion_tokens": 0.0,
+  "expansion_overhead_pct": 0.0,
+  "accuracy_by_level": {},
+  "accuracy_by_type": {}
+}

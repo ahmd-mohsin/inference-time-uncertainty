@@ -9,7 +9,7 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
-MODES = ["digte", "greedy", "beam", "adadec", "entropy_only", "prompt_only"]
+MODES = ["digte", "greedy", "beam", "adadec", "entropy_only", "prompt_only", "ptcs", "egmi"]
 
 
 def setup_logging(cfg: dict, mode: str) -> None:
@@ -109,6 +109,56 @@ def _build_generator(mode: str, model, tokenizer, tau_e: float, tau_d: float, cf
             zone_classifier=zone, tau_e=tau_e, cfg=cfg,
         )
 
+    if mode == "egmi":
+        from src.inference.egmi_generator import EGMIGenerator
+        from src.uncertainty.mixture_injector import EntropyGatedMixtureInjector
+        import json as _json
+        from pathlib import Path as _Path
+        dec_cfg = cfg.get("decoding", {})
+        short = cfg["model"]["short_name"]
+        tau_low = dec_cfg.get("egmi_tau_low", None)
+        if tau_low is None:
+            tpath = dec_cfg.get("thresholds_file", "data/calibration_outputs/learned_thresholds.json")
+            if _Path(tpath).exists():
+                with open(tpath) as _f:
+                    _t = _json.load(_f)
+                tau_low = float(_t.get(short, {}).get("tau_low_egmi", 0.3))
+            else:
+                tau_low = 0.3
+        logger.info(f"EGMI tau_low={tau_low:.5f}  window={dec_cfg.get('egmi_strategy_window', 40)}  k={dec_cfg.get('egmi_top_k', 2)}")
+        injector = EntropyGatedMixtureInjector(
+            model=model,
+            low_entropy_threshold=tau_low,
+            strategy_window=dec_cfg.get("egmi_strategy_window", 40),
+            top_k=dec_cfg.get("egmi_top_k", 2),
+            device=cfg["model"]["device"],
+        )
+        return EGMIGenerator(
+            model=model,
+            tokenizer=tokenizer,
+            injector=injector,
+            cfg=cfg,
+            log_detail=log_detail,
+        )
+
+    if mode == "ptcs":
+        from src.inference.ptcs_generator import PTCSGenerator
+        from src.uncertainty.pretokencommitment import PreTokenCommitmentDetector
+        dec_cfg = cfg.get("decoding", {})
+        detector = PreTokenCommitmentDetector(
+            k_probes=dec_cfg.get("ptcs_k_probes", 5),
+            noise_std=dec_cfg.get("ptcs_noise_std", 0.01),
+            divergence_threshold=dec_cfg.get("ptcs_divergence_threshold", 0.05),
+            device=cfg["model"]["device"],
+        )
+        return PTCSGenerator(
+            model=model,
+            tokenizer=tokenizer,
+            detector=detector,
+            cfg=cfg,
+            log_detail=log_detail,
+        )
+
     if mode == "prompt_only":
         from src.baselines.prompt_only import PromptOnlyGenerator
         return PromptOnlyGenerator(
@@ -140,6 +190,16 @@ def _gen_to_stats(result, mode: str) -> dict:
     }
     if mode == "digte":
         base["trace"] = [vars(s) for s in result.trace]
+    if mode == "egmi":
+        base["n_injections"] = result.n_injections
+        base["injection_positions"] = result.injection_positions
+        base["mean_injection_entropy"] = result.mean_injection_entropy
+    if mode == "ptcs":
+        base["commitment_divergence"] = result.commitment_divergence
+        base["is_unstable"] = result.is_unstable
+        base["steered"] = result.steered
+        base["selected_probe_idx"] = result.selected_probe_idx
+        base["probe_wall_time_sec"] = result.probe_wall_time_sec
     return base
 
 
