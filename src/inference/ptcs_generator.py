@@ -84,7 +84,7 @@ class PTCSGenerator:
                 f"steering to probe {probe.selected_idx}"
             )
             inputs_embeds = self.detector.get_steered_input(
-                self.model, prompt_ids, probe.selected_idx
+                self.model, prompt_ids, probe.selected_probe_idx
             )
             out = self.model.generate(
                 inputs_embeds=inputs_embeds,
@@ -117,7 +117,7 @@ class PTCSGenerator:
             commitment_divergence=probe.divergence,
             is_unstable=steered,
             steered=steered,
-            selected_probe_idx=probe.selected_idx,
+            selected_probe_idx=probe.selected_probe_idx,
             n_entropy_triggers=0,
             n_expansion_triggers=int(steered),
             total_expansion_tokens=0,
