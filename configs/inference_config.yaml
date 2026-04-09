@@ -37,3 +37,7 @@ output:
 logging:
   level: "INFO"
   log_file: "logs/inference_{model_short_name}_{decoding_mode}.log"
+
+  egmi_strategy_window: 40
+  egmi_top_k: 2
+  egmi_tau_low: null
