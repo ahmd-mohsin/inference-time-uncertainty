@@ -13,7 +13,7 @@ class CommitmentProbe:
     hidden_states: list[torch.Tensor]
     centroid: torch.Tensor
     is_unstable: bool
-    selected_idx: int
+    selected_probe_idx: int
 
 
 class PreTokenCommitmentDetector:
@@ -98,7 +98,7 @@ class PreTokenCommitmentDetector:
             hidden_states=hidden_states,
             centroid=centroid,
             is_unstable=is_unstable,
-            selected_idx=selected_idx,
+            selected_probe_idx=selected_idx,
         )
 
     @torch.no_grad()
