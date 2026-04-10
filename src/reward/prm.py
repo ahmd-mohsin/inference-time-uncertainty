@@ -6,6 +6,7 @@ import torch.nn.functional as F
 
 logger = logging.getLogger(__name__)
 
+
 class PRMInterface(Protocol):
 
     def score_step(
@@ -24,7 +25,22 @@ class PRMInterface(Protocol):
     ) -> list[float]:
         ...
 
+
+def make_step_rewards(logits, token_masks):
+    probabilities = F.softmax(logits, dim=-1)
+    probabilities = probabilities * token_masks.unsqueeze(-1)
+    all_scores_res = []
+    for i in range(probabilities.size(0)):
+        sample = probabilities[i]
+        positive_probs = sample[sample != 0].view(-1, 2)[:, 1]
+        non_zero_elements_list = positive_probs.cpu().tolist()
+        all_scores_res.append(non_zero_elements_list)
+    return all_scores_res
+
+
 class QwenMathPRM:
+
+    STEP_SEPARATOR = "<extra_0>"
 
     def __init__(
         self,
@@ -38,6 +54,7 @@ class QwenMathPRM:
 
         self.device = device
         self.max_length = max_length
+        self.model_name = model_name
 
         logger.info(f"Loading PRM: {model_name} (dtype={dtype}, 4bit={quantize_4bit})")
 
@@ -70,8 +87,17 @@ class QwenMathPRM:
         self.model = AutoModel.from_pretrained(model_name, **load_kwargs)
         self.model.eval()
 
+        self.step_sep_id = self.tokenizer.encode(self.STEP_SEPARATOR)[0]
+
         params = sum(p.numel() for p in self.model.parameters())
         logger.info(f"PRM loaded — {params / 1e9:.2f}B parameters")
+
+    def _format_solution_with_separators(self, solution_text: str) -> str:
+        steps = solution_text.split("\n\n")
+        steps = [s.strip() for s in steps if s.strip()]
+        if not steps:
+            return solution_text + self.STEP_SEPARATOR
+        return self.STEP_SEPARATOR.join(steps) + self.STEP_SEPARATOR
 
     @torch.no_grad()
     def score_step(
@@ -81,32 +107,76 @@ class QwenMathPRM:
         current_step: str,
     ) -> float:
         full_solution = solution_so_far + current_step
-        conversation = [
+        formatted_solution = self._format_solution_with_separators(full_solution)
+
+        messages = [
             {"role": "system", "content": "Please reason step by step, and put your final answer within \\boxed{}."},
             {"role": "user", "content": problem_text},
-            {"role": "assistant", "content": full_solution},
+            {"role": "assistant", "content": formatted_solution},
         ]
 
         conversation_str = self.tokenizer.apply_chat_template(
-            conversation, tokenize=False, add_generation_prompt=False
+            messages, tokenize=False, add_generation_prompt=False
         )
 
-        input_ids = self.tokenizer(
+        input_ids = self.tokenizer.encode(
             conversation_str,
             return_tensors="pt",
-            truncation=True,
-            max_length=self.max_length,
-        )["input_ids"].to(self.model.device)
+        ).to(self.model.device)
+
+        if input_ids.shape[1] > self.max_length:
+            input_ids = input_ids[:, :self.max_length]
 
         outputs = self.model(input_ids=input_ids)
-        if hasattr(outputs, "logits"):
-            reward = torch.sigmoid(outputs.logits[0, -1]).item()
-        elif hasattr(outputs, "last_hidden_state"):
-            reward = self._extract_reward(outputs.last_hidden_state[0, -1])
-        else:
-            reward = 0.5
+        logits = outputs[0]
 
-        return float(reward)
+        token_masks = (input_ids == self.step_sep_id)
+
+        step_rewards = make_step_rewards(logits, token_masks)
+
+        if step_rewards and step_rewards[0]:
+            return float(step_rewards[0][-1])
+
+        return 0.5
+
+    @torch.no_grad()
+    def score_solution(
+        self,
+        problem_text: str,
+        full_solution: str,
+    ) -> tuple[float, list[float]]:
+        formatted_solution = self._format_solution_with_separators(full_solution)
+
+        messages = [
+            {"role": "system", "content": "Please reason step by step, and put your final answer within \\boxed{}."},
+            {"role": "user", "content": problem_text},
+            {"role": "assistant", "content": formatted_solution},
+        ]
+
+        conversation_str = self.tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=False
+        )
+
+        input_ids = self.tokenizer.encode(
+            conversation_str,
+            return_tensors="pt",
+        ).to(self.model.device)
+
+        if input_ids.shape[1] > self.max_length:
+            input_ids = input_ids[:, :self.max_length]
+
+        outputs = self.model(input_ids=input_ids)
+        logits = outputs[0]
+
+        token_masks = (input_ids == self.step_sep_id)
+        step_rewards = make_step_rewards(logits, token_masks)
+
+        if step_rewards and step_rewards[0]:
+            all_step_scores = step_rewards[0]
+            min_reward = min(all_step_scores)
+            return min_reward, all_step_scores
+
+        return 0.5, [0.5]
 
     @torch.no_grad()
     def score_steps_batch(
@@ -120,16 +190,18 @@ class QwenMathPRM:
             rewards.append(self.score_step(problem_text, sol, step))
         return rewards
 
-    def _extract_reward(self, hidden: torch.Tensor) -> float:
-        return float(torch.sigmoid(hidden.mean()).item())
 
 class DummyPRM:
 
     def score_step(self, problem_text, solution_so_far, current_step) -> float:
         return 0.5
 
+    def score_solution(self, problem_text, full_solution) -> tuple[float, list[float]]:
+        return 0.5, [0.5]
+
     def score_steps_batch(self, problem_text, solutions_so_far, current_steps) -> list[float]:
         return [0.5] * len(solutions_so_far)
+
 
 def load_prm(cfg: dict) -> PRMInterface:
     prm_cfg = cfg.get("prm", {})
