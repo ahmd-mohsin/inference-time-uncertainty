@@ -15,6 +15,9 @@
       "entropy_auroc": 0.6275765358043492,
       "neg_margin_auroc": 0.6219480552059077,
       "neg_top1_auroc": 0.6236321383912711
-    }
+    },
+    "tau_low_egmi": 0.0001743244385579601,
+    "egmi_strategy_window": 40,
+    "egmi_low_entropy_pct": 5.0
   }
 }

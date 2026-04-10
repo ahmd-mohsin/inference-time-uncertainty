@@ -1,17 +1,22 @@
 {
   "decoding_mode": "egmi",
-  "n_problems": 0,
-  "accuracy": 0.0,
-  "accuracy_with_boxed": 0.0,
-  "mean_tokens": 0.0,
-  "median_tokens": 0.0,
-  "std_tokens": 0.0,
-  "mean_wall_time": 0.0,
-  "total_wall_time": 0.0,
-  "mean_entropy_trigger_rate": 0.0,
-  "mean_expansion_trigger_rate": 0.0,
+  "n_problems": 25,
+  "accuracy": 0.72,
+  "accuracy_with_boxed": 0.72,
+  "mean_tokens": 754.2,
+  "median_tokens": 590.0,
+  "std_tokens": 574.741124333382,
+  "mean_wall_time": 60.19436420440674,
+  "total_wall_time": 1504.8591051101685,
+  "mean_entropy_trigger_rate": 0.0028197838728511366,
+  "mean_expansion_trigger_rate": 0.0028197838728511366,
   "mean_expansion_tokens": 0.0,
   "expansion_overhead_pct": 0.0,
-  "accuracy_by_level": {},
+  "accuracy_by_level": {
+    "2": 0.8571428571428571,
+    "4": 0.6666666666666666,
+    "3": 0.75,
+    "5": 0.6
+  },
   "accuracy_by_type": {}
 }
