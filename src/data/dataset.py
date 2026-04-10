@@ -80,25 +80,27 @@ def load_math500(
 
 
 def load_aime(
-    year: int = 2024,
+    year: int = 2025,
     n_problems: int = -1,
 ) -> list[dict]:
-    logger.info(f"Loading AIME {year}")
-    raw = load_dataset("Maxwell-Jia/AIME_1983_2024")
-    data = [item for item in raw["train"] if str(item.get("Year", "")) == str(year)]
+    # opencompass/AIME2025 is the available Hub source; use it for any requested year
+    logger.info(f"Loading AIME {year} (via opencompass/AIME2025)")
+    part_i  = load_dataset("opencompass/AIME2025", "AIME2025-I",  split="test")
+    part_ii = load_dataset("opencompass/AIME2025", "AIME2025-II", split="test")
+    data = list(part_i) + list(part_ii)
     if n_problems > 0:
         data = data[:n_problems]
     problems = []
     for i, item in enumerate(data):
         problems.append({
             "problem_id": i,
-            "question": item["Problem"],
-            "gold_answer": str(item["Answer"]),
+            "question": item["question"],
+            "gold_answer": str(item["answer"]),
             "source": f"aime_{year}",
             "level": "competition",
             "problem_type": "aime",
         })
-    logger.info(f"Loaded {len(problems)} AIME {year} problems")
+    logger.info(f"Loaded {len(problems)} AIME problems")
     return problems
 
 
