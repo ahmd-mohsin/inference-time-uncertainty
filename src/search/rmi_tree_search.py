@@ -10,26 +10,19 @@ import numpy as np
 
 from src.search.tree import StepNode, SolutionTree
 from src.search.diversity import (
-    compute_kl_divergence_full,
-    compute_hidden_state_divergence,
+    compute_kl_divergence_topk,
     compute_combined_score,
 )
 
 logger = logging.getLogger(__name__)
 
-_STEP_BOUNDARY_PATTERN = re.compile(
-    r"(\n\n|\nStep \d+[:.]|\n\d+[.)]\s|\n\\\\|\n\\\[)"
-)
 
 @dataclass
 class RMITreeResult:
-
     generated_text: str
     generated_ids: list[int]
     extracted_answer: Optional[str]
-
     all_solutions: list[dict] = field(default_factory=list)
-
     prompt_len: int = 0
     total_tokens: int = 0
     wall_time_sec: float = 0.0
@@ -38,7 +31,6 @@ class RMITreeResult:
     total_expansion_tokens: int = 0
     trigger_rate_entropy: float = 0.0
     trigger_rate_expansion: float = 0.0
-
     n_completed_solutions: int = 0
     n_prm_calls: int = 0
     tree_max_depth: int = 0
@@ -46,15 +38,10 @@ class RMITreeResult:
     mean_diversity_score: float = 0.0
     selected_method: str = "best_reward"
 
+
 class RMITreeSearchGenerator:
 
-    def __init__(
-        self,
-        model,
-        tokenizer,
-        prm,
-        cfg: dict,
-    ):
+    def __init__(self, model, tokenizer, prm, cfg: dict):
         self.model = model
         self.tokenizer = tokenizer
         self.prm = prm
@@ -71,14 +58,12 @@ class RMITreeSearchGenerator:
         self.temperature = search_cfg.get("sampling_temperature", 0.7)
         self.balance_temperature = search_cfg.get("balance_temperature", 0.1)
         self.top_p = search_cfg.get("top_p", 0.95)
+        self.max_path_tokens = search_cfg.get("max_path_tokens", 4096)
 
         self.lambda_div = search_cfg.get("lambda_diversity", 0.5)
         self.diversity_method = search_cfg.get("diversity_method", "kl")
         self.continuation_topk = search_cfg.get("continuation_topk", 50)
-
         self.aggregation = search_cfg.get("aggregation", "weighted_vote")
-
-        self.log_detail = cfg.get("output", {}).get("log_detail", False)
 
     @torch.no_grad()
     def generate(self, prompt_ids: torch.Tensor, problem_text: str = "") -> RMITreeResult:
@@ -108,29 +93,29 @@ class RMITreeSearchGenerator:
                 break
 
             leaves = tree.get_leaves_at_depth(depth - 1)
-            active_leaves = [n for n in leaves if not n.is_terminal and n.children_ids == []]
+            active_leaves = [n for n in leaves if not n.is_terminal and not n.children_ids]
 
             if not active_leaves:
                 logger.info(f"  Depth {depth}: No active leaves, stopping.")
                 break
 
             self._score_nodes_with_prm(active_leaves, problem_text, tree)
-
-            self._compute_diversity_scores(active_leaves, prompt_ids)
-
+            self._compute_diversity_scores(active_leaves)
             widths = self._allocate_expansion_widths(active_leaves, budget)
 
             new_completed = 0
             for node, width in zip(active_leaves, widths):
                 if width <= 0:
                     continue
+                if len(node.path_token_ids) >= self.max_path_tokens:
+                    node.is_terminal = True
+                    node.is_complete = self._has_boxed_answer(node.path_text)
+                    if node.is_complete:
+                        node.extracted_answer = self._extract_answer(node.path_text)
+                        new_completed += 1
+                    continue
 
-                children = self._expand_node(
-                    node=node,
-                    prompt_ids=prompt_ids,
-                    n_children=width,
-                    tree=tree,
-                )
+                children = self._expand_node(node, prompt_ids, width, tree)
                 new_completed += sum(1 for c in children if c.is_terminal)
 
             budget -= new_completed
@@ -143,19 +128,90 @@ class RMITreeSearchGenerator:
                 f"total_leaves={n_total_leaves}"
             )
 
-        completed = tree.get_complete_solutions()
+            torch.cuda.empty_cache()
 
+        completed = tree.get_complete_solutions()
         if not completed:
             completed = tree.get_terminal_nodes()
+        if not completed:
+            all_nodes = sorted(tree.nodes.values(), key=lambda n: len(n.path_token_ids), reverse=True)
+            for n in all_nodes[:self.n_solutions]:
+                n.is_terminal = True
+                n.is_complete = self._has_boxed_answer(n.path_text)
+                if n.is_complete:
+                    n.extracted_answer = self._extract_answer(n.path_text)
+                    completed.append(n)
 
         if not completed:
             logger.warning("RMI-Tree: No solutions found, falling back to greedy.")
             return self._greedy_fallback(prompt_ids, prompt_len, t_start)
 
-        result = self._aggregate_solutions(
-            completed, tree, prompt_len, problem_text, t_start
-        )
+        result = self._aggregate_solutions(completed, tree, prompt_len, problem_text, t_start)
         return result
+
+    @torch.no_grad()
+    def _sample_one_step(
+        self,
+        input_ids: torch.Tensor,
+        max_tokens: int,
+    ) -> tuple[list[int], str, bool, Optional[torch.Tensor]]:
+        seq_len_before = input_ids.shape[1]
+
+        out = self.model.generate(
+            input_ids=input_ids,
+            max_new_tokens=max_tokens,
+            do_sample=(self.temperature >= 0.05),
+            temperature=self.temperature if self.temperature >= 0.05 else None,
+            top_p=self.top_p if self.temperature >= 0.05 else None,
+            pad_token_id=self.pad_token_id,
+            eos_token_id=self.eos_token_id,
+            output_scores=True,
+            return_dict_in_generate=True,
+        )
+
+        all_new_ids = out.sequences[0, seq_len_before:].tolist()
+
+        if not all_new_ids:
+            return [], "", True, None
+
+        is_terminal = False
+        step_ids = []
+        decoded_so_far = ""
+        newline_count = 0
+
+        for i, tid in enumerate(all_new_ids):
+            step_ids.append(tid)
+
+            if tid == self.eos_token_id:
+                is_terminal = True
+                break
+
+            tok_str = self.tokenizer.decode([tid], skip_special_tokens=False)
+            decoded_so_far += tok_str
+
+            if "\n" in tok_str:
+                newline_count += tok_str.count("\n")
+            else:
+                newline_count = 0
+
+            if i >= 5 and newline_count >= 2:
+                break
+
+            if "\\boxed{" in decoded_so_far and self._has_boxed_answer(decoded_so_far):
+                is_terminal = True
+                break
+
+        text = self.tokenizer.decode(step_ids, skip_special_tokens=True)
+
+        last_logits = None
+        if out.scores and len(step_ids) <= len(out.scores):
+            last_logits = out.scores[len(step_ids) - 1].squeeze(0)
+            last_logits = torch.nan_to_num(last_logits, nan=0.0, posinf=1e4, neginf=-1e4)
+
+        del out
+        torch.cuda.empty_cache()
+
+        return step_ids, text, is_terminal, last_logits
 
     @torch.no_grad()
     def _sample_first_steps(
@@ -165,7 +221,6 @@ class RMITreeSearchGenerator:
         tree: SolutionTree,
     ) -> list[StepNode]:
         nodes = []
-
         for _ in range(n_samples):
             step_ids, step_text, is_terminal, logits_last = self._sample_one_step(
                 input_ids=prompt_ids,
@@ -186,8 +241,9 @@ class RMITreeSearchGenerator:
 
             if node.is_complete:
                 node.extracted_answer = self._extract_answer(step_text)
+                node.is_terminal = True
 
-            if logits_last is not None:
+            if logits_last is not None and not is_terminal:
                 topk_probs, topk_ids = F.softmax(logits_last.float(), dim=-1).topk(
                     self.continuation_topk
                 )
@@ -202,58 +258,6 @@ class RMITreeSearchGenerator:
         return nodes
 
     @torch.no_grad()
-    def _sample_one_step(
-        self,
-        input_ids: torch.Tensor,
-        max_tokens: int,
-    ) -> tuple[list[int], str, bool, Optional[torch.Tensor]]:
-        generated_ids = []
-        current_ids = input_ids.clone()
-        is_terminal = False
-        last_logits = None
-
-        for _ in range(max_tokens):
-            out = self.model(input_ids=current_ids, return_dict=True)
-            logits = out.logits[0, -1, :]
-            logits = torch.nan_to_num(logits, nan=0.0, posinf=1e4, neginf=-1e4)
-            last_logits = logits
-
-            if self.temperature < 0.05:
-                next_id = int(logits.argmax().item())
-            else:
-                probs = F.softmax(logits.float() / self.temperature, dim=-1)
-                if self.top_p < 1.0:
-                    sorted_probs, sorted_indices = torch.sort(probs, descending=True)
-                    cumsum = torch.cumsum(sorted_probs, dim=-1)
-                    mask = cumsum - sorted_probs > self.top_p
-                    sorted_probs[mask] = 0.0
-                    sorted_probs = sorted_probs / sorted_probs.sum()
-                    idx = torch.multinomial(sorted_probs, 1).item()
-                    next_id = int(sorted_indices[idx].item())
-                else:
-                    next_id = int(torch.multinomial(probs, 1).item())
-
-            generated_ids.append(next_id)
-            current_ids = torch.cat(
-                [current_ids, torch.tensor([[next_id]], device=self.device)], dim=1
-            )
-
-            if next_id == self.eos_token_id:
-                is_terminal = True
-                break
-
-            text_so_far = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
-            if len(generated_ids) >= 10 and _STEP_BOUNDARY_PATTERN.search(text_so_far[-20:]):
-                break
-
-            if "\\boxed{" in text_so_far and self._has_boxed_answer(text_so_far):
-                is_terminal = True
-                break
-
-        text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
-        return generated_ids, text, is_terminal, last_logits
-
-    @torch.no_grad()
     def _expand_node(
         self,
         node: StepNode,
@@ -264,11 +268,17 @@ class RMITreeSearchGenerator:
         path_tensor = torch.tensor([node.path_token_ids], device=self.device)
         full_input = torch.cat([prompt_ids, path_tensor], dim=1)
 
+        if full_input.shape[1] > self.max_path_tokens:
+            full_input = full_input[:, :self.max_path_tokens]
+
         children = []
         for _ in range(n_children):
+            remaining = self.max_path_tokens - full_input.shape[1]
+            step_max = min(self.max_step_tokens, max(remaining, 64))
+
             step_ids, step_text, is_terminal, logits_last = self._sample_one_step(
                 input_ids=full_input,
-                max_tokens=self.max_step_tokens,
+                max_tokens=step_max,
             )
 
             child = StepNode(
@@ -285,8 +295,16 @@ class RMITreeSearchGenerator:
 
             if child.is_complete:
                 child.extracted_answer = self._extract_answer(child.path_text)
+                child.is_terminal = True
 
-            if logits_last is not None and not is_terminal:
+            if len(child.path_token_ids) >= self.max_path_tokens:
+                child.is_terminal = True
+                if not child.is_complete:
+                    child.is_complete = self._has_boxed_answer(child.path_text)
+                    if child.is_complete:
+                        child.extracted_answer = self._extract_answer(child.path_text)
+
+            if logits_last is not None and not child.is_terminal:
                 topk_probs, topk_ids = F.softmax(logits_last.float(), dim=-1).topk(
                     self.continuation_topk
                 )
@@ -300,12 +318,7 @@ class RMITreeSearchGenerator:
         node.expansion_width = n_children
         return children
 
-    def _score_nodes_with_prm(
-        self,
-        nodes: list[StepNode],
-        problem_text: str,
-        tree: SolutionTree,
-    ) -> None:
+    def _score_nodes_with_prm(self, nodes: list[StepNode], problem_text: str, tree: SolutionTree) -> None:
         for node in nodes:
             if node.parent_id is not None:
                 parent = tree.nodes[node.parent_id]
@@ -313,25 +326,24 @@ class RMITreeSearchGenerator:
             else:
                 solution_so_far = ""
 
-            reward = self.prm.score_step(
-                problem_text=problem_text,
-                solution_so_far=solution_so_far,
-                current_step=node.text,
-            )
+            try:
+                reward = self.prm.score_step(
+                    problem_text=problem_text,
+                    solution_so_far=solution_so_far,
+                    current_step=node.text,
+                )
+            except Exception as e:
+                logger.debug(f"PRM scoring failed for node {node.node_id}: {e}")
+                reward = 0.5
+
             node.prm_reward = reward
             tree.n_prm_calls += 1
 
-    def _compute_diversity_scores(
-        self,
-        nodes: list[StepNode],
-        prompt_ids: torch.Tensor,
-    ) -> None:
+    def _compute_diversity_scores(self, nodes: list[StepNode]) -> None:
         if len(nodes) <= 1:
             for n in nodes:
                 n.diversity_score = 0.0
-                n.combined_score = compute_combined_score(
-                    n.prm_reward, 0.0, self.lambda_div
-                )
+                n.combined_score = compute_combined_score(n.prm_reward, 0.0, self.lambda_div)
             return
 
         pool_topk_ids = [n.continuation_topk_ids for n in nodes]
@@ -341,34 +353,31 @@ class RMITreeSearchGenerator:
             sibling_ids = pool_topk_ids[:i] + pool_topk_ids[i + 1:]
             sibling_lps = pool_topk_logprobs[:i] + pool_topk_logprobs[i + 1:]
 
-            if self.diversity_method == "kl":
-                from src.search.diversity import compute_kl_divergence_topk
+            if not node.continuation_topk_ids or not any(sibling_ids):
+                div = 0.0
+            elif self.diversity_method == "kl":
                 div = compute_kl_divergence_topk(
                     node.continuation_topk_ids,
                     node.continuation_topk_logprobs,
-                    sibling_ids,
-                    sibling_lps,
+                    [s for s in sibling_ids if s],
+                    [s for s in sibling_lps if s],
                     vocab_size=len(self.tokenizer),
                 )
             else:
                 node_set = set(node.continuation_topk_ids[:10])
                 overlaps = []
                 for sib_ids in sibling_ids:
+                    if not sib_ids:
+                        continue
                     sib_set = set(sib_ids[:10])
                     jaccard = len(node_set & sib_set) / max(1, len(node_set | sib_set))
                     overlaps.append(jaccard)
-                div = 1.0 - (sum(overlaps) / max(1, len(overlaps)))
+                div = 1.0 - (sum(overlaps) / max(1, len(overlaps))) if overlaps else 0.0
 
             node.diversity_score = div
-            node.combined_score = compute_combined_score(
-                node.prm_reward, div, self.lambda_div
-            )
+            node.combined_score = compute_combined_score(node.prm_reward, div, self.lambda_div)
 
-    def _allocate_expansion_widths(
-        self,
-        nodes: list[StepNode],
-        budget: int,
-    ) -> list[int]:
+    def _allocate_expansion_widths(self, nodes: list[StepNode], budget: int) -> list[int]:
         if not nodes or budget <= 0:
             return [0] * len(nodes)
 
@@ -393,14 +402,7 @@ class RMITreeSearchGenerator:
 
         return widths.tolist()
 
-    def _aggregate_solutions(
-        self,
-        completed: list[StepNode],
-        tree: SolutionTree,
-        prompt_len: int,
-        problem_text: str,
-        t_start: float,
-    ) -> RMITreeResult:
+    def _aggregate_solutions(self, completed, tree, prompt_len, problem_text, t_start):
         all_solutions = []
         for node in completed:
             answer = node.extracted_answer
@@ -451,10 +453,9 @@ class RMITreeSearchGenerator:
             trigger_rate_expansion=1.0,
         )
 
-    def _weighted_majority_vote(self, solutions: list[dict]) -> dict:
-        answer_scores: dict[str, float] = {}
-        answer_best: dict[str, dict] = {}
-
+    def _weighted_majority_vote(self, solutions):
+        answer_scores = {}
+        answer_best = {}
         for sol in solutions:
             a = self._normalize_for_voting(sol["answer"])
             if not a:
@@ -462,17 +463,14 @@ class RMITreeSearchGenerator:
             answer_scores[a] = answer_scores.get(a, 0.0) + sol["prm_reward"]
             if a not in answer_best or sol["prm_reward"] > answer_best[a]["prm_reward"]:
                 answer_best[a] = sol
-
         if not answer_scores:
             return max(solutions, key=lambda s: s["prm_reward"])
-
         best_answer = max(answer_scores, key=answer_scores.get)
         return answer_best[best_answer]
 
-    def _majority_vote(self, solutions: list[dict]) -> dict:
-        answer_counts: dict[str, int] = {}
-        answer_best: dict[str, dict] = {}
-
+    def _majority_vote(self, solutions):
+        answer_counts = {}
+        answer_best = {}
         for sol in solutions:
             a = self._normalize_for_voting(sol["answer"])
             if not a:
@@ -480,51 +478,47 @@ class RMITreeSearchGenerator:
             answer_counts[a] = answer_counts.get(a, 0) + 1
             if a not in answer_best or sol["prm_reward"] > answer_best[a]["prm_reward"]:
                 answer_best[a] = sol
-
         if not answer_counts:
             return max(solutions, key=lambda s: s["prm_reward"])
-
         best_answer = max(answer_counts, key=answer_counts.get)
         return answer_best[best_answer]
 
-    def _has_boxed_answer(self, text: str) -> bool:
+    def _has_boxed_answer(self, text):
         if "\\boxed{" not in text:
             return False
         depth = 0
         in_boxed = False
-        for i, c in enumerate(text):
+        i = 0
+        while i < len(text):
             if text[i:i + 7] == "\\boxed{":
                 in_boxed = True
                 depth = 1
+                i += 7
                 continue
             if in_boxed:
-                if c == "{":
+                if text[i] == "{":
                     depth += 1
-                elif c == "}":
+                elif text[i] == "}":
                     depth -= 1
                     if depth == 0:
                         return True
+            i += 1
         return False
 
-    def _extract_answer(self, text: str) -> Optional[str]:
+    def _extract_answer(self, text):
         from src.data.dataset import extract_boxed_answer, extract_numeric_answer
         answer = extract_boxed_answer(text)
         if answer:
             return answer
         return extract_numeric_answer(text)
 
-    def _normalize_for_voting(self, answer: Optional[str]) -> str:
+    def _normalize_for_voting(self, answer):
         if answer is None:
             return ""
         from src.data.dataset import normalize_answer
         return normalize_answer(answer)
 
-    def _greedy_fallback(
-        self,
-        prompt_ids: torch.Tensor,
-        prompt_len: int,
-        t_start: float,
-    ) -> RMITreeResult:
+    def _greedy_fallback(self, prompt_ids, prompt_len, t_start):
         out = self.model.generate(
             input_ids=prompt_ids,
             max_new_tokens=self.max_new_tokens,
@@ -535,7 +529,6 @@ class RMITreeSearchGenerator:
         gen_ids = out[0, prompt_len:].tolist()
         gen_text = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
         answer = self._extract_answer(gen_text)
-
         return RMITreeResult(
             generated_text=gen_text,
             generated_ids=gen_ids,
