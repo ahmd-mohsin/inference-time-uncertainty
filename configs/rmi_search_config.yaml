@@ -1,0 +1,51 @@
+model:
+  name: "Qwen/Qwen2.5-Math-7B-Instruct"
+  short_name: "qwen2.5-math-7b"
+  dtype: "bfloat16"
+  device: "cuda"
+  max_new_tokens: 8192
+  trust_remote_code: true
+  attn_implementation: "eager"
+
+prm:
+  type: "qwen"
+  model_name: "Qwen/Qwen2.5-Math-PRM-7B"
+  dtype: "bfloat16"
+  max_length: 8192
+  quantize_4bit: false
+
+search:
+  n_solutions: 32
+
+  max_depth: 20
+
+  max_step_tokens: 512
+
+  sampling_temperature: 0.7
+  top_p: 0.95
+
+  balance_temperature: 0.1
+
+  lambda_diversity: 0.5
+
+  diversity_method: "kl"
+
+  continuation_topk: 50
+
+  aggregation: "weighted_vote"
+
+dataset:
+  name: "aime_2024"
+  split: "test"
+  n_problems: -1
+  seed: 42
+
+output:
+  dir: "data/inference_outputs"
+  predictions_file: "data/inference_outputs/predictions_{model_short_name}_{decoding_mode}.jsonl"
+  metrics_file: "data/inference_outputs/metrics_{model_short_name}_{decoding_mode}.json"
+  log_detail: false
+
+logging:
+  level: "INFO"
+  log_file: "logs/inference_{model_short_name}_{decoding_mode}.log"
