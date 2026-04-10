@@ -42,12 +42,11 @@ class EGMIGenerator:
         self.tokenizer = tokenizer
         self.injector = injector
         self.log_detail = log_detail
-
-        dec_cfg = cfg.get("decoding", {})
         self.max_new_tokens = cfg["model"]["max_new_tokens"]
         self.eos_token_id = tokenizer.eos_token_id
         self.pad_token_id = tokenizer.pad_token_id or tokenizer.eos_token_id
         self.device = cfg["model"]["device"]
+        self._model_dtype = next(model.parameters()).dtype
 
     @torch.no_grad()
     def generate(self, prompt_ids: torch.Tensor) -> EGMIResult:
@@ -55,14 +54,14 @@ class EGMIGenerator:
         prompt_len = prompt_ids.shape[1]
 
         embedding = self.model.get_input_embeddings()
-        current_embeds = embedding(prompt_ids).clone()
+        current_embeds = embedding(prompt_ids).to(self._model_dtype)
 
         generated_ids: list[int] = []
         injections: list[InjectionRecord] = []
 
         out = self.model(inputs_embeds=current_embeds, return_dict=True)
-        logits = out.logits[0, -1, :]
-        logits = torch.nan_to_num(logits.float(), nan=0.0, posinf=1e4, neginf=-1e4)
+        logits = out.logits[0, -1, :].float()
+        logits = torch.nan_to_num(logits, nan=0.0, posinf=1e4, neginf=-1e4)
 
         for step in range(self.max_new_tokens):
             entropy = compute_entropy(logits.unsqueeze(0)).item()
@@ -80,13 +79,10 @@ class EGMIGenerator:
                 logits, current_embeds = self.injector.forward_with_mixture(
                     current_embeds, mixture_embed
                 )
-                logits = torch.nan_to_num(logits.float(), nan=0.0, posinf=1e4, neginf=-1e4)
+                logits = logits.float()
+                logits = torch.nan_to_num(logits, nan=0.0, posinf=1e4, neginf=-1e4)
 
-                next_token_id = int(logits.argmax(dim=-1).item())
-
-            else:
-                next_token_id = int(logits.argmax(dim=-1).item())
-
+            next_token_id = int(logits.argmax(dim=-1).item())
             generated_ids.append(next_token_id)
 
             if next_token_id == self.eos_token_id:
@@ -94,20 +90,17 @@ class EGMIGenerator:
 
             token_embed = embedding(
                 torch.tensor([[next_token_id]], device=self.device)
-            )
+            ).to(self._model_dtype)
             current_embeds = torch.cat([current_embeds, token_embed], dim=1)
 
             out = self.model(inputs_embeds=current_embeds, return_dict=True)
-            logits = out.logits[0, -1, :]
-            logits = torch.nan_to_num(logits.float(), nan=0.0, posinf=1e4, neginf=-1e4)
+            logits = out.logits[0, -1, :].float()
+            logits = torch.nan_to_num(logits, nan=0.0, posinf=1e4, neginf=-1e4)
 
         generated_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
         total = len(generated_ids)
         n_inj = len(injections)
-
-        mean_inj_entropy = (
-            float(sum(r.entropy for r in injections) / n_inj) if n_inj > 0 else 0.0
-        )
+        mean_inj_entropy = float(sum(r.entropy for r in injections) / n_inj) if n_inj > 0 else 0.0
 
         return EGMIResult(
             generated_ids=generated_ids,
