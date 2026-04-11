@@ -12,26 +12,22 @@ prm:
   model_name: "Qwen/Qwen2.5-Math-PRM-7B"
   dtype: "bfloat16"
   max_length: 8192
-  quantize_4bit: false
+  quantize_4bit: true
 
 search:
   n_solutions: 32
-
-  max_depth: 20
-
-  max_step_tokens: 512
-
+  max_depth: 15
+  max_step_tokens: 2048
+  max_path_tokens: 8192
   sampling_temperature: 0.7
   top_p: 0.95
-
   balance_temperature: 0.1
-
+  k_expand: 4
+  k_keep: 2
+  max_active: 8
   lambda_diversity: 0.5
-
   diversity_method: "kl"
-
   continuation_topk: 50
-
   aggregation: "weighted_vote"
 
 dataset:
