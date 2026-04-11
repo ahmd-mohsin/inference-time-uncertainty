@@ -3,9 +3,9 @@
   "model": "Qwen/Qwen2.5-Math-7B-Instruct",
   "prm": "Qwen/Qwen2.5-Math-PRM-7B",
   "dataset": "aime_2024",
-  "n_problems": 0,
-  "n_correct": 0,
-  "accuracy": 0.0,
+  "n_problems": 3,
+  "n_correct": 1,
+  "accuracy": 0.3333333333333333,
   "lambda_diversity": 0.5,
   "n_solutions": 4,
   "aggregation": "weighted_vote",
@@ -13,12 +13,15 @@
   "balance_temperature": 0.1,
   "sampling_temperature": 0.7,
   "max_new_tokens": 8192,
-  "mean_tokens": 0,
-  "median_tokens": 0,
-  "mean_wall_time": 0,
-  "total_wall_time": 0,
-  "mean_prm_reward": 0,
-  "mean_diversity": 0,
-  "mean_solutions_per_problem": 0,
-  "mean_prm_calls_per_problem": 0
+  "mean_tokens": 3817.6666666666665,
+  "median_tokens": 3982.0,
+  "mean_wall_time": 56.10585427284241,
+  "total_wall_time": 168.31756281852722,
+  "mean_prm_reward": 0.3603346082899306,
+  "mean_diversity": 0.0,
+  "mean_solutions_per_problem": 5.0,
+  "mean_prm_calls_per_problem": 11.666666666666666,
+  "accuracy_by_level": {
+    "competition": 0.3333333333333333
+  }
 }
