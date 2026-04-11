@@ -267,7 +267,7 @@ def main():
 
     if torch.cuda.is_available():
         props = torch.cuda.get_device_properties(0)
-        logger.info(f"  GPU            : {props.name}  {props.total_mem / 1e9:.1f} GB")
+        logger.info(f"  GPU            : {props.name}  {props.total_memory / 1e9:.1f} GB")
 
     run(cfg, mode)
 
