@@ -7,6 +7,8 @@ from typing import Optional
 import jsonlines
 from datasets import load_dataset
 
+from src.data.extra_loaders import load_amc, load_competition_math, load_olympiad_bench
+
 logger = logging.getLogger(__name__)
 
 
@@ -79,6 +81,47 @@ def load_math500(
     return problems
 
 
+def load_deepmath(
+    split: str = "train",
+    n_problems: int = -1,
+    seed: int = 42,
+    cache_dir: Optional[str] = None,
+) -> list[dict]:
+    """zwhe99/DeepMath-103K: question + verifiable final_answer (+ difficulty, topic)."""
+    logger.info(f"Loading DeepMath-103K split='{split}' n={n_problems} seed={seed}")
+    raw = load_dataset("zwhe99/DeepMath-103K", cache_dir=cache_dir)
+    if split not in raw:
+        fallback = "train" if "train" in raw else next(iter(raw.keys()))
+        logger.warning(
+            "DeepMath-103K has no split %r; using %r (available: %s)",
+            split,
+            fallback,
+            list(raw.keys()),
+        )
+        split = fallback
+    data = list(raw[split])
+    random.seed(seed)
+    random.shuffle(data)
+    if n_problems > 0:
+        data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        q = item.get("question") or item.get("problem") or ""
+        gold = item.get("final_answer")
+        if gold is None:
+            gold = item.get("answer", "")
+        problems.append({
+            "problem_id": i,
+            "question": q,
+            "gold_answer": str(gold).strip() if gold is not None else "",
+            "source": "deepmath",
+            "level": str(item.get("difficulty", "")),
+            "problem_type": str(item.get("topic", "")),
+        })
+    logger.info(f"Loaded {len(problems)} DeepMath problems")
+    return problems
+
+
 def load_aime(
     year: int = 2025,
     n_problems: int = -1,
@@ -101,6 +144,59 @@ def load_aime(
             "problem_type": "aime",
         })
     logger.info(f"Loaded {len(problems)} AIME problems")
+    return problems
+
+
+def load_aime_2025(n_problems: int = -1) -> list[dict]:
+    return load_aime(year=2025, n_problems=n_problems)
+
+
+def _amo_bench_inner_answer(answer: str) -> str:
+    """AMO-Bench stores gold like \\boxed{...}; normalize for answers_match."""
+    s = str(answer).strip()
+    pattern = r"\\boxed\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}"
+    matches = re.findall(pattern, s)
+    if matches:
+        return matches[-1].strip()
+    return s
+
+
+def load_amo_bench(
+    split: str = "train",
+    n_problems: int = -1,
+    seed: int = 42,
+    cache_dir: Optional[str] = None,
+) -> list[dict]:
+    """meituan-longcat/AMO-Bench: 50 Olympiad-style problems (prompt + answer)."""
+    logger.info(f"Loading AMO-Bench split='{split}' n={n_problems} seed={seed}")
+    raw = load_dataset("meituan-longcat/AMO-Bench", cache_dir=cache_dir)
+    if split not in raw:
+        fallback = "test" if "test" in raw else ("train" if "train" in raw else next(iter(raw.keys())))
+        logger.warning(
+            "AMO-Bench has no split %r; using %r (available: %s)",
+            split,
+            fallback,
+            list(raw.keys()),
+        )
+        split = fallback
+    data = list(raw[split])
+    random.seed(seed)
+    random.shuffle(data)
+    if n_problems > 0:
+        data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        q = item.get("prompt") or item.get("question") or ""
+        gold = _amo_bench_inner_answer(item.get("answer", ""))
+        problems.append({
+            "problem_id": int(item.get("question_id", i)),
+            "question": q,
+            "gold_answer": gold,
+            "source": "amo_bench",
+            "level": "olympiad",
+            "problem_type": str(item.get("answer_type", "")),
+        })
+    logger.info(f"Loaded {len(problems)} AMO-Bench problems")
     return problems
 
 
@@ -275,8 +371,20 @@ def get_inference_dataset(cfg: dict) -> list[dict]:
         return load_gsm8k(split=split, n_problems=n, seed=seed)
     elif name == "math500":
         return load_math500(split=split, n_problems=n, seed=seed)
+    elif name == "deepmath":
+        return load_deepmath(n_problems=n)
+    elif name == "aime_2025":
+        return load_aime_2025(n_problems=n)
     elif name.startswith("aime"):
         year = int(name.split("_")[-1]) if "_" in name else 2024
         return load_aime(year=year, n_problems=n)
+    elif name == "amc":
+        return load_amc(n_problems=n)
+    elif name == "competition_math":
+        return load_competition_math(n_problems=n, seed=seed)
+    elif name == "olympiad_bench":
+        return load_olympiad_bench(n_problems=n, seed=seed)
+    elif name in ("amo", "amo_bench", "amobench"):
+        return load_amo_bench(split=split, n_problems=n, seed=seed)
     else:
         raise ValueError(f"Unknown inference dataset: {name}")
