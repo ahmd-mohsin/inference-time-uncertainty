@@ -378,13 +378,13 @@ def get_inference_dataset(cfg: dict) -> list[dict]:
     elif name.startswith("aime"):
         year = int(name.split("_")[-1]) if "_" in name else 2024
         return load_aime(year=year, n_problems=n)
+    elif name in ("amo", "amo_bench"):
+        return load_amo_bench(n_problems=n)
     elif name == "amc":
         return load_amc(n_problems=n)
     elif name == "competition_math":
         return load_competition_math(n_problems=n, seed=seed)
     elif name == "olympiad_bench":
         return load_olympiad_bench(n_problems=n, seed=seed)
-    elif name in ("amo", "amo_bench", "amobench"):
-        return load_amo_bench(split=split, n_problems=n, seed=seed)
     else:
         raise ValueError(f"Unknown inference dataset: {name}")
