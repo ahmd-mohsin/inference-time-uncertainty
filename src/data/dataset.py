@@ -266,15 +266,22 @@ def _normalize_latex(s: str) -> str:
 
 
 def normalize_answer(answer: Optional[str]) -> str:
+    """Normalize a math answer for comparison.
+
+    Handles: whitespace, commas, degree symbols, float-to-int conversion,
+    leading zeros, LaTeX formatting.
+    """
     if answer is None:
         return ""
-    answer = answer.strip()
+    answer = str(answer).strip()
     answer = re.sub(r"\s+", " ", answer)
     answer = re.sub(r"^x\s*\\in\s*", "", answer).strip()
     answer = re.sub(r"^x\s*=\s*", "", answer).strip()
     answer = re.sub(r"\^\\circ", "", answer)
     answer = re.sub(r"\\circ", "", answer)
     answer = answer.replace(",", "").replace("\\,", "")
+    # Strip leading/trailing $
+    answer = answer.strip("$").strip()
     try:
         val = float(answer)
         if val == int(val) and abs(val) < 1e15:
@@ -286,6 +293,11 @@ def normalize_answer(answer: Optional[str]) -> str:
 
 
 def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
+    """Check if predicted answer matches gold answer.
+
+    Handles: exact match, numeric tolerance, fractions, leading zeros,
+    LaTeX normalization, sympy simplification.
+    """
     if pred is None:
         return False
 
@@ -295,11 +307,25 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
     if pred_n == gold_n:
         return True
 
+    # Strip leading zeros and compare: '017' == '17'
+    pred_stripped = pred_n.lstrip("0") or "0"
+    gold_stripped = gold_n.lstrip("0") or "0"
+    if pred_stripped == gold_stripped:
+        return True
+
+    # Numeric comparison with tolerance
     try:
-        return abs(float(pred_n) - float(gold_n)) < tol
+        pv = float(pred_n)
+        gv = float(gold_n)
+        if abs(pv - gv) < tol:
+            return True
+        # Also try: both are integers but stored differently
+        if pv == int(pv) and gv == int(gv) and int(pv) == int(gv):
+            return True
     except (ValueError, TypeError):
         pass
 
+    # Fraction comparison
     frac_pat = r"^([\-\+]?\d+)\s*/\s*(\d+)$"
     pm = re.match(frac_pat, pred_n)
     gm = re.match(frac_pat, gold_n)
@@ -311,6 +337,23 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
         except ZeroDivisionError:
             pass
 
+    # Mixed: one is fraction, other is decimal
+    if pm and not gm:
+        try:
+            pv = int(pm.group(1)) / int(pm.group(2))
+            gv = float(gold_n)
+            return abs(pv - gv) < tol
+        except (ValueError, ZeroDivisionError):
+            pass
+    if gm and not pm:
+        try:
+            pv = float(pred_n)
+            gv = int(gm.group(1)) / int(gm.group(2))
+            return abs(pv - gv) < tol
+        except (ValueError, ZeroDivisionError):
+            pass
+
+    # LaTeX normalization
     pred_l = _normalize_latex(pred)
     gold_l = _normalize_latex(gold)
     if pred_l == gold_l:
@@ -321,8 +364,10 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
     if pred_l2 == gold_l2:
         return True
 
+    # Sympy fallback
     try:
         from sympy import simplify, sympify
+
         p_expr = sympify(pred_l.replace("^", "**"))
         g_expr = sympify(gold_l.replace("^", "**"))
         if simplify(p_expr - g_expr) == 0:
