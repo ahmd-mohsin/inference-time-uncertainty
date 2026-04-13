@@ -1,3 +1,11 @@
+"""
+run_dad.py — FIXED version
+
+Fixes applied:
+1. max_position_embeddings set to 32768 after model load (prevents 4096 truncation warning)
+2. Leading zero normalization in voting (017 == 17)
+3. Float gold answer handling in answers_match (142.0 == 142)
+"""
 import argparse
 import json
 import logging
@@ -25,6 +33,26 @@ def setup_logging(log_file=None):
         handlers=handlers,
         force=True,
     )
+
+
+def _normalize_for_voting(answer):
+    """Robust answer normalization for majority voting.
+    Handles: leading zeros, float-to-int, whitespace.
+    """
+    if answer is None or answer == "":
+        return ""
+    from src.data.dataset import normalize_answer
+    n = normalize_answer(answer)
+    # Strip leading zeros: '017' -> '17', but '0' stays '0'
+    n = n.lstrip("0") or "0"
+    try:
+        val = float(n)
+        if val == int(val) and abs(val) < 1e15:
+            return str(int(val))
+        return f"{val:.8f}".rstrip("0").rstrip(".")
+    except (ValueError, OverflowError):
+        pass
+    return n
 
 
 def run_greedy(model, tokenizer, problems, cfg):
@@ -82,7 +110,7 @@ def run_greedy(model, tokenizer, problems, cfg):
 
 
 def run_sampling_vote(model, tokenizer, problems, cfg):
-    from src.data.dataset import format_prompt, extract_boxed_answer, extract_numeric_answer, answers_match, normalize_answer
+    from src.data.dataset import format_prompt, extract_boxed_answer, extract_numeric_answer, answers_match
 
     device = cfg["model"]["device"]
     dad_cfg = cfg.get("dad", {})
@@ -120,17 +148,11 @@ def run_sampling_vote(model, tokenizer, problems, cfg):
 
         wall = time.time() - t0
 
+        # Majority vote with robust normalization
         answer_counts = defaultdict(int)
         answer_text = {}
         for s in solutions:
-            norm = normalize_answer(s["answer"])
-            norm = norm.lstrip("0") or "0"
-            try:
-                val = float(norm)
-                if val == int(val) and abs(val) < 1e15:
-                    norm = str(int(val))
-            except (ValueError, OverflowError):
-                pass
+            norm = _normalize_for_voting(s["answer"])
             answer_counts[norm] += 1
             if norm not in answer_text:
                 answer_text[norm] = s
@@ -331,6 +353,18 @@ def main():
     from src.data.dataset import get_inference_dataset
 
     model, tokenizer = ModelLoader(cfg).load()
+
+    # ============================================================
+    # FIX 1: Override max_position_embeddings for all baselines
+    # Qwen2.5-Math-7B supports 32K context but config says 4096
+    # Without this, greedy/sampling solutions get truncated
+    # ============================================================
+    if hasattr(model, 'config'):
+        old_max_pos = getattr(model.config, 'max_position_embeddings', None)
+        if old_max_pos and old_max_pos < 32768:
+            model.config.max_position_embeddings = 32768
+            logger.info(f"  Fixed max_position_embeddings: {old_max_pos} -> 32768")
+
     problems = get_inference_dataset(cfg)
     logger.info(f"Loaded {len(problems)} problems")
 

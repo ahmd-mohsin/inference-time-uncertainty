@@ -10,7 +10,7 @@ model:
 dad:
   m_samples: 8
   max_rounds: 3
-  max_gen_tokens: 2048
+  max_gen_tokens: 4096    # was 2048 — gives model room to finish \boxed{}
   temperature: 0.7
   top_p: 0.95
   confidence_threshold: 0.8
