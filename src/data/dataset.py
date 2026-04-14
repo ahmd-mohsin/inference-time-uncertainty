@@ -122,34 +122,85 @@ def load_deepmath(
     return problems
 
 
-def load_aime(
-    year: int = 2025,
-    n_problems: int = -1,
-) -> list[dict]:
-    # opencompass/AIME2025 is the available Hub source; use it for any requested year
-    logger.info(f"Loading AIME {year} (via opencompass/AIME2025)")
-    part_i  = load_dataset("opencompass/AIME2025", "AIME2025-I",  split="test")
-    part_ii = load_dataset("opencompass/AIME2025", "AIME2025-II", split="test")
-    data = list(part_i) + list(part_ii)
+def load_aime_2024(n_problems: int = -1) -> list[dict]:
+    """Load AIME 2024 from Maxwell-Jia/AIME_2024.
+    
+    Fields: ID (str, e.g. '2024-I-1'), Problem (str), Solution (str), Answer (int or str)
+    30 problems total (15 from AIME I, 15 from AIME II).
+    """
+    logger.info("Loading AIME 2024 (Maxwell-Jia/AIME_2024)")
+    raw = load_dataset("Maxwell-Jia/AIME_2024")
+    # Dataset has a single split, usually 'train'
+    split = "train" if "train" in raw else next(iter(raw.keys()))
+    data = list(raw[split])
     if n_problems > 0:
         data = data[:n_problems]
     problems = []
     for i, item in enumerate(data):
+        # Capitalized field names!
+        question = item.get("Problem", item.get("problem", ""))
+        answer = item.get("Answer", item.get("answer", ""))
+        problem_id = item.get("ID", item.get("id", str(i)))
         problems.append({
             "problem_id": i,
-            "question": item["question"],
-            "gold_answer": str(item["answer"]),
-            "source": f"aime_{year}",
+            "question": str(question),
+            "gold_answer": str(int(answer)) if isinstance(answer, (int, float)) else str(answer).strip(),
+            "source": "aime_2024",
             "level": "competition",
             "problem_type": "aime",
         })
-    logger.info(f"Loaded {len(problems)} AIME problems")
+    logger.info(f"Loaded {len(problems)} AIME 2024 problems")
     return problems
 
 
-def load_aime_2025(n_problems: int = -1) -> list[dict]:
-    return load_aime(year=2025, n_problems=n_problems)
-
+def load_aime_2025(n_problems: int = -1, part: str = "both") -> list[dict]:
+    """Load AIME 2025 from opencompass/AIME2025.
+    
+    Fields: question (str), answer (str, integer as string)
+    Subsets: AIME2025-I (15 problems), AIME2025-II (15 problems)
+    
+    Args:
+        part: "I" for Part I only, "II" for Part II only, "both" for all 30
+    """
+    logger.info(f"Loading AIME 2025 part={part} (opencompass/AIME2025)")
+    
+    data = []
+    if part in ("I", "both"):
+        part_i = load_dataset("opencompass/AIME2025", "AIME2025-I", split="test")
+        data.extend(list(part_i))
+    if part in ("II", "both"):
+        part_ii = load_dataset("opencompass/AIME2025", "AIME2025-II", split="test")
+        data.extend(list(part_ii))
+    
+    if n_problems > 0:
+        data = data[:n_problems]
+    
+    problems = []
+    for i, item in enumerate(data):
+        # Lowercase field names
+        question = item.get("question", "")
+        answer = item.get("answer", "")
+        problems.append({
+            "problem_id": i,
+            "question": str(question),
+            "gold_answer": str(int(answer)) if isinstance(answer, (int, float)) else str(answer).strip(),
+            "source": "aime_2025",
+            "level": "competition",
+            "problem_type": "aime",
+        })
+    logger.info(f"Loaded {len(problems)} AIME 2025 problems")
+    return problems
+ 
+ 
+def load_aime(year: int = 2025, n_problems: int = -1, part: str = "both") -> list[dict]:
+    """Dispatch to the correct AIME loader by year."""
+    if year == 2024:
+        return load_aime_2024(n_problems=n_problems)
+    elif year == 2025:
+        return load_aime_2025(n_problems=n_problems, part=part)
+    else:
+        logger.warning(f"AIME {year} not explicitly supported, trying opencompass/AIME2025 as fallback")
+        return load_aime_2025(n_problems=n_problems, part=part)
 
 def _amo_bench_inner_answer(answer: str) -> str:
     """AMO-Bench stores gold like \\boxed{...}; normalize for answers_match."""
@@ -159,6 +210,105 @@ def _amo_bench_inner_answer(answer: str) -> str:
     if matches:
         return matches[-1].strip()
     return s
+
+def load_amc(n_problems: int = -1, cache_dir: Optional[str] = None) -> list[dict]:
+    logger.info("Loading AMC (via AI-MO/aimo-validation-amc)")
+    raw = load_dataset("AI-MO/aimo-validation-amc", cache_dir=cache_dir)
+    split = "train" if "train" in raw else next(iter(raw.keys()))
+    data = list(raw[split])
+    if n_problems > 0:
+        data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        problems.append({
+            "problem_id": i,
+            "question": item["problem"],
+            "gold_answer": str(item["answer"]),
+            "source": "amc",
+            "level": "competition",
+            "problem_type": "amc12",
+        })
+    logger.info(f"Loaded {len(problems)} AMC problems")
+    return problems
+
+
+def load_competition_math(
+    n_problems: int = -1,
+    seed: int = 42,
+    cache_dir: Optional[str] = None,
+) -> list[dict]:
+    """Load hendrycks/competition_math (the full MATH benchmark, 5K test problems).
+ 
+    Fields in the dataset:
+        problem  : str — problem text
+        solution : str — full solution text containing \\boxed{answer}
+        level    : str — e.g. "Level 5"
+        type     : str — e.g. "Algebra"
+    """
+    logger.info("Loading Competition MATH (hendrycks/competition_math)")
+    raw = load_dataset("hendrycks/competition_math", cache_dir=cache_dir)
+    data = list(raw["test"])
+    random.seed(seed)
+    random.shuffle(data)
+    if n_problems > 0:
+        data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        solution_text = item.get("solution", "")
+        # Use depth-tracking extraction instead of simple regex
+        gold = _extract_boxed_from_solution(solution_text)
+        if not gold:
+            # Fallback: last line of solution
+            lines = [ln.strip() for ln in solution_text.strip().split("\n") if ln.strip()]
+            gold = lines[-1] if lines else ""
+ 
+        level_raw = item.get("level", "")
+        level_num = ""
+        m = re.search(r"\d+", str(level_raw))
+        if m:
+            level_num = m.group(0)
+ 
+        problems.append({
+            "problem_id": i,
+            "question": item["problem"],
+            "gold_answer": gold,
+            "source": "competition_math",
+            "level": level_num,
+            "problem_type": item.get("type", ""),
+        })
+    logger.info(f"Loaded {len(problems)} Competition MATH problems")
+    return problems
+ 
+
+
+def load_olympiad_bench(n_problems: int = -1, seed: int = 42, cache_dir: Optional[str] = None) -> list[dict]:
+    logger.info("Loading OlympiadBench")
+    try:
+        raw = load_dataset("lmms-lab/OlympiadBench", cache_dir=cache_dir)
+        data = list(raw["test_en"])
+    except Exception:
+        logger.warning("OlympiadBench not available, skipping")
+        return []
+    random.seed(seed)
+    random.shuffle(data)
+    if n_problems > 0:
+        data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        question = item.get("question", item.get("problem", ""))
+        answer = item.get("final_answer", item.get("answer", ""))
+        if isinstance(answer, list):
+            answer = answer[0] if answer else ""
+        problems.append({
+            "problem_id": i,
+            "question": str(question),
+            "gold_answer": str(answer),
+            "source": "olympiad_bench",
+            "level": "olympiad",
+            "problem_type": item.get("subject", "math"),
+        })
+    logger.info(f"Loaded {len(problems)} OlympiadBench problems")
+    return problems
 
 
 def load_amo_bench(
@@ -418,8 +568,17 @@ def get_inference_dataset(cfg: dict) -> list[dict]:
         return load_math500(split=split, n_problems=n, seed=seed)
     elif name == "deepmath":
         return load_deepmath(n_problems=n)
+    elif name == "aime_2024":
+        return load_aime_2024(n_problems=n)
     elif name == "aime_2025":
         return load_aime_2025(n_problems=n)
+    elif name == "aime_2025_i":
+        return load_aime_2025(n_problems=n, part="I")
+    elif name == "aime_2025_ii":
+        return load_aime_2025(n_problems=n, part="II")
+    elif name.startswith("aime"):
+        year = int(name.split("_")[-1]) if "_" in name else 2025
+        return load_aime(year=year, n_problems=n)
     elif name.startswith("aime"):
         year = int(name.split("_")[-1]) if "_" in name else 2024
         return load_aime(year=year, n_problems=n)
