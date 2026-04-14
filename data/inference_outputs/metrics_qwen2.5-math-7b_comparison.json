@@ -1,59 +1,56 @@
 [
   {
     "method": "greedy",
-    "n_problems": 50,
-    "n_correct": 2,
-    "accuracy": 0.04,
-    "mean_tokens": 1756.6,
-    "median_tokens": 1248.0,
-    "mean_wall_time": 26.238394231796264,
-    "total_wall_time": 1311.9197115898132,
+    "n_problems": 500,
+    "n_correct": 385,
+    "accuracy": 0.77,
+    "mean_tokens": 803.39,
+    "median_tokens": 514.0,
+    "mean_wall_time": 11.592696487903595,
+    "total_wall_time": 5796.3482439517975,
     "accuracy_by_level": {
-      "olympiad": 0.04
+      "1": 0.9302325581395349,
+      "2": 0.9,
+      "3": 0.8666666666666667,
+      "4": 0.7734375,
+      "5": 0.5522388059701493
     },
-    "accuracy_by_type": {
-      "description": 0.0,
-      "number": 0.029411764705882353,
-      "set": 0.3333333333333333,
-      "variable": 0.0
-    }
+    "accuracy_by_type": {}
   },
   {
     "method": "sampling_vote_m8",
-    "n_problems": 50,
-    "n_correct": 2,
-    "accuracy": 0.04,
-    "mean_tokens": 11364.54,
-    "median_tokens": 11026.0,
-    "mean_wall_time": 166.03517085552215,
-    "total_wall_time": 8301.758542776108,
+    "n_problems": 500,
+    "n_correct": 403,
+    "accuracy": 0.806,
+    "mean_tokens": 5890.102,
+    "median_tokens": 4390.5,
+    "mean_wall_time": 84.57082974863053,
+    "total_wall_time": 42285.41487431526,
     "accuracy_by_level": {
-      "olympiad": 0.04
+      "1": 0.9534883720930233,
+      "2": 0.8888888888888888,
+      "3": 0.9238095238095239,
+      "4": 0.8203125,
+      "5": 0.5970149253731343
     },
-    "accuracy_by_type": {
-      "description": 0.0,
-      "number": 0.058823529411764705,
-      "set": 0.0,
-      "variable": 0.0
-    }
+    "accuracy_by_type": {}
   },
   {
     "method": "dad_m8_r3",
-    "n_problems": 50,
-    "n_correct": 2,
-    "accuracy": 0.04,
-    "mean_tokens": 23077.34,
-    "median_tokens": 23836.5,
-    "mean_wall_time": 346.9784290790558,
-    "total_wall_time": 17348.92145395279,
+    "n_problems": 500,
+    "n_correct": 424,
+    "accuracy": 0.848,
+    "mean_tokens": 10385.078,
+    "median_tokens": 6995.0,
+    "mean_wall_time": 151.72453312301636,
+    "total_wall_time": 75862.26656150818,
     "accuracy_by_level": {
-      "olympiad": 0.04
+      "1": 0.9767441860465116,
+      "2": 0.9,
+      "3": 0.9523809523809523,
+      "4": 0.9140625,
+      "5": 0.6268656716417911
     },
-    "accuracy_by_type": {
-      "description": 0.0,
-      "number": 0.029411764705882353,
-      "set": 0.3333333333333333,
-      "variable": 0.0
-    }
+    "accuracy_by_type": {}
   }
 ]
