@@ -123,28 +123,29 @@ def load_deepmath(
 
 
 def load_aime_2024(n_problems: int = -1) -> list[dict]:
-    """Load AIME 2024 from Maxwell-Jia/AIME_2024.
+    """Load AIME 2024 from math-ai/aime24.
     
-    Fields: ID (str, e.g. '2024-I-1'), Problem (str), Solution (str), Answer (int or str)
-    30 problems total (15 from AIME I, 15 from AIME II).
+    Fields: id (int), problem (str), solution (str with \\boxed{answer}), url (str)
+    30 problems total, split: test
     """
-    logger.info("Loading AIME 2024 (Maxwell-Jia/AIME_2024)")
-    raw = load_dataset("Maxwell-Jia/AIME_2024")
-    # Dataset has a single split, usually 'train'
-    split = "train" if "train" in raw else next(iter(raw.keys()))
+    logger.info("Loading AIME 2024 (math-ai/aime24)")
+    raw = load_dataset("math-ai/aime24")
+    split = "test" if "test" in raw else next(iter(raw.keys()))
     data = list(raw[split])
     if n_problems > 0:
         data = data[:n_problems]
     problems = []
     for i, item in enumerate(data):
-        # Capitalized field names!
-        question = item.get("Problem", item.get("problem", ""))
-        answer = item.get("Answer", item.get("answer", ""))
-        problem_id = item.get("ID", item.get("id", str(i)))
+        question = item.get("problem", "")
+        # solution field is like "\boxed{104}" — extract the integer
+        sol = item.get("solution", "")
+        gold = extract_boxed_answer(sol)
+        if gold is None:
+            gold = sol.strip()
         problems.append({
             "problem_id": i,
             "question": str(question),
-            "gold_answer": str(int(answer)) if isinstance(answer, (int, float)) else str(answer).strip(),
+            "gold_answer": str(gold).strip(),
             "source": "aime_2024",
             "level": "competition",
             "problem_type": "aime",
@@ -153,32 +154,21 @@ def load_aime_2024(n_problems: int = -1) -> list[dict]:
     return problems
 
 
-def load_aime_2025(n_problems: int = -1, part: str = "both") -> list[dict]:
-    """Load AIME 2025 from opencompass/AIME2025.
+def load_aime_2025(n_problems: int = -1) -> list[dict]:
+    """Load AIME 2025 from math-ai/aime25.
     
-    Fields: question (str), answer (str, integer as string)
-    Subsets: AIME2025-I (15 problems), AIME2025-II (15 problems)
-    
-    Args:
-        part: "I" for Part I only, "II" for Part II only, "both" for all 30
+    Fields: problem (str), answer (str), id (str)
+    30 problems total, split: test
     """
-    logger.info(f"Loading AIME 2025 part={part} (opencompass/AIME2025)")
-    
-    data = []
-    if part in ("I", "both"):
-        part_i = load_dataset("opencompass/AIME2025", "AIME2025-I", split="test")
-        data.extend(list(part_i))
-    if part in ("II", "both"):
-        part_ii = load_dataset("opencompass/AIME2025", "AIME2025-II", split="test")
-        data.extend(list(part_ii))
-    
+    logger.info("Loading AIME 2025 (math-ai/aime25)")
+    raw = load_dataset("math-ai/aime25")
+    split = "test" if "test" in raw else next(iter(raw.keys()))
+    data = list(raw[split])
     if n_problems > 0:
         data = data[:n_problems]
-    
     problems = []
     for i, item in enumerate(data):
-        # Lowercase field names
-        question = item.get("question", "")
+        question = item.get("problem", "")
         answer = item.get("answer", "")
         problems.append({
             "problem_id": i,
@@ -190,7 +180,6 @@ def load_aime_2025(n_problems: int = -1, part: str = "both") -> list[dict]:
         })
     logger.info(f"Loaded {len(problems)} AIME 2025 problems")
     return problems
- 
  
 def load_aime(year: int = 2025, n_problems: int = -1, part: str = "both") -> list[dict]:
     """Dispatch to the correct AIME loader by year."""
