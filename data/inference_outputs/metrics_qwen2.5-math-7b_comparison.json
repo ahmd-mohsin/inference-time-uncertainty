@@ -1,50 +1,53 @@
 [
   {
     "method": "greedy",
-    "n_problems": 30,
-    "n_correct": 4,
-    "accuracy": 0.13333333333333333,
-    "mean_tokens": 1788.2666666666667,
-    "median_tokens": 1024.0,
-    "mean_wall_time": 26.847608534495034,
-    "total_wall_time": 805.4282560348511,
+    "n_problems": 40,
+    "n_correct": 22,
+    "accuracy": 0.55,
+    "mean_tokens": 1219.975,
+    "median_tokens": 823.5,
+    "mean_wall_time": 17.844598293304443,
+    "total_wall_time": 713.7839317321777,
     "accuracy_by_level": {
-      "competition": 0.13333333333333333
+      "competition": 0.55
     },
     "accuracy_by_type": {
-      "aime": 0.13333333333333333
+      "amc12a": 0.5909090909090909,
+      "amc12b": 0.5
     }
   },
   {
     "method": "sampling_vote_m8",
-    "n_problems": 30,
-    "n_correct": 2,
-    "accuracy": 0.06666666666666667,
-    "mean_tokens": 11992.3,
-    "median_tokens": 10554.0,
-    "mean_wall_time": 175.0404147863388,
-    "total_wall_time": 5251.212443590164,
+    "n_problems": 40,
+    "n_correct": 24,
+    "accuracy": 0.6,
+    "mean_tokens": 8473.9,
+    "median_tokens": 8534.0,
+    "mean_wall_time": 121.99265395998955,
+    "total_wall_time": 4879.706158399582,
     "accuracy_by_level": {
-      "competition": 0.06666666666666667
+      "competition": 0.6
     },
     "accuracy_by_type": {
-      "aime": 0.06666666666666667
+      "amc12a": 0.6818181818181818,
+      "amc12b": 0.5
     }
   },
   {
     "method": "dad_m8_r3",
-    "n_problems": 30,
-    "n_correct": 6,
-    "accuracy": 0.2,
-    "mean_tokens": 23484.866666666665,
-    "median_tokens": 23952.0,
-    "mean_wall_time": 349.4415476640066,
-    "total_wall_time": 10483.246429920197,
+    "n_problems": 40,
+    "n_correct": 27,
+    "accuracy": 0.675,
+    "mean_tokens": 16482.55,
+    "median_tokens": 16784.5,
+    "mean_wall_time": 242.6242599785328,
+    "total_wall_time": 9704.970399141312,
     "accuracy_by_level": {
-      "competition": 0.2
+      "competition": 0.675
     },
     "accuracy_by_type": {
-      "aime": 0.2
+      "amc12a": 0.6818181818181818,
+      "amc12b": 0.6666666666666666
     }
   }
 ]

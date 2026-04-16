@@ -201,23 +201,47 @@ def _amo_bench_inner_answer(answer: str) -> str:
     return s
 
 def load_amc(n_problems: int = -1, cache_dir: Optional[str] = None) -> list[dict]:
-    logger.info("Loading AMC (via AI-MO/aimo-validation-amc)")
-    raw = load_dataset("AI-MO/aimo-validation-amc", cache_dir=cache_dir)
-    split = "train" if "train" in raw else next(iter(raw.keys()))
+    """
+    Load the AMC 2023 dataset from math-ai/amc23.
+ 
+    Schema (test split, 40 rows):
+        id:       int64   (non-sequential, native problem id)
+        question: string  (LaTeX-formatted problem text)
+        answer:   string  (integer answer, length 1-4)
+        url:      string  (AoPS wiki link; contains 'AMC_12A' or 'AMC_12B')
+    """
+    logger.info("Loading AMC (via math-ai/amc23)")
+    raw = load_dataset("math-ai/amc23", cache_dir=cache_dir)
+ 
+    # amc23 ships with only a 'test' split; fall back defensively
+    split = "test" if "test" in raw else next(iter(raw.keys()))
     data = list(raw[split])
+ 
     if n_problems > 0:
         data = data[:n_problems]
+ 
     problems = []
     for i, item in enumerate(data):
+        url = item.get("url", "") or ""
+        if "AMC_12A" in url:
+            subtype = "amc12a"
+        elif "AMC_12B" in url:
+            subtype = "amc12b"
+        else:
+            subtype = "amc12"
+ 
         problems.append({
-            "problem_id": i,
-            "question": item["problem"],
-            "gold_answer": str(item["answer"]),
-            "source": "amc",
+            "problem_id": i,                          # sequential local id
+            "native_id": item.get("id", i),           # preserve dataset's own id
+            "question": item["question"],             # note: field is 'question', not 'problem'
+            "gold_answer": str(item["answer"]).strip(),
+            "source": "amc23",
             "level": "competition",
-            "problem_type": "amc12",
+            "problem_type": subtype,                  # amc12a / amc12b / amc12
+            "url": url,
         })
-    logger.info(f"Loaded {len(problems)} AMC problems")
+ 
+    logger.info(f"Loaded {len(problems)} AMC23 problems")
     return problems
 
 
@@ -317,31 +341,36 @@ def load_olympiad_bench(n_problems: int = -1, seed: int = 42, cache_dir: Optiona
 
 
 def load_amo_bench(
-    split: str = "train",
     n_problems: int = -1,
     seed: int = 42,
     cache_dir: Optional[str] = None,
+    number_only: bool = True,
 ) -> list[dict]:
-    """meituan-longcat/AMO-Bench: 50 Olympiad-style problems (prompt + answer)."""
-    logger.info(f"Loading AMO-Bench split='{split}' n={n_problems} seed={seed}")
+    """meituan-longcat/AMO-Bench: 50 Olympiad-style problems.
+    
+    Fields: question_id (int), prompt (str), solution (str), 
+            answer (str with \\boxed{}), answer_type (str)
+    answer_type: "number", "set", "description", "variable"
+    Split: test only (50 rows)
+    """
+    logger.info(f"Loading AMO-Bench n={n_problems} seed={seed}")
     raw = load_dataset("meituan-longcat/AMO-Bench", cache_dir=cache_dir)
-    if split not in raw:
-        fallback = "test" if "test" in raw else ("train" if "train" in raw else next(iter(raw.keys())))
-        logger.warning(
-            "AMO-Bench has no split %r; using %r (available: %s)",
-            split,
-            fallback,
-            list(raw.keys()),
-        )
-        split = fallback
+    split = "test" if "test" in raw else next(iter(raw.keys()))
     data = list(raw[split])
+
+    # Filter to number-only problems (others are too hard to match)
+    if number_only:
+        data = [item for item in data if item.get("answer_type", "") == "number"]
+        logger.info(f"Filtered to {len(data)} number-type problems")
+
     random.seed(seed)
     random.shuffle(data)
     if n_problems > 0:
         data = data[:n_problems]
+
     problems = []
     for i, item in enumerate(data):
-        q = item.get("prompt") or item.get("question") or ""
+        q = item.get("prompt", "")
         gold = _amo_bench_inner_answer(item.get("answer", ""))
         problems.append({
             "problem_id": int(item.get("question_id", i)),
@@ -577,15 +606,8 @@ def get_inference_dataset(cfg: dict) -> list[dict]:
         return load_aime_2024(n_problems=n)
     elif name == "aime_2025":
         return load_aime_2025(n_problems=n)
-    elif name == "aime_2025_i":
-        return load_aime_2025(n_problems=n, part="I")
-    elif name == "aime_2025_ii":
-        return load_aime_2025(n_problems=n, part="II")
     elif name.startswith("aime"):
         year = int(name.split("_")[-1]) if "_" in name else 2025
-        return load_aime(year=year, n_problems=n)
-    elif name.startswith("aime"):
-        year = int(name.split("_")[-1]) if "_" in name else 2024
         return load_aime(year=year, n_problems=n)
     elif name in ("amo", "amo_bench"):
         return load_amo_bench(n_problems=n)
