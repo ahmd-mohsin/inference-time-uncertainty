@@ -181,15 +181,15 @@ def load_aime_2025(n_problems: int = -1) -> list[dict]:
     logger.info(f"Loaded {len(problems)} AIME 2025 problems")
     return problems
  
-def load_aime(year: int = 2025, n_problems: int = -1, part: str = "both") -> list[dict]:
+def load_aime(year: int = 2025, n_problems: int = -1) -> list[dict]:
     """Dispatch to the correct AIME loader by year."""
     if year == 2024:
         return load_aime_2024(n_problems=n_problems)
     elif year == 2025:
-        return load_aime_2025(n_problems=n_problems, part=part)
+        return load_aime_2025(n_problems=n_problems)
     else:
-        logger.warning(f"AIME {year} not explicitly supported, trying opencompass/AIME2025 as fallback")
-        return load_aime_2025(n_problems=n_problems, part=part)
+        logger.warning(f"AIME {year} not explicitly supported, trying aime25 as fallback")
+        return load_aime_2025(n_problems=n_problems)
 
 def _amo_bench_inner_answer(answer: str) -> str:
     """AMO-Bench stores gold like \\boxed{...}; normalize for answers_match."""
@@ -271,30 +271,46 @@ def load_competition_math(
 
 
 def load_olympiad_bench(n_problems: int = -1, seed: int = 42, cache_dir: Optional[str] = None) -> list[dict]:
-    logger.info("Loading OlympiadBench")
-    try:
-        raw = load_dataset("lmms-lab/OlympiadBench", cache_dir=cache_dir)
-        data = list(raw["test_en"])
-    except Exception:
-        logger.warning("OlympiadBench not available, skipping")
-        return []
+    logger.info("Loading OlympiadBench (math-ai/olympiadbench)")
+    raw = load_dataset("math-ai/olympiadbench")
+    split = "test" if "test" in raw else next(iter(raw.keys()))
+    data = list(raw[split])
+
+    # Filter to text-only problems (skip image-based problems)
+    data = [item for item in data if item.get("modality", "") == "Text-only"]
+    logger.info(f"Filtered to {len(data)} text-only problems")
+
     random.seed(seed)
     random.shuffle(data)
     if n_problems > 0:
         data = data[:n_problems]
+
     problems = []
     for i, item in enumerate(data):
-        question = item.get("question", item.get("problem", ""))
-        answer = item.get("final_answer", item.get("answer", ""))
+        question = item.get("question", "")
+
+        # final_answer is a LIST, not a string
+        answer = item.get("final_answer", [])
         if isinstance(answer, list):
-            answer = answer[0] if answer else ""
+            # Join multiple answers with comma for multi-answer problems
+            answer = ", ".join(str(a) for a in answer) if answer else ""
+        
+        # Strip LaTeX $ wrappers from answer
+        answer = str(answer).strip().strip("$").strip()
+
+        # Get unit if present (e.g., "degrees", "cm")
+        unit = item.get("unit", None)
+
         problems.append({
             "problem_id": i,
             "question": str(question),
-            "gold_answer": str(answer),
+            "gold_answer": answer,
             "source": "olympiad_bench",
             "level": "olympiad",
-            "problem_type": item.get("subject", "math"),
+            "problem_type": item.get("subfield", "math"),
+            "answer_type": item.get("answer_type", ""),
+            "unit": str(unit) if unit else "",
+            "is_multiple_answer": item.get("is_multiple_answer", False),
         })
     logger.info(f"Loaded {len(problems)} OlympiadBench problems")
     return problems
