@@ -1,5 +1,5 @@
 model:
-  name: "Qwen/Qwen2.5-Math-7B-Instruct"
+  name: "Qwen/Qwen3-8B"
   short_name: "qwen2.5-math-7b"
   dtype: "bfloat16"
   device: "cuda"

@@ -1,5 +1,5 @@
 model:
-  name: "Qwen/Qwen2.5-Math-7B-Instruct"
+  name: "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"
   short_name: "qwen2.5-math-7b"
   dtype: "bfloat16"
   device: "cuda"
@@ -10,7 +10,7 @@ model:
 dad:
   m_samples: 8
   max_rounds: 3
-  max_gen_tokens: 8192   # was 2048 — gives model room to finish \boxed{}
+  max_gen_tokens: 8192    # was 2048 — gives model room to finish \boxed{}
   temperature: 0.7
   top_p: 0.95
   confidence_threshold: 0.8

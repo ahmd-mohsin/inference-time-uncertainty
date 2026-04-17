@@ -1,53 +1,56 @@
 [
   {
     "method": "greedy",
-    "n_problems": 40,
-    "n_correct": 22,
-    "accuracy": 0.55,
-    "mean_tokens": 1219.975,
-    "median_tokens": 823.5,
-    "mean_wall_time": 17.844598293304443,
-    "total_wall_time": 713.7839317321777,
+    "n_problems": 50,
+    "n_correct": 35,
+    "accuracy": 0.7,
+    "mean_tokens": 847.82,
+    "median_tokens": 570.5,
+    "mean_wall_time": 12.178594789505006,
+    "total_wall_time": 608.9297394752502,
     "accuracy_by_level": {
-      "competition": 0.55
+      "1": 1.0,
+      "2": 0.8461538461538461,
+      "3": 0.6,
+      "4": 0.7333333333333333,
+      "5": 0.5454545454545454
     },
-    "accuracy_by_type": {
-      "amc12a": 0.5909090909090909,
-      "amc12b": 0.5
-    }
+    "accuracy_by_type": {}
   },
   {
     "method": "sampling_vote_m8",
-    "n_problems": 40,
-    "n_correct": 24,
-    "accuracy": 0.6,
-    "mean_tokens": 8473.9,
-    "median_tokens": 8534.0,
-    "mean_wall_time": 121.99265395998955,
-    "total_wall_time": 4879.706158399582,
+    "n_problems": 50,
+    "n_correct": 41,
+    "accuracy": 0.83,
+    "mean_tokens": 6051.7,
+    "median_tokens": 5391.5,
+    "mean_wall_time": 86.38891591548919,
+    "total_wall_time": 4319.44579577446,
     "accuracy_by_level": {
-      "competition": 0.6
+      "1": 1.0,
+      "2": 0.8461538461538461,
+      "3": 0.8,
+      "4": 0.8366666666666667,
+      "5": 0.7272727272727273
     },
-    "accuracy_by_type": {
-      "amc12a": 0.6818181818181818,
-      "amc12b": 0.5
-    }
+    "accuracy_by_type": {}
   },
   {
     "method": "dad_m8_r3",
-    "n_problems": 40,
-    "n_correct": 27,
-    "accuracy": 0.675,
-    "mean_tokens": 16482.55,
-    "median_tokens": 16784.5,
-    "mean_wall_time": 242.6242599785328,
-    "total_wall_time": 9704.970399141312,
+    "n_problems": 50,
+    "n_correct": 41,
+    "accuracy": 0.88,
+    "mean_tokens": 10822.14,
+    "median_tokens": 7552.0,
+    "mean_wall_time": 157.47557544708252,
+    "total_wall_time": 7873.778772354126,
     "accuracy_by_level": {
-      "competition": 0.675
+      "1": 1.0,
+      "2": 0.923076923076923,
+      "3": 0.88,
+      "4": 0.8466666666666667,
+      "5": 0.8181818181818182
     },
-    "accuracy_by_type": {
-      "amc12a": 0.6818181818181818,
-      "amc12b": 0.6666666666666666
-    }
+    "accuracy_by_type": {}
   }
 ]
