@@ -57,9 +57,13 @@ def _normalize_for_voting(answer):
 
 def _make_run_id(cfg, mode, dataset_name):
     """Create a unique run identifier: modelshort_dataset_mode_timestamp."""
-    short = cfg["model"].get("short_name", "model")
+    model_name = cfg["model"].get("name", "model")
+    # Auto-derive short name from HuggingFace model path
+    # e.g. "Qwen/Qwen2.5-Math-7B-Instruct" -> "Qwen2.5-Math-7B-Instruct"
+    # e.g. "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B" -> "DeepSeek-R1-0528-Qwen3-8B"
+    short = model_name.split("/")[-1]
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return f"{short}_{dataset_name}_{mode}_{ts}"
+    return f"{short}_{dataset_name}_{mode}_{ts}
 
 
 def run_greedy(model, tokenizer, problems, cfg, out_path):
