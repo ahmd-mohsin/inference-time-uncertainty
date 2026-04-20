@@ -1,0 +1,20 @@
+[
+  {
+    "method": "Greedy",
+    "config": "N=1",
+    "mean_tokens": 830.0,
+    "total_tokens": 41500,
+    "accuracy": 0.7,
+    "n_correct": 35,
+    "n_problems": 50
+  },
+  {
+    "method": "Maj@2",
+    "config": "N=2",
+    "mean_tokens": 1840.1,
+    "total_tokens": 92005,
+    "accuracy": 0.66,
+    "n_correct": 33,
+    "n_problems": 50
+  }
+]
