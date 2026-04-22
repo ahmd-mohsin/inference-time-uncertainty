@@ -1,0 +1,702 @@
+[
+  {
+    "problem_id": 0,
+    "correct": true,
+    "tokens": 24003,
+    "wall_time": 373.5162136554718,
+    "rounds": 1
+  },
+  {
+    "problem_id": 1,
+    "correct": true,
+    "tokens": 6075,
+    "wall_time": 85.46732258796692,
+    "rounds": 1
+  },
+  {
+    "problem_id": 2,
+    "correct": true,
+    "tokens": 2158,
+    "wall_time": 30.124407529830933,
+    "rounds": 1
+  },
+  {
+    "problem_id": 3,
+    "correct": true,
+    "tokens": 17826,
+    "wall_time": 271.9117603302002,
+    "rounds": 1
+  },
+  {
+    "problem_id": 4,
+    "correct": true,
+    "tokens": 2437,
+    "wall_time": 33.99759316444397,
+    "rounds": 1
+  },
+  {
+    "problem_id": 5,
+    "correct": true,
+    "tokens": 3417,
+    "wall_time": 47.72931885719299,
+    "rounds": 1
+  },
+  {
+    "problem_id": 6,
+    "correct": true,
+    "tokens": 4228,
+    "wall_time": 59.232250928878784,
+    "rounds": 1
+  },
+  {
+    "problem_id": 7,
+    "correct": true,
+    "tokens": 4566,
+    "wall_time": 64.02145385742188,
+    "rounds": 1
+  },
+  {
+    "problem_id": 8,
+    "correct": true,
+    "tokens": 4797,
+    "wall_time": 67.26145243644714,
+    "rounds": 1
+  },
+  {
+    "problem_id": 9,
+    "correct": true,
+    "tokens": 13834,
+    "wall_time": 212.52705097198486,
+    "rounds": 1
+  },
+  {
+    "problem_id": 10,
+    "correct": true,
+    "tokens": 4669,
+    "wall_time": 65.49064826965332,
+    "rounds": 1
+  },
+  {
+    "problem_id": 11,
+    "correct": true,
+    "tokens": 6140,
+    "wall_time": 86.32812261581421,
+    "rounds": 1
+  },
+  {
+    "problem_id": 12,
+    "correct": true,
+    "tokens": 13476,
+    "wall_time": 207.06132817268372,
+    "rounds": 1
+  },
+  {
+    "problem_id": 13,
+    "correct": true,
+    "tokens": 3179,
+    "wall_time": 44.38830614089966,
+    "rounds": 1
+  },
+  {
+    "problem_id": 14,
+    "correct": true,
+    "tokens": 2727,
+    "wall_time": 38.07147741317749,
+    "rounds": 1
+  },
+  {
+    "problem_id": 15,
+    "correct": true,
+    "tokens": 3602,
+    "wall_time": 50.3599967956543,
+    "rounds": 1
+  },
+  {
+    "problem_id": 16,
+    "correct": true,
+    "tokens": 2181,
+    "wall_time": 30.445058584213257,
+    "rounds": 1
+  },
+  {
+    "problem_id": 17,
+    "correct": false,
+    "tokens": 4051,
+    "wall_time": 56.82637596130371,
+    "rounds": 1
+  },
+  {
+    "problem_id": 18,
+    "correct": true,
+    "tokens": 11978,
+    "wall_time": 187.122900724411,
+    "rounds": 1
+  },
+  {
+    "problem_id": 19,
+    "correct": true,
+    "tokens": 4603,
+    "wall_time": 64.72774243354797,
+    "rounds": 1
+  },
+  {
+    "problem_id": 20,
+    "correct": true,
+    "tokens": 2544,
+    "wall_time": 35.509474992752075,
+    "rounds": 1
+  },
+  {
+    "problem_id": 21,
+    "correct": true,
+    "tokens": 4991,
+    "wall_time": 70.29786443710327,
+    "rounds": 1
+  },
+  {
+    "problem_id": 22,
+    "correct": true,
+    "tokens": 6350,
+    "wall_time": 89.5539300441742,
+    "rounds": 1
+  },
+  {
+    "problem_id": 23,
+    "correct": true,
+    "tokens": 3538,
+    "wall_time": 49.667717933654785,
+    "rounds": 1
+  },
+  {
+    "problem_id": 24,
+    "correct": true,
+    "tokens": 13243,
+    "wall_time": 204.14856886863708,
+    "rounds": 1
+  },
+  {
+    "problem_id": 25,
+    "correct": true,
+    "tokens": 3624,
+    "wall_time": 50.77538847923279,
+    "rounds": 1
+  },
+  {
+    "problem_id": 26,
+    "correct": true,
+    "tokens": 13368,
+    "wall_time": 205.5801661014557,
+    "rounds": 1
+  },
+  {
+    "problem_id": 27,
+    "correct": false,
+    "tokens": 10767,
+    "wall_time": 153.81457543373108,
+    "rounds": 1
+  },
+  {
+    "problem_id": 28,
+    "correct": false,
+    "tokens": 7265,
+    "wall_time": 102.69059109687805,
+    "rounds": 1
+  },
+  {
+    "problem_id": 29,
+    "correct": true,
+    "tokens": 2875,
+    "wall_time": 40.15576434135437,
+    "rounds": 1
+  },
+  {
+    "problem_id": 30,
+    "correct": true,
+    "tokens": 6717,
+    "wall_time": 94.6864366531372,
+    "rounds": 1
+  },
+  {
+    "problem_id": 31,
+    "correct": false,
+    "tokens": 5910,
+    "wall_time": 83.1170449256897,
+    "rounds": 1
+  },
+  {
+    "problem_id": 32,
+    "correct": true,
+    "tokens": 2608,
+    "wall_time": 36.46130895614624,
+    "rounds": 1
+  },
+  {
+    "problem_id": 33,
+    "correct": true,
+    "tokens": 51246,
+    "wall_time": 826.8288376331329,
+    "rounds": 1
+  },
+  {
+    "problem_id": 34,
+    "correct": true,
+    "tokens": 3617,
+    "wall_time": 50.508644819259644,
+    "rounds": 1
+  },
+  {
+    "problem_id": 35,
+    "correct": true,
+    "tokens": 6931,
+    "wall_time": 97.64215683937073,
+    "rounds": 1
+  },
+  {
+    "problem_id": 36,
+    "correct": true,
+    "tokens": 4890,
+    "wall_time": 68.59297180175781,
+    "rounds": 1
+  },
+  {
+    "problem_id": 37,
+    "correct": true,
+    "tokens": 5259,
+    "wall_time": 73.96913480758667,
+    "rounds": 1
+  },
+  {
+    "problem_id": 38,
+    "correct": false,
+    "tokens": 2327,
+    "wall_time": 32.49384140968323,
+    "rounds": 1
+  },
+  {
+    "problem_id": 39,
+    "correct": true,
+    "tokens": 6775,
+    "wall_time": 96.26821780204773,
+    "rounds": 1
+  },
+  {
+    "problem_id": 40,
+    "correct": true,
+    "tokens": 2656,
+    "wall_time": 37.2092707157135,
+    "rounds": 1
+  },
+  {
+    "problem_id": 41,
+    "correct": true,
+    "tokens": 4777,
+    "wall_time": 66.9436285495758,
+    "rounds": 1
+  },
+  {
+    "problem_id": 42,
+    "correct": false,
+    "tokens": 5104,
+    "wall_time": 71.94035744667053,
+    "rounds": 1
+  },
+  {
+    "problem_id": 43,
+    "correct": false,
+    "tokens": 12222,
+    "wall_time": 191.1315257549286,
+    "rounds": 1
+  },
+  {
+    "problem_id": 44,
+    "correct": true,
+    "tokens": 3169,
+    "wall_time": 44.22508454322815,
+    "rounds": 1
+  },
+  {
+    "problem_id": 45,
+    "correct": true,
+    "tokens": 22762,
+    "wall_time": 356.0400638580322,
+    "rounds": 1
+  },
+  {
+    "problem_id": 46,
+    "correct": true,
+    "tokens": 1720,
+    "wall_time": 24.017153024673462,
+    "rounds": 1
+  },
+  {
+    "problem_id": 47,
+    "correct": false,
+    "tokens": 13831,
+    "wall_time": 212.3888645172119,
+    "rounds": 1
+  },
+  {
+    "problem_id": 48,
+    "correct": true,
+    "tokens": 5740,
+    "wall_time": 80.68437957763672,
+    "rounds": 1
+  },
+  {
+    "problem_id": 49,
+    "correct": true,
+    "tokens": 18492,
+    "wall_time": 280.0969624519348,
+    "rounds": 1
+  },
+  {
+    "problem_id": 50,
+    "correct": true,
+    "tokens": 9022,
+    "wall_time": 128.16896867752075,
+    "rounds": 1
+  },
+  {
+    "problem_id": 51,
+    "correct": false,
+    "tokens": 25818,
+    "wall_time": 401.9441514015198,
+    "rounds": 1
+  },
+  {
+    "problem_id": 52,
+    "correct": true,
+    "tokens": 6219,
+    "wall_time": 87.39624547958374,
+    "rounds": 1
+  },
+  {
+    "problem_id": 53,
+    "correct": false,
+    "tokens": 8477,
+    "wall_time": 120.19621515274048,
+    "rounds": 1
+  },
+  {
+    "problem_id": 54,
+    "correct": true,
+    "tokens": 13532,
+    "wall_time": 208.36381697654724,
+    "rounds": 1
+  },
+  {
+    "problem_id": 55,
+    "correct": true,
+    "tokens": 2465,
+    "wall_time": 34.396716594696045,
+    "rounds": 1
+  },
+  {
+    "problem_id": 56,
+    "correct": true,
+    "tokens": 4977,
+    "wall_time": 69.98671555519104,
+    "rounds": 1
+  },
+  {
+    "problem_id": 57,
+    "correct": true,
+    "tokens": 4289,
+    "wall_time": 60.05679774284363,
+    "rounds": 1
+  },
+  {
+    "problem_id": 58,
+    "correct": false,
+    "tokens": 3962,
+    "wall_time": 55.5101432800293,
+    "rounds": 1
+  },
+  {
+    "problem_id": 59,
+    "correct": true,
+    "tokens": 12240,
+    "wall_time": 189.64631605148315,
+    "rounds": 1
+  },
+  {
+    "problem_id": 60,
+    "correct": true,
+    "tokens": 2609,
+    "wall_time": 36.37632465362549,
+    "rounds": 1
+  },
+  {
+    "problem_id": 61,
+    "correct": true,
+    "tokens": 3325,
+    "wall_time": 46.460652351379395,
+    "rounds": 1
+  },
+  {
+    "problem_id": 62,
+    "correct": true,
+    "tokens": 2074,
+    "wall_time": 28.947475910186768,
+    "rounds": 1
+  },
+  {
+    "problem_id": 63,
+    "correct": true,
+    "tokens": 3325,
+    "wall_time": 46.4236319065094,
+    "rounds": 1
+  },
+  {
+    "problem_id": 64,
+    "correct": true,
+    "tokens": 4229,
+    "wall_time": 60.12739562988281,
+    "rounds": 1
+  },
+  {
+    "problem_id": 65,
+    "correct": true,
+    "tokens": 5185,
+    "wall_time": 72.81196403503418,
+    "rounds": 1
+  },
+  {
+    "problem_id": 66,
+    "correct": true,
+    "tokens": 6955,
+    "wall_time": 98.0395929813385,
+    "rounds": 1
+  },
+  {
+    "problem_id": 67,
+    "correct": false,
+    "tokens": 8202,
+    "wall_time": 117.10153841972351,
+    "rounds": 1
+  },
+  {
+    "problem_id": 68,
+    "correct": true,
+    "tokens": 2047,
+    "wall_time": 28.50675344467163,
+    "rounds": 1
+  },
+  {
+    "problem_id": 69,
+    "correct": true,
+    "tokens": 3303,
+    "wall_time": 46.193135023117065,
+    "rounds": 1
+  },
+  {
+    "problem_id": 70,
+    "correct": false,
+    "tokens": 5368,
+    "wall_time": 76.52637219429016,
+    "rounds": 1
+  },
+  {
+    "problem_id": 71,
+    "correct": true,
+    "tokens": 1928,
+    "wall_time": 26.902572631835938,
+    "rounds": 1
+  },
+  {
+    "problem_id": 72,
+    "correct": false,
+    "tokens": 11044,
+    "wall_time": 157.95509123802185,
+    "rounds": 1
+  },
+  {
+    "problem_id": 73,
+    "correct": false,
+    "tokens": 27194,
+    "wall_time": 422.12971663475037,
+    "rounds": 1
+  },
+  {
+    "problem_id": 74,
+    "correct": true,
+    "tokens": 1877,
+    "wall_time": 26.195003747940063,
+    "rounds": 1
+  },
+  {
+    "problem_id": 75,
+    "correct": false,
+    "tokens": 9485,
+    "wall_time": 134.79877305030823,
+    "rounds": 1
+  },
+  {
+    "problem_id": 76,
+    "correct": true,
+    "tokens": 2606,
+    "wall_time": 36.36865186691284,
+    "rounds": 1
+  },
+  {
+    "problem_id": 77,
+    "correct": true,
+    "tokens": 11871,
+    "wall_time": 184.28372192382812,
+    "rounds": 1
+  },
+  {
+    "problem_id": 78,
+    "correct": true,
+    "tokens": 6798,
+    "wall_time": 95.91799807548523,
+    "rounds": 1
+  },
+  {
+    "problem_id": 79,
+    "correct": true,
+    "tokens": 2952,
+    "wall_time": 41.14572048187256,
+    "rounds": 1
+  },
+  {
+    "problem_id": 80,
+    "correct": false,
+    "tokens": 7228,
+    "wall_time": 102.02869200706482,
+    "rounds": 1
+  },
+  {
+    "problem_id": 81,
+    "correct": true,
+    "tokens": 3195,
+    "wall_time": 44.570560693740845,
+    "rounds": 1
+  },
+  {
+    "problem_id": 82,
+    "correct": true,
+    "tokens": 2131,
+    "wall_time": 29.715240716934204,
+    "rounds": 1
+  },
+  {
+    "problem_id": 83,
+    "correct": true,
+    "tokens": 2203,
+    "wall_time": 30.778342723846436,
+    "rounds": 1
+  },
+  {
+    "problem_id": 84,
+    "correct": true,
+    "tokens": 4153,
+    "wall_time": 58.732394218444824,
+    "rounds": 1
+  },
+  {
+    "problem_id": 85,
+    "correct": false,
+    "tokens": 5594,
+    "wall_time": 78.77039813995361,
+    "rounds": 1
+  },
+  {
+    "problem_id": 86,
+    "correct": true,
+    "tokens": 2171,
+    "wall_time": 30.302496910095215,
+    "rounds": 1
+  },
+  {
+    "problem_id": 87,
+    "correct": true,
+    "tokens": 7636,
+    "wall_time": 107.75518488883972,
+    "rounds": 1
+  },
+  {
+    "problem_id": 88,
+    "correct": false,
+    "tokens": 4203,
+    "wall_time": 59.11614727973938,
+    "rounds": 1
+  },
+  {
+    "problem_id": 89,
+    "correct": true,
+    "tokens": 5617,
+    "wall_time": 79.00387215614319,
+    "rounds": 1
+  },
+  {
+    "problem_id": 90,
+    "correct": true,
+    "tokens": 1776,
+    "wall_time": 24.719016790390015,
+    "rounds": 1
+  },
+  {
+    "problem_id": 91,
+    "correct": false,
+    "tokens": 7812,
+    "wall_time": 110.46390342712402,
+    "rounds": 1
+  },
+  {
+    "problem_id": 92,
+    "correct": true,
+    "tokens": 2035,
+    "wall_time": 28.39577293395996,
+    "rounds": 1
+  },
+  {
+    "problem_id": 93,
+    "correct": true,
+    "tokens": 2686,
+    "wall_time": 37.47178888320923,
+    "rounds": 1
+  },
+  {
+    "problem_id": 94,
+    "correct": true,
+    "tokens": 1921,
+    "wall_time": 26.7958664894104,
+    "rounds": 1
+  },
+  {
+    "problem_id": 95,
+    "correct": true,
+    "tokens": 6090,
+    "wall_time": 85.7666335105896,
+    "rounds": 1
+  },
+  {
+    "problem_id": 96,
+    "correct": false,
+    "tokens": 35457,
+    "wall_time": 572.8055768013,
+    "rounds": 1
+  },
+  {
+    "problem_id": 97,
+    "correct": true,
+    "tokens": 9699,
+    "wall_time": 138.11720418930054,
+    "rounds": 1
+  },
+  {
+    "problem_id": 98,
+    "correct": true,
+    "tokens": 7242,
+    "wall_time": 102.54310822486877,
+    "rounds": 1
+  },
+  {
+    "problem_id": 99,
+    "correct": true,
+    "tokens": 3369,
+    "wall_time": 47.13468933105469,
+    "rounds": 1
+  }
+]

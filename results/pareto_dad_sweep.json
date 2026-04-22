@@ -1,0 +1,56 @@
+[
+  {
+    "method": "DAD(M=4,R=1)",
+    "n_problems": 100,
+    "n_correct": 79,
+    "accuracy": 0.79,
+    "mean_tokens": 4318.96,
+    "total_tokens": 431896,
+    "mean_wall_time": 65.17243298530579
+  },
+  {
+    "method": "DAD(M=4,R=2)",
+    "n_problems": 100,
+    "n_correct": 83,
+    "accuracy": 0.83,
+    "mean_tokens": 8416.81,
+    "total_tokens": 841681,
+    "mean_wall_time": 128.52053420066832
+  },
+  {
+    "method": "DAD(M=4,R=3)",
+    "n_problems": 100,
+    "n_correct": 81,
+    "accuracy": 0.81,
+    "mean_tokens": 10731.05,
+    "total_tokens": 1073105,
+    "mean_wall_time": 164.85035046100617
+  },
+  {
+    "method": "DAD(M=8,R=1)",
+    "n_problems": 100,
+    "n_correct": 79,
+    "accuracy": 0.79,
+    "mean_tokens": 7308.61,
+    "total_tokens": 730861,
+    "mean_wall_time": 108.37915772676467
+  },
+  {
+    "method": "DAD(M=8,R=2)",
+    "n_problems": 100,
+    "n_correct": 82,
+    "accuracy": 0.82,
+    "mean_tokens": 12042.12,
+    "total_tokens": 1204212,
+    "mean_wall_time": 182.402773001194
+  },
+  {
+    "method": "DAD(M=8,R=3)",
+    "n_problems": 100,
+    "n_correct": 84,
+    "accuracy": 0.84,
+    "mean_tokens": 14795.6,
+    "total_tokens": 1479560,
+    "mean_wall_time": 226.71458853960038
+  }
+]
