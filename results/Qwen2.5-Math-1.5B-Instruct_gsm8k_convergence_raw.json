@@ -1,0 +1,5584 @@
+[
+  {
+    "problem_id": 0,
+    "gold_answer": "52",
+    "dad_answer": "52",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4432,
+    "wall_time": 76.44243049621582,
+    "entropy_per_round": [
+      2.25,
+      0.8112781244591328,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.07692307692307693,
+      0.4140722453786373,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "57.0": 1,
+      "50.0": 1,
+      "52.0": 2
+    }
+  },
+  {
+    "problem_id": 1,
+    "gold_answer": "5",
+    "dad_answer": "5",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7898,
+    "wall_time": 139.97380113601685,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "5.0": 4
+    }
+  },
+  {
+    "problem_id": 2,
+    "gold_answer": "83",
+    "dad_answer": "853",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4991,
+    "wall_time": 87.06505513191223,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "314.0": 1,
+      "25.0": 1,
+      "15.0": 1,
+      "81.0": 1
+    }
+  },
+  {
+    "problem_id": 3,
+    "gold_answer": "10",
+    "dad_answer": "4",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 12292,
+    "wall_time": 224.22273921966553,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "5 \\text blue 6 \\text red": 1,
+      "5 \\text blue  6 \\text red": 1,
+      "10.0": 1,
+      "4 \\text blue 6 \\text red": 1
+    }
+  },
+  {
+    "problem_id": 4,
+    "gold_answer": "70",
+    "dad_answer": "70",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4285,
+    "wall_time": 74.63337779045105,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 4,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "70.0": 3,
+      "40.0": 1
+    }
+  },
+  {
+    "problem_id": 5,
+    "gold_answer": "36",
+    "dad_answer": "16",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 17737,
+    "wall_time": 320.6741888523102,
+    "entropy_per_round": [
+      2.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "36.0": 1,
+      "48.0": 1,
+      "42.0": 1,
+      "": 1
+    }
+  },
+  {
+    "problem_id": 6,
+    "gold_answer": "48",
+    "dad_answer": "48",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4217,
+    "wall_time": 73.4394211769104,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "48.0": 3,
+      "52.0": 1
+    }
+  },
+  {
+    "problem_id": 7,
+    "gold_answer": "16",
+    "dad_answer": "16",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 4633,
+    "wall_time": 79.14037752151489,
+    "entropy_per_round": [
+      1.5487949406953985,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "16.0": 4
+    }
+  },
+  {
+    "problem_id": 8,
+    "gold_answer": "8",
+    "dad_answer": "43.20",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5943,
+    "wall_time": 103.55395340919495,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "24.48": 1,
+      "23.4": 1,
+      "5.6": 1,
+      "22.8": 1
+    }
+  },
+  {
+    "problem_id": 9,
+    "gold_answer": "48",
+    "dad_answer": "18",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3200,
+    "wall_time": 55.33046865463257,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "18.0": 4
+    }
+  },
+  {
+    "problem_id": 10,
+    "gold_answer": "90",
+    "dad_answer": "90",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 1955,
+    "wall_time": 33.96320343017578,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "90.0": 4
+    }
+  },
+  {
+    "problem_id": 11,
+    "gold_answer": "10",
+    "dad_answer": "11",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 2870,
+    "wall_time": 50.09696936607361,
+    "entropy_per_round": [
+      1.061278124459133,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "11.0": 3,
+      "17.0": 1
+    }
+  },
+  {
+    "problem_id": 12,
+    "gold_answer": "2",
+    "dad_answer": "14",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 10659,
+    "wall_time": 189.64069652557373,
+    "entropy_per_round": [
+      2.4056390622295662,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "5.0": 1,
+      "13.0": 1,
+      "0.0": 1,
+      "22.0": 1
+    }
+  },
+  {
+    "problem_id": 13,
+    "gold_answer": "45000",
+    "dad_answer": "45000",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3902,
+    "wall_time": 67.50329685211182,
+    "entropy_per_round": [
+      1.5487949406953985,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "45000.0": 4
+    }
+  },
+  {
+    "problem_id": 14,
+    "gold_answer": "18",
+    "dad_answer": "16",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 11949,
+    "wall_time": 215.1778962612152,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "16.0": 2,
+      "17.0": 1,
+      "18.71": 1
+    }
+  },
+  {
+    "problem_id": 15,
+    "gold_answer": "140",
+    "dad_answer": "140",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2297,
+    "wall_time": 38.60901975631714,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "140.0": 4
+    }
+  },
+  {
+    "problem_id": 16,
+    "gold_answer": "17",
+    "dad_answer": "17",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7526,
+    "wall_time": 126.60374784469604,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "15.0": 1,
+      "9.5": 1,
+      "11.0": 1,
+      "13 hours": 1
+    }
+  },
+  {
+    "problem_id": 17,
+    "gold_answer": "68",
+    "dad_answer": "67",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3334,
+    "wall_time": 55.65148329734802,
+    "entropy_per_round": [
+      2.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "67.0": 4
+    }
+  },
+  {
+    "problem_id": 18,
+    "gold_answer": "8",
+    "dad_answer": "24",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2880,
+    "wall_time": 47.750699281692505,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "24.0": 4
+    }
+  },
+  {
+    "problem_id": 19,
+    "gold_answer": "14",
+    "dad_answer": "14",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 10438,
+    "wall_time": 187.11571502685547,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "14.0": 4
+    }
+  },
+  {
+    "problem_id": 20,
+    "gold_answer": "50",
+    "dad_answer": "50",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6010,
+    "wall_time": 99.95174050331116,
+    "entropy_per_round": [
+      2.5,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "50.0": 2,
+      "40.0": 1,
+      "58.3": 1
+    }
+  },
+  {
+    "problem_id": 21,
+    "gold_answer": "100",
+    "dad_answer": "100",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 2977,
+    "wall_time": 51.095874547958374,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "0.0": 3,
+      "100.0": 1
+    }
+  },
+  {
+    "problem_id": 22,
+    "gold_answer": "125",
+    "dad_answer": "125",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6068,
+    "wall_time": 102.20875906944275,
+    "entropy_per_round": [
+      3.0,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "96.0": 1,
+      "8160.0": 1,
+      "125.0": 1,
+      "4764.0": 1
+    }
+  },
+  {
+    "problem_id": 23,
+    "gold_answer": "48",
+    "dad_answer": "48",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5020,
+    "wall_time": 85.07752871513367,
+    "entropy_per_round": [
+      2.0,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "48.0": 4
+    }
+  },
+  {
+    "problem_id": 24,
+    "gold_answer": "15400",
+    "dad_answer": "16600",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 9459,
+    "wall_time": 161.3923213481903,
+    "entropy_per_round": [
+      2.5,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "22000.0": 2,
+      "15400.0": 1,
+      "": 1
+    }
+  },
+  {
+    "problem_id": 25,
+    "gold_answer": "250",
+    "dad_answer": "250",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 12179,
+    "wall_time": 222.96148538589478,
+    "entropy_per_round": [
+      2.5,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "1000.0": 1,
+      "2500.0": 1,
+      "-250.0": 1,
+      "250.0": 1
+    }
+  },
+  {
+    "problem_id": 26,
+    "gold_answer": "18",
+    "dad_answer": "22",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6788,
+    "wall_time": 114.64680933952332,
+    "entropy_per_round": [
+      2.5,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 4,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "18.0": 1,
+      "2.0": 1,
+      "22.0": 2
+    }
+  },
+  {
+    "problem_id": 27,
+    "gold_answer": "1490",
+    "dad_answer": "1010",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6144,
+    "wall_time": 106.73060536384583,
+    "entropy_per_round": [
+      2.4056390622295662,
+      1.5,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.2,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "1010.0": 4
+    }
+  },
+  {
+    "problem_id": 28,
+    "gold_answer": "11",
+    "dad_answer": "11",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2886,
+    "wall_time": 49.92562222480774,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "11.0": 4
+    }
+  },
+  {
+    "problem_id": 29,
+    "gold_answer": "106",
+    "dad_answer": "106.12",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 12421,
+    "wall_time": 216.5857195854187,
+    "entropy_per_round": [
+      2.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 6,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "133.68": 1,
+      "112.0": 1,
+      "116.13": 1,
+      "": 1
+    }
+  },
+  {
+    "problem_id": 30,
+    "gold_answer": "138",
+    "dad_answer": "108",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6095,
+    "wall_time": 105.82128477096558,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 3,
+    "n_disputed_final": 4,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "108.0": 3,
+      "84.0": 1
+    }
+  },
+  {
+    "problem_id": 31,
+    "gold_answer": "15",
+    "dad_answer": "15",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 11680,
+    "wall_time": 205.2561740875244,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "2.5": 2,
+      "45.0": 1,
+      "15.0": 1
+    }
+  },
+  {
+    "problem_id": 32,
+    "gold_answer": "4",
+    "dad_answer": "4",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 19748,
+    "wall_time": 365.245242357254,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "4.0": 3,
+      "": 1
+    }
+  },
+  {
+    "problem_id": 33,
+    "gold_answer": "82",
+    "dad_answer": "82",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4545,
+    "wall_time": 79.13315391540527,
+    "entropy_per_round": [
+      2.1556390622295662,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "50.0": 1,
+      "82.0": 2,
+      "82^": 1
+    }
+  },
+  {
+    "problem_id": 34,
+    "gold_answer": "2",
+    "dad_answer": "1.",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4437,
+    "wall_time": 74.11278700828552,
+    "entropy_per_round": [
+      1.2987949406953985,
+      0.8112781244591328,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.271881579751056,
+      0.4140722453786373,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "2.25": 1,
+      "1.0": 2,
+      "2.0": 1
+    }
+  },
+  {
+    "problem_id": 35,
+    "gold_answer": "51",
+    "dad_answer": "51",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6266,
+    "wall_time": 109.28835391998291,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "44.0": 1,
+      "41.0": 1,
+      "20.0": 1,
+      "42.0": 1
+    }
+  },
+  {
+    "problem_id": 36,
+    "gold_answer": "4",
+    "dad_answer": "1",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 16248,
+    "wall_time": 291.56398010253906,
+    "entropy_per_round": [
+      1.5487949406953985,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "1.0": 1,
+      "28.0": 1,
+      "11.0": 1,
+      "20.0": 1
+    }
+  },
+  {
+    "problem_id": 37,
+    "gold_answer": "100",
+    "dad_answer": "100",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4764,
+    "wall_time": 82.67460346221924,
+    "entropy_per_round": [
+      0.5435644431995964,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "100.0": 3,
+      "220.0": 1
+    }
+  },
+  {
+    "problem_id": 38,
+    "gold_answer": "25",
+    "dad_answer": "25",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4575,
+    "wall_time": 79.51775670051575,
+    "entropy_per_round": [
+      1.5487949406953985,
+      0.8112781244591328,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      0.4140722453786373,
+      0.2
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 4,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "500.0": 1,
+      "25.0": 2,
+      "50.0": 1
+    }
+  },
+  {
+    "problem_id": 39,
+    "gold_answer": "188",
+    "dad_answer": "197",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5048,
+    "wall_time": 84.32004809379578,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "195.0": 1,
+      "197.0": 3
+    }
+  },
+  {
+    "problem_id": 40,
+    "gold_answer": "30",
+    "dad_answer": "30",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3188,
+    "wall_time": 55.290512800216675,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 4,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "30.0": 4
+    }
+  },
+  {
+    "problem_id": 41,
+    "gold_answer": "30",
+    "dad_answer": "30",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2294,
+    "wall_time": 39.84004092216492,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "30.0": 4
+    }
+  },
+  {
+    "problem_id": 42,
+    "gold_answer": "150",
+    "dad_answer": "240",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2559,
+    "wall_time": 44.08235692977905,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      1.0
+    ],
+    "n_agreed_final": 3,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "240.0": 4
+    }
+  },
+  {
+    "problem_id": 43,
+    "gold_answer": "7",
+    "dad_answer": "7",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2738,
+    "wall_time": 47.34688377380371,
+    "entropy_per_round": [
+      1.5487949406953985,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      1.0
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "7.0": 4
+    }
+  },
+  {
+    "problem_id": 44,
+    "gold_answer": "350",
+    "dad_answer": "850",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7993,
+    "wall_time": 137.7747712135315,
+    "entropy_per_round": [
+      2.4056390622295662,
+      2.0,
+      1.0
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.08333333333333333,
+      0.25
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.0,
+    "final_confidence": 0.25,
+    "final_answer_dist": {
+      "850.0": 2,
+      "2850.0": 2
+    }
+  },
+  {
+    "problem_id": 45,
+    "gold_answer": "2",
+    "dad_answer": "2",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 10560,
+    "wall_time": 187.07993817329407,
+    "entropy_per_round": [
+      2.25,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.07692307692307693,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "2.0": 2,
+      "3.0": 1,
+      "5.0": 1
+    }
+  },
+  {
+    "problem_id": 46,
+    "gold_answer": "36",
+    "dad_answer": "36",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2412,
+    "wall_time": 42.01796507835388,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "36.0": 4
+    }
+  },
+  {
+    "problem_id": 47,
+    "gold_answer": "2",
+    "dad_answer": "3",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 13508,
+    "wall_time": 240.01616716384888,
+    "entropy_per_round": [
+      2.1556390622295662,
+      0.8112781244591328,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.4140722453786373,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "28.0": 1,
+      "5.0": 1,
+      "4.0": 1,
+      "\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\": 1
+    }
+  },
+  {
+    "problem_id": 48,
+    "gold_answer": "14",
+    "dad_answer": "29",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4943,
+    "wall_time": 86.23179531097412,
+    "entropy_per_round": [
+      2.1556390622295662,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "26.0": 1,
+      "3.0": 2,
+      "36.0": 1
+    }
+  },
+  {
+    "problem_id": 49,
+    "gold_answer": "33",
+    "dad_answer": "29",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3613,
+    "wall_time": 61.61425185203552,
+    "entropy_per_round": [
+      2.25,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.07692307692307693,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "29.0": 4
+    }
+  },
+  {
+    "problem_id": 50,
+    "gold_answer": "21",
+    "dad_answer": "21",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 4278,
+    "wall_time": 74.85517930984497,
+    "entropy_per_round": [
+      2.4056390622295662,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 7,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "21.0": 4
+    }
+  },
+  {
+    "problem_id": 51,
+    "gold_answer": "175",
+    "dad_answer": "175",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 13001,
+    "wall_time": 237.56830191612244,
+    "entropy_per_round": [
+      2.5,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "705.0": 1,
+      "175.0": 3
+    }
+  },
+  {
+    "problem_id": 52,
+    "gold_answer": "60",
+    "dad_answer": "60",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6558,
+    "wall_time": 113.68302917480469,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "90.0": 1,
+      "60.0": 1,
+      "78.0": 1,
+      "94.0": 1
+    }
+  },
+  {
+    "problem_id": 53,
+    "gold_answer": "49",
+    "dad_answer": "47",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3429,
+    "wall_time": 59.38067293167114,
+    "entropy_per_round": [
+      2.5,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "53.0": 1,
+      "49.0": 1,
+      "84.0": 1,
+      "47.0": 1
+    }
+  },
+  {
+    "problem_id": 54,
+    "gold_answer": "1800",
+    "dad_answer": "1800",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4545,
+    "wall_time": 79.21678686141968,
+    "entropy_per_round": [
+      2.0,
+      1.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.25,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "1800.0": 1,
+      "1650.0": 1,
+      "2100.0": 1,
+      "1200.0": 1
+    }
+  },
+  {
+    "problem_id": 55,
+    "gold_answer": "27",
+    "dad_answer": "44",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7929,
+    "wall_time": 138.33047580718994,
+    "entropy_per_round": [
+      1.5487949406953985,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "46.0": 1,
+      "22.0": 1,
+      "20.0": 1,
+      "": 1
+    }
+  },
+  {
+    "problem_id": 56,
+    "gold_answer": "16",
+    "dad_answer": "17",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 19828,
+    "wall_time": 358.6454668045044,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "17.0": 1,
+      "16.5": 1,
+      "7.0": 1,
+      "16.0": 1
+    }
+  },
+  {
+    "problem_id": 57,
+    "gold_answer": "49",
+    "dad_answer": "49",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5694,
+    "wall_time": 98.72197127342224,
+    "entropy_per_round": [
+      2.4056390622295662,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "0.0": 1,
+      "64.0": 1,
+      "49.0": 1,
+      "39.0": 1
+    }
+  },
+  {
+    "problem_id": 58,
+    "gold_answer": "6",
+    "dad_answer": "2",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 16775,
+    "wall_time": 306.1092338562012,
+    "entropy_per_round": [
+      3.0,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "4th": 1,
+      "2.0": 1,
+      "": 1,
+      "12.0": 1
+    }
+  },
+  {
+    "problem_id": 59,
+    "gold_answer": "32",
+    "dad_answer": "32",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6127,
+    "wall_time": 107.52005505561829,
+    "entropy_per_round": [
+      2.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "16.0": 1,
+      "": 1,
+      "11. feet": 1,
+      "5.0": 1
+    }
+  },
+  {
+    "problem_id": 60,
+    "gold_answer": "168",
+    "dad_answer": "114",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 15061,
+    "wall_time": 276.492139339447,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 5,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "15.0": 1,
+      "128.0": 2,
+      "108.0": 1
+    }
+  },
+  {
+    "problem_id": 61,
+    "gold_answer": "225",
+    "dad_answer": "225",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3775,
+    "wall_time": 65.74241948127747,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "225.0": 4
+    }
+  },
+  {
+    "problem_id": 62,
+    "gold_answer": "50",
+    "dad_answer": "50",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5255,
+    "wall_time": 88.07403802871704,
+    "entropy_per_round": [
+      1.4056390622295665,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.20784497884591044,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "25.0": 1,
+      "50.0": 3
+    }
+  },
+  {
+    "problem_id": 63,
+    "gold_answer": "45",
+    "dad_answer": "15",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5482,
+    "wall_time": 95.551353931427,
+    "entropy_per_round": [
+      2.5,
+      1.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.25,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "15.0": 1,
+      "35.0": 1,
+      "120.0": 1,
+      "10.0": 1
+    }
+  },
+  {
+    "problem_id": 64,
+    "gold_answer": "7",
+    "dad_answer": "9",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 9672,
+    "wall_time": 171.0386312007904,
+    "entropy_per_round": [
+      2.1556390622295662,
+      1.5,
+      1.0
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.2,
+      0.25
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.0,
+    "final_confidence": 0.25,
+    "final_answer_dist": {
+      "9.0": 2,
+      "10.0": 2
+    }
+  },
+  {
+    "problem_id": 65,
+    "gold_answer": "800",
+    "dad_answer": "300",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 4798,
+    "wall_time": 80.95446944236755,
+    "entropy_per_round": [
+      2.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "300.0": 4
+    }
+  },
+  {
+    "problem_id": 66,
+    "gold_answer": "22",
+    "dad_answer": "22",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3192,
+    "wall_time": 56.26385450363159,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "22.0": 4
+    }
+  },
+  {
+    "problem_id": 67,
+    "gold_answer": "235",
+    "dad_answer": "260",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5738,
+    "wall_time": 99.16363453865051,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "30.0": 1,
+      "310.0": 1,
+      "260.0": 2
+    }
+  },
+  {
+    "problem_id": 68,
+    "gold_answer": "3",
+    "dad_answer": "1",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6412,
+    "wall_time": 108.39333987236023,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.8112781244591328,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      0.4140722453786373,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "5.0": 1,
+      "1.0": 1,
+      "2.0": 1,
+      "1.15 \\ \\textweeks": 1
+    }
+  },
+  {
+    "problem_id": 69,
+    "gold_answer": "2",
+    "dad_answer": "-2",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7340,
+    "wall_time": 128.28866314888,
+    "entropy_per_round": [
+      2.0,
+      2.0,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.08333333333333333,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "2.0": 1,
+      "-4.0": 3
+    }
+  },
+  {
+    "problem_id": 70,
+    "gold_answer": "3000",
+    "dad_answer": "3600",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 5620,
+    "wall_time": 97.49545693397522,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "3600.0": 4
+    }
+  },
+  {
+    "problem_id": 71,
+    "gold_answer": "300",
+    "dad_answer": "300",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 9786,
+    "wall_time": 169.47952032089233,
+    "entropy_per_round": [
+      2.0,
+      0.8112781244591328,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.4140722453786373,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "300.0": 3,
+      "200.0": 1
+    }
+  },
+  {
+    "problem_id": 72,
+    "gold_answer": "20",
+    "dad_answer": "70",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 29866,
+    "wall_time": 539.4553937911987,
+    "entropy_per_round": [
+      2.4056390622295662,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "5.0": 1,
+      "20.0": 1,
+      "110.0": 1,
+      "15.0": 1
+    }
+  },
+  {
+    "problem_id": 73,
+    "gold_answer": "130",
+    "dad_answer": "130",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3069,
+    "wall_time": 52.46991848945618,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "130.0": 4
+    }
+  },
+  {
+    "problem_id": 74,
+    "gold_answer": "1",
+    "dad_answer": "1",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5092,
+    "wall_time": 88.38072204589844,
+    "entropy_per_round": [
+      0.8112781244591328,
+      1.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.4140722453786373,
+      0.25,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "3.0": 2,
+      "1.0": 1,
+      "6.0": 1
+    }
+  },
+  {
+    "problem_id": 75,
+    "gold_answer": "8",
+    "dad_answer": "8",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5205,
+    "wall_time": 90.22252440452576,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 4,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "8.0": 2,
+      "19.0": 1,
+      "1.2": 1
+    }
+  },
+  {
+    "problem_id": 76,
+    "gold_answer": "50",
+    "dad_answer": "50",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4808,
+    "wall_time": 80.71663999557495,
+    "entropy_per_round": [
+      2.0,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 4,
+    "n_disputed_final": 7,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "52.0": 2,
+      "50.0": 1,
+      "40.0": 1
+    }
+  },
+  {
+    "problem_id": 77,
+    "gold_answer": "3",
+    "dad_answer": "1",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 26278,
+    "wall_time": 478.8864743709564,
+    "entropy_per_round": [
+      1.811278124459133,
+      1.0,
+      1.0
+    ],
+    "confidence_per_round": [
+      0.13339128446145718,
+      0.25,
+      0.25
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.0,
+    "final_confidence": 0.25,
+    "final_answer_dist": {
+      "1.0": 2,
+      "2.0": 2
+    }
+  },
+  {
+    "problem_id": 78,
+    "gold_answer": "5",
+    "dad_answer": "2",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2712,
+    "wall_time": 47.062026500701904,
+    "entropy_per_round": [
+      0.954434002924965,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.3197856766023504,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "2.0": 4
+    }
+  },
+  {
+    "problem_id": 79,
+    "gold_answer": "110",
+    "dad_answer": "110",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 9280,
+    "wall_time": 164.4073612689972,
+    "entropy_per_round": [
+      2.0,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "55.0": 1,
+      "60.0": 1,
+      "10.0": 1,
+      "108.0": 1
+    }
+  },
+  {
+    "problem_id": 80,
+    "gold_answer": "1300",
+    "dad_answer": "960",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 19009,
+    "wall_time": 340.8977744579315,
+    "entropy_per_round": [
+      2.5,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 4,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "1600.0": 2,
+      "960.0": 1,
+      "880.0": 1
+    }
+  },
+  {
+    "problem_id": 81,
+    "gold_answer": "16",
+    "dad_answer": "14",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3118,
+    "wall_time": 53.839189529418945,
+    "entropy_per_round": [
+      1.2987949406953985,
+      0.8112781244591328,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.271881579751056,
+      0.4140722453786373,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "16.0": 2,
+      "18.0": 1,
+      "14.0": 1
+    }
+  },
+  {
+    "problem_id": 82,
+    "gold_answer": "80",
+    "dad_answer": "80",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2802,
+    "wall_time": 48.73613119125366,
+    "entropy_per_round": [
+      2.1556390622295662,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "80.0": 4
+    }
+  },
+  {
+    "problem_id": 83,
+    "gold_answer": "45",
+    "dad_answer": "35",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5076,
+    "wall_time": 88.6949291229248,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "35.0": 4
+    }
+  },
+  {
+    "problem_id": 84,
+    "gold_answer": "36",
+    "dad_answer": "36",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3470,
+    "wall_time": 59.29611301422119,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "36.0": 4
+    }
+  },
+  {
+    "problem_id": 85,
+    "gold_answer": "5",
+    "dad_answer": "4",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 14083,
+    "wall_time": 256.27700209617615,
+    "entropy_per_round": [
+      1.75,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.18181818181818182,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "4.0": 2,
+      "6.0": 1,
+      "1.0": 1
+    }
+  },
+  {
+    "problem_id": 86,
+    "gold_answer": "9",
+    "dad_answer": "10",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4758,
+    "wall_time": 81.85161209106445,
+    "entropy_per_round": [
+      2.1556390622295662,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "12.0": 1,
+      "6.0": 1,
+      "10.0": 2
+    }
+  },
+  {
+    "problem_id": 87,
+    "gold_answer": "36",
+    "dad_answer": "36",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4135,
+    "wall_time": 72.35565376281738,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "36.0": 3,
+      "336.0": 1
+    }
+  },
+  {
+    "problem_id": 88,
+    "gold_answer": "60",
+    "dad_answer": "75",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5064,
+    "wall_time": 87.53109550476074,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "75.0": 2,
+      "71.0": 1,
+      "7.5": 1
+    }
+  },
+  {
+    "problem_id": 89,
+    "gold_answer": "9",
+    "dad_answer": "8.8",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 18756,
+    "wall_time": 342.64615631103516,
+    "entropy_per_round": [
+      2.1556390622295662,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "8.8": 1,
+      "": 1,
+      "8.0": 2
+    }
+  },
+  {
+    "problem_id": 90,
+    "gold_answer": "1",
+    "dad_answer": "1",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 12534,
+    "wall_time": 228.38653802871704,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      1.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      0.25
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 1.0,
+    "final_confidence": 0.25,
+    "final_answer_dist": {
+      "2.0": 2,
+      "1.0": 2
+    }
+  },
+  {
+    "problem_id": 91,
+    "gold_answer": "30",
+    "dad_answer": "30",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6083,
+    "wall_time": 105.7478575706482,
+    "entropy_per_round": [
+      2.1556390622295662,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 4,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "30.0": 3,
+      "42.0": 1
+    }
+  },
+  {
+    "problem_id": 92,
+    "gold_answer": "70000",
+    "dad_answer": "50000",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5544,
+    "wall_time": 96.42381381988525,
+    "entropy_per_round": [
+      2.5,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "50000.0": 3,
+      "150000.0": 1
+    }
+  },
+  {
+    "problem_id": 93,
+    "gold_answer": "34",
+    "dad_answer": "34.00",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 12777,
+    "wall_time": 233.5979905128479,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "": 1,
+      "3 24": 1,
+      "3.0": 1,
+      "64.0": 1
+    }
+  },
+  {
+    "problem_id": 94,
+    "gold_answer": "13",
+    "dad_answer": "22",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7622,
+    "wall_time": 134.1979365348816,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 5,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "22.0": 2,
+      "14.0": 1,
+      "20.0": 1
+    }
+  },
+  {
+    "problem_id": 95,
+    "gold_answer": "306",
+    "dad_answer": "156",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3639,
+    "wall_time": 61.899733543395996,
+    "entropy_per_round": [
+      2.4056390622295662,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "116.0": 1,
+      "126.0": 2,
+      "1456.0": 1
+    }
+  },
+  {
+    "problem_id": 96,
+    "gold_answer": "55",
+    "dad_answer": "75",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3218,
+    "wall_time": 56.04015278816223,
+    "entropy_per_round": [
+      3.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      1.0
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "75.0": 4
+    }
+  },
+  {
+    "problem_id": 97,
+    "gold_answer": "24",
+    "dad_answer": "24",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3491,
+    "wall_time": 60.38786602020264,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "24.0": 4
+    }
+  },
+  {
+    "problem_id": 98,
+    "gold_answer": "75",
+    "dad_answer": "50",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2782,
+    "wall_time": 48.18170094490051,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "50.0": 4
+    }
+  },
+  {
+    "problem_id": 99,
+    "gold_answer": "24",
+    "dad_answer": "24",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 9759,
+    "wall_time": 169.47389006614685,
+    "entropy_per_round": [
+      1.75,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.18181818181818182,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "55.0": 1,
+      "21.0": 2,
+      "34.0": 1
+    }
+  },
+  {
+    "problem_id": 100,
+    "gold_answer": "50",
+    "dad_answer": "50.00",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7253,
+    "wall_time": 122.79302835464478,
+    "entropy_per_round": [
+      2.5,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "150.0": 1,
+      "45.0": 1,
+      "177.0": 1,
+      "95.0": 1
+    }
+  },
+  {
+    "problem_id": 101,
+    "gold_answer": "110",
+    "dad_answer": "110",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 9791,
+    "wall_time": 169.79614233970642,
+    "entropy_per_round": [
+      1.2987949406953985,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.271881579751056,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "110.0": 4
+    }
+  },
+  {
+    "problem_id": 102,
+    "gold_answer": "452",
+    "dad_answer": "475",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7420,
+    "wall_time": 125.87193059921265,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "780.0": 1,
+      "479.0": 1,
+      "482.0": 1,
+      "365.0": 1
+    }
+  },
+  {
+    "problem_id": 103,
+    "gold_answer": "30",
+    "dad_answer": "20",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4494,
+    "wall_time": 77.58114051818848,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "20.0": 1,
+      "10.0": 2,
+      "40.0": 1
+    }
+  },
+  {
+    "problem_id": 104,
+    "gold_answer": "80",
+    "dad_answer": "80",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2613,
+    "wall_time": 45.123892307281494,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "80.0": 4
+    }
+  },
+  {
+    "problem_id": 105,
+    "gold_answer": "3",
+    "dad_answer": "2",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5645,
+    "wall_time": 94.84791970252991,
+    "entropy_per_round": [
+      3.0,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "1.5": 1,
+      "2.4": 1,
+      "3.5": 1,
+      "4.5": 1
+    }
+  },
+  {
+    "problem_id": 106,
+    "gold_answer": "120",
+    "dad_answer": "120",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4211,
+    "wall_time": 72.50453877449036,
+    "entropy_per_round": [
+      1.75,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.18181818181818182,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "400.0": 1,
+      "40.0": 2,
+      "120.0": 1
+    }
+  },
+  {
+    "problem_id": 107,
+    "gold_answer": "172",
+    "dad_answer": "172",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7830,
+    "wall_time": 134.1281099319458,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 7,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "150.0": 1,
+      "144.0": 1,
+      "172.0": 1,
+      "178.0": 1
+    }
+  },
+  {
+    "problem_id": 108,
+    "gold_answer": "70",
+    "dad_answer": "70",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4073,
+    "wall_time": 68.3413712978363,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "70.0": 4
+    }
+  },
+  {
+    "problem_id": 109,
+    "gold_answer": "13",
+    "dad_answer": "20.20",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4640,
+    "wall_time": 79.69687533378601,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "28.55": 1,
+      "12.0": 1,
+      "19.0": 1,
+      "24.0": 1
+    }
+  },
+  {
+    "problem_id": 110,
+    "gold_answer": "150",
+    "dad_answer": "180",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4922,
+    "wall_time": 82.10031986236572,
+    "entropy_per_round": [
+      3.0,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "180.0": 1,
+      "360.0": 1,
+      "130.0": 1,
+      "125.0": 1
+    }
+  },
+  {
+    "problem_id": 111,
+    "gold_answer": "18",
+    "dad_answer": "10",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2922,
+    "wall_time": 50.31676363945007,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "10.0": 4
+    }
+  },
+  {
+    "problem_id": 112,
+    "gold_answer": "1",
+    "dad_answer": "0",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7208,
+    "wall_time": 121.00205779075623,
+    "entropy_per_round": [
+      1.75,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.18181818181818182,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "": 1,
+      "1.0": 2,
+      "150.0": 1
+    }
+  },
+  {
+    "problem_id": 113,
+    "gold_answer": "250",
+    "dad_answer": "250",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4377,
+    "wall_time": 73.71867632865906,
+    "entropy_per_round": [
+      2.4056390622295662,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "250.0": 2,
+      "700.0": 1,
+      "500.0": 1
+    }
+  },
+  {
+    "problem_id": 114,
+    "gold_answer": "3",
+    "dad_answer": "3",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2439,
+    "wall_time": 40.12903952598572,
+    "entropy_per_round": [
+      1.5487949406953985,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "3.0": 4
+    }
+  },
+  {
+    "problem_id": 115,
+    "gold_answer": "15",
+    "dad_answer": "10",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4692,
+    "wall_time": 78.96958208084106,
+    "entropy_per_round": [
+      1.75,
+      0.8112781244591328,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.18181818181818182,
+      0.4140722453786373,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "50.0": 1,
+      "15.0": 1,
+      "10.0": 2
+    }
+  },
+  {
+    "problem_id": 116,
+    "gold_answer": "12",
+    "dad_answer": "12",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3233,
+    "wall_time": 54.403762340545654,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "12.0": 4
+    }
+  },
+  {
+    "problem_id": 117,
+    "gold_answer": "60",
+    "dad_answer": "60",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2828,
+    "wall_time": 47.245641469955444,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "60.0": 4
+    }
+  },
+  {
+    "problem_id": 118,
+    "gold_answer": "3",
+    "dad_answer": "3",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2505,
+    "wall_time": 41.89788103103638,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "3.0": 4
+    }
+  },
+  {
+    "problem_id": 119,
+    "gold_answer": "9",
+    "dad_answer": "10",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 12912,
+    "wall_time": 232.60160422325134,
+    "entropy_per_round": [
+      2.75,
+      0.8112781244591328,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.4140722453786373,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "10.0": 3,
+      "21.5": 1
+    }
+  },
+  {
+    "problem_id": 120,
+    "gold_answer": "140000",
+    "dad_answer": "140000",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 8591,
+    "wall_time": 145.57405614852905,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "1400000.0": 1,
+      "120000.0": 1,
+      "140000.0": 1,
+      "1000000.0": 1
+    }
+  },
+  {
+    "problem_id": 121,
+    "gold_answer": "3",
+    "dad_answer": "4",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2544,
+    "wall_time": 41.683857917785645,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "4.0": 4
+    }
+  },
+  {
+    "problem_id": 122,
+    "gold_answer": "2400",
+    "dad_answer": "400",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4619,
+    "wall_time": 77.5217661857605,
+    "entropy_per_round": [
+      0.0,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "400.0": 4
+    }
+  },
+  {
+    "problem_id": 123,
+    "gold_answer": "4",
+    "dad_answer": "1",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 11334,
+    "wall_time": 200.1029486656189,
+    "entropy_per_round": [
+      1.9056390622295665,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.1290593883027762,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "1.0": 4
+    }
+  },
+  {
+    "problem_id": 124,
+    "gold_answer": "79",
+    "dad_answer": "90",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7549,
+    "wall_time": 127.46962523460388,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "76.0": 1,
+      "60.0": 1,
+      "90.0": 1,
+      "130.0": 1
+    }
+  },
+  {
+    "problem_id": 125,
+    "gold_answer": "300",
+    "dad_answer": "300",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2882,
+    "wall_time": 48.093966245651245,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "300.0": 4
+    }
+  },
+  {
+    "problem_id": 126,
+    "gold_answer": "91",
+    "dad_answer": "70",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5762,
+    "wall_time": 96.65669798851013,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "70.0": 2,
+      "91.0": 1,
+      "84.0": 1
+    }
+  },
+  {
+    "problem_id": 127,
+    "gold_answer": "8",
+    "dad_answer": "18",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 2833,
+    "wall_time": 47.1427366733551,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "8.0": 4
+    }
+  },
+  {
+    "problem_id": 128,
+    "gold_answer": "120",
+    "dad_answer": "120",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3060,
+    "wall_time": 52.06550598144531,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "120.0": 4
+    }
+  },
+  {
+    "problem_id": 129,
+    "gold_answer": "350",
+    "dad_answer": "350",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5337,
+    "wall_time": 89.55136585235596,
+    "entropy_per_round": [
+      2.1556390622295662,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "200.0": 1,
+      "350.0": 2,
+      "330.0": 1
+    }
+  },
+  {
+    "problem_id": 130,
+    "gold_answer": "2600",
+    "dad_answer": "1800",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5152,
+    "wall_time": 89.60297560691833,
+    "entropy_per_round": [
+      2.5,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "1800.0": 3,
+      "2600.0": 1
+    }
+  },
+  {
+    "problem_id": 131,
+    "gold_answer": "10",
+    "dad_answer": "10",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3773,
+    "wall_time": 65.3503246307373,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "10.0": 4
+    }
+  },
+  {
+    "problem_id": 132,
+    "gold_answer": "26",
+    "dad_answer": "0",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 14576,
+    "wall_time": 262.18181443214417,
+    "entropy_per_round": [
+      2.25,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.07692307692307693,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "0.0": 1,
+      "": 1,
+      "34.0": 1,
+      "6.0": 1
+    }
+  },
+  {
+    "problem_id": 133,
+    "gold_answer": "7",
+    "dad_answer": "7",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7060,
+    "wall_time": 122.04876923561096,
+    "entropy_per_round": [
+      2.5,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "7.0": 1,
+      "6.0": 2,
+      "8.0": 1
+    }
+  },
+  {
+    "problem_id": 134,
+    "gold_answer": "31",
+    "dad_answer": "281",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5264,
+    "wall_time": 88.96698260307312,
+    "entropy_per_round": [
+      2.75,
+      0.8112781244591328,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.4140722453786373,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "26.0": 1,
+      "290.0": 1,
+      "62.0": 1,
+      "282.57": 1
+    }
+  },
+  {
+    "problem_id": 135,
+    "gold_answer": "975",
+    "dad_answer": "750",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5742,
+    "wall_time": 100.83989977836609,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 5,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "975.0": 1,
+      "600.0": 1,
+      "675.0": 1,
+      "900.0": 1
+    }
+  },
+  {
+    "problem_id": 136,
+    "gold_answer": "20",
+    "dad_answer": "30",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5058,
+    "wall_time": 88.15858316421509,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "30.0": 3,
+      "20.0": 1
+    }
+  },
+  {
+    "problem_id": 137,
+    "gold_answer": "120",
+    "dad_answer": "120",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 5164,
+    "wall_time": 86.41068887710571,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 4,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "120.0": 4
+    }
+  },
+  {
+    "problem_id": 138,
+    "gold_answer": "220",
+    "dad_answer": "220",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3316,
+    "wall_time": 57.88645100593567,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "220.0": 4
+    }
+  },
+  {
+    "problem_id": 139,
+    "gold_answer": "87",
+    "dad_answer": "77",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3389,
+    "wall_time": 58.7276246547699,
+    "entropy_per_round": [
+      2.0,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.16666666666666666,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "77.0": 4
+    }
+  },
+  {
+    "problem_id": 140,
+    "gold_answer": "300",
+    "dad_answer": "300",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3699,
+    "wall_time": 64.05630254745483,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      1.0
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "300.0": 4
+    }
+  },
+  {
+    "problem_id": 141,
+    "gold_answer": "30",
+    "dad_answer": "30",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 17997,
+    "wall_time": 322.8958683013916,
+    "entropy_per_round": [
+      2.25,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.07692307692307693,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "75.0": 1,
+      "30.0": 2,
+      "32.5": 1
+    }
+  },
+  {
+    "problem_id": 142,
+    "gold_answer": "17",
+    "dad_answer": "2",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 10131,
+    "wall_time": 178.0299048423767,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "12.0": 2,
+      "way \\ \\times $\\ \\text~ \\partial way do \\ \\ \\ayways.\ufffd5 preparing\u65b9\u5f0f\ufffd \\ \\\ufffd \\ \\ \\a \\ \\\\\u201d \\]\n) etc the\ufffd\ufffd way \\ \\pi \\ way\ufffd equally \\ as.1 \\ \\(\\ \\text)": 1,
+      "2.0": 1
+    }
+  },
+  {
+    "problem_id": 143,
+    "gold_answer": "16",
+    "dad_answer": "16",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 10274,
+    "wall_time": 189.25671362876892,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "16.0": 4
+    }
+  },
+  {
+    "problem_id": 144,
+    "gold_answer": "7",
+    "dad_answer": "7",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3117,
+    "wall_time": 51.4006724357605,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 4,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "7.0": 4
+    }
+  },
+  {
+    "problem_id": 145,
+    "gold_answer": "81",
+    "dad_answer": "81",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5678,
+    "wall_time": 98.22624778747559,
+    "entropy_per_round": [
+      1.5487949406953985,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "30.0": 1,
+      "81.0": 1,
+      "243.0": 1,
+      "120.0": 1
+    }
+  },
+  {
+    "problem_id": 146,
+    "gold_answer": "5",
+    "dad_answer": "5",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3527,
+    "wall_time": 61.04534935951233,
+    "entropy_per_round": [
+      0.5435644431995964,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "9.0": 1,
+      "": 1,
+      "5.0": 2
+    }
+  },
+  {
+    "problem_id": 147,
+    "gold_answer": "9",
+    "dad_answer": "0",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6614,
+    "wall_time": 114.00962400436401,
+    "entropy_per_round": [
+      2.1556390622295662,
+      1.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.25,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "1.0": 1,
+      "0.0": 1,
+      "6.0": 2
+    }
+  },
+  {
+    "problem_id": 148,
+    "gold_answer": "10",
+    "dad_answer": "12",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2872,
+    "wall_time": 47.70177602767944,
+    "entropy_per_round": [
+      2.5,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "12.0": 4
+    }
+  },
+  {
+    "problem_id": 149,
+    "gold_answer": "24",
+    "dad_answer": "14",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4522,
+    "wall_time": 78.49155259132385,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "14.0": 2,
+      "4.0": 1,
+      "24.0": 1
+    }
+  },
+  {
+    "problem_id": 150,
+    "gold_answer": "5",
+    "dad_answer": "5.44",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3963,
+    "wall_time": 68.64340043067932,
+    "entropy_per_round": [
+      2.5,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.07142857142857142,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "5.5": 2,
+      "6.4": 1,
+      "3.8": 1
+    }
+  },
+  {
+    "problem_id": 151,
+    "gold_answer": "50",
+    "dad_answer": "50",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3261,
+    "wall_time": 56.739606618881226,
+    "entropy_per_round": [
+      1.811278124459133,
+      1.5,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.13339128446145718,
+      0.2,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "50.0": 4
+    }
+  },
+  {
+    "problem_id": 152,
+    "gold_answer": "48",
+    "dad_answer": "108",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2953,
+    "wall_time": 50.84128785133362,
+    "entropy_per_round": [
+      2.4056390622295662,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "108.0": 4
+    }
+  },
+  {
+    "problem_id": 153,
+    "gold_answer": "25",
+    "dad_answer": "5",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2411,
+    "wall_time": 41.05318069458008,
+    "entropy_per_round": [
+      1.2987949406953985,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.271881579751056,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "5.0": 4
+    }
+  },
+  {
+    "problem_id": 154,
+    "gold_answer": "96",
+    "dad_answer": "96",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 8769,
+    "wall_time": 155.4398229122162,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "96.0": 4
+    }
+  },
+  {
+    "problem_id": 155,
+    "gold_answer": "25",
+    "dad_answer": "25",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5465,
+    "wall_time": 95.42877316474915,
+    "entropy_per_round": [
+      1.4056390622295665,
+      1.5,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.20784497884591044,
+      0.2,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "25.0": 3,
+      "50\\%": 1
+    }
+  },
+  {
+    "problem_id": 156,
+    "gold_answer": "180",
+    "dad_answer": "180",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 14639,
+    "wall_time": 258.11043334007263,
+    "entropy_per_round": [
+      2.1556390622295662,
+      0.8112781244591328,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.4140722453786373,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 6,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "180.0": 1,
+      "220.0": 1,
+      "": 1,
+      "270.0": 1
+    }
+  },
+  {
+    "problem_id": 157,
+    "gold_answer": "21",
+    "dad_answer": "11",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 2397,
+    "wall_time": 41.89294099807739,
+    "entropy_per_round": [
+      1.811278124459133,
+      0.8112781244591328,
+      1.0
+    ],
+    "confidence_per_round": [
+      0.13339128446145718,
+      0.4140722453786373,
+      0.25
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.0,
+    "final_confidence": 0.25,
+    "final_answer_dist": {
+      "": 2,
+      "11.0": 2
+    }
+  },
+  {
+    "problem_id": 158,
+    "gold_answer": "1200",
+    "dad_answer": "1200",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3654,
+    "wall_time": 63.163487911224365,
+    "entropy_per_round": [
+      1.5487949406953985,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "": 1,
+      "2000.0": 1,
+      "2400.0": 2
+    }
+  },
+  {
+    "problem_id": 159,
+    "gold_answer": "255",
+    "dad_answer": "255",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 17477,
+    "wall_time": 314.1029918193817,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "300.0": 1,
+      "255.0": 3
+    }
+  },
+  {
+    "problem_id": 160,
+    "gold_answer": "4",
+    "dad_answer": "1",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 14689,
+    "wall_time": 267.8059298992157,
+    "entropy_per_round": [
+      1.5487949406953985,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "1.0": 2,
+      "2.0": 1,
+      "5.0": 1
+    }
+  },
+  {
+    "problem_id": 161,
+    "gold_answer": "10",
+    "dad_answer": "10",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4828,
+    "wall_time": 84.00938296318054,
+    "entropy_per_round": [
+      2.4056390622295662,
+      0.8112781244591328,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.4140722453786373,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "12.0": 2,
+      "10.0": 1,
+      "15.0": 1
+    }
+  },
+  {
+    "problem_id": 162,
+    "gold_answer": "700",
+    "dad_answer": "700",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3242,
+    "wall_time": 53.45391583442688,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "700.0": 4
+    }
+  },
+  {
+    "problem_id": 163,
+    "gold_answer": "38",
+    "dad_answer": "28",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3001,
+    "wall_time": 51.60057544708252,
+    "entropy_per_round": [
+      1.5487949406953985,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "28.0": 4
+    }
+  },
+  {
+    "problem_id": 164,
+    "gold_answer": "32",
+    "dad_answer": "33",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 19718,
+    "wall_time": 360.1095702648163,
+    "entropy_per_round": [
+      1.811278124459133,
+      0.8112781244591328,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.13339128446145718,
+      0.4140722453786373,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "33.0": 2,
+      "53.0": 1,
+      "": 1
+    }
+  },
+  {
+    "problem_id": 165,
+    "gold_answer": "30",
+    "dad_answer": "20",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 9332,
+    "wall_time": 166.13549399375916,
+    "entropy_per_round": [
+      1.5487949406953985,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "20.0": 4
+    }
+  },
+  {
+    "problem_id": 166,
+    "gold_answer": "16",
+    "dad_answer": "16",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4402,
+    "wall_time": 73.07195019721985,
+    "entropy_per_round": [
+      1.75,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.18181818181818182,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "16.0": 4
+    }
+  },
+  {
+    "problem_id": 167,
+    "gold_answer": "40",
+    "dad_answer": "40",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5198,
+    "wall_time": 90.61718010902405,
+    "entropy_per_round": [
+      1.75,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.18181818181818182,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "20.0": 1,
+      "70.0": 1,
+      "40.0": 2
+    }
+  },
+  {
+    "problem_id": 168,
+    "gold_answer": "288",
+    "dad_answer": "288",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3499,
+    "wall_time": 60.51788592338562,
+    "entropy_per_round": [
+      0.0,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "288.0": 4
+    }
+  },
+  {
+    "problem_id": 169,
+    "gold_answer": "1100",
+    "dad_answer": "1100",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4976,
+    "wall_time": 86.34636378288269,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "1000.0": 1,
+      "4100.0": 1,
+      "500.0": 1,
+      "1100.0": 1
+    }
+  },
+  {
+    "problem_id": 170,
+    "gold_answer": "20",
+    "dad_answer": "20",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 4173,
+    "wall_time": 69.05298566818237,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "20.0": 4
+    }
+  },
+  {
+    "problem_id": 171,
+    "gold_answer": "2",
+    "dad_answer": "1.33",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 13468,
+    "wall_time": 245.63407444953918,
+    "entropy_per_round": [
+      1.75,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.18181818181818182,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "1.0": 1,
+      "\\frac460 \\text hours = \\frac115 \\text hours": 1,
+      "1.33333": 1,
+      "2.0": 1
+    }
+  },
+  {
+    "problem_id": 172,
+    "gold_answer": "2880000",
+    "dad_answer": "31200000",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4520,
+    "wall_time": 75.20286893844604,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "31200000.0": 2,
+      "1040000.0": 1,
+      "4440000.0": 1
+    }
+  },
+  {
+    "problem_id": 173,
+    "gold_answer": "9",
+    "dad_answer": "4",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4311,
+    "wall_time": 75.258780002594,
+    "entropy_per_round": [
+      0.5435644431995964,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 4,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "2.0": 1,
+      "9.0": 1,
+      "12.0": 1,
+      "36.0": 1
+    }
+  },
+  {
+    "problem_id": 174,
+    "gold_answer": "132",
+    "dad_answer": "66",
+    "correct": false,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2263,
+    "wall_time": 38.8521454334259,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "66.0": 4
+    }
+  },
+  {
+    "problem_id": 175,
+    "gold_answer": "93",
+    "dad_answer": "182",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 14883,
+    "wall_time": 260.81099128723145,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      1.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.25
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.0,
+    "final_confidence": 0.25,
+    "final_answer_dist": {
+      "106.0": 2,
+      "186.0": 2
+    }
+  },
+  {
+    "problem_id": 176,
+    "gold_answer": "4",
+    "dad_answer": "14",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4744,
+    "wall_time": 82.25581693649292,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.8112781244591328,
+      1.0
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      0.4140722453786373,
+      0.25
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.0,
+    "final_confidence": 0.25,
+    "final_answer_dist": {
+      "4.0": 2,
+      "14.0": 2
+    }
+  },
+  {
+    "problem_id": 177,
+    "gold_answer": "85",
+    "dad_answer": "85",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5112,
+    "wall_time": 88.71908664703369,
+    "entropy_per_round": [
+      2.4056390622295662,
+      1.5,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.2,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "85.0": 4
+    }
+  },
+  {
+    "problem_id": 178,
+    "gold_answer": "33",
+    "dad_answer": "33.00",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 10498,
+    "wall_time": 182.25249767303467,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "\\$30.00": 1,
+      "30.0": 1,
+      "32.0": 1,
+      "33.0": 1
+    }
+  },
+  {
+    "problem_id": 179,
+    "gold_answer": "12",
+    "dad_answer": "12",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5828,
+    "wall_time": 101.59768033027649,
+    "entropy_per_round": [
+      1.5487949406953985,
+      0.8112781244591328,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      0.4140722453786373,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "6.0": 1,
+      "17.0": 1,
+      "14.0": 1,
+      "12.0": 1
+    }
+  },
+  {
+    "problem_id": 180,
+    "gold_answer": "7200",
+    "dad_answer": "12000",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4117,
+    "wall_time": 68.64083313941956,
+    "entropy_per_round": [
+      2.75,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 2,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "12000.0": 2,
+      "360.0": 1,
+      "6000.0": 1
+    }
+  },
+  {
+    "problem_id": 181,
+    "gold_answer": "60",
+    "dad_answer": "60",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4121,
+    "wall_time": 71.15385246276855,
+    "entropy_per_round": [
+      1.5487949406953985,
+      0.8112781244591328,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.2452139205162886,
+      0.4140722453786373,
+      1.0
+    ],
+    "n_agreed_final": 4,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "60.0": 4
+    }
+  },
+  {
+    "problem_id": 182,
+    "gold_answer": "44",
+    "dad_answer": "44",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 9961,
+    "wall_time": 178.16912579536438,
+    "entropy_per_round": [
+      3.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "44.0": 4
+    }
+  },
+  {
+    "problem_id": 183,
+    "gold_answer": "113",
+    "dad_answer": "111.00",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7026,
+    "wall_time": 121.30202269554138,
+    "entropy_per_round": [
+      3.0,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "103.0": 1,
+      "118.6": 1,
+      "47.0": 1,
+      "112.0": 1
+    }
+  },
+  {
+    "problem_id": 184,
+    "gold_answer": "43500",
+    "dad_answer": "45400",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 18944,
+    "wall_time": 342.90229320526123,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "": 1,
+      "45400.0": 2,
+      "qab": 1
+    }
+  },
+  {
+    "problem_id": 185,
+    "gold_answer": "720",
+    "dad_answer": "240",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3335,
+    "wall_time": 57.6090624332428,
+    "entropy_per_round": [
+      1.9056390622295665,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.1290593883027762,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "240.0": 1,
+      "\\(\\boxed720\\).": 1,
+      "400.0": 1,
+      "0.0": 1
+    }
+  },
+  {
+    "problem_id": 186,
+    "gold_answer": "50",
+    "dad_answer": "50",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 3927,
+    "wall_time": 68.47035908699036,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "50.0": 4
+    }
+  },
+  {
+    "problem_id": 187,
+    "gold_answer": "24",
+    "dad_answer": "24",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4220,
+    "wall_time": 73.6699001789093,
+    "entropy_per_round": [
+      0.0,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      1.0,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "6.0": 2,
+      "12.0": 1,
+      "18.0": 1
+    }
+  },
+  {
+    "problem_id": 188,
+    "gold_answer": "43",
+    "dad_answer": "53",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 4362,
+    "wall_time": 74.79621887207031,
+    "entropy_per_round": [
+      2.75,
+      1.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.25,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "37.0": 1,
+      "52.0": 1,
+      "53.0": 1,
+      "6.0": 1
+    }
+  },
+  {
+    "problem_id": 189,
+    "gold_answer": "30",
+    "dad_answer": "30",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 11781,
+    "wall_time": 218.0146028995514,
+    "entropy_per_round": [
+      1.75,
+      1.5,
+      0.0
+    ],
+    "confidence_per_round": [
+      0.18181818181818182,
+      0.2,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "30.0": 4
+    }
+  },
+  {
+    "problem_id": 190,
+    "gold_answer": "23",
+    "dad_answer": "22",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5649,
+    "wall_time": 97.08821773529053,
+    "entropy_per_round": [
+      1.9056390622295665,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.1290593883027762,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "40.0": 1,
+      "25.0": 1,
+      "22.0": 2
+    }
+  },
+  {
+    "problem_id": 191,
+    "gold_answer": "251",
+    "dad_answer": "10",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 7886,
+    "wall_time": 139.94271039962769,
+    "entropy_per_round": [
+      3.0,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.03125,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "115.0": 1,
+      "49.0": 1,
+      "97.0": 1,
+      "147.0": 1
+    }
+  },
+  {
+    "problem_id": 192,
+    "gold_answer": "35",
+    "dad_answer": "35",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3529,
+    "wall_time": 61.427924156188965,
+    "entropy_per_round": [
+      0.5435644431995964,
+      0.8112781244591328,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.5668697564620273,
+      0.4140722453786373,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "33.0": 1,
+      "35.0": 2,
+      "30.0": 1
+    }
+  },
+  {
+    "problem_id": 193,
+    "gold_answer": "50",
+    "dad_answer": "110",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 5789,
+    "wall_time": 99.82781887054443,
+    "entropy_per_round": [
+      2.4056390622295662,
+      2.0,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.08333333333333333,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "110.0": 3,
+      "-110.0": 1
+    }
+  },
+  {
+    "problem_id": 194,
+    "gold_answer": "82",
+    "dad_answer": "82",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 3550,
+    "wall_time": 59.20427584648132,
+    "entropy_per_round": [
+      1.061278124459133,
+      0.8112781244591328,
+      0.8112781244591328
+    ],
+    "confidence_per_round": [
+      0.3638519184289095,
+      0.4140722453786373,
+      0.4140722453786373
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 0.8112781244591328,
+    "final_confidence": 0.4140722453786373,
+    "final_answer_dist": {
+      "42.0": 1,
+      "82.0": 3
+    }
+  },
+  {
+    "problem_id": 195,
+    "gold_answer": "2100",
+    "dad_answer": "2700",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 6494,
+    "wall_time": 113.41128587722778,
+    "entropy_per_round": [
+      2.4056390622295662,
+      2.0,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.1101114924828526,
+      0.08333333333333333,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 3,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "1500.0": 1,
+      "2100.0": 1,
+      "3000.0": 1,
+      "1550.0": 1
+    }
+  },
+  {
+    "problem_id": 196,
+    "gold_answer": "3",
+    "dad_answer": "3",
+    "correct": true,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 14754,
+    "wall_time": 263.58691453933716,
+    "entropy_per_round": [
+      2.1556390622295662,
+      1.5,
+      2.0
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.2,
+      0.08333333333333333
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 0,
+    "final_answer_entropy": 2.0,
+    "final_confidence": 0.08333333333333333,
+    "final_answer_dist": {
+      "": 1,
+      "4.0": 1,
+      "22.0": 1,
+      "9.0": 1
+    }
+  },
+  {
+    "problem_id": 197,
+    "gold_answer": "12",
+    "dad_answer": "12",
+    "correct": true,
+    "n_rounds": 2,
+    "n_total_generations": 12,
+    "total_tokens": 2473,
+    "wall_time": 42.94076991081238,
+    "entropy_per_round": [
+      0.0,
+      0.0
+    ],
+    "confidence_per_round": [
+      1.0,
+      1.0
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 0.0,
+    "final_confidence": 1.0,
+    "final_answer_dist": {
+      "12.0": 4
+    }
+  },
+  {
+    "problem_id": 198,
+    "gold_answer": "11",
+    "dad_answer": "1",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 15486,
+    "wall_time": 273.6470310688019,
+    "entropy_per_round": [
+      2.1556390622295662,
+      1.5,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.11883488339602746,
+      0.2,
+      0.2
+    ],
+    "n_agreed_final": 1,
+    "n_disputed_final": 2,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "1.0": 2,
+      "11.0": 1,
+      "6.0": 1
+    }
+  },
+  {
+    "problem_id": 199,
+    "gold_answer": "12",
+    "dad_answer": "20",
+    "correct": false,
+    "n_rounds": 3,
+    "n_total_generations": 16,
+    "total_tokens": 10745,
+    "wall_time": 188.86829161643982,
+    "entropy_per_round": [
+      2.75,
+      2.0,
+      1.5
+    ],
+    "confidence_per_round": [
+      0.06666666666666667,
+      0.08333333333333333,
+      0.2
+    ],
+    "n_agreed_final": 0,
+    "n_disputed_final": 1,
+    "final_answer_entropy": 1.5,
+    "final_confidence": 0.2,
+    "final_answer_dist": {
+      "64.0": 2,
+      "60.0": 1,
+      "20.0": 1
+    }
+  }
+]
