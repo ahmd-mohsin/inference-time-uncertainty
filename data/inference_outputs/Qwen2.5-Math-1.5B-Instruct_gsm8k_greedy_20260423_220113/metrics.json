@@ -1,0 +1,14 @@
+[
+  {
+    "method": "greedy",
+    "n_problems": 1319,
+    "n_correct": 427,
+    "accuracy": 0.3237300985595148,
+    "mean_tokens": 465.5625473843821,
+    "median_tokens": 310.0,
+    "mean_wall_time": 22.625626779669066,
+    "total_wall_time": 29843.2017223835,
+    "accuracy_by_level": {},
+    "accuracy_by_type": {}
+  }
+]
