@@ -1,0 +1,18 @@
+[
+  {
+    "method": "dad_m8_r3",
+    "n_problems": 30,
+    "n_correct": 1,
+    "accuracy": 0.03333333333333333,
+    "mean_tokens": 18505.5,
+    "median_tokens": 16723.5,
+    "mean_wall_time": 914.5550753831864,
+    "total_wall_time": 27436.65226149559,
+    "accuracy_by_level": {
+      "competition": 0.03333333333333333
+    },
+    "accuracy_by_type": {
+      "aime": 0.03333333333333333
+    }
+  }
+]
