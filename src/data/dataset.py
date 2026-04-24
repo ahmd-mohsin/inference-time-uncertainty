@@ -386,18 +386,52 @@ def load_amo_bench(
 
 def format_prompt(problem: dict, model_name: str) -> str:
     question = problem["question"]
+    model_lower = model_name.lower()
+
+    # Gemma needs a more forceful prompt
+    if "gemma" in model_lower:
+        system = (
+            "Solve the following math problem completely. Show all calculations. "
+            "You MUST compute the final numerical answer. "
+            "Put your final answer in \\boxed{} at the end."
+        )
+        return (
+            f"<start_of_turn>user\n{system}\n\n{question}<end_of_turn>\n"
+            f"<start_of_turn>model\n"
+        )
+
     system = (
         "You are a helpful math assistant. Solve the following problem step by step. "
         "Show your reasoning clearly. Put your final answer in \\boxed{}."
     )
-    model_lower = model_name.lower()
-    if any(k in model_lower for k in ["qwen", "deepseek", "instruct"]):
+
+    # Qwen / DeepSeek / Nemotron (ChatML)
+    if any(k in model_lower for k in ["qwen", "deepseek", "nemotron"]):
         return (
             f"<|im_start|>system\n{system}<|im_end|>\n"
             f"<|im_start|>user\n{question}<|im_end|>\n"
             f"<|im_start|>assistant\n"
         )
-    return f"System: {system}\n\nProblem: {question}\n\nSolution:"
+
+    # LLaMA 3
+    if "llama" in model_lower:
+        return (
+            f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n"
+            f"{system}<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n"
+            f"{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+        )
+
+    # Ministral / Mistral
+    if any(k in model_lower for k in ["ministral", "mistral"]):
+        return f"[INST] {system}\n\n{question} [/INST]"
+
+    # Fallback (ChatML)
+    return (
+        f"<|im_start|>system\n{system}<|im_end|>\n"
+        f"<|im_start|>user\n{question}<|im_end|>\n"
+        f"<|im_start|>assistant\n"
+    )
+
 
 
 def extract_boxed_answer(text: str) -> Optional[str]:
@@ -425,16 +459,56 @@ def extract_boxed_answer(text: str) -> Optional[str]:
 
 
 def extract_numeric_answer(text: str) -> Optional[str]:
+    """Extract numeric answer from generated text.
+    
+    Handles multiple output formats:
+    - \\boxed{answer}
+    - "The answer is X"
+    - "Answer: X"  
+    - "= X" at end of line
+    - **X** (bold, common in Gemma/LLaMA)
+    - "#### X" (GSM8K style)
+    - Bare number at end of text
+    """
+    # 1. Try \boxed{} first (highest priority)
     boxed = extract_boxed_answer(text)
     if boxed:
         return boxed
+
+    # 2. Try "the answer is" / "answer:" patterns
     for pat in [
-        r"(?:the answer is|answer:|=)\s*([\-\+]?\d[\d,\.]*(?:/\d+)?)",
-        r"([\-\+]?\d[\d,\.]*(?:/\d+)?)\s*$",
+        r"(?:the\s+(?:final\s+)?answer\s+is)[:\s]*\$?([^\$\n]{1,60})\$?",
+        r"(?:answer)[:\s]*\$?([^\$\n]{1,60})\$?",
+        r"####\s*([\-\+]?\d[\d,\.]*(?:/\d+)?)",
     ]:
-        m = re.search(pat, text.strip(), re.IGNORECASE | re.MULTILINE)
+        m = re.search(pat, text.strip(), re.IGNORECASE)
         if m:
-            return m.group(1).replace(",", "").strip()
+            ans = m.group(1).strip().strip("$").strip(".").strip()
+            if ans:
+                return ans
+
+    # 3. Try bold answer format: **X** (common in Gemma, LLaMA)
+    bold_match = re.findall(r"\*\*([^\*]{1,60})\*\*", text)
+    if bold_match:
+        # Take the last bold text that looks like an answer
+        for candidate in reversed(bold_match):
+            candidate = candidate.strip().strip("$").strip()
+            # Check if it's a number or simple expression
+            if re.match(r"^[\-\+]?\d", candidate) or re.match(r"^\\?(?:frac|sqrt)", candidate):
+                return candidate
+
+    # 4. Try "= X" at end of a line
+    eq_match = re.search(r"=\s*\$?([^\$\n=]{1,40})\$?\s*$", text.strip(), re.MULTILINE)
+    if eq_match:
+        ans = eq_match.group(1).strip().strip("$").strip(".").strip()
+        if ans and re.match(r"^[\-\+]?\d", ans):
+            return ans
+
+    # 5. Bare number at end of text
+    bare_match = re.search(r"([\-\+]?\d[\d,\.]*(?:/\d+)?)\s*\.?\s*$", text.strip())
+    if bare_match:
+        return bare_match.group(1).replace(",", "").strip()
+
     return None
 
 
