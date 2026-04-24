@@ -1,36 +1,19 @@
 name: digte
 channels:
-  - pytorch
-  - nvidia
-  - conda-forge
   - defaults
+  - conda-forge
 dependencies:
-  - python=3.10
+  - python=3.12
   - pip
-  - numpy=1.26.4
-  - scipy=1.13.0
+  - pyyaml
+  - numpy
+  - jsonlines
+  - tqdm
+  - requests
+  - packaging
+  - typing_extensions
   - pip:
-    - torch==2.3.1
-    - torchvision==0.18.1
-    - torchaudio==2.3.1
-    - transformers==4.44.2
-    - tokenizers==0.19.1
-    - accelerate==0.33.0
-    - datasets==2.21.0
-    - huggingface-hub==0.24.5
-    - scikit-learn==1.5.1
-    - tqdm==4.66.5
-    - pyyaml==6.0.2
-    - jsonlines==4.0.0
-    - sympy==1.13.2
-    - latex2sympy2==1.9.1
-    - antlr4-python3-runtime==4.7.2
-    - word2number==1.1
-    - regex==2024.7.24
-    - pandas==2.2.2
-    - matplotlib==3.9.2
-    - seaborn==0.13.2
-    - wandb==0.17.7
-    - python-dotenv==1.0.1
-    - einops==0.8.0
-    - flash-attn==2.6.3
+      - torch>=2.0
+      - transformers>=4.40
+      - datasets
+      - huggingface_hub
