@@ -1,4 +1,5 @@
 import re
+import math
 import random
 import logging
 from pathlib import Path
@@ -7,10 +8,12 @@ from typing import Optional
 import jsonlines
 from datasets import load_dataset
 
-from src.data.extra_loaders import load_amc, load_competition_math, load_olympiad_bench
-
 logger = logging.getLogger(__name__)
 
+
+# ============================================================
+# Dataset Loaders
+# ============================================================
 
 def load_gsm8k(
     split: str = "train",
@@ -124,7 +127,7 @@ def load_deepmath(
 
 def load_aime_2024(n_problems: int = -1) -> list[dict]:
     """Load AIME 2024 from math-ai/aime24.
-    
+
     Fields: id (int), problem (str), solution (str with \\boxed{answer}), url (str)
     30 problems total, split: test
     """
@@ -137,7 +140,6 @@ def load_aime_2024(n_problems: int = -1) -> list[dict]:
     problems = []
     for i, item in enumerate(data):
         question = item.get("problem", "")
-        # solution field is like "\boxed{104}" — extract the integer
         sol = item.get("solution", "")
         gold = extract_boxed_answer(sol)
         if gold is None:
@@ -156,7 +158,7 @@ def load_aime_2024(n_problems: int = -1) -> list[dict]:
 
 def load_aime_2025(n_problems: int = -1) -> list[dict]:
     """Load AIME 2025 from math-ai/aime25.
-    
+
     Fields: problem (str), answer (str), id (str)
     30 problems total, split: test
     """
@@ -180,7 +182,8 @@ def load_aime_2025(n_problems: int = -1) -> list[dict]:
         })
     logger.info(f"Loaded {len(problems)} AIME 2025 problems")
     return problems
- 
+
+
 def load_aime(year: int = 2025, n_problems: int = -1) -> list[dict]:
     """Dispatch to the correct AIME loader by year."""
     if year == 2024:
@@ -191,6 +194,7 @@ def load_aime(year: int = 2025, n_problems: int = -1) -> list[dict]:
         logger.warning(f"AIME {year} not explicitly supported, trying aime25 as fallback")
         return load_aime_2025(n_problems=n_problems)
 
+
 def _amo_bench_inner_answer(answer: str) -> str:
     """AMO-Bench stores gold like \\boxed{...}; normalize for answers_match."""
     s = str(answer).strip()
@@ -200,26 +204,15 @@ def _amo_bench_inner_answer(answer: str) -> str:
         return matches[-1].strip()
     return s
 
+
 def load_amc(n_problems: int = -1, cache_dir: Optional[str] = None) -> list[dict]:
-    """
-    Load the AMC 2023 dataset from math-ai/amc23.
- 
-    Schema (test split, 40 rows):
-        id:       int64   (non-sequential, native problem id)
-        question: string  (LaTeX-formatted problem text)
-        answer:   string  (integer answer, length 1-4)
-        url:      string  (AoPS wiki link; contains 'AMC_12A' or 'AMC_12B')
-    """
+    """Load the AMC 2023 dataset from math-ai/amc23."""
     logger.info("Loading AMC (via math-ai/amc23)")
     raw = load_dataset("math-ai/amc23", cache_dir=cache_dir)
- 
-    # amc23 ships with only a 'test' split; fall back defensively
     split = "test" if "test" in raw else next(iter(raw.keys()))
     data = list(raw[split])
- 
     if n_problems > 0:
         data = data[:n_problems]
- 
     problems = []
     for i, item in enumerate(data):
         url = item.get("url", "") or ""
@@ -229,18 +222,16 @@ def load_amc(n_problems: int = -1, cache_dir: Optional[str] = None) -> list[dict
             subtype = "amc12b"
         else:
             subtype = "amc12"
- 
         problems.append({
-            "problem_id": i,                          # sequential local id
-            "native_id": item.get("id", i),           # preserve dataset's own id
-            "question": item["question"],             # note: field is 'question', not 'problem'
+            "problem_id": i,
+            "native_id": item.get("id", i),
+            "question": item["question"],
             "gold_answer": str(item["answer"]).strip(),
             "source": "amc23",
             "level": "competition",
-            "problem_type": subtype,                  # amc12a / amc12b / amc12
+            "problem_type": subtype,
             "url": url,
         })
- 
     logger.info(f"Loaded {len(problems)} AMC23 problems")
     return problems
 
@@ -250,14 +241,7 @@ def load_competition_math(
     seed: int = 42,
     cache_dir: Optional[str] = None,
 ) -> list[dict]:
-    """Load hendrycks/competition_math (the full MATH benchmark, 5K test problems).
- 
-    Fields in the dataset:
-        problem  : str — problem text
-        solution : str — full solution text containing \\boxed{answer}
-        level    : str — e.g. "Level 5"
-        type     : str — e.g. "Algebra"
-    """
+    """Load hendrycks/competition_math (the full MATH benchmark, 5K test problems)."""
     logger.info("Loading Competition MATH (hendrycks/competition_math)")
     raw = load_dataset("hendrycks/competition_math", cache_dir=cache_dir)
     data = list(raw["test"])
@@ -268,19 +252,15 @@ def load_competition_math(
     problems = []
     for i, item in enumerate(data):
         solution_text = item.get("solution", "")
-        # Use depth-tracking extraction instead of simple regex
-        gold = _extract_boxed_from_solution(solution_text)
+        gold = extract_boxed_answer(solution_text)
         if not gold:
-            # Fallback: last line of solution
             lines = [ln.strip() for ln in solution_text.strip().split("\n") if ln.strip()]
             gold = lines[-1] if lines else ""
- 
         level_raw = item.get("level", "")
         level_num = ""
         m = re.search(r"\d+", str(level_raw))
         if m:
             level_num = m.group(0)
- 
         problems.append({
             "problem_id": i,
             "question": item["problem"],
@@ -291,10 +271,9 @@ def load_competition_math(
         })
     logger.info(f"Loaded {len(problems)} Competition MATH problems")
     return problems
- 
 
 
-def load_olympiad_bench(n_problems: int = -1, seed: int = 42, cache_dir: Optional[str] = None) -> list[dict]:
+def load_olympiad_bench(n_problems: int = -1, seed: int = 42, cache_dir: Optional[str] = None, numeric_only: bool = True) -> list[dict]:
     logger.info("Loading OlympiadBench (math-ai/olympiadbench)")
     raw = load_dataset("math-ai/olympiadbench")
     split = "test" if "test" in raw else next(iter(raw.keys()))
@@ -303,6 +282,11 @@ def load_olympiad_bench(n_problems: int = -1, seed: int = 42, cache_dir: Optiona
     # Filter to text-only problems (skip image-based problems)
     data = [item for item in data if item.get("modality", "") == "Text-only"]
     logger.info(f"Filtered to {len(data)} text-only problems")
+
+    # Filter to numeric-answer problems only
+    if numeric_only:
+        data = [item for item in data if item.get("answer_type", "") == "Numerical"]
+        logger.info(f"Filtered to {len(data)} numerical-answer problems")
 
     random.seed(seed)
     random.shuffle(data)
@@ -316,13 +300,11 @@ def load_olympiad_bench(n_problems: int = -1, seed: int = 42, cache_dir: Optiona
         # final_answer is a LIST, not a string
         answer = item.get("final_answer", [])
         if isinstance(answer, list):
-            # Join multiple answers with comma for multi-answer problems
             answer = ", ".join(str(a) for a in answer) if answer else ""
-        
+
         # Strip LaTeX $ wrappers from answer
         answer = str(answer).strip().strip("$").strip()
 
-        # Get unit if present (e.g., "degrees", "cm")
         unit = item.get("unit", None)
 
         problems.append({
@@ -346,19 +328,12 @@ def load_amo_bench(
     cache_dir: Optional[str] = None,
     number_only: bool = True,
 ) -> list[dict]:
-    """meituan-longcat/AMO-Bench: 50 Olympiad-style problems.
-    
-    Fields: question_id (int), prompt (str), solution (str), 
-            answer (str with \\boxed{}), answer_type (str)
-    answer_type: "number", "set", "description", "variable"
-    Split: test only (50 rows)
-    """
+    """meituan-longcat/AMO-Bench: 50 Olympiad-style problems."""
     logger.info(f"Loading AMO-Bench n={n_problems} seed={seed}")
     raw = load_dataset("meituan-longcat/AMO-Bench", cache_dir=cache_dir)
     split = "test" if "test" in raw else next(iter(raw.keys()))
     data = list(raw[split])
 
-    # Filter to number-only problems (others are too hard to match)
     if number_only:
         data = [item for item in data if item.get("answer_type", "") == "number"]
         logger.info(f"Filtered to {len(data)} number-type problems")
@@ -383,6 +358,10 @@ def load_amo_bench(
     logger.info(f"Loaded {len(problems)} AMO-Bench problems")
     return problems
 
+
+# ============================================================
+# Prompt Formatting
+# ============================================================
 
 def format_prompt(problem: dict, model_name: str) -> str:
     question = problem["question"]
@@ -433,6 +412,9 @@ def format_prompt(problem: dict, model_name: str) -> str:
     )
 
 
+# ============================================================
+# Answer Extraction
+# ============================================================
 
 def extract_boxed_answer(text: str) -> Optional[str]:
     depth = 0
@@ -460,11 +442,11 @@ def extract_boxed_answer(text: str) -> Optional[str]:
 
 def extract_numeric_answer(text: str) -> Optional[str]:
     """Extract numeric answer from generated text.
-    
+
     Handles multiple output formats:
     - \\boxed{answer}
     - "The answer is X"
-    - "Answer: X"  
+    - "Answer: X"
     - "= X" at end of line
     - **X** (bold, common in Gemma/LLaMA)
     - "#### X" (GSM8K style)
@@ -490,10 +472,8 @@ def extract_numeric_answer(text: str) -> Optional[str]:
     # 3. Try bold answer format: **X** (common in Gemma, LLaMA)
     bold_match = re.findall(r"\*\*([^\*]{1,60})\*\*", text)
     if bold_match:
-        # Take the last bold text that looks like an answer
         for candidate in reversed(bold_match):
             candidate = candidate.strip().strip("$").strip()
-            # Check if it's a number or simple expression
             if re.match(r"^[\-\+]?\d", candidate) or re.match(r"^\\?(?:frac|sqrt)", candidate):
                 return candidate
 
@@ -512,23 +492,26 @@ def extract_numeric_answer(text: str) -> Optional[str]:
     return None
 
 
+# ============================================================
+# Answer Normalization & Matching
+# ============================================================
+
 def _normalize_latex(s: str) -> str:
     s = s.strip()
     s = re.sub(r"\s+", "", s)
     s = s.replace("\\left", "").replace("\\right", "")
     s = s.replace("\\!", "").replace("\\,", "").replace("\\ ", "")
     s = s.replace("\\circ", "").replace("^\\circ", "").replace("°", "")
+    s = s.replace("\\%", "").replace("%", "")
+    s = s.replace("$", "")
     s = s.replace("{", "").replace("}", "")
+    s = s.replace("\\pi", "pi")
     s = s.lower()
     return s
 
 
 def normalize_answer(answer: Optional[str]) -> str:
-    """Normalize a math answer for comparison.
-
-    Handles: whitespace, commas, degree symbols, float-to-int conversion,
-    leading zeros, LaTeX formatting.
-    """
+    """Normalize a math answer for comparison."""
     if answer is None:
         return ""
     answer = str(answer).strip()
@@ -537,14 +520,15 @@ def normalize_answer(answer: Optional[str]) -> str:
     answer = re.sub(r"^x\s*=\s*", "", answer).strip()
     answer = re.sub(r"\^\\circ", "", answer)
     answer = re.sub(r"\\circ", "", answer)
+    answer = re.sub(r"\\?%", "", answer)
     answer = answer.replace(",", "").replace("\\,", "")
-    # Strip leading/trailing $
     answer = answer.strip("$").strip()
     try:
         val = float(answer)
-        if val == int(val) and abs(val) < 1e15:
-            return str(int(val))
-        return f"{val:.8f}".rstrip("0").rstrip(".")
+        if math.isfinite(val):
+            if val == int(val) and abs(val) < 1e15:
+                return str(int(val))
+            return f"{val:.8f}".rstrip("0").rstrip(".")
     except (ValueError, OverflowError):
         pass
     return answer.lower().strip()
@@ -554,10 +538,32 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
     """Check if predicted answer matches gold answer.
 
     Handles: exact match, numeric tolerance, fractions, leading zeros,
-    LaTeX normalization, sympy simplification.
+    LaTeX normalization, multi-answer gold, percentage, sympy fallback.
     """
     if pred is None:
         return False
+
+    # Strip $ signs from both
+    pred = str(pred).strip().strip("$").strip()
+    gold = str(gold).strip().strip("$").strip()
+
+    # Multi-answer: check if pred matches any individual gold answer
+    # Gold answers like "-1$,$2$,$-2" or "1, 3, 5, 15" or "f(x)=x,f(x)=-x"
+    if "," in gold:
+        gold_clean = gold.replace("$", "").strip()
+        gold_parts = [g.strip() for g in gold_clean.split(",") if g.strip()]
+        if len(gold_parts) > 1:
+            for gp in gold_parts:
+                if _single_answer_match(pred, gp, tol):
+                    return True
+
+    return _single_answer_match(pred, gold, tol)
+
+
+def _single_answer_match(pred: str, gold: str, tol: float = 1e-6) -> bool:
+    """Match a single predicted answer against a single gold answer."""
+    pred = str(pred).strip().strip("$").strip()
+    gold = str(gold).strip().strip("$").strip()
 
     pred_n = normalize_answer(pred)
     gold_n = normalize_answer(gold)
@@ -565,22 +571,36 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
     if pred_n == gold_n:
         return True
 
-    # Strip leading zeros and compare: '017' == '17'
+    # Strip leading zeros
     pred_stripped = pred_n.lstrip("0") or "0"
     gold_stripped = gold_n.lstrip("0") or "0"
     if pred_stripped == gold_stripped:
         return True
 
-    # Numeric comparison with tolerance
+    # Numeric comparison with tolerance (guarded against inf/nan)
     try:
         pv = float(pred_n)
         gv = float(gold_n)
-        if abs(pv - gv) < tol:
-            return True
-        # Also try: both are integers but stored differently
-        if pv == int(pv) and gv == int(gv) and int(pv) == int(gv):
-            return True
-    except (ValueError, TypeError):
+        if math.isfinite(pv) and math.isfinite(gv):
+            if abs(pv - gv) < tol:
+                return True
+            if abs(pv) < 1e15 and abs(gv) < 1e15 and pv == int(pv) and gv == int(gv) and int(pv) == int(gv):
+                return True
+    except (ValueError, TypeError, OverflowError):
+        pass
+
+    # Percentage comparison: "62.5%" vs "0.625" or "62.5"
+    try:
+        pred_pct = re.sub(r"\\?%", "", pred_n).strip()
+        gold_pct = re.sub(r"\\?%", "", gold_n).strip()
+        pv = float(pred_pct)
+        gv = float(gold_pct)
+        if math.isfinite(pv) and math.isfinite(gv):
+            if abs(pv - gv) < tol:
+                return True
+            if abs(pv - gv * 100) < tol or abs(pv * 100 - gv) < tol:
+                return True
+    except (ValueError, TypeError, OverflowError):
         pass
 
     # Fraction comparison
@@ -591,8 +611,9 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
         try:
             pv = int(pm.group(1)) / int(pm.group(2))
             gv = int(gm.group(1)) / int(gm.group(2))
-            return abs(pv - gv) < tol
-        except ZeroDivisionError:
+            if math.isfinite(pv) and math.isfinite(gv):
+                return abs(pv - gv) < tol
+        except (ZeroDivisionError, OverflowError):
             pass
 
     # Mixed: one is fraction, other is decimal
@@ -600,15 +621,17 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
         try:
             pv = int(pm.group(1)) / int(pm.group(2))
             gv = float(gold_n)
-            return abs(pv - gv) < tol
-        except (ValueError, ZeroDivisionError):
+            if math.isfinite(pv) and math.isfinite(gv):
+                return abs(pv - gv) < tol
+        except (ValueError, ZeroDivisionError, OverflowError):
             pass
     if gm and not pm:
         try:
             pv = float(pred_n)
             gv = int(gm.group(1)) / int(gm.group(2))
-            return abs(pv - gv) < tol
-        except (ValueError, ZeroDivisionError):
+            if math.isfinite(pv) and math.isfinite(gv):
+                return abs(pv - gv) < tol
+        except (ValueError, ZeroDivisionError, OverflowError):
             pass
 
     # LaTeX normalization
@@ -625,7 +648,6 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
     # Sympy fallback
     try:
         from sympy import simplify, sympify
-
         p_expr = sympify(pred_l.replace("^", "**"))
         g_expr = sympify(gold_l.replace("^", "**"))
         if simplify(p_expr - g_expr) == 0:
@@ -635,6 +657,10 @@ def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
 
     return False
 
+
+# ============================================================
+# Cache / Save / Load
+# ============================================================
 
 def save_problems_cache(problems: list[dict], path: str) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -649,6 +675,10 @@ def load_problems_cache(path: str) -> list[dict]:
     logger.info(f"Loaded {len(problems)} problems from cache {path}")
     return problems
 
+
+# ============================================================
+# Dataset Dispatch
+# ============================================================
 
 def get_calibration_dataset(cfg: dict) -> list[dict]:
     cal = cfg["calibration"]
