@@ -1,0 +1,19 @@
+[
+  {
+    "method": "greedy",
+    "n_problems": 40,
+    "n_correct": 10,
+    "accuracy": 0.25,
+    "mean_tokens": 2812.3,
+    "median_tokens": 818.5,
+    "mean_wall_time": 61.531291246414185,
+    "total_wall_time": 2461.2516498565674,
+    "accuracy_by_level": {
+      "competition": 0.25
+    },
+    "accuracy_by_type": {
+      "amc12a": 0.18181818181818182,
+      "amc12b": 0.3333333333333333
+    }
+  }
+]
