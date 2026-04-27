@@ -1,0 +1,59 @@
+[
+  {
+    "method": "greedy",
+    "n_problems": 200,
+    "n_correct": 15,
+    "accuracy": 0.075,
+    "mean_tokens": 1410.945,
+    "median_tokens": 707.0,
+    "mean_wall_time": 42.96790324449539,
+    "total_wall_time": 8593.580648899078,
+    "accuracy_by_level": {
+      "olympiad": 0.075
+    },
+    "accuracy_by_type": {
+      "Algebra": 0.08823529411764706,
+      "Combinatorics": 0.06976744186046512,
+      "Geometry": 0.061224489795918366,
+      "Number Theory": 0.075
+    }
+  },
+  {
+    "method": "sampling_vote_m8",
+    "n_problems": 200,
+    "n_correct": 25,
+    "accuracy": 0.125,
+    "mean_tokens": 7776.425,
+    "median_tokens": 5996.0,
+    "mean_wall_time": 217.85646574258806,
+    "total_wall_time": 43571.29314851761,
+    "accuracy_by_level": {
+      "olympiad": 0.125
+    },
+    "accuracy_by_type": {
+      "Algebra": 0.1323529411764706,
+      "Combinatorics": 0.16279069767441862,
+      "Geometry": 0.10204081632653061,
+      "Number Theory": 0.1
+    }
+  },
+  {
+    "method": "dad_m8_r3",
+    "n_problems": 200,
+    "n_correct": 28,
+    "accuracy": 0.14,
+    "mean_tokens": 16618.88,
+    "median_tokens": 13857.5,
+    "mean_wall_time": 410.3439232623577,
+    "total_wall_time": 82068.78465247154,
+    "accuracy_by_level": {
+      "olympiad": 0.14
+    },
+    "accuracy_by_type": {
+      "Algebra": 0.11764705882352941,
+      "Combinatorics": 0.18604651162790697,
+      "Geometry": 0.08163265306122448,
+      "Number Theory": 0.2
+    }
+  }
+]
