@@ -7,6 +7,7 @@ Fixes applied:
 3. Float gold answer handling in answers_match (142.0 == 142)
 4. Unique output filenames per run (model_dataset_mode_timestamp)
 5. tqdm progress bars for each problem
+6. Optional --resume_dir: append to an existing run's JSONL, skipping problem_ids already present
 """
 import argparse
 import json
@@ -55,6 +56,23 @@ def _normalize_for_voting(answer):
     return n
 
 
+def _load_jsonl(path: Path) -> list:
+    path = Path(path)
+    if not path.exists():
+        return []
+    rows = []
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError:
+                logger.warning("Skipping invalid JSONL line in %s", path)
+    return rows
+
+
 def _make_run_id(cfg, mode, dataset_name):
     """Create a unique run identifier: modelshort_dataset_mode_timestamp."""
     model_name = cfg["model"].get("name", "model")
@@ -71,10 +89,26 @@ def run_greedy(model, tokenizer, problems, cfg, out_path):
 
     device = cfg["model"]["device"]
     max_tokens = cfg["model"].get("max_new_tokens", 2048)
-    results = []
-    n_correct = 0
+    out_path = Path(out_path)
+    existing = _load_jsonl(out_path)
+    done_ids = {r["problem_id"] for r in existing}
+    todo = [p for p in problems if p["problem_id"] not in done_ids]
+    n_correct = sum(1 for r in existing if r.get("correct"))
+    base_n = len(existing)
+    results = list(existing)
 
-    pbar = tqdm(problems, desc="Greedy", unit="prob",
+    if not todo:
+        logger.info("Greedy: all %s problems already in %s, skipping.", base_n, out_path)
+        return results
+    if base_n:
+        logger.info(
+            "Greedy: resuming — %s on disk, %s remaining -> %s",
+            base_n,
+            len(todo),
+            out_path,
+        )
+
+    pbar = tqdm(todo, desc="Greedy", unit="prob",
                 bar_format="{l_bar}{bar:30}{r_bar}{bar:-10b}")
 
     for i, problem in enumerate(pbar):
@@ -122,7 +156,7 @@ def run_greedy(model, tokenizer, problems, cfg, out_path):
             f.write(json.dumps(result) + "\n")
             f.flush()
 
-        acc = n_correct / (i + 1)
+        acc = n_correct / (base_n + i + 1)
         pbar.set_postfix(acc=f"{acc:.3f}", ans=answer[:20], gold=problem["gold_answer"][:20])
 
         del out
@@ -141,10 +175,26 @@ def run_sampling_vote(model, tokenizer, problems, cfg, out_path):
     max_tokens = dad_cfg.get("max_gen_tokens", 2048)
     temperature = dad_cfg.get("temperature", 0.7)
     top_p = dad_cfg.get("top_p", 0.95)
-    results = []
-    n_correct = 0
+    out_path = Path(out_path)
+    existing = _load_jsonl(out_path)
+    done_ids = {r["problem_id"] for r in existing}
+    todo = [p for p in problems if p["problem_id"] not in done_ids]
+    n_correct = sum(1 for r in existing if r.get("correct"))
+    base_n = len(existing)
+    results = list(existing)
 
-    pbar = tqdm(problems, desc=f"Sampling M={n_samples}", unit="prob",
+    if not todo:
+        logger.info("Sampling: all %s problems already in %s, skipping.", base_n, out_path)
+        return results
+    if base_n:
+        logger.info(
+            "Sampling: resuming — %s on disk, %s remaining -> %s",
+            base_n,
+            len(todo),
+            out_path,
+        )
+
+    pbar = tqdm(todo, desc=f"Sampling M={n_samples}", unit="prob",
                 bar_format="{l_bar}{bar:30}{r_bar}{bar:-10b}")
 
     for i, problem in enumerate(pbar):
@@ -212,7 +262,7 @@ def run_sampling_vote(model, tokenizer, problems, cfg, out_path):
             f.write(json.dumps(result) + "\n")
             f.flush()
 
-        acc = n_correct / (i + 1)
+        acc = n_correct / (base_n + i + 1)
         pbar.set_postfix(acc=f"{acc:.3f}", ans=best_sol["answer"][:20], gold=problem["gold_answer"][:20])
 
     pbar.close()
@@ -224,10 +274,26 @@ def run_dad(model, tokenizer, problems, cfg, out_path):
     from src.dad.dad_generator import DADGenerator
 
     generator = DADGenerator(model, tokenizer, cfg)
-    results = []
-    n_correct = 0
+    out_path = Path(out_path)
+    existing = _load_jsonl(out_path)
+    done_ids = {r["problem_id"] for r in existing}
+    todo = [p for p in problems if p["problem_id"] not in done_ids]
+    n_correct = sum(1 for r in existing if r.get("correct"))
+    base_n = len(existing)
+    results = list(existing)
 
-    pbar = tqdm(problems, desc="DAD", unit="prob",
+    if not todo:
+        logger.info("DAD: all %s problems already in %s, skipping.", base_n, out_path)
+        return results
+    if base_n:
+        logger.info(
+            "DAD: resuming — %s on disk, %s remaining -> %s",
+            base_n,
+            len(todo),
+            out_path,
+        )
+
+    pbar = tqdm(todo, desc="DAD", unit="prob",
                 bar_format="{l_bar}{bar:30}{r_bar}{bar:-10b}")
 
     for i, problem in enumerate(pbar):
@@ -275,7 +341,7 @@ def run_dad(model, tokenizer, problems, cfg, out_path):
             f.write(json.dumps(result) + "\n")
             f.flush()
 
-        acc = n_correct / (i + 1)
+        acc = n_correct / (base_n + i + 1)
         pbar.set_postfix(
             acc=f"{acc:.3f}",
             ans=gen.extracted_answer[:15],
@@ -361,6 +427,13 @@ def main():
     parser.add_argument("--m_samples", type=int, default=None)
     parser.add_argument("--max_rounds", type=int, default=None)
     parser.add_argument("--temperature", type=float, default=None)
+    parser.add_argument(
+        "--resume_dir",
+        type=str,
+        default=None,
+        help="Existing inference output directory (from prior run's log: output_dir). "
+        "Appends to JSONL files and skips problem_ids already written for each mode.",
+    )
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -379,7 +452,14 @@ def main():
 
     dataset_name = cfg["dataset"]["name"]
     short = cfg["model"].get("short_name", cfg["model"]["name"].split("/")[-1])
-    run_id = _make_run_id(cfg, args.mode, dataset_name)
+    if args.resume_dir:
+        out_dir = Path(args.resume_dir).resolve()
+        if not out_dir.is_dir():
+            print(f"Error: --resume_dir must be an existing directory: {out_dir}", file=sys.stderr)
+            sys.exit(1)
+        run_id = out_dir.name
+    else:
+        run_id = _make_run_id(cfg, args.mode, dataset_name)
 
     setup_logging(f"logs/{run_id}.log")
 
@@ -394,6 +474,8 @@ def main():
     logger.info(f"  max_rounds : {cfg['dad']['max_rounds']}")
     logger.info(f"  temperature: {cfg['dad']['temperature']}")
     logger.info(f"  mode       : {args.mode}")
+    if args.resume_dir:
+        logger.info(f"  resume_dir : {out_dir}")
 
     if torch.cuda.is_available():
         props = torch.cuda.get_device_properties(0)
@@ -414,8 +496,9 @@ def main():
     problems = get_inference_dataset(cfg)
     logger.info(f"Loaded {len(problems)} problems")
 
-    out_dir = Path(cfg["output"]["dir"]) / run_id
-    out_dir.mkdir(parents=True, exist_ok=True)
+    if not args.resume_dir:
+        out_dir = Path(cfg["output"]["dir"]) / run_id
+        out_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"  output_dir : {out_dir}")
 
     all_metrics = []
