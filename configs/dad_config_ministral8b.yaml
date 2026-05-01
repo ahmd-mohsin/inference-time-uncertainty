@@ -1,0 +1,35 @@
+model:
+  # If you want a different Ministral/Mistral checkpoint, change this HF id.
+  name: "mistralai/Ministral-8B-Instruct-2410"
+  short_name: "ministral-8b"
+  dtype: "bfloat16"
+  device: "cuda"
+  max_new_tokens: 8192
+  trust_remote_code: true
+  attn_implementation: "eager"
+
+dad:
+  m_samples: 8
+  max_rounds: 3
+  max_gen_tokens: 8192   # gives model room to finish \boxed{}
+  temperature: 0.7
+  top_p: 0.95
+  confidence_threshold: 0.8
+  workspace_max_tokens: 800
+  refine_samples: 4
+
+dataset:
+  name: "math500"
+  split: "test"
+  n_problems: -1
+  seed: 42
+
+output:
+  dir: "data/inference_outputs"
+  predictions_file: "data/inference_outputs/predictions_{model_short_name}_{decoding_mode}.jsonl"
+  metrics_file: "data/inference_outputs/metrics_{model_short_name}_{decoding_mode}.json"
+  log_detail: false
+
+logging:
+  level: "INFO"
+  log_file: "logs/inference_{model_short_name}_{decoding_mode}.log"
