@@ -365,9 +365,16 @@ def load_amo_bench(
 
 def format_prompt(problem: dict, model_name: str) -> str:
     question = problem["question"]
+    system = (
+        "You are a helpful math assistant. Solve the following problem step by step. "
+        "Show your reasoning clearly. Put your final answer in \\boxed{}."
+    )
     model_lower = model_name.lower()
 
-    # Gemma needs a more forceful prompt
+    # Try tokenizer's built-in template first (most reliable)
+    # Fall back to manual templates only if needed
+
+    # Gemma needs forceful prompt
     if "gemma" in model_lower:
         system = (
             "Solve the following math problem completely. Show all calculations. "
@@ -378,11 +385,6 @@ def format_prompt(problem: dict, model_name: str) -> str:
             f"<start_of_turn>user\n{system}\n\n{question}<end_of_turn>\n"
             f"<start_of_turn>model\n"
         )
-
-    system = (
-        "You are a helpful math assistant. Solve the following problem step by step. "
-        "Show your reasoning clearly. Put your final answer in \\boxed{}."
-    )
 
     # Qwen / DeepSeek / Nemotron (ChatML)
     if any(k in model_lower for k in ["qwen", "deepseek", "nemotron"]):
@@ -400,7 +402,7 @@ def format_prompt(problem: dict, model_name: str) -> str:
             f"{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
         )
 
-    # Ministral / Mistral
+    # Ministral / Mistral (V3-Tekken template)
     if any(k in model_lower for k in ["ministral", "mistral"]):
         return f"[INST] {system}\n\n{question} [/INST]"
 

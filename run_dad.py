@@ -418,6 +418,31 @@ def print_comparison(all_metrics):
     logger.info(sep)
 
 
+def append_accuracy_snapshot(snapshot_path: str, run_id: str, cfg: dict, all_metrics: list, out_dir: Path):
+    """Append one JSON object per method so separate greedy/dad runs can be summarized together."""
+    if not snapshot_path or not all_metrics:
+        return
+    p = Path(snapshot_path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    model_name = cfg["model"]["name"]
+    dataset_name = cfg["dataset"]["name"]
+    with open(p, "a") as f:
+        for m in all_metrics:
+            rec = {
+                "run_id": run_id,
+                "dataset": dataset_name,
+                "model": model_name,
+                "method": m["method"],
+                "accuracy": m["accuracy"],
+                "n_correct": m["n_correct"],
+                "n_problems": m["n_problems"],
+                "output_dir": str(out_dir),
+            }
+            f.write(json.dumps(rec) + "\n")
+            f.flush()
+    logger.info(f"Appended accuracy snapshot to {p}")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="configs/dad_config.yaml")
@@ -427,6 +452,13 @@ def main():
     parser.add_argument("--m_samples", type=int, default=None)
     parser.add_argument("--max_rounds", type=int, default=None)
     parser.add_argument("--temperature", type=float, default=None)
+    parser.add_argument(
+        "--accuracy_snapshot",
+        type=str,
+        default=None,
+        help="Append one JSON line per executed method (accuracy, counts, output_dir). "
+        "Use the same path across chained greedy+dad runs to summarize both.",
+    )
     parser.add_argument(
         "--resume_dir",
         type=str,
@@ -534,6 +566,8 @@ def main():
         with open(metrics_path, "w") as f:
             json.dump(all_metrics, f, indent=2)
         logger.info(f"Metrics saved to {metrics_path}")
+        if args.accuracy_snapshot:
+            append_accuracy_snapshot(args.accuracy_snapshot, run_id, cfg, all_metrics, out_dir)
 
     logger.info(f"All outputs saved to: {out_dir}")
 
