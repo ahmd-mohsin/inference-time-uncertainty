@@ -365,16 +365,9 @@ def load_amo_bench(
 
 def format_prompt(problem: dict, model_name: str) -> str:
     question = problem["question"]
-    system = (
-        "You are a helpful math assistant. Solve the following problem step by step. "
-        "Show your reasoning clearly. Put your final answer in \\boxed{}."
-    )
     model_lower = model_name.lower()
 
-    # Try tokenizer's built-in template first (most reliable)
-    # Fall back to manual templates only if needed
-
-    # Gemma needs forceful prompt
+    # Gemma needs a more forceful prompt
     if "gemma" in model_lower:
         system = (
             "Solve the following math problem completely. Show all calculations. "
@@ -385,6 +378,11 @@ def format_prompt(problem: dict, model_name: str) -> str:
             f"<start_of_turn>user\n{system}\n\n{question}<end_of_turn>\n"
             f"<start_of_turn>model\n"
         )
+
+    system = (
+        "You are a helpful math assistant. Solve the following problem step by step. "
+        "Show your reasoning clearly. Put your final answer in \\boxed{}."
+    )
 
     # Qwen / DeepSeek / Nemotron (ChatML)
     if any(k in model_lower for k in ["qwen", "deepseek", "nemotron"]):
@@ -402,7 +400,7 @@ def format_prompt(problem: dict, model_name: str) -> str:
             f"{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
         )
 
-    # Ministral / Mistral (V3-Tekken template)
+    # Ministral / Mistral
     if any(k in model_lower for k in ["ministral", "mistral"]):
         return f"[INST] {system}\n\n{question} [/INST]"
 
@@ -495,117 +493,345 @@ def extract_numeric_answer(text: str) -> Optional[str]:
 
 
 # ============================================================
-# Answer Normalization & Matching
+# LaTeX Normalization Helpers
 # ============================================================
 
-def _normalize_latex(s: str) -> str:
-    s = s.strip()
-    s = re.sub(r"\s+", "", s)
-    s = s.replace("\\left", "").replace("\\right", "")
-    s = s.replace("\\!", "").replace("\\,", "").replace("\\ ", "")
-    s = s.replace("\\circ", "").replace("^\\circ", "").replace("°", "")
-    s = s.replace("\\%", "").replace("%", "")
-    s = s.replace("$", "")
-    s = s.replace("{", "").replace("}", "")
-    s = s.replace("\\pi", "pi")
-    s = s.lower()
+# LaTeX formatting wrappers that should be stripped (\text{...}, \mathrm{...}, etc.)
+_TEXT_WRAPPERS = (
+    "text", "mathrm", "mathbf", "mathit", "mathsf", "mathtt",
+    "operatorname", "textbf", "textit", "textrm", "rm", "bf", "it",
+    "displaystyle", "textstyle", "scriptstyle", "scriptscriptstyle",
+)
+
+
+def _strip_text_wrappers(s: str) -> str:
+    """Strip \\text{...}, \\mathrm{...}, \\operatorname{...}, etc.
+
+    Handles nested wrappers like \\text{\\mathrm{x}} via repeated application.
+    """
+    for cmd in _TEXT_WRAPPERS:
+        prev = None
+        while prev != s:
+            prev = s
+            s = re.sub(r"\\" + cmd + r"\s*\{([^{}]*)\}", r"\1", s)
+            # Also handle \cmd without braces: \cmd x → x
+            s = re.sub(r"\\" + cmd + r"\s+", "", s)
     return s
 
 
+def _convert_frac_to_slash(s: str) -> str:
+    """Convert \\frac{a}{b}, \\dfrac{a}{b}, \\tfrac{a}{b} → ((a)/(b)).
+
+    Handles nested fractions by repeated application. Parentheses are added so
+    "-\\frac{1}{2}" becomes "-((1)/(2))" which parses unambiguously.
+    """
+    # Normalize dfrac/tfrac → frac
+    s = re.sub(r"\\(?:dfrac|tfrac)\b", r"\\frac", s)
+
+    # Convert \frac{...}{...} repeatedly (innermost first)
+    for _ in range(10):  # safety cap on nesting depth
+        new = re.sub(
+            r"\\frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}",
+            r"((\1)/(\2))",
+            s,
+        )
+        if new == s:
+            break
+        s = new
+
+    # Handle \frac a b (no braces, single tokens)
+    s = re.sub(r"\\frac\s+(\S)\s+(\S)", r"((\1)/(\2))", s)
+
+    return s
+
+
+def _convert_sqrt(s: str) -> str:
+    """Convert \\sqrt{n} → sqrt(n), \\sqrt n → sqrt(n)."""
+    for _ in range(5):
+        new = re.sub(r"\\sqrt\s*\{([^{}]*)\}", r"sqrt(\1)", s)
+        if new == s:
+            break
+        s = new
+    s = re.sub(r"\\sqrt\s+(\S+)", r"sqrt(\1)", s)
+    return s
+
+
+def _strip_left_right(s: str) -> str:
+    """Strip \\left and \\right delimiters."""
+    return s.replace(r"\left", "").replace(r"\right", "")
+
+
+def _normalize_latex(s: str) -> str:
+    """Aggressively normalize a LaTeX string for string-equality comparison."""
+    if s is None:
+        return ""
+    s = str(s).strip()
+
+    # Strip surrounding $ ... $ or $$ ... $$
+    s = re.sub(r"^\${1,2}", "", s)
+    s = re.sub(r"\${1,2}$", "", s)
+    s = s.strip()
+
+    # Strip \left \right
+    s = _strip_left_right(s)
+
+    # Strip text/format wrappers
+    s = _strip_text_wrappers(s)
+
+    # Convert fractions and square roots
+    s = _convert_frac_to_slash(s)
+    s = _convert_sqrt(s)
+
+    # Spacing commands
+    s = s.replace(r"\!", "").replace(r"\,", "").replace(r"\:", "")
+    s = s.replace(r"\;", "").replace(r"\ ", "").replace(r"\quad", "")
+    s = s.replace(r"\qquad", "")
+
+    # Degree/percent symbols
+    s = s.replace(r"^\circ", "").replace(r"\circ", "").replace("°", "")
+    s = s.replace(r"\%", "").replace("%", "")
+
+    # Greek letters and operators
+    s = s.replace(r"\pi", "pi")
+    s = s.replace(r"\cdot", "*").replace(r"\times", "*").replace(r"\div", "/")
+
+    # Unicode minus → ASCII minus
+    s = s.replace("−", "-").replace("–", "-").replace("—", "-")
+
+    # Strip remaining $ and braces (cosmetic at this point)
+    s = s.replace("$", "")
+    s = s.replace("{", "").replace("}", "")
+
+    # Collapse all whitespace, lowercase, strip trailing punctuation
+    s = re.sub(r"\s+", "", s)
+    s = s.lower()
+    s = s.rstrip(".,;:")
+
+    return s
+
+
+# ============================================================
+# Numeric Conversion
+# ============================================================
+
+def _try_float(s: str) -> Optional[float]:
+    """Try parsing s as a float, including a/b fraction syntax. Returns None on failure."""
+    if s is None:
+        return None
+    s = str(s).strip()
+    if not s:
+        return None
+
+    # Direct float
+    try:
+        v = float(s)
+        if math.isfinite(v):
+            return v
+    except (ValueError, OverflowError):
+        pass
+
+    # Simple a/b
+    m = re.match(
+        r"^\s*\(?\s*([\-\+]?\d+(?:\.\d+)?)\s*\)?\s*/\s*\(?\s*([\-\+]?\d+(?:\.\d+)?)\s*\)?\s*$",
+        s,
+    )
+    if m:
+        try:
+            num = float(m.group(1))
+            den = float(m.group(2))
+            if den != 0 and math.isfinite(num) and math.isfinite(den):
+                return num / den
+        except (ValueError, OverflowError, ZeroDivisionError):
+            pass
+
+    # ((a)/(b)) — output of frac conversion
+    m = re.match(
+        r"^\(*\(([\-\+]?\d+(?:\.\d+)?)\)/\(([\-\+]?\d+(?:\.\d+)?)\)\)*$",
+        s,
+    )
+    if m:
+        try:
+            num = float(m.group(1))
+            den = float(m.group(2))
+            if den != 0 and math.isfinite(num) and math.isfinite(den):
+                return num / den
+        except (ValueError, OverflowError, ZeroDivisionError):
+            pass
+
+    return None
+
+
+# ============================================================
+# Set / Tuple Parsing
+# ============================================================
+
+def _try_parse_set(s: str) -> Optional[tuple]:
+    """Parse {a,b,c}, (a,b,c), [a,b,c] into a tuple of normalized strings.
+
+    Sets {...} are sorted (unordered semantics).
+    Tuples (...) and lists [...] preserve order (e.g. coordinate points).
+
+    Returns a tuple prefixed with "set" or "seq" so a set can never accidentally
+    match a tuple with the same elements. Returns None if not a set/tuple/list.
+    """
+    if s is None:
+        return None
+    s = str(s).strip()
+    s = _strip_left_right(s)
+    s = re.sub(r"\\\{", "{", s).replace(r"\}", "}")
+
+    pairs = [("{", "}", "set"), ("(", ")", "seq"), ("[", "]", "seq")]
+    inner = None
+    kind = None
+    for o, c, k in pairs:
+        if s.startswith(o) and s.endswith(c):
+            inner = s[1:-1]
+            kind = k
+            break
+
+    if inner is None:
+        return None
+
+    parts = [p.strip() for p in inner.split(",") if p.strip()]
+    if len(parts) < 2:
+        return None
+
+    normalized = [normalize_answer(p) for p in parts]
+    if kind == "set":
+        normalized = sorted(normalized)
+    return (kind, *normalized)
+
+
+# ============================================================
+# Answer Normalization & Matching
+# ============================================================
+
 def normalize_answer(answer: Optional[str]) -> str:
-    """Normalize a math answer for comparison."""
+    """Normalize a math answer for comparison.
+
+    Returns a canonical string. Numeric answers are returned in their most
+    compact decimal form; non-numeric answers are returned as a normalized
+    LaTeX/lowercase string.
+    """
     if answer is None:
         return ""
     answer = str(answer).strip()
+
+    # Whitespace normalization
     answer = re.sub(r"\s+", " ", answer)
-    answer = re.sub(r"^x\s*\\in\s*", "", answer).strip()
-    answer = re.sub(r"^x\s*=\s*", "", answer).strip()
-    answer = re.sub(r"\^\\circ", "", answer)
-    answer = re.sub(r"\\circ", "", answer)
+
+    # Strip common variable prefixes
+    answer = re.sub(r"^\s*x\s*\\?in\s*", "", answer).strip()
+    answer = re.sub(r"^\s*x\s*=\s*", "", answer).strip()
+
+    # Strip degree/percent
+    answer = re.sub(r"\^\\?circ", "", answer)
+    answer = re.sub(r"\\?circ", "", answer)
     answer = re.sub(r"\\?%", "", answer)
-    answer = answer.replace(",", "").replace("\\,", "")
+
+    # Thousands separators and $ wrappers
+    answer = answer.replace(",", "").replace(r"\,", "")
     answer = answer.strip("$").strip()
-    try:
-        val = float(answer)
-        if math.isfinite(val):
-            if val == int(val) and abs(val) < 1e15:
-                return str(int(val))
-            return f"{val:.8f}".rstrip("0").rstrip(".")
-    except (ValueError, OverflowError):
-        pass
+
+    # Trailing punctuation
+    answer = answer.rstrip(".,;:")
+
+    # Try numeric (handles ints, floats, simple fractions)
+    val = _try_float(answer)
+    if val is not None:
+        if val == int(val) and abs(val) < 1e15:
+            return str(int(val))
+        return f"{val:.10f}".rstrip("0").rstrip(".")
+
     return answer.lower().strip()
-
-
-def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
-    """Check if predicted answer matches gold answer.
-
-    Handles: exact match, numeric tolerance, fractions, leading zeros,
-    LaTeX normalization, multi-answer gold, percentage, sympy fallback.
-    """
-    if pred is None:
-        return False
-
-    # Strip $ signs from both
-    pred = str(pred).strip().strip("$").strip()
-    gold = str(gold).strip().strip("$").strip()
-
-    # Multi-answer: check if pred matches any individual gold answer
-    # Gold answers like "-1$,$2$,$-2" or "1, 3, 5, 15" or "f(x)=x,f(x)=-x"
-    if "," in gold:
-        gold_clean = gold.replace("$", "").strip()
-        gold_parts = [g.strip() for g in gold_clean.split(",") if g.strip()]
-        if len(gold_parts) > 1:
-            for gp in gold_parts:
-                if _single_answer_match(pred, gp, tol):
-                    return True
-
-    return _single_answer_match(pred, gold, tol)
 
 
 def _single_answer_match(pred: str, gold: str, tol: float = 1e-6) -> bool:
     """Match a single predicted answer against a single gold answer."""
-    pred = str(pred).strip().strip("$").strip()
-    gold = str(gold).strip().strip("$").strip()
+    if pred is None or gold is None:
+        return False
 
+    pred = str(pred).strip().strip("$").strip().rstrip(".,;:")
+    gold = str(gold).strip().strip("$").strip().rstrip(".,;:")
+
+    if not pred or not gold:
+        return False
+
+    # ---- Set/tuple comparison (must come before scalar attempts) ----
+    pred_set = _try_parse_set(pred)
+    gold_set = _try_parse_set(gold)
+    if pred_set is not None and gold_set is not None:
+        return pred_set == gold_set
+
+    # ---- Direct normalized comparison ----
     pred_n = normalize_answer(pred)
     gold_n = normalize_answer(gold)
-
     if pred_n == gold_n:
         return True
 
-    # Strip leading zeros
-    pred_stripped = pred_n.lstrip("0") or "0"
-    gold_stripped = gold_n.lstrip("0") or "0"
-    if pred_stripped == gold_stripped:
+    # ---- Strip leading zeros ----
+    if pred_n and gold_n:
+        ps = pred_n.lstrip("0") or "0"
+        gs = gold_n.lstrip("0") or "0"
+        if ps == gs:
+            return True
+
+    # ---- Numeric comparison with tolerance ----
+    pv = _try_float(pred_n)
+    gv = _try_float(gold_n)
+    if pv is not None and gv is not None:
+        if abs(pv - gv) < tol:
+            return True
+        if abs(pv) < 1e15 and abs(gv) < 1e15:
+            try:
+                if pv == int(pv) and gv == int(gv) and int(pv) == int(gv):
+                    return True
+            except (ValueError, OverflowError):
+                pass
+
+    # ---- Percentage handling: "62.5%" ↔ "0.625" ↔ "62.5" ----
+    pred_pct = re.sub(r"\\?%", "", pred_n).strip()
+    gold_pct = re.sub(r"\\?%", "", gold_n).strip()
+    pv = _try_float(pred_pct)
+    gv = _try_float(gold_pct)
+    if pv is not None and gv is not None:
+        if abs(pv - gv) < tol:
+            return True
+        if abs(pv - gv * 100) < tol or abs(pv * 100 - gv) < tol:
+            return True
+
+    # ---- Aggressive LaTeX normalization ----
+    pred_l = _normalize_latex(pred)
+    gold_l = _normalize_latex(gold)
+    if pred_l and gold_l and pred_l == gold_l:
         return True
 
-    # Numeric comparison with tolerance (guarded against inf/nan)
-    try:
-        pv = float(pred_n)
-        gv = float(gold_n)
-        if math.isfinite(pv) and math.isfinite(gv):
-            if abs(pv - gv) < tol:
-                return True
-            if abs(pv) < 1e15 and abs(gv) < 1e15 and pv == int(pv) and gv == int(gv) and int(pv) == int(gv):
-                return True
-    except (ValueError, TypeError, OverflowError):
-        pass
+    # Try numeric on LaTeX-normalized form (handles \frac → decimal)
+    pv = _try_float(pred_l)
+    gv = _try_float(gold_l)
+    if pv is not None and gv is not None and abs(pv - gv) < tol:
+        return True
 
-    # Percentage comparison: "62.5%" vs "0.625" or "62.5"
-    try:
-        pred_pct = re.sub(r"\\?%", "", pred_n).strip()
-        gold_pct = re.sub(r"\\?%", "", gold_n).strip()
-        pv = float(pred_pct)
-        gv = float(gold_pct)
-        if math.isfinite(pv) and math.isfinite(gv):
-            if abs(pv - gv) < tol:
-                return True
-            if abs(pv - gv * 100) < tol or abs(pv * 100 - gv) < tol:
-                return True
-    except (ValueError, TypeError, OverflowError):
-        pass
+    # ---- Sign-shuffling for negative fractions: -a/b vs a/-b vs -(a/b) ----
+    def _neg_variants(s: str) -> set:
+        out = {s}
+        if s.startswith("-"):
+            out.add(s[1:])
+            out.add("-(" + s[1:] + ")")
+        if s.startswith("("):
+            out.add(s.strip("()"))
+        return out
 
-    # Fraction comparison
+    for pv_s in _neg_variants(pred_l):
+        for gv_s in _neg_variants(gold_l):
+            if pv_s == gv_s:
+                return True
+            pv = _try_float(pv_s)
+            gv = _try_float(gv_s)
+            if pv is not None and gv is not None and abs(pv - gv) < tol:
+                return True
+
+    # ---- Fraction comparison (legacy a/b form) ----
     frac_pat = r"^([\-\+]?\d+)\s*/\s*(\d+)$"
     pm = re.match(frac_pat, pred_n)
     gm = re.match(frac_pat, gold_n)
@@ -636,28 +862,84 @@ def _single_answer_match(pred: str, gold: str, tol: float = 1e-6) -> bool:
         except (ValueError, ZeroDivisionError, OverflowError):
             pass
 
-    # LaTeX normalization
-    pred_l = _normalize_latex(pred)
-    gold_l = _normalize_latex(gold)
-    if pred_l == gold_l:
-        return True
-
-    pred_l2 = _normalize_latex(pred_n)
-    gold_l2 = _normalize_latex(gold_n)
-    if pred_l2 == gold_l2:
-        return True
-
-    # Sympy fallback
+    # ---- Sympy fallback for symbolic equivalence ----
     try:
         from sympy import simplify, sympify
-        p_expr = sympify(pred_l.replace("^", "**"))
-        g_expr = sympify(gold_l.replace("^", "**"))
-        if simplify(p_expr - g_expr) == 0:
-            return True
-    except Exception:
+        from sympy.parsing.sympy_parser import parse_expr
+
+        def _prepare(expr_str: str) -> str:
+            e = expr_str
+            e = e.replace("^", "**")
+            return e
+
+        try:
+            p_expr = parse_expr(_prepare(pred_l), evaluate=True)
+            g_expr = parse_expr(_prepare(gold_l), evaluate=True)
+            diff = simplify(p_expr - g_expr)
+            if diff == 0:
+                return True
+            try:
+                if abs(float(diff)) < tol:
+                    return True
+            except (TypeError, ValueError):
+                pass
+        except Exception:
+            pass
+
+        # Last-ditch: pure sympify on raw input (after stripping $)
+        try:
+            p_expr = sympify(pred.replace("$", "").replace(r"\dfrac", r"\frac"))
+            g_expr = sympify(gold.replace("$", "").replace(r"\dfrac", r"\frac"))
+            if simplify(p_expr - g_expr) == 0:
+                return True
+        except Exception:
+            pass
+    except ImportError:
         pass
 
     return False
+
+
+def answers_match(pred: Optional[str], gold: str, tol: float = 1e-6) -> bool:
+    """Check if predicted answer matches gold answer.
+
+    Handles:
+      - exact string match
+      - numeric tolerance (ints, floats, simple a/b fractions)
+      - leading-zero invariance
+      - LaTeX normalization (\\frac, \\dfrac, \\tfrac, \\sqrt, \\text{}, \\mathrm{},
+                             \\left/\\right, \\cdot, \\pi, etc.)
+      - multi-answer gold ("1, 2, 3" — checks if pred matches any)
+      - set vs ordered-tuple comparison (\\{a,b\\} unordered, (a,b) ordered)
+      - percentage equivalence ("62.5%" ↔ "0.625")
+      - sign-shuffling for negative fractions
+      - sympy symbolic equivalence as last resort
+    """
+    if pred is None:
+        return False
+
+    pred = str(pred).strip().strip("$").strip()
+    gold = str(gold).strip().strip("$").strip()
+
+    if not pred or not gold:
+        return False
+
+    # ---- Multi-answer gold ("1, 2, 3" not wrapped in {} () [] ) ----
+    if "," in gold:
+        first = gold.lstrip()[:1]
+        last = gold.rstrip()[-1:]
+        is_wrapped = (first, last) in {("{", "}"), ("(", ")"), ("[", "]")}
+        if not is_wrapped:
+            gold_clean = gold.replace("$", "").strip()
+            gold_parts = [g.strip() for g in gold_clean.split(",") if g.strip()]
+            if len(gold_parts) > 1:
+                for gp in gold_parts:
+                    if _single_answer_match(pred, gp, tol):
+                        return True
+                # Also fall through to single-answer match below in case the
+                # whole comma-separated string is the intended answer
+
+    return _single_answer_match(pred, gold, tol)
 
 
 # ============================================================
@@ -725,3 +1007,96 @@ def get_inference_dataset(cfg: dict) -> list[dict]:
         return load_olympiad_bench(n_problems=n, seed=seed)
     else:
         raise ValueError(f"Unknown inference dataset: {name}")
+
+
+# ============================================================
+# Self-test
+# ============================================================
+
+if __name__ == "__main__":
+    """Sanity-check the answer matching against common LaTeX edge cases."""
+    test_cases = [
+        # Basic fraction equivalence
+        (r"\frac{1}{2}", r"\dfrac{1}{2}", True),
+        (r"\frac{1}{2}", r"\tfrac{1}{2}", True),
+        (r"\frac{1}{2}", "0.5", True),
+        (r"\frac{1}{2}", "1/2", True),
+        (r"-\frac{1}{2}", r"-\dfrac{1}{2}", True),
+        (r"-\frac{1}{2}", r"\frac{-1}{2}", True),
+        (r"-\frac{25}{8}", "-3.125", True),
+        ("-25/8", r"-\frac{25}{8}", True),
+
+        # Text wrappers
+        (r"\text{even}", "even", True),
+        (r"\mathrm{even}", "even", True),
+        (r"\mathbf{42}", "42", True),
+        (r"\operatorname{even}", "even", True),
+
+        # Square roots
+        (r"\sqrt{2}", "sqrt(2)", True),
+        (r"\sqrt 2", r"\sqrt{2}", True),
+        (r"2\sqrt{3}", r"2\sqrt{3}", True),
+
+        # Numbers
+        ("33", "33", True),
+        ("33.0", "33", True),
+        ("0.625", "62.5%", True),
+        ("-7", "-7", True),
+        ("−7", "-7", True),  # unicode minus
+        ("33.", "33", True),  # trailing punctuation
+        ("33;", "33", True),
+        ("  33  ", "33", True),
+        ("$33$", "33", True),
+
+        # Sets (unordered)
+        (r"\{1,2,3\}", "{3,2,1}", True),
+        (r"\{1, 2, 3\}", r"\{3, 1, 2\}", True),
+
+        # Tuples (ordered)
+        (r"\left(0,1\right)", "(0,1)", True),
+        ("(1, 2, 3)", "(1, 2, 3)", True),
+        ("(1, 2, 3)", "(3, 2, 1)", False),  # order matters for tuples
+        ("(0, 1)", "(1, 0)", False),
+        ("[1, 2]", "[2, 1]", False),
+        (r"\{1, 2\}", "(1, 2)", False),  # set ≠ tuple
+
+        # Pi
+        (r"2\pi", "2pi", True),
+
+        # Multi-answer gold
+        ("2", "1, 2, 3", True),
+        ("4", "1, 2, 3", False),
+
+        # Units
+        (r"5\text{ cm}", r"5 \text{ cm}", True),
+        (r"5\text{cm}", "5cm", True),
+
+        # Sympy fallback
+        (r"\frac{1}{2} + \frac{1}{3}", r"\frac{5}{6}", True),
+
+        # Negative cases
+        (r"33", "34", False),
+        (r"\frac{1}{2}", r"\frac{1}{3}", False),
+        ("even", "odd", False),
+        ("", "5", False),
+        ("5", "", False),
+        (None, "5", False),
+    ]
+
+    passed = 0
+    failed = []
+    for pred, gold, expected in test_cases:
+        try:
+            result = answers_match(pred, gold)
+        except Exception as e:
+            result = f"ERROR: {e}"
+        if result == expected:
+            passed += 1
+        else:
+            failed.append((pred, gold, expected, result))
+
+    print(f"Passed: {passed}/{len(test_cases)}")
+    if failed:
+        print("\nFailures:")
+        for pred, gold, expected, result in failed:
+            print(f"  pred={pred!r:35} gold={gold!r:30} expected={expected} got={result}")
