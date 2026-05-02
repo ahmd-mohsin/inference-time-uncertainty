@@ -28,6 +28,8 @@ class DADResult:
     answer_entropy_per_round: list[float] = field(default_factory=list)
     confidence_per_round: list[float] = field(default_factory=list)
     selected_method: str = ""
+    # NEW: per-round disagreement maps for characterization
+    per_round_disagreement_maps: list[dict] = field(default_factory=list)
 
 
 class DADGenerator:
@@ -52,11 +54,25 @@ class DADGenerator:
         if hasattr(model, 'config') and model.config.max_position_embeddings < 32768:
             model.config.max_position_embeddings = 32768
 
+    def _dmap_to_dict(self, dmap) -> dict:
+        """Convert a DisagreementMap to a serializable dict."""
+        return {
+            "n_solutions": dmap.n_solutions,
+            "answer_distribution": dmap.answer_distribution,
+            "answer_entropy": dmap.answer_entropy,
+            "majority_answer": dmap.majority_answer,
+            "majority_answer_fraction": dmap.majority_answer_fraction,
+            "n_agreed": len(dmap.agreed_claims),
+            "n_disputed": len(dmap.disputed_claims),
+            "confidence": dmap.confidence_score,
+        }
+
     def generate(self, prompt_ids: torch.Tensor, problem_text: str = "") -> DADResult:
         t_start = time.time()
         all_solutions_across_rounds = []
         answer_entropies = []
         confidences = []
+        per_round_dmaps = []  # NEW: store every round's disagreement map
         best_workspace = ""
         best_dmap = None
 
@@ -79,6 +95,9 @@ class DADGenerator:
 
             answer_entropies.append(dmap.answer_entropy)
             confidences.append(dmap.confidence_score)
+
+            # Store this round's disagreement map
+            per_round_dmaps.append(self._dmap_to_dict(dmap))
 
             best_workspace = format_workspace(problem_text, dmap, self.workspace_max_tokens)
             best_dmap = dmap
@@ -108,15 +127,7 @@ class DADGenerator:
 
         dmap_dict = None
         if best_dmap:
-            dmap_dict = {
-                "n_solutions": best_dmap.n_solutions,
-                "answer_distribution": best_dmap.answer_distribution,
-                "answer_entropy": best_dmap.answer_entropy,
-                "majority_answer": best_dmap.majority_answer,
-                "n_agreed": len(best_dmap.agreed_claims),
-                "n_disputed": len(best_dmap.disputed_claims),
-                "confidence": best_dmap.confidence_score,
-            }
+            dmap_dict = self._dmap_to_dict(best_dmap)
 
         return DADResult(
             generated_text=best_solution["text"],
@@ -134,6 +145,7 @@ class DADGenerator:
             answer_entropy_per_round=answer_entropies,
             confidence_per_round=confidences,
             selected_method="disagreement_weighted_vote",
+            per_round_disagreement_maps=per_round_dmaps,
         )
 
     @torch.no_grad()
