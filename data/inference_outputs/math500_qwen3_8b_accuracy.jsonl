@@ -1,0 +1,1 @@
+{"run_id": "Qwen3-8B_math500_greedy_20260501_225815", "dataset": "math500", "model": "Qwen/Qwen3-8B", "method": "greedy", "accuracy": 0.81, "n_correct": 405, "n_problems": 500, "output_dir": "data/inference_outputs/Qwen3-8B_math500_greedy_20260501_225815"}
