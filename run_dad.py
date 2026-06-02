@@ -1,13 +1,13 @@
 """
-run_dad.py — FIXED version v2
+run_dad.py — corrected
 
-Fixes applied:
-1. max_position_embeddings set to 32768 after model load
-2. Leading zero normalization in voting (017 == 17)
-3. Float gold answer handling in answers_match (142.0 == 142)
-4. Unique output filenames per run (model_dataset_mode_timestamp)
-5. tqdm progress bars for each problem
-6. Optional --resume_dir: append to an existing run's JSONL, skipping problem_ids already present
+Changes vs the previous version:
+  * Records the adaptive telemetry from DADResult (stop_reason, samples/round,
+    contested_mass/round, chosen_coordinate/round, leverage/round).
+  * Guards the tqdm postfix against a None extracted answer.
+Everything else (greedy / sampling-vote / resume / metrics / snapshots) is
+unchanged. The compute savings come from the generator's claim-level early
+stop, so no logic change is needed here.
 """
 import argparse
 import json
@@ -76,16 +76,15 @@ def _load_jsonl(path: Path) -> list:
 def _make_run_id(cfg, mode, dataset_name):
     """Create a unique run identifier: modelshort_dataset_mode_timestamp."""
     model_name = cfg["model"].get("name", "model")
-    # Auto-derive short name from HuggingFace model path
-    # e.g. "Qwen/Qwen2.5-Math-7B-Instruct" -> "Qwen2.5-Math-7B-Instruct"
-    # e.g. "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B" -> "DeepSeek-R1-0528-Qwen3-8B"
     short = model_name.split("/")[-1]
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     return f"{short}_{dataset_name}_{mode}_{ts}"
 
 
 def run_greedy(model, tokenizer, problems, cfg, out_path):
-    from src.data.dataset import format_prompt, extract_boxed_answer, extract_numeric_answer, answers_match
+    from src.data.dataset import (
+        format_prompt, extract_boxed_answer, extract_numeric_answer, answers_match,
+    )
 
     device = cfg["model"]["device"]
     max_tokens = cfg["model"].get("max_new_tokens", 2048)
@@ -101,12 +100,8 @@ def run_greedy(model, tokenizer, problems, cfg, out_path):
         logger.info("Greedy: all %s problems already in %s, skipping.", base_n, out_path)
         return results
     if base_n:
-        logger.info(
-            "Greedy: resuming — %s on disk, %s remaining -> %s",
-            base_n,
-            len(todo),
-            out_path,
-        )
+        logger.info("Greedy: resuming — %s on disk, %s remaining -> %s",
+                    base_n, len(todo), out_path)
 
     pbar = tqdm(todo, desc="Greedy", unit="prob",
                 bar_format="{l_bar}{bar:30}{r_bar}{bar:-10b}")
@@ -120,9 +115,7 @@ def run_greedy(model, tokenizer, problems, cfg, out_path):
         t0 = time.time()
         with torch.no_grad():
             out = model.generate(
-                input_ids=prompt_ids,
-                max_new_tokens=max_tokens,
-                do_sample=False,
+                input_ids=prompt_ids, max_new_tokens=max_tokens, do_sample=False,
                 pad_token_id=tokenizer.pad_token_id or tokenizer.eos_token_id,
                 eos_token_id=tokenizer.eos_token_id,
             )
@@ -136,29 +129,18 @@ def run_greedy(model, tokenizer, problems, cfg, out_path):
             n_correct += 1
 
         result = {
-            "problem_id": problem["problem_id"],
-            "source": problem.get("source", ""),
-            "question": problem["question"],
-            "gold_answer": problem["gold_answer"],
-            "extracted_answer": answer,
-            "correct": correct,
-            "generated_text": gen_text,
-            "total_tokens": len(gen_ids),
-            "wall_time_sec": wall,
-            "method": "greedy",
-            "level": problem.get("level", ""),
-            "problem_type": problem.get("problem_type", ""),
+            "problem_id": problem["problem_id"], "source": problem.get("source", ""),
+            "question": problem["question"], "gold_answer": problem["gold_answer"],
+            "extracted_answer": answer, "correct": correct, "generated_text": gen_text,
+            "total_tokens": len(gen_ids), "wall_time_sec": wall, "method": "greedy",
+            "level": problem.get("level", ""), "problem_type": problem.get("problem_type", ""),
         }
         results.append(result)
-
-        # Incremental save
         with open(out_path, "a") as f:
-            f.write(json.dumps(result) + "\n")
-            f.flush()
+            f.write(json.dumps(result) + "\n"); f.flush()
 
         acc = n_correct / (base_n + i + 1)
-        pbar.set_postfix(acc=f"{acc:.3f}", ans=answer[:20], gold=problem["gold_answer"][:20])
-
+        pbar.set_postfix(acc=f"{acc:.3f}", ans=str(answer)[:20], gold=problem["gold_answer"][:20])
         del out
         torch.cuda.empty_cache()
 
@@ -167,7 +149,9 @@ def run_greedy(model, tokenizer, problems, cfg, out_path):
 
 
 def run_sampling_vote(model, tokenizer, problems, cfg, out_path):
-    from src.data.dataset import format_prompt, extract_boxed_answer, extract_numeric_answer, answers_match
+    from src.data.dataset import (
+        format_prompt, extract_boxed_answer, extract_numeric_answer, answers_match,
+    )
 
     device = cfg["model"]["device"]
     dad_cfg = cfg.get("dad", {})
@@ -187,12 +171,8 @@ def run_sampling_vote(model, tokenizer, problems, cfg, out_path):
         logger.info("Sampling: all %s problems already in %s, skipping.", base_n, out_path)
         return results
     if base_n:
-        logger.info(
-            "Sampling: resuming — %s on disk, %s remaining -> %s",
-            base_n,
-            len(todo),
-            out_path,
-        )
+        logger.info("Sampling: resuming — %s on disk, %s remaining -> %s",
+                    base_n, len(todo), out_path)
 
     pbar = tqdm(todo, desc=f"Sampling M={n_samples}", unit="prob",
                 bar_format="{l_bar}{bar:30}{r_bar}{bar:-10b}")
@@ -206,13 +186,10 @@ def run_sampling_vote(model, tokenizer, problems, cfg, out_path):
         t0 = time.time()
         solutions = []
         with torch.no_grad():
-            for s_idx in range(n_samples):
+            for _ in range(n_samples):
                 out = model.generate(
-                    input_ids=prompt_ids,
-                    max_new_tokens=max_tokens,
-                    do_sample=True,
-                    temperature=temperature,
-                    top_p=top_p,
+                    input_ids=prompt_ids, max_new_tokens=max_tokens, do_sample=True,
+                    temperature=temperature, top_p=top_p,
                     pad_token_id=tokenizer.pad_token_id or tokenizer.eos_token_id,
                     eos_token_id=tokenizer.eos_token_id,
                 )
@@ -222,10 +199,8 @@ def run_sampling_vote(model, tokenizer, problems, cfg, out_path):
                 solutions.append({"text": gen_text, "answer": ans, "tokens": len(gen_ids)})
                 del out
                 torch.cuda.empty_cache()
-
         wall = time.time() - t0
 
-        # Majority vote
         answer_counts = defaultdict(int)
         answer_text = {}
         for s in solutions:
@@ -241,36 +216,28 @@ def run_sampling_vote(model, tokenizer, problems, cfg, out_path):
             n_correct += 1
 
         result = {
-            "problem_id": problem["problem_id"],
-            "source": problem.get("source", ""),
-            "question": problem["question"],
-            "gold_answer": problem["gold_answer"],
-            "extracted_answer": best_sol["answer"],
-            "correct": correct,
+            "problem_id": problem["problem_id"], "source": problem.get("source", ""),
+            "question": problem["question"], "gold_answer": problem["gold_answer"],
+            "extracted_answer": best_sol["answer"], "correct": correct,
             "generated_text": best_sol["text"],
-            "total_tokens": sum(s["tokens"] for s in solutions),
-            "wall_time_sec": wall,
-            "method": "sampling_vote",
-            "n_samples": n_samples,
+            "total_tokens": sum(s["tokens"] for s in solutions), "wall_time_sec": wall,
+            "method": "sampling_vote", "n_samples": n_samples,
             "answer_distribution": dict(answer_counts),
-            "level": problem.get("level", ""),
-            "problem_type": problem.get("problem_type", ""),
+            "level": problem.get("level", ""), "problem_type": problem.get("problem_type", ""),
         }
         results.append(result)
-
         with open(out_path, "a") as f:
-            f.write(json.dumps(result) + "\n")
-            f.flush()
+            f.write(json.dumps(result) + "\n"); f.flush()
 
         acc = n_correct / (base_n + i + 1)
-        pbar.set_postfix(acc=f"{acc:.3f}", ans=best_sol["answer"][:20], gold=problem["gold_answer"][:20])
+        pbar.set_postfix(acc=f"{acc:.3f}", ans=str(best_sol["answer"])[:20], gold=problem["gold_answer"][:20])
 
     pbar.close()
     return results
 
 
 def run_dad(model, tokenizer, problems, cfg, out_path):
-    from src.data.dataset import format_prompt, answers_match
+    from src.data.dataset import answers_match
     from src.dad.dad_generator import DADGenerator
 
     generator = DADGenerator(model, tokenizer, cfg)
@@ -286,17 +253,14 @@ def run_dad(model, tokenizer, problems, cfg, out_path):
         logger.info("DAD: all %s problems already in %s, skipping.", base_n, out_path)
         return results
     if base_n:
-        logger.info(
-            "DAD: resuming — %s on disk, %s remaining -> %s",
-            base_n,
-            len(todo),
-            out_path,
-        )
+        logger.info("DAD: resuming — %s on disk, %s remaining -> %s",
+                    base_n, len(todo), out_path)
 
     pbar = tqdm(todo, desc="DAD", unit="prob",
                 bar_format="{l_bar}{bar:30}{r_bar}{bar:-10b}")
 
     for i, problem in enumerate(pbar):
+        from src.data.dataset import format_prompt
         prompt = format_prompt(problem, cfg["model"]["name"])
         prompt_ids = tokenizer(
             prompt, return_tensors="pt", truncation=True, max_length=4096,
@@ -317,37 +281,29 @@ def run_dad(model, tokenizer, problems, cfg, out_path):
             n_correct += 1
 
         result = {
-            "problem_id": problem["problem_id"],
-            "source": problem.get("source", ""),
-            "question": problem["question"],
-            "gold_answer": problem["gold_answer"],
-            "extracted_answer": gen.extracted_answer,
-            "correct": correct,
-            "generated_text": gen.generated_text,
-            "total_tokens": gen.total_tokens,
-            "wall_time_sec": gen.wall_time_sec,
-            "method": "dad",
-            "n_rounds": gen.n_rounds,
-            "n_total_generations": gen.n_total_generations,
+            "problem_id": problem["problem_id"], "source": problem.get("source", ""),
+            "question": problem["question"], "gold_answer": problem["gold_answer"],
+            "extracted_answer": gen.extracted_answer, "correct": correct,
+            "generated_text": gen.generated_text, "total_tokens": gen.total_tokens,
+            "wall_time_sec": gen.wall_time_sec, "method": "dad",
+            "n_rounds": gen.n_rounds, "n_total_generations": gen.n_total_generations,
             "answer_entropy_per_round": gen.answer_entropy_per_round,
             "confidence_per_round": gen.confidence_per_round,
             "disagreement_map": gen.disagreement_map,
-            "level": problem.get("level", ""),
-            "problem_type": problem.get("problem_type", ""),
+            "level": problem.get("level", ""), "problem_type": problem.get("problem_type", ""),
+            # adaptive-allocation telemetry
+            "stop_reason": gen.stop_reason,
+            "samples_per_round": gen.samples_per_round,
+            "contested_mass_per_round": gen.contested_mass_per_round,
+            "chosen_coordinate_per_round": gen.chosen_coordinate_per_round,
+            "leverage_per_round": gen.leverage_per_round,
         }
         results.append(result)
-
         with open(out_path, "a") as f:
-            f.write(json.dumps(result) + "\n")
-            f.flush()
+            f.write(json.dumps(result) + "\n"); f.flush()
 
         acc = n_correct / (base_n + i + 1)
-        pbar.set_postfix(
-            acc=f"{acc:.3f}",
-            ans=gen.extracted_answer[:15],
-            rounds=gen.n_rounds,
-        )
-
+        pbar.set_postfix(acc=f"{acc:.3f}", ans=(gen.extracted_answer or "")[:15], rounds=gen.n_rounds)
         torch.cuda.empty_cache()
 
     pbar.close()
@@ -355,23 +311,18 @@ def run_dad(model, tokenizer, problems, cfg, out_path):
 
 
 def save_results(results, path):
-    """Save full results (used for final consolidated save)."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w") as f:
         for r in results:
-            f.write(json.dumps(r) + "\n")
-            f.flush()
+            f.write(json.dumps(r) + "\n"); f.flush()
     logger.info(f"Saved {len(results)} results to {path}")
 
 
 def compute_metrics(results, method_name):
     if not results:
         return {}
-
     n = len(results)
     n_correct = sum(1 for r in results if r["correct"])
-    accuracy = n_correct / n
-
     by_level = defaultdict(list)
     by_type = defaultdict(list)
     for r in results:
@@ -379,12 +330,9 @@ def compute_metrics(results, method_name):
             by_level[r["level"]].append(r["correct"])
         if r.get("problem_type"):
             by_type[r["problem_type"]].append(r["correct"])
-
-    metrics = {
-        "method": method_name,
-        "n_problems": n,
-        "n_correct": n_correct,
-        "accuracy": accuracy,
+    return {
+        "method": method_name, "n_problems": n, "n_correct": n_correct,
+        "accuracy": n_correct / n,
         "mean_tokens": float(np.mean([r["total_tokens"] for r in results])),
         "median_tokens": float(np.median([r["total_tokens"] for r in results])),
         "mean_wall_time": float(np.mean([r["wall_time_sec"] for r in results])),
@@ -392,7 +340,6 @@ def compute_metrics(results, method_name):
         "accuracy_by_level": {k: float(np.mean(v)) for k, v in sorted(by_level.items())},
         "accuracy_by_type": {k: float(np.mean(v)) for k, v in sorted(by_type.items())},
     }
-    return metrics
 
 
 def print_comparison(all_metrics):
@@ -401,45 +348,32 @@ def print_comparison(all_metrics):
     logger.info(f"{'Method':<25} {'Acc':>8} {'N':>6} {'Tokens':>10} {'Time/Q':>10}")
     logger.info("-" * 70)
     for m in all_metrics:
-        logger.info(
-            f"{m['method']:<25} {m['accuracy']:>8.4f} {m['n_problems']:>6} "
-            f"{m['mean_tokens']:>10.0f} {m['mean_wall_time']:>10.1f}s"
-        )
+        logger.info(f"{m['method']:<25} {m['accuracy']:>8.4f} {m['n_problems']:>6} "
+                    f"{m['mean_tokens']:>10.0f} {m['mean_wall_time']:>10.1f}s")
     logger.info(sep)
-
     if len(all_metrics) >= 2:
         baseline = all_metrics[0]
         for m in all_metrics[1:]:
             delta = m["accuracy"] - baseline["accuracy"]
-            logger.info(
-                f"  {m['method']} vs {baseline['method']}: "
-                f"{'+' if delta >= 0 else ''}{delta:.4f} ({delta*100:+.1f}%)"
-            )
+            logger.info(f"  {m['method']} vs {baseline['method']}: "
+                        f"{'+' if delta >= 0 else ''}{delta:.4f} ({delta*100:+.1f}%)")
     logger.info(sep)
 
 
-def append_accuracy_snapshot(snapshot_path: str, run_id: str, cfg: dict, all_metrics: list, out_dir: Path):
-    """Append one JSON object per method so separate greedy/dad runs can be summarized together."""
+def append_accuracy_snapshot(snapshot_path, run_id, cfg, all_metrics, out_dir):
     if not snapshot_path or not all_metrics:
         return
     p = Path(snapshot_path)
     p.parent.mkdir(parents=True, exist_ok=True)
-    model_name = cfg["model"]["name"]
-    dataset_name = cfg["dataset"]["name"]
     with open(p, "a") as f:
         for m in all_metrics:
             rec = {
-                "run_id": run_id,
-                "dataset": dataset_name,
-                "model": model_name,
-                "method": m["method"],
-                "accuracy": m["accuracy"],
-                "n_correct": m["n_correct"],
-                "n_problems": m["n_problems"],
-                "output_dir": str(out_dir),
+                "run_id": run_id, "dataset": cfg["dataset"]["name"],
+                "model": cfg["model"]["name"], "method": m["method"],
+                "accuracy": m["accuracy"], "n_correct": m["n_correct"],
+                "n_problems": m["n_problems"], "output_dir": str(out_dir),
             }
-            f.write(json.dumps(rec) + "\n")
-            f.flush()
+            f.write(json.dumps(rec) + "\n"); f.flush()
     logger.info(f"Appended accuracy snapshot to {p}")
 
 
@@ -452,20 +386,10 @@ def main():
     parser.add_argument("--m_samples", type=int, default=None)
     parser.add_argument("--max_rounds", type=int, default=None)
     parser.add_argument("--temperature", type=float, default=None)
-    parser.add_argument(
-        "--accuracy_snapshot",
-        type=str,
-        default=None,
-        help="Append one JSON line per executed method (accuracy, counts, output_dir). "
-        "Use the same path across chained greedy+dad runs to summarize both.",
-    )
-    parser.add_argument(
-        "--resume_dir",
-        type=str,
-        default=None,
-        help="Existing inference output directory (from prior run's log: output_dir). "
-        "Appends to JSONL files and skips problem_ids already written for each mode.",
-    )
+    parser.add_argument("--accuracy_snapshot", type=str, default=None,
+                        help="Append one JSON line per executed method.")
+    parser.add_argument("--resume_dir", type=str, default=None,
+                        help="Existing output dir to append to (skips done problem_ids).")
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -483,7 +407,6 @@ def main():
         cfg["dad"]["temperature"] = args.temperature
 
     dataset_name = cfg["dataset"]["name"]
-    short = cfg["model"].get("short_name", cfg["model"]["name"].split("/")[-1])
     if args.resume_dir:
         out_dir = Path(args.resume_dir).resolve()
         if not out_dir.is_dir():
@@ -494,7 +417,6 @@ def main():
         run_id = _make_run_id(cfg, args.mode, dataset_name)
 
     setup_logging(f"logs/{run_id}.log")
-
     logger.info("=" * 60)
     logger.info("Disagreement-Aware Distillation (DAD)")
     logger.info("=" * 60)
@@ -518,9 +440,8 @@ def main():
 
     model, tokenizer = ModelLoader(cfg).load()
 
-    # FIX: Override max_position_embeddings
-    if hasattr(model, 'config'):
-        old_max_pos = getattr(model.config, 'max_position_embeddings', None)
+    if hasattr(model, "config"):
+        old_max_pos = getattr(model.config, "max_position_embeddings", None)
         if old_max_pos and old_max_pos < 32768:
             model.config.max_position_embeddings = 32768
             logger.info(f"  Fixed max_position_embeddings: {old_max_pos} -> 32768")
@@ -561,7 +482,6 @@ def main():
 
     if all_metrics:
         print_comparison(all_metrics)
-
         metrics_path = out_dir / "metrics.json"
         with open(metrics_path, "w") as f:
             json.dump(all_metrics, f, indent=2)
