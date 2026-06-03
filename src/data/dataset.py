@@ -10,6 +10,24 @@ from datasets import load_dataset
 
 logger = logging.getLogger(__name__)
 
+# Patterns for stripping reasoning/thinking traces from various models
+_THINK_PATTERNS = [
+    # Qwen3, DeepSeek-R1: <think>...</think>
+    (r"<think>", r"</think>"),
+    # Some models use <reasoning>...</reasoning>
+    (r"<reasoning>", r"</reasoning>"),
+    # Some models use <reflection>...</reflection>
+    (r"<reflection>", r"</reflection>"),
+]
+
+# Answer marker patterns (searched in post-reasoning tail)
+_ANSWER_MARKERS = [
+    r"(?:the\s+)?(?:final\s+)?answer\s+is[:\s]*\$?([^\$\n]{1,80})\$?",
+    r"(?:the\s+)?(?:final\s+)?answer[:\s]*\$?([^\$\n]{1,80})\$?",
+    r"(?:therefore|thus|hence|so)[,:\s]+(?:the\s+)?(?:answer\s+is\s+)?\$?([^\$\n]{1,60})\$?",
+    r"####\s*([\-\+]?\d[\d,\.]*(?:/\d+)?)",
+    r"\\boxed\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}",
+]
 
 # ============================================================
 # Dataset Loaders   (unchanged)
@@ -247,21 +265,45 @@ _SPECIAL_TOKENS = re.compile(
 
 
 def _strip_reasoning(text: str) -> str:
-    """Remove <think>… blocks, chat special tokens, and markdown emphasis.
-
-    The final answer is normally emitted *after* the reasoning block, so the
-    answer-of-record lives in the tail. Stripping the scaffold prevents the
-    fallback heuristics from latching onto an intermediate number inside the
-    chain of thought. Boxed extraction still runs on the full text first.
+    """Strip thinking/reasoning traces from model output.
+    
+    Handles:
+    - Complete traces: <think>...</think> -> returns text after </think>
+    - Truncated traces: <think>... (no closing tag) -> searches tail for answer
+    - Multiple trace formats (Qwen3, DeepSeek-R1, etc.)
+    - Nested or repeated traces
     """
-    if not text:
-        return text
-    t = _THINK_BLOCK.sub(" ", text)
-    # drop an unclosed leading <think> ... with no closer: keep text after it
-    t = re.sub(r"^.*?</think>", " ", t, count=1, flags=re.DOTALL | re.IGNORECASE) if "</think>" in t and "<think>" in text else t
-    t = _SPECIAL_TOKENS.sub(" ", t)
-    t = t.replace("**", " ").replace("###", " ").replace("####", "#### ")
-    return t
+    result = text
+    
+    for open_tag, close_tag in _THINK_PATTERNS:
+        if close_tag in result:
+            # Complete trace found — take everything after the LAST closing tag
+            parts = result.split(close_tag)
+            after = parts[-1].strip()
+            if after:
+                result = after
+            else:
+                # Closing tag is at the very end — check the part just before it
+                # for a \boxed{} that might be inside the thinking
+                # (some models put the final answer inside <think>)
+                for part in reversed(parts[:-1]):
+                    boxed = extract_boxed_answer(part)
+                    if boxed:
+                        return f"\\boxed{{{boxed}}}"
+                # No boxed found, use last 1000 chars of the full text
+                result = text[-1000:]
+        elif re.search(open_tag, result):
+            # Truncated trace — opening tag but no closing tag
+            # Model likely hit token limit mid-thinking
+            # Strategy: search the tail for \boxed{}, or fall back to last 500 chars
+            boxed = extract_boxed_answer(text)
+            if boxed:
+                return f"\\boxed{{{boxed}}}"
+            # Try the last 500 characters
+            result = text[-500:]
+    
+    return result
+
 
 
 # ============================================================
@@ -269,79 +311,111 @@ def _strip_reasoning(text: str) -> str:
 # ============================================================
 
 def extract_boxed_answer(text: str) -> Optional[str]:
-    if text is None:
+    """Extract the LAST \\boxed{...} from text, handling nested braces.
+    
+    Returns the content inside the last \\boxed{}, or None if not found.
+    Handles: \\boxed{}, \\fbox{}, nested braces like \\boxed{\\frac{1}{2}}.
+    """
+    if not text:
         return None
-    # tolerate "\boxed {" (optional space) and "\boxed" without brace before $
-    text = re.sub(r"\\boxed\s+\{", r"\\boxed{", text)
-    depth = 0; start = None; i = 0; last = None
+    
+    # Find ALL \boxed{ occurrences and extract the last one
+    last_answer = None
+    i = 0
     while i < len(text):
+        # Check for \boxed{ or \fbox{
         if text[i:i + 7] == r"\boxed{":
-            start = i + 7; depth = 1; i += 7
-            while i < len(text) and depth > 0:
-                if text[i] == "{": depth += 1
-                elif text[i] == "}":
+            start = i + 7
+            depth = 1
+            j = start
+            while j < len(text) and depth > 0:
+                if text[j] == "{":
+                    depth += 1
+                elif text[j] == "}":
                     depth -= 1
-                    if depth == 0:
-                        last = text[start:i].strip(); break
-                i += 1
+                j += 1
+            if depth == 0:
+                last_answer = text[start:j - 1].strip()
+            i = j
             continue
         i += 1
-    if last is not None:
-        return last
-    matches = re.findall(r"\\boxed\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}", text)
+    
+    if last_answer is not None:
+        return last_answer
+    
+    # Fallback: regex for simpler cases
+    pattern = r"\\boxed\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}"
+    matches = re.findall(pattern, text)
     return matches[-1].strip() if matches else None
+
 
 
 # answer-announcing markers, tried in order of reliability
 _ANSWER_MARKERS = [
-    r"(?:the\s+)?final\s+answer\s+is[:\s]*\$?\\?\(?\s*([^\$\n]{1,80}?)\s*\)?\$?(?:\.|$)",
-    r"(?:the\s+)?answer\s+is[:\s]*\$?\\?\(?\s*([^\$\n]{1,80}?)\s*\)?\$?(?:\.|$)",
-    r"answer\s*[:=]\s*\$?\\?\(?\s*([^\$\n]{1,80}?)\s*\)?\$?(?:\.|$)",
-    r"(?:the\s+)?result\s+is[:\s]*\$?\s*([^\$\n]{1,80}?)\s*\$?(?:\.|$)",
-    # competition final form: "m + n = 113", "m+n=113", tolerant of run-ons
-    r"m\s*\+\s*n\s*=\s*\$?\s*([\-\+]?\d[\d,\.]*)",
-    r"(?:so|thus|hence|therefore)[,:\s]+(?:we\s+(?:get|have|obtain)\s+)?\$?\s*"
-    r"([\-\+]?[\d\\][^\$\n]{0,40}?)\s*\$?(?:\.|$)",
+    r"(?:the\s+)?(?:final\s+)?answer\s+is[:\s]*\$?([^\$\n]{1,80})\$?",
+    r"(?:the\s+)?(?:final\s+)?answer[:\s]*\$?([^\$\n]{1,80})\$?",
+    r"(?:therefore|thus|hence|so)[,:\s]+(?:the\s+)?(?:answer\s+is\s+)?\$?([^\$\n]{1,60})\$?",
     r"####\s*([\-\+]?\d[\d,\.]*(?:/\d+)?)",
+    r"\\boxed\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}",
 ]
 
 
 def extract_numeric_answer(text: str) -> Optional[str]:
     """Extract the answer-of-record across diverse model output styles.
 
-    Order: boxed (whole text) -> announced answer (tail, after reasoning) ->
-    bold -> trailing '= X' -> bare number at end. Handles reasoning models
-    (<think>…), markdown bold, ChatML/LLaMA/Mistral special tokens, GSM8K
-    '#### X', fractions/roots, signed and comma-grouped numbers.
+    Handles reasoning models (Qwen3 <think>, DeepSeek-R1 <think>),
+    markdown bold, ChatML/LLaMA/Mistral special tokens, GSM8K #### X,
+    fractions/roots, signed and comma-grouped numbers.
+    
+    Priority order:
+    1. \\boxed{} anywhere in full text (last occurrence wins)
+    2. \\boxed{} after stripping reasoning traces
+    3. Explicit answer markers in post-reasoning tail
+    4. Bold **X** format
+    5. Trailing "= X" on last line
+    6. Bare number at end
+    7. Trailing LaTeX expression
     """
     if not text:
         return None
 
-    # 1) boxed anywhere (the final boxed is the answer-of-record)
+    # 1) Try \boxed{} on the FULL text first (catches boxed inside <think>)
     boxed = extract_boxed_answer(text)
     if boxed:
+        # Clean up: if boxed contains thinking artifacts, clean them
+        boxed = boxed.strip()
+        # Sometimes the boxed content has trailing text from truncation
+        # e.g., \boxed{23. However let me verify...}
+        # Take only up to the first period/space that looks like prose
+        prose_match = re.match(r"^([\-\+]?\d[\d,\.\\/\s\{\}\\a-zA-Z\^_]*?)(?:\.\s+[A-Z]|\.\s+however|\.\s+but|\.\s+let|\.\s+so|\.\s+wait)", boxed, re.IGNORECASE)
+        if prose_match:
+            boxed = prose_match.group(1).rstrip(".")
         return boxed
 
-    # work on the post-reasoning tail for the textual heuristics
+    # 2) Strip reasoning traces and try boxed again
     tail = _strip_reasoning(text).strip()
+    
+    boxed_tail = extract_boxed_answer(tail)
+    if boxed_tail:
+        return boxed_tail
 
-    # 2) explicit answer markers
+    # 3) Explicit answer markers (search in tail)
     for pat in _ANSWER_MARKERS:
         m = None
         for m in re.finditer(pat, tail, re.IGNORECASE):
-            pass  # keep the LAST occurrence (closest to the end)
+            pass  # keep the LAST occurrence
         if m:
             ans = m.group(1).strip().strip("$").strip("\\()").strip().rstrip(".,;:")
             if ans:
                 return ans
 
-    # 3) bold **X** (already partly stripped; re-scan original for safety)
+    # 4) Bold **X** — scan original text for safety
     for cand in reversed(re.findall(r"\*\*([^\*]{1,80})\*\*", text)):
         cand = cand.strip().strip("$").strip()
         if re.match(r"^[\-\+]?\d", cand) or re.match(r"^\\?(?:frac|dfrac|sqrt)", cand):
             return cand.rstrip(".,;:")
 
-    # 4) trailing "= X" on the last meaningful line
+    # 5) Trailing "= X" on last meaningful line
     for line in reversed([ln for ln in tail.splitlines() if ln.strip()]):
         eq = re.search(r"=\s*\$?([^\$\n=]{1,40})\$?\s*$", line.strip())
         if eq:
@@ -350,12 +424,12 @@ def extract_numeric_answer(text: str) -> Optional[str]:
                 return ans
         break  # only inspect the last non-empty line
 
-    # 5) bare number at the very end
+    # 6) Bare number at the very end
     bare = re.search(r"([\-\+]?\d[\d,\.]*(?:/\d+)?)\s*\.?\s*$", tail)
     if bare:
         return bare.group(1).replace(",", "").strip()
 
-    # 6) trailing bare LaTeX expression (\frac, \dfrac, \sqrt) with no marker
+    # 7) Trailing LaTeX expression
     latex_tail = re.search(
         r"([\-\+]?\\(?:dfrac|tfrac|frac|sqrt)\s*\{[^{}]*\}(?:\s*\{[^{}]*\})?)\s*\$?\.?\s*$",
         tail,
