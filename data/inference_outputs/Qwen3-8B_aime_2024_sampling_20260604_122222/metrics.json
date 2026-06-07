@@ -1,0 +1,18 @@
+[
+  {
+    "method": "sampling_vote_m12",
+    "n_problems": 30,
+    "n_correct": 23,
+    "accuracy": 0.7666666666666667,
+    "mean_tokens": 141297.83333333334,
+    "median_tokens": 153542.5,
+    "mean_wall_time": 3341.7445631424584,
+    "total_wall_time": 100252.33689427376,
+    "accuracy_by_level": {
+      "competition": 0.7666666666666667
+    },
+    "accuracy_by_type": {
+      "aime": 0.7666666666666667
+    }
+  }
+]
