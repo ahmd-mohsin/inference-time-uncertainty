@@ -51,6 +51,9 @@ class DADResult:
     chosen_coordinate_per_round: list[str] = field(default_factory=list)
     leverage_per_round: list[float] = field(default_factory=list)
     stop_reason: str = ""
+    # truncation telemetry: the dominant waste on hard problems
+    n_truncated_per_round: list[int] = field(default_factory=list)
+    n_truncated_total: int = 0
 
 
 class DADGenerator:
@@ -62,6 +65,14 @@ class DADGenerator:
         dad_cfg = cfg.get("dad", {})
         self.model_name = cfg["model"].get("name", "")
         self.m_samples = dad_cfg.get("m_samples", 8)
+        # Adaptive probe width: draw a cheap initial batch of `probe_init`, and
+        # only draw the remaining (m_samples - probe_init) if that batch is NOT
+        # decisively settled. This captures M=4 economics on easy problems
+        # ({204:8}-type) WITHOUT gambling the blank-heavy / thin-margin ones,
+        # which expand to the full m_samples. Set adaptive_probe=False for the
+        # old fixed-width probe.
+        self.adaptive_probe = dad_cfg.get("adaptive_probe", True)
+        self.probe_init = dad_cfg.get("probe_init", 4)
         self.max_rounds = dad_cfg.get("max_rounds", 3)
         self.max_gen_tokens = dad_cfg.get("max_gen_tokens", 2048)
         self.temperature = dad_cfg.get("temperature", 0.7)
@@ -121,6 +132,7 @@ class DADGenerator:
         entropies, confidences = [], []
         contested, widths, coords, levs = [], [], [], []
         per_round_dmaps = []
+        n_trunc_per_round = []
         workspace = ""
         last_dmap = None
         stop_reason = "max_rounds"
@@ -134,9 +146,19 @@ class DADGenerator:
         for r in range(self.max_rounds):
             # ---- decide sample count for this round ----
             if r == 0:
-                n = self.alloc.probe_samples
                 prompt_text = self.tokenizer.decode(prompt_ids[0],
                                                     skip_special_tokens=False)
+                if self.adaptive_probe and self.probe_init < self.m_samples:
+                    # Stage 1: cheap probe.
+                    sols = self._sample_solutions(prompt_text, self.probe_init)
+                    if not self._probe_decisive(sols):
+                        # Stage 2: not decisively settled -> draw the rest.
+                        sols += self._sample_solutions(
+                            prompt_text, self.m_samples - self.probe_init)
+                    n = len(sols)
+                else:
+                    n = self.alloc.probe_samples
+                    sols = self._sample_solutions(prompt_text, n)
             else:
                 ws_tokens = len(self.tokenizer.encode(workspace))
                 cost = prompt_len + ws_tokens + L_est
@@ -149,11 +171,13 @@ class DADGenerator:
                     stop_reason = "water_level" if delta > 0 else "converged"
                     break
                 prompt_text = self._build_refine_prompt(problem_text, workspace)
+                sols = self._sample_solutions(prompt_text, n)
 
-            # ---- sample ----
-            sols = self._sample_solutions(prompt_text, n)
+            # ---- sample (already drawn above) ----
             all_solutions.extend(sols)
             tokens_used += sum(s["tokens"] for s in sols)
+            n_trunc = sum(1 for s in sols if s.get("truncated"))
+            n_trunc_per_round.append(n_trunc)
             if sols:
                 L_est = 0.5 * L_est + 0.5 * (sum(s["tokens"] for s in sols) / len(sols))
 
@@ -188,6 +212,13 @@ class DADGenerator:
             )
 
             # ---- claim-level convergence (can fire on round 0) ----
+            # (0) Round produced NO extractable answer at all (every chain blank
+            # / truncated). This is a generation failure, not a cheap economic
+            # stop -- label it honestly so the dominant waste is measurable and
+            # not buried under "water_level".
+            if not dmap.answer_distribution:
+                stop_reason = "no_answer"
+                break
             # (1) No majority-engaged disputed claims remain -> done.
             if not dmap.disputed_claims:
                 stop_reason = "claims_converged"
@@ -235,7 +266,35 @@ class DADGenerator:
             chosen_coordinate_per_round=coords,
             leverage_per_round=levs,
             stop_reason=stop_reason,
+            n_truncated_per_round=n_trunc_per_round,
+            n_truncated_total=sum(n_trunc_per_round),
         )
+
+    # ------------------------------------------------------------------
+    def _probe_decisive(self, sols) -> bool:
+        """Should the cheap initial probe stop without drawing more samples?
+
+        Conservative on purpose: only stop early when the small probe is
+        UNANIMOUS on a real (non-blank) answer with NO truncated chains. This
+        fires on the easy {204:8}/{25:8}-type problems (captured here at
+        probe_init cost) and refuses to fire on anything blank-heavy or split
+        (e.g. {BLANK:6, X:2}), which is exactly where the M=4 subsampling
+        analysis showed accuracy gets lost -- those expand to the full width.
+        """
+        if not sols:
+            return False
+        if any(s.get("truncated") for s in sols):
+            return False
+        answers = [s.get("answer", "") for s in sols]
+        if any(a == "" for a in answers):
+            return False
+        # normalize so "113" / "113." / " 113" count as one value
+        try:
+            from src.data.dataset import normalize_answer
+            norm = {normalize_answer(a) for a in answers}
+        except Exception:
+            norm = set(answers)
+        return len(norm) == 1
 
     # ------------------------------------------------------------------
     @torch.no_grad()
@@ -266,10 +325,19 @@ class DADGenerator:
                     ans = extract_numeric_answer(gen_text) or ""
                 except Exception:
                     ans = ""
+            # A chain is TRUNCATED if it consumed (nearly) the whole budget and
+            # never emitted EOS. This is the dominant compute waste on hard
+            # problems: it burns max_gen_tokens and the answer is usually blank.
+            # Flagging it lets us (a) measure the waste and (b) label the stop
+            # honestly instead of mislabelling an all-blank round "water_level".
+            hit_cap = len(gen_ids) >= self.max_gen_tokens - 1
+            saw_eos = bool(gen_ids) and gen_ids[-1] == self.eos_token_id
+            truncated = hit_cap and not saw_eos
             solutions.append({
                 "text": gen_text,
                 "answer": ans,
                 "tokens": len(gen_ids),
+                "truncated": truncated,
             })
             del out
             torch.cuda.empty_cache()
