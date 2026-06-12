@@ -33,14 +33,13 @@ from typing import Optional, Callable
 
 logger = logging.getLogger(__name__)
 
-# Optional reuse of the project's answer machinery; guarded so this module is
-# importable standalone.
-try:
-    from src.data.dataset import normalize_answer as _normalize_answer
-    from src.data.dataset import extract_numeric_answer as _extract_numeric_answer
-except Exception:  # pragma: no cover
-    _normalize_answer = None
-    _extract_numeric_answer = None
+# Direct imports from the project's dataset module (no fallback). These must
+# resolve -- the decoder relies on the SAME answer machinery as the baselines.
+from src.data.dataset import (
+    normalize_answer as _normalize_answer,
+    extract_numeric_answer as _extract_numeric_answer,
+    extract_boxed_answer as _extract_boxed_answer,
+)
 
 try:
     import sympy
@@ -229,26 +228,18 @@ def emerging_answer(text: str):
     """Best-effort 'where is this branch heading' signal for the lookahead."""
     if not text:
         return None
-    m = re.search(r"\\boxed\{([^{}]+)\}", text)
-    if m:
-        cand = m.group(1)
-    elif _extract_numeric_answer is not None:
-        cand = _extract_numeric_answer(text) or ""
-    else:
-        nums = re.findall(r"-?\d+(?:\.\d+)?", text)
-        cand = nums[-1] if nums else ""
+    box = _extract_boxed_answer(text)
+    cand = box if box else (_extract_numeric_answer(text) or "")
     if not cand:
         return None
-    if _normalize_answer is not None:
-        try:
-            return _normalize_answer(cand)
-        except Exception:
-            return cand.strip()
-    return cand.strip()
+    try:
+        return _normalize_answer(cand)
+    except Exception:
+        return str(cand).strip()
 
 
 def has_boxed(text: str) -> bool:
-    return bool(re.search(r"\\boxed\{[^{}]+\}", text or ""))
+    return bool(_extract_boxed_answer(text or ""))
 
 
 # ======================================================================
@@ -273,26 +264,35 @@ class HFBackend:
 
     def generate_text(self, prefix_text, n, max_new_tokens,
                       do_sample=True, temperature=None):
+        """Generate `n` continuations of `prefix_text`. Sampling draws all n in a
+        SINGLE batched call (num_return_sequences=n) -- this is the difference
+        between tractable and hopeless on a step-synchronous decoder, since we
+        regenerate from the growing prefix many times."""
         torch = self.torch
-        ids = self.tokenizer(prefix_text, return_tensors="pt",
-                             truncation=True, max_length=8192
-                             )["input_ids"].to(self.device)
-        outs = []
+        enc = self.tokenizer(prefix_text, return_tensors="pt",
+                             truncation=True, max_length=16384)
+        ids = enc["input_ids"].to(self.device)
+        attn = enc.get("attention_mask")
+        kwargs = dict(
+            input_ids=ids,
+            max_new_tokens=max_new_tokens,
+            pad_token_id=self.pad_token_id,
+            eos_token_id=self.eos_token_id,
+        )
+        if attn is not None:
+            kwargs["attention_mask"] = attn.to(self.device)
+        if do_sample:
+            kwargs.update(do_sample=True, top_p=self.top_p,
+                          temperature=(temperature if temperature is not None
+                                       else self.temperature),
+                          num_return_sequences=n)
+        else:
+            kwargs.update(do_sample=False, num_return_sequences=1)
         with torch.no_grad():
-            for _ in range(n):
-                out = self.model.generate(
-                    input_ids=ids,
-                    max_new_tokens=max_new_tokens,
-                    do_sample=do_sample,
-                    temperature=(temperature if temperature is not None
-                                 else self.temperature),
-                    top_p=self.top_p,
-                    pad_token_id=self.pad_token_id,
-                    eos_token_id=self.eos_token_id,
-                )
-                gen = out[0, ids.shape[1]:].tolist()
-                outs.append(self.tokenizer.decode(gen, skip_special_tokens=True))
-        return outs
+            out = self.model.generate(**kwargs)
+        plen = ids.shape[1]
+        return [self.tokenizer.decode(out[i, plen:], skip_special_tokens=True)
+                for i in range(out.shape[0])]
 
 
 def _first_step(text: str, max_chars: int = 1200) -> str:
