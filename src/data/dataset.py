@@ -784,3 +784,41 @@ def get_inference_dataset(cfg):
     if name == "competition_math": return load_competition_math(n_problems=n, seed=seed)
     if name == "olympiad_bench": return load_olympiad_bench(n_problems=n, seed=seed)
     raise ValueError(f"Unknown inference dataset: {name}")
+
+# ======================================================================
+# APPEND THIS ONE FUNCTION to your existing src/data/dataset.py
+# (it is the ONLY change dataset.py needs for consensus decoding).
+# Everything else the decoder/runner uses -- normalize_answer,
+# extract_numeric_answer, extract_boxed_answer, answers_match,
+# format_prompt, get_inference_dataset -- already exists in your file.
+# ======================================================================
+ 
+def format_stepwise_prompt(problem: dict, model_name: str) -> str:
+    """Chat-templated prompt tuned for STEP-SYNCHRONOUS consensus decoding.
+ 
+    Asks the model to emit each reasoning step as its own paragraph separated
+    by a single BLANK LINE, so '\\n\\n' is a reliable step boundary for the
+    decoder's branch/commit loop, and to end with a \\boxed{} answer. Mirrors
+    format_prompt's per-model templating so it stays comparable to the DAD /
+    sampling baselines.
+    """
+    question = problem["question"]
+    model_lower = model_name.lower()
+    system = (
+        "Solve the following math problem by reasoning in DISCRETE STEPS. "
+        "Write each step as a short, self-contained paragraph, and separate "
+        "consecutive steps with a single blank line. Do not merge multiple "
+        "steps into one paragraph. When the solution is complete, write the "
+        "final answer in \\boxed{} on the last line."
+    )
+    if "gemma" in model_lower:
+        return (f"<start_of_turn>user\n{system}\n\n{question}<end_of_turn>\n<start_of_turn>model\n")
+    if any(k in model_lower for k in ["qwen", "deepseek", "nemotron"]):
+        return (f"<|im_start|>system\n{system}<|im_end|>\n<|im_start|>user\n{question}<|im_end|>\n<|im_start|>assistant\n")
+    if "llama" in model_lower:
+        return (f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n{system}<|eot_id|>"
+                f"<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>"
+                f"<|start_header_id|>assistant<|end_header_id|>\n\n")
+    if any(k in model_lower for k in ["ministral", "mistral"]):
+        return f"[INST] {system}\n\n{question} [/INST]"
+    return (f"<|im_start|>system\n{system}<|im_end|>\n<|im_start|>user\n{question}<|im_end|>\n<|im_start|>assistant\n")
