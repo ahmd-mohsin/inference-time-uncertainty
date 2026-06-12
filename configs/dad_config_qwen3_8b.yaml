@@ -3,14 +3,14 @@ model:
   short_name: "qwen2.5-math-7b"
   dtype: "bfloat16"
   device: "cuda"
-  max_new_tokens: 16384
+  max_new_tokens: 32000
   trust_remote_code: true
   attn_implementation: "eager"
 
 dad:
   m_samples: 8
   max_rounds: 3
-  max_gen_tokens: 16384   # was 2048 — gives model room to finish \boxed{}
+  max_gen_tokens: 32000   # was 2048 — gives model room to finish \boxed{}
   temperature: 0.7
   top_p: 0.95
   confidence_threshold: 0.8

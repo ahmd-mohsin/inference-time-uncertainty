@@ -73,6 +73,11 @@ class DADGenerator:
         # old fixed-width probe.
         self.adaptive_probe = dad_cfg.get("adaptive_probe", True)
         self.probe_init = dad_cfg.get("probe_init", 4)
+        # When the first probe_init samples don't agree, we extract their dispute,
+        # condition the SECOND batch on it (a targeted mini-refinement), and stop
+        # early if that batch reaches this agreement fraction (e.g. 3/4) -- without
+        # spending a further full refinement round.
+        self.probe_expand_stop_fraction = dad_cfg.get("probe_expand_stop_fraction", 0.75)
         self.max_rounds = dad_cfg.get("max_rounds", 3)
         self.max_gen_tokens = dad_cfg.get("max_gen_tokens", 2048)
         self.temperature = dad_cfg.get("temperature", 0.7)
@@ -144,17 +149,34 @@ class DADGenerator:
         prev_psi = None
 
         for r in range(self.max_rounds):
+            probe_early_stop = None
             # ---- decide sample count for this round ----
             if r == 0:
                 prompt_text = self.tokenizer.decode(prompt_ids[0],
                                                     skip_special_tokens=False)
                 if self.adaptive_probe and self.probe_init < self.m_samples:
-                    # Stage 1: cheap probe.
-                    sols = self._sample_solutions(prompt_text, self.probe_init)
-                    if not self._probe_decisive(sols):
-                        # Stage 2: not decisively settled -> draw the rest.
-                        sols += self._sample_solutions(
-                            prompt_text, self.m_samples - self.probe_init)
+                    # Stage A: cheap unconditioned probe.
+                    sols_a = self._sample_solutions(prompt_text, self.probe_init)
+                    if self._probe_decisive(sols_a):
+                        # 4/4 agree, real answer, none truncated -> done cheaply.
+                        sols = sols_a
+                        probe_early_stop = "settled_probe"
+                    else:
+                        # Not converged: extract the dispute from stage A and feed
+                        # it as context to stage B (targeted mini-refinement), then
+                        # stop if stage B agrees >= probe_expand_stop_fraction.
+                        prof_a = [profile_solution(s["text"], i)
+                                  for i, s in enumerate(sols_a)]
+                        dmap_a = build_disagreement_map(prof_a)
+                        ws_a = format_workspace(problem_text, dmap_a,
+                                                self.workspace_max_tokens)
+                        refine_prompt = self._build_refine_prompt(problem_text, ws_a)
+                        sols_b = self._sample_solutions(
+                            refine_prompt, self.m_samples - self.probe_init)
+                        sols = sols_a + sols_b
+                        if self._probe_agreement(sols_b,
+                                                 self.probe_expand_stop_fraction):
+                            probe_early_stop = "settled_expansion"
                     n = len(sols)
                 else:
                     n = self.alloc.probe_samples
@@ -210,6 +232,13 @@ class DADGenerator:
                 f"disputed={len(dmap.disputed_claims)}, Psi={dmap.contested_mass:.2f}, "
                 f"top='{dmap.top_leverage_key}', rho={rho:.2f}, used={tokens_used}"
             )
+
+            # ---- staged-probe early stop (round 0 only) ----
+            # Stage A unanimous, or stage B (workspace-conditioned) reached the
+            # agreement threshold -> stop without a further refinement round.
+            if probe_early_stop:
+                stop_reason = probe_early_stop
+                break
 
             # ---- claim-level convergence (can fire on round 0) ----
             # (0) Round produced NO extractable answer at all (every chain blank
@@ -269,6 +298,36 @@ class DADGenerator:
             n_truncated_per_round=n_trunc_per_round,
             n_truncated_total=sum(n_trunc_per_round),
         )
+
+    # ------------------------------------------------------------------
+    def _probe_agreement(self, sols, min_fraction) -> bool:
+        """True if a single real answer holds at least `min_fraction` of `sols`
+        AND is a strict majority. Used for the stage-B (workspace-conditioned)
+        early stop, where 3/4 agreement is enough -- looser than the unanimous
+        stage-A test because these samples are already dispute-informed.
+        Blank / truncated chains count against the fraction (they dilute).
+        """
+        if not sols:
+            return False
+        try:
+            from src.data.dataset import normalize_answer
+        except Exception:
+            normalize_answer = lambda x: x
+        n = len(sols)
+        counts = {}
+        for s in sols:
+            a = s.get("answer", "")
+            if a == "":
+                continue
+            try:
+                a = normalize_answer(a)
+            except Exception:
+                pass
+            counts[a] = counts.get(a, 0) + 1
+        if not counts:
+            return False
+        top = max(counts.values())
+        return top >= max(1, round(min_fraction * n)) and top * 2 > n
 
     # ------------------------------------------------------------------
     def _probe_decisive(self, sols) -> bool:
