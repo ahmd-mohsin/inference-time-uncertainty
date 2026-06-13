@@ -1,0 +1,40 @@
+{
+  "n_problems": 2,
+  "accuracy": 0.5,
+  "n_correct": 1,
+  "mean_model_calls": 307.5,
+  "median_model_calls": 511,
+  "mean_steps": 38.5,
+  "median_steps": 63,
+  "stop_reason_distribution": {
+    "all_pruned": 1,
+    "boxed": 1
+  },
+  "decision_distribution": {
+    "commit": 9,
+    "resolved": 57,
+    "benign_commit": 10,
+    "pruned_to": 1
+  },
+  "consensus_calibration": {
+    "clean_boxed_commit_problems": 1,
+    "of_which_correct": 1,
+    "rate": 1.0
+  },
+  "training_signal_totals": {
+    "sft_examples": 79,
+    "kl_target_forks": 73,
+    "dpo_pairs": 69
+  },
+  "method": "consensus_decoding",
+  "dataset": "aime_2024",
+  "prompt_style": "stepwise",
+  "decoder_config": {
+    "branch_k": null,
+    "commit_tau": null,
+    "adjudicators": null,
+    "lookahead_steps": null,
+    "step_max_tokens": null,
+    "max_steps": null
+  }
+}
