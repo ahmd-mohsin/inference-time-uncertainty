@@ -1,0 +1,8 @@
+{
+  "n_problems_mined": 5,
+  "n_genuine_forks": 0,
+  "resolved_correct_rate": null,
+  "gold_in_contention_rate": null,
+  "wall_time_sec": 5263.7,
+  "interpretation": "resolved_correct_rate is P(consensus collapses onto the gold answer | a genuine fork was detected). High => teacher-free consensus is a usable training signal. Low => consensus != truth; use OPSD with ground-truth instead."
+}
