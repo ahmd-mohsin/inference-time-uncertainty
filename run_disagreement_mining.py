@@ -91,7 +91,18 @@ def main():
     ap.add_argument("--resume", action="store_true")
     # miner knobs (override MinerConfig defaults)
     ap.add_argument("--k_rollouts", type=int, default=6)
-    ap.add_argument("--rollout_max_tokens", type=int, default=4096)
+    ap.add_argument("--rollout_max_tokens", type=int, default=14336,
+                    help="AIME thinking traces are 8-16k tokens; budgets like "
+                         "4096 truncate nearly all rollouts and corrupt the "
+                         "answer distribution.")
+    ap.add_argument("--require_boxed", dest="require_boxed",
+                    action="store_true", default=True,
+                    help="(default) a rollout with no \\boxed{} counts as BLANK, "
+                         "not a stray intermediate number.")
+    ap.add_argument("--no_require_boxed", dest="require_boxed",
+                    action="store_false",
+                    help="DANGER: re-enables numeric fallback; truncated "
+                         "rollouts fabricate fake distinct answers.")
     ap.add_argument("--rollout_temperature", type=float, default=0.7)
     ap.add_argument("--max_anchors", type=int, default=10)
     ap.add_argument("--min_support", type=int, default=2)
@@ -114,6 +125,7 @@ def main():
         k_rollouts=args.k_rollouts,
         rollout_max_tokens=args.rollout_max_tokens,
         rollout_temperature=args.rollout_temperature,
+        require_boxed=args.require_boxed,
         max_anchors=args.max_anchors,
         min_support=args.min_support,
         min_distinct_before=args.min_distinct_before,

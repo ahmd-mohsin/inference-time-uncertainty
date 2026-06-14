@@ -103,10 +103,24 @@ except Exception:  # pragma: no cover - fallback for standalone use/testing
 BLANK = "<blank>"
 
 
-def extract_answer(text: str) -> str:
-    """Normalized final answer of a (partial) rollout, or BLANK if none."""
+def extract_answer(text: str, require_boxed: bool = True) -> str:
+    """Normalized final answer of a (partial) rollout, or BLANK if none.
+
+    CRITICAL: with require_boxed=True (the default), a rollout that has not
+    emitted a \\boxed{} is treated as BLANK -- it is UNFINISHED, not a vote.
+    The old numeric fallback (grab the last number anywhere) is a trap on long
+    reasoning traces: a truncated rollout ends on a random intermediate
+    quantity, so K truncated rollouts manufacture K distinct fake "answers",
+    inflating entropy to log2(K) and masquerading as disagreement while
+    reporting blank_frac=0. Only a boxed final answer counts as a vote.
+    """
     box = _extract_boxed_answer(text or "")
-    cand = box if box else (_extract_numeric_answer(text or "") or "")
+    if box:
+        norm = _normalize_answer(box)
+        return norm if norm else BLANK
+    if require_boxed:
+        return BLANK  # unfinished trace -> blank, NOT a stray intermediate number
+    cand = _extract_numeric_answer(text or "") or ""
     norm = _normalize_answer(cand)
     return norm if norm else BLANK
 
@@ -204,8 +218,10 @@ class GenuineDisagreement:
 class MinerConfig:
     # --- answer-distribution sampling --- #
     k_rollouts: int = 6           # greedy-ish rollouts per anchor prefix
-    rollout_max_tokens: int = 4096
+    rollout_max_tokens: int = 14336  # AIME thinking traces are 8-16k; 4096
+                                     # truncates nearly everything -> all-blank
     rollout_temperature: float = 0.7   # need diversity to SEE the split
+    require_boxed: bool = True     # a non-boxed rollout is BLANK, not a vote
     # --- anchoring (segmentation quality is irrelevant; see module docstring) #
     max_anchors: int = 10         # cap forks evaluated per problem (cost)
     min_segment_chars: int = 120  # don't anchor on tiny fragments
@@ -231,7 +247,8 @@ def answer_distribution(backend: Backend, prefix: str, cfg: MinerConfig) -> Answ
     outs = backend.complete(prefix, n=cfg.k_rollouts,
                             max_new_tokens=cfg.rollout_max_tokens,
                             do_sample=True, temperature=cfg.rollout_temperature)
-    counts = Counter(extract_answer(o) for o in outs)
+    counts = Counter(extract_answer(o, require_boxed=cfg.require_boxed)
+                     for o in outs)
     return AnswerDist(counts=counts, k=cfg.k_rollouts)
 
 
