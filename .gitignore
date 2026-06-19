@@ -3,7 +3,7 @@
 logs/
 
 # Markdown
-*.md
+
 
 # Python bytecode
 *.pyc
