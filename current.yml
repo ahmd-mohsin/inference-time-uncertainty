@@ -1,4 +1,0 @@
-name: digte
-channels:
-  - defaults
-prefix: /home/ubuntu/miniconda3/envs/digte
