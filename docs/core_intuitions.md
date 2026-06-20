@@ -188,6 +188,60 @@ objective with this max-trajectory view.
 
 ---
 
+## 6. Loss Surfaces, Mode Connectivity, and Fast Ensembling of DNNs (NeurIPS 2018)
+
+**Paper:** https://arxiv.org/abs/1802.10026 (Garipov et al.)
+
+**The problem it solves:** Are different solutions found by independent training runs
+isolated from each other (trapped in separate basins), or are they connected by
+low-loss pathways? And can you exploit that geometry?
+
+**Core mechanism:**
+
+1. Train two networks independently → they converge to different optima (modes).
+2. Parameterize a curve (Bézier curve or polygonal chain) between the two sets of
+   weights in parameter space.
+3. Optimize the curve's parameters to minimize loss along the path.
+4. Finding: low-loss curves almost always exist — "the optima of these complex loss
+   functions are connected by simple curves over which training and test accuracy are
+   nearly constant."
+
+**Key intuition in one sentence:** Different solutions to a neural network are not
+isolated peaks in a rugged landscape — they're connected by smooth ridges, and you
+can walk between them without losing accuracy.
+
+**Connected vs. disconnected modes:**
+- **Connected:** A low-loss path exists between solutions → they're part of the same
+  broad basin. Interpolation between them yields valid intermediate solutions.
+- **Disconnected:** Every path crosses high-loss regions → genuinely separate basins.
+  No intermediate solution exists; you're stuck in one or the other.
+
+**Practical payoff (Fast Geometric Ensembling):** Since modes are connected, you can
+traverse the curve during training and collect diverse models along it — building an
+ensemble for the cost of training a single model.
+
+**Why it matters for our work (Direction 3):** This is the foundational result that
+makes "interpolation in logit space between disagreeing trajectories" meaningful. If
+two reasoning chains disagree but the model's internal representations are
+*mode-connected* (interpolation stays coherent), then intermediate strategies exist
+and more diverse sampling can find them. If they're *disconnected* (interpolation
+immediately becomes incoherent), the model has no path between those strategies —
+the two answer modes are structurally separate, and sampling within either basin will
+never escape to the other. This directly measures whether test-time compute can bridge
+the gap or whether it's a hard wall.
+
+**Adaptation to trajectory space:** Instead of interpolating between weight vectors,
+interpolate between:
+- Logit distributions at the divergence point of two disagreeing chains
+- Hidden state representations at the step where chains branch
+- Soft prompts that steer the model toward chain A vs. chain B
+
+If interpolated logits produce valid continuations (low perplexity, coherent reasoning),
+the modes are connected. If they produce garbage, the modes are disconnected — that's
+a ceiling signal for this specific disagreement.
+
+---
+
 ## Connecting Thread: The Three Regimes
 
 These papers collectively reveal a three-regime picture:
