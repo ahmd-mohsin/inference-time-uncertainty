@@ -361,3 +361,101 @@ Combining the cheapest signals from above, a practical early detector might look
 The key insight: you don't need 1000 chains to *detect* the ceiling. You need the
 right 8 chains + the right diversity metrics + the right comparison (IID vs.
 conditioned) to infer it.
+
+---
+
+## Direction 13: Test-Time Discovery via Max-Trajectory Reward (Learning to Discover)
+
+**The shift in objective:** Standard test-time scaling optimizes expected reward across
+trajectories (majority vote, best-of-N by average). "Learning to Discover at Test Time"
+inverts this: instead of maximizing E[R], maximize max_i R(trajectory_i) — the reward
+of the single best trajectory. The insight is that if you optimize for the *ceiling*
+of your trajectory distribution rather than its *center*, you train the model to
+produce at least one SOTA-level solution among its K samples, even if most samples are
+garbage.
+
+**Why this matters for our ceiling question:** This reframes the problem entirely.
+A model might have a "ceiling" under average-reward optimization (majority vote
+plateaus) while having NO ceiling under max-trajectory optimization (the single best
+chain keeps improving with more samples + RL shaping). The ceiling isn't a property
+of the model alone — it's a property of the (model × objective × selection) triple.
+
+**The RL interference angle:** The key mechanism is that an external RL reward signal
+reshapes the sampling distribution at test time — not by retraining the full weights,
+but by learning a lightweight policy (e.g., a value head or a steering vector) that
+biases generation toward trajectories with high *peak* reward. This is a middle ground
+between pure sampling (no weight update, diversity-limited) and full retraining
+(expensive, changes the model). It's a *targeted* weight update that specifically
+expands the practically-reachable set in the direction of high reward.
+
+**Connection to DAD and the conditioning paradox:**
+
+DAD conditions on disagreements to redirect sampling — but the objective is still
+implicitly average-reward (majority vote selects the final answer). What if instead:
+
+1. Use DAD's disagreement extraction to *identify* the frontier of what the model
+   can produce (the diverse set of competing strategies)
+2. Apply a reward signal (PRM, ORM, or ground truth on a few examples) to identify
+   which *direction* in trajectory space leads to SOTA
+3. Use a small RL update (LoRA, steering vector, or even just a reweighting of the
+   softmax via a learned value function) to bias future sampling toward that direction
+
+This converts DAD from a "find disagreements → resolve them by voting" system into a
+"find disagreements → use them as exploration signal → RL-steer toward the best
+frontier." The ceiling moves because you're not just redistributing mass within the
+existing support — you're *shaping* the support via gradient signal.
+
+**The deeper question this raises:**
+
+If we can detect (via directions 1–12 above) that a problem is at a hard ceiling
+under pure sampling — can a small RL intervention (trained on the disagreement
+structure) break through that ceiling? In other words:
+
+- Pure sampling ceiling = "the correct answer has probability < epsilon in the model's
+  distribution, no amount of IID or conditioned sampling will find it"
+- RL-assisted ceiling = "after a lightweight reward-driven update, is the correct
+  answer now reachable?"
+
+The gap between these two ceilings is the "discovery gap" — what the model *could*
+find with external interference that it *cannot* find through internal search alone.
+
+**Concrete experimental framing:**
+
+1. Identify problems where DAD hits the ceiling (spectral rank frozen, NCD collapsed,
+   no new answers after conditioning) — these are "pure-sampling-hard"
+2. Apply a reward model (PRM) to score all generated chains. Check: does the PRM
+   assign higher reward to chains that are closer (in embedding space) to the correct
+   solution, even when no chain actually reaches it?
+3. If yes: train a small LoRA or prefix that maximizes *max-trajectory PRM reward*
+   rather than average reward. This should specifically expand the model's reach
+   toward the high-reward frontier.
+4. Re-evaluate: does the previously-ceiling'd problem now get solved?
+
+**The meta-insight:** Diversity collapse (our ceiling signal) might be the *trigger*
+for when to apply RL interference. The two-phase system becomes:
+
+- Phase 1 (cheap): Pure sampling + DAD conditioning. Monitor diversity metrics.
+- Phase 2 (expensive, triggered by diversity collapse): Small RL update targeting
+  max-trajectory reward in the direction indicated by the disagreement structure.
+
+This makes the ceiling detection problem directly actionable: you're not just
+diagnosing "this needs retraining" — you're identifying the minimal, targeted
+intervention (a few gradient steps on a reward signal derived from the trajectory
+diversity structure) that can break through.
+
+**Open questions:**
+
+- How many gradient steps (on the max-trajectory RL objective) are needed to break
+  through a detected ceiling? Is it proportional to the "hardness" of the ceiling
+  (e.g., inverse spectral rank)?
+- Can the disagreement structure itself serve as the reward signal? E.g., reward
+  trajectories that resolve the highest-leverage disputed claim in a *novel* way
+  (not just picking one of the existing competing values, but finding a third option)
+- Does this create a "discovery curriculum"? Easy problems → pure sampling. Medium
+  problems → DAD conditioning. Hard problems → RL-steered discovery. The boundaries
+  between these regimes are exactly what the ceiling detector identifies.
+- Is there a formal relationship between the max-trajectory reward objective and the
+  submodular information gain of the trajectory set? Maximizing max_i R(x_i) over a
+  diverse set might be equivalent to maximizing a submodular facility-location
+  objective where the "facilities" are solution strategies and the "coverage" is
+  reward.
