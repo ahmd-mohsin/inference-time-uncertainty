@@ -20,6 +20,22 @@ exhausted — adding more samples cannot create new topological features (new so
 strategies). If Betti numbers keep changing, the manifold is still being revealed and
 more compute helps.
 
+**Representation caveat:** Collapsing a full trajectory to a single point (e.g.,
+mean-pooled hidden state) is an under-representation. It discards path structure —
+where the chain branches, step ordering, whether two chains diverge early vs. late.
+Two chains arriving at the same answer via completely different reasoning map to
+nearby points despite being strategically distinct. Better representations:
+- Treat each chain as a *curve* (sequence of step-level embeddings) and use Fréchet
+  distance or DTW between curves, then do persistent homology on the resulting
+  distance matrix between curves
+- Compute a persistence diagram *per trajectory* (from its own step-level point
+  cloud), then use Wasserstein distance between persistence diagrams as the
+  inter-trajectory metric
+- Time-delay embedding (Takens-style) on the token-level entropy signal along the
+  chain — preserves dynamical structure without full hidden states
+
+The point representation is a cheap first pass. The real signal lives in path geometry.
+
 **Why it's different:** Submodular information gain tells you about marginal value of
 the *next* sample. Persistent homology tells you about the *shape* of what remains
 unexplored — holes in the solution space the model will never fill regardless of
@@ -30,6 +46,12 @@ trajectory embeddings. If H_1 (loops) dies at the same radius as H_0 (connected
 components merge), the model sees one cluster of solutions. If H_1 persists
 significantly beyond H_0 stabilization, there are distinct strategic "corridors" still
 being discovered.
+
+**Related work:** "Geometry Score: A Method For Comparing Generative Adversarial
+Networks" (Khrulkov & Oseledets, ICML 2018) — https://arxiv.org/abs/1802.02664.
+Uses persistent homology on point clouds of generated samples to detect mode collapse
+in GANs. Directly analogous: replace "GAN outputs" with "reasoning trajectories" and
+"mode collapse" with "diversity collapse / model ceiling."
 
 **Question:** Can the death time of the longest-lived H_1 feature in 8 chains predict
 whether the 1000th chain will find a fundamentally new approach?
