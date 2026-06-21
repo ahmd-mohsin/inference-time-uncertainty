@@ -62,6 +62,8 @@ def curve_distance_matrix(curves: list[np.ndarray], metric: str = "dtw") -> np.n
 
 
 def compute_distance_matrix(embedding_data: dict, metric: str = "cosine") -> np.ndarray:
+    if embedding_data.get("type") == "ncd":
+        return embedding_data["distance_matrix"]
     if embedding_data["type"] == "point":
         points = embedding_data["points"]
         if metric == "cosine":

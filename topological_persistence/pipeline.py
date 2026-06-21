@@ -9,7 +9,7 @@ import numpy as np
 
 from topological_persistence.config import ExperimentConfig
 from topological_persistence.sampler import get_sampler, Chain
-from topological_persistence.embeddings import embed_chains
+from topological_persistence.embeddings import embed_chains, ncd_distance_matrix
 from topological_persistence.distances import compute_distance_matrix
 from topological_persistence.persistence import compute_topological_signature
 from topological_persistence.ceiling_detector import detect_ceiling, compare_topologies
@@ -58,6 +58,18 @@ def run_single_problem(problem: dict, cfg: ExperimentConfig, sampler=None) -> di
     if sig_cond is not None:
         comparison = compare_topologies(sig_iid, sig_cond)
 
+    D_ncd_iid = ncd_distance_matrix(chains_iid)
+    sig_ncd_iid = compute_topological_signature(D_ncd_iid, cfg.topology.max_homology_dim, cfg.topology.n_radii)
+    signal_ncd = detect_ceiling(sig_ncd_iid)
+
+    ncd_stats = {
+        "mean_ncd": float(D_ncd_iid[np.triu_indices_from(D_ncd_iid, k=1)].mean()),
+        "min_ncd": float(D_ncd_iid[np.triu_indices_from(D_ncd_iid, k=1)].min()),
+        "max_ncd": float(D_ncd_iid[np.triu_indices_from(D_ncd_iid, k=1)].max()),
+        "h1_features_ncd": signal_ncd.h1_n_features,
+        "verdict_ncd": signal_ncd.verdict,
+    }
+
     result = {
         "problem_id": problem.get("problem_id", -1),
         "question": problem.get("question", "")[:200],
@@ -67,8 +79,10 @@ def run_single_problem(problem: dict, cfg: ExperimentConfig, sampler=None) -> di
         "answers_iid": [c.answer for c in chains_iid],
         "answers_conditioned": [c.answer for c in chains_cond] if chains_cond else [],
         "signal": asdict(signal),
+        "signal_ncd": ncd_stats,
         "comparison": comparison,
         "distance_matrix_iid": D_iid.tolist(),
+        "distance_matrix_ncd": D_ncd_iid.tolist(),
         "wall_time_sec": time.time() - t_start,
     }
     return result
