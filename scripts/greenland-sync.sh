@@ -78,7 +78,7 @@ run_remote() {
     echo ">> Running on Greenland: $cmd"
     check_tunnel
     ssh -p "$LOCAL_PORT" $SSH_OPTS "$SSH_USER@$SSH_HOST" \
-        "cd $REMOTE_PROJECT_DIR && source ~/miniconda3/etc/profile.d/conda.sh && conda activate digte && $cmd"
+        "cd $REMOTE_PROJECT_DIR && source ~/miniconda3/etc/profile.d/conda.sh && conda activate topo && $cmd"
 }
 
 deploy() {
