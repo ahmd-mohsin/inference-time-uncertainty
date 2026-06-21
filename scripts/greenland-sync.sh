@@ -10,7 +10,7 @@
 #   ./scripts/greenland-sync.sh experiment        # push + run topological experiment
 set -euo pipefail
 
-LOCAL_PORT="1053"
+LOCAL_PORT="${GREENLAND_PORT:-1054}"
 SSH_USER="greenland-user"
 SSH_HOST="localhost"
 SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
