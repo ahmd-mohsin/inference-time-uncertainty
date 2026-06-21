@@ -105,19 +105,15 @@ class HFSampler:
     @torch.no_grad()
     def sample_chains(self, prompt: str, n: int) -> list[Chain]:
         self._init_model()
-        batch_size = min(4, n)
+        input_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"]
+        input_ids = input_ids.to(self.model.device)
+        prompt_len = input_ids.shape[1]
         chains = []
 
-        for batch_start in range(0, n, batch_size):
-            batch_n = min(batch_size, n - batch_start)
-            batch_input = self.tokenizer(
-                [prompt] * batch_n, return_tensors="pt", padding=True
-            ).to(self.model.device)
-            prompt_len = batch_input["input_ids"].shape[1]
-
-            logger.info(f"  Generating batch {batch_start//batch_size + 1} ({batch_n} chains, prompt_len={prompt_len})...")
+        for i in range(n):
+            logger.info(f"  Generating chain {i+1}/{n} (prompt_len={prompt_len})...")
             out = self.model.generate(
-                **batch_input,
+                input_ids,
                 max_new_tokens=self.cfg.max_new_tokens,
                 do_sample=True,
                 temperature=self.cfg.temperature,
@@ -125,61 +121,42 @@ class HFSampler:
                 return_dict_in_generate=True,
                 output_hidden_states=True,
             )
+            gen_ids = out.sequences[0, prompt_len:].tolist()
+            text = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
+            answer = self._extract_answer(text)
+            truncated = len(gen_ids) >= self.cfg.max_new_tokens - 1
 
-            all_hidden = self._collect_hidden_states_batch(out, prompt_len, batch_n)
+            hidden_states = self._collect_hidden_states(out)
 
-            for i in range(batch_n):
-                gen_ids = out.sequences[i, prompt_len:].tolist()
-                if self.tokenizer.eos_token_id in gen_ids:
-                    eos_pos = gen_ids.index(self.tokenizer.eos_token_id)
-                    gen_ids = gen_ids[:eos_pos]
-                pad_id = self.tokenizer.pad_token_id
-                gen_ids = [t for t in gen_ids if t != pad_id]
-
-                text = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
-                answer = self._extract_answer(text)
-                truncated = len(gen_ids) >= self.cfg.max_new_tokens - 1
-                hidden = all_hidden[i] if i < len(all_hidden) else np.array([])
-
-                chains.append(Chain(
-                    text=text,
-                    answer=answer,
-                    token_ids=gen_ids,
-                    hidden_states=hidden,
-                    n_tokens=len(gen_ids),
-                    truncated=truncated,
-                ))
-                logger.info(f"    chain {batch_start+i+1}/{n}: tokens={len(gen_ids)}, answer='{answer[:50]}', hidden_shape={hidden.shape if hidden.size > 0 else 'empty'}")
-
+            chains.append(Chain(
+                text=text,
+                answer=answer,
+                token_ids=gen_ids,
+                hidden_states=hidden_states,
+                n_tokens=len(gen_ids),
+                truncated=truncated,
+            ))
+            logger.info(f"    chain {i+1}/{n}: tokens={len(gen_ids)}, answer='{answer[:50]}', hidden_shape={hidden_states.shape if hidden_states.size > 0 else 'empty'}")
             del out
             torch.cuda.empty_cache()
 
         return chains
 
-    def _collect_hidden_states_batch(self, out, prompt_len: int, batch_size: int) -> list[np.ndarray]:
+    def _collect_hidden_states(self, out) -> np.ndarray:
         if not hasattr(out, "hidden_states") or not out.hidden_states:
-            return [np.array([]) for _ in range(batch_size)]
-
-        per_sample = [[] for _ in range(batch_size)]
-        step_count = 0
+            return np.array([])
+        states = []
         for step_idx, step_states in enumerate(out.hidden_states):
             if step_states is None or len(step_states) == 0:
                 continue
-            step_count += 1
-            if step_count % self.hidden_subsample != 0:
+            if step_idx % self.hidden_subsample != 0:
                 continue
             last_layer = step_states[-1]
-            for i in range(min(batch_size, last_layer.shape[0])):
-                h = last_layer[i, -1, :].cpu().float().numpy()
-                per_sample[i].append(h)
-
-        result = []
-        for states in per_sample:
-            if states:
-                result.append(np.stack(states))
-            else:
-                result.append(np.array([]))
-        return result
+            h = last_layer[0, -1, :].cpu().float().numpy()
+            states.append(h)
+        if states:
+            return np.stack(states)
+        return np.array([])
 
     def _extract_answer(self, text: str) -> str:
         import re
