@@ -85,6 +85,7 @@ class HFSampler:
         if self.model is not None:
             return
         from transformers import AutoModelForCausalLM, AutoTokenizer
+        logger.info(f"Loading {self.cfg.model_name} with device_map='auto' and output_hidden_states=True")
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.cfg.model_name, trust_remote_code=True
         )
@@ -93,9 +94,9 @@ class HFSampler:
             torch_dtype=getattr(torch, self.cfg.dtype),
             device_map="auto",
             trust_remote_code=True,
-            output_hidden_states=True,
         )
         self.model.eval()
+        logger.info(f"Model loaded. Device map: {len(self.model.hf_device_map)} layers distributed")
 
     @torch.no_grad()
     def sample_chains(self, prompt: str, n: int) -> list[Chain]:
@@ -105,15 +106,16 @@ class HFSampler:
         prompt_len = input_ids.shape[1]
         chains = []
 
-        for _ in range(n):
+        for i in range(n):
+            logger.info(f"  Generating chain {i+1}/{n}...")
             out = self.model.generate(
                 input_ids,
                 max_new_tokens=self.cfg.max_new_tokens,
                 do_sample=True,
                 temperature=self.cfg.temperature,
                 top_p=self.cfg.top_p,
-                output_hidden_states=True,
                 return_dict_in_generate=True,
+                output_hidden_states=True,
             )
             gen_ids = out.sequences[0, prompt_len:].tolist()
             text = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
@@ -130,18 +132,24 @@ class HFSampler:
                 n_tokens=len(gen_ids),
                 truncated=truncated,
             ))
+            logger.info(f"    tokens={len(gen_ids)}, answer='{answer[:50]}', hidden_shape={hidden_states.shape if hidden_states is not None and hidden_states.size > 0 else 'empty'}")
             torch.cuda.empty_cache()
 
         return chains
 
     def _collect_hidden_states(self, out, prompt_len: int) -> np.ndarray:
-        layer_idx = -1
         states = []
-        if hasattr(out, "hidden_states") and out.hidden_states:
-            for step_states in out.hidden_states:
-                if step_states and len(step_states) > 0:
-                    h = step_states[layer_idx][0, -1, :].cpu().float().numpy()
-                    states.append(h)
+        if not hasattr(out, "hidden_states") or not out.hidden_states:
+            return np.array([])
+        for step_idx, step_states in enumerate(out.hidden_states):
+            if step_states is None or len(step_states) == 0:
+                continue
+            last_layer = step_states[-1]
+            if step_idx == 0:
+                h = last_layer[0, -1, :].cpu().float().numpy()
+            else:
+                h = last_layer[0, -1, :].cpu().float().numpy()
+            states.append(h)
         if states:
             return np.stack(states)
         return np.array([])

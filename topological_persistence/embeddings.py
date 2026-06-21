@@ -140,22 +140,18 @@ def ncd_distance_matrix(chains: list[Chain]) -> np.ndarray:
 
 
 def embed_chains(chains: list[Chain], cfg: EmbeddingConfig) -> dict:
-    has_hidden = _has_hidden_states(chains)
+    if not _has_hidden_states(chains):
+        raise ValueError("No hidden states available. Hidden states are required for topological analysis.")
 
-    if has_hidden:
-        if cfg.representation == "point":
-            points = np.stack([get_point_embedding(c, cfg) for c in chains])
-            return {"points": points, "type": "point"}
-        elif cfg.representation == "curve":
-            curves = [get_curve_embedding(c, cfg) for c in chains]
-            return {"curves": curves, "type": "curve"}
-        elif cfg.representation == "steps":
-            steps = [get_step_embeddings(c, cfg) for c in chains]
-            return {"curves": steps, "type": "curve"}
-
-    if cfg.representation == "curve" or cfg.representation == "steps":
-        curves = [_step_ngram_curves(c, cfg) for c in chains]
+    if cfg.representation == "point":
+        points = np.stack([get_point_embedding(c, cfg) for c in chains])
+        return {"points": points, "type": "point"}
+    elif cfg.representation == "curve":
+        curves = [get_curve_embedding(c, cfg) for c in chains]
         return {"curves": curves, "type": "curve"}
+    elif cfg.representation == "steps":
+        steps = [get_step_embeddings(c, cfg) for c in chains]
+        return {"curves": steps, "type": "curve"}
 
-    points = np.stack([_ngram_vector(c.text) for c in chains])
+    points = np.stack([get_point_embedding(c, cfg) for c in chains])
     return {"points": points, "type": "point"}

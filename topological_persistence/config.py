@@ -7,12 +7,12 @@ from typing import Optional
 class SamplingConfig:
     model_name: str = "Qwen/Qwen3-32B"
     n_chains: int = 8
-    max_new_tokens: int = 8192
+    max_new_tokens: int = 16384
     temperature: float = 0.7
     top_p: float = 0.95
     dtype: str = "bfloat16"
     tensor_parallel_size: int = 8
-    use_vllm: bool = True
+    use_vllm: bool = False
     enable_thinking: bool = True
 
 
