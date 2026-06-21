@@ -25,9 +25,10 @@ def format_problem_prompt(problem: dict, model_name: str) -> str:
     return format_prompt(problem, model_name)
 
 
-def run_single_problem(problem: dict, cfg: ExperimentConfig) -> dict:
+def run_single_problem(problem: dict, cfg: ExperimentConfig, sampler=None) -> dict:
     t_start = time.time()
-    sampler = get_sampler(cfg.sampling)
+    if sampler is None:
+        sampler = get_sampler(cfg.sampling)
 
     prompt = format_problem_prompt(problem, cfg.sampling.model_name)
     logger.info(f"Sampling {cfg.sampling.n_chains} IID chains for problem {problem.get('problem_id', '?')}")
@@ -84,11 +85,13 @@ def run_experiment(cfg: ExperimentConfig) -> list[dict]:
     output_dir = Path(cfg.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    sampler = get_sampler(cfg.sampling)
+
     results = []
     for i, problem in enumerate(problems):
         logger.info(f"[{i+1}/{len(problems)}] Problem {problem.get('problem_id', i)}")
         try:
-            result = run_single_problem(problem, cfg)
+            result = run_single_problem(problem, cfg, sampler=sampler)
             results.append(result)
 
             with open(output_dir / f"problem_{problem.get('problem_id', i)}.json", "w") as f:

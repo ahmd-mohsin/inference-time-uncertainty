@@ -81,6 +81,33 @@ run_remote() {
         "cd $REMOTE_PROJECT_DIR && source ~/miniconda3/etc/profile.d/conda.sh && conda activate topo && $cmd"
 }
 
+run_detached() {
+    local cmd="$1"
+    local logfile="${2:-experiment.log}"
+    echo ">> Launching detached on Greenland (survives disconnect)..."
+    echo ">> Log: ~/$logfile"
+    check_tunnel
+    ssh -p "$LOCAL_PORT" $SSH_OPTS "$SSH_USER@$SSH_HOST" \
+        "cd $REMOTE_PROJECT_DIR && nohup bash -c 'source ~/miniconda3/etc/profile.d/conda.sh && conda activate topo && $cmd' > ~/$logfile 2>&1 &"
+    echo ">> ✓ Process launched in background"
+    echo ""
+    echo "  Monitor:  ./scripts/greenland-sync.sh logs"
+    echo "  Status:   ./scripts/greenland-sync.sh status"
+    echo "  Pull:     ./scripts/greenland-sync.sh pull"
+}
+
+logs() {
+    local logfile="${1:-experiment.log}"
+    check_tunnel
+    ssh -p "$LOCAL_PORT" $SSH_OPTS "$SSH_USER@$SSH_HOST" "tail -50 ~/$logfile"
+}
+
+status() {
+    check_tunnel
+    ssh -p "$LOCAL_PORT" $SSH_OPTS "$SSH_USER@$SSH_HOST" \
+        "ps aux | grep 'topological_persistence\|python -m' | grep -v grep || echo 'No running experiment found'"
+}
+
 deploy() {
     push
     echo ""
@@ -93,30 +120,34 @@ experiment() {
     local extra_args="${1:-}"
     push
     echo ""
-    echo ">> Running topological persistence experiment..."
-    run_remote "python -m topological_persistence.run --model Qwen/Qwen3-32B --dataset aime_2024 --n-problems 5 --n-chains 8 --representation curve $extra_args"
-    echo ""
-    pull "data/topological_outputs/" "$LOCAL_PROJECT_DIR/data/topological_outputs/"
+    echo ">> Launching topological persistence experiment (detached)..."
+    run_detached "python -m topological_persistence.run --model Qwen/Qwen3-32B --dataset aime_2024 --n-problems 5 --n-chains 8 --representation curve $extra_args"
 }
 
 case "${1:-help}" in
     push)       push ;;
     pull)       pull "${2:-data/topological_outputs/}" "${3:-$LOCAL_PROJECT_DIR/data/topological_outputs/}" ;;
     run)        run_remote "${2:?Usage: $0 run \"command\"}" ;;
+    runbg)      run_detached "${2:?Usage: $0 runbg \"command\"}" "${3:-experiment.log}" ;;
     deploy)     deploy ;;
     experiment) experiment "${2:-}" ;;
+    logs)       logs "${2:-experiment.log}" ;;
+    status)     status ;;
     help|*)
         echo "Usage: $0 <command>"
         echo ""
         echo "Commands:"
-        echo "  push                Sync local code → Greenland"
-        echo "  pull [path]         Pull results from Greenland (default: data/topological_outputs/)"
-        echo "  run \"command\"       Execute a command on Greenland"
-        echo "  deploy              Push code + install dependencies"
-        echo "  experiment [args]   Push → run topological persistence → pull results"
+        echo "  push              Sync local code → Greenland"
+        echo "  pull [path]       Pull results (default: data/topological_outputs/)"
+        echo "  run \"command\"     Run on Greenland (foreground, dies on disconnect)"
+        echo "  runbg \"cmd\" [log] Run detached with nohup (survives disconnect)"
+        echo "  deploy            Push code + install deps"
+        echo "  experiment [args] Push + launch experiment (detached)"
+        echo "  logs [file]       Tail experiment log (default: experiment.log)"
+        echo "  status            Check if experiment is still running"
         echo ""
         echo "Prerequisites:"
-        echo "  1. Auth must be done:    ./scripts/greenland-auth.sh"
-        echo "  2. Tunnel must be open:  ./scripts/greenland-connect.sh tunnel"
+        echo "  1. Auth:    ./scripts/greenland-auth.sh"
+        echo "  2. Tunnel:  ./scripts/greenland-connect.sh tunnel"
         ;;
 esac
