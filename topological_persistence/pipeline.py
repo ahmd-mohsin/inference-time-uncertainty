@@ -103,6 +103,12 @@ def run_experiment(cfg: ExperimentConfig) -> list[dict]:
 
     results = []
     for i, problem in enumerate(problems):
+        problem_file = output_dir / f"problem_{problem.get('problem_id', i)}.json"
+        if problem_file.exists():
+            logger.info(f"[{i+1}/{len(problems)}] Problem {problem.get('problem_id', i)} — already done, skipping")
+            with open(problem_file) as f:
+                results.append(json.load(f))
+            continue
         logger.info(f"[{i+1}/{len(problems)}] Problem {problem.get('problem_id', i)}")
         try:
             result = run_single_problem(problem, cfg, sampler=sampler)
