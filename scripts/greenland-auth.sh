@@ -9,6 +9,9 @@ PROVIDER="isengard"
 PROFILE="greenland"
 REGION="us-east-2"
 JOB_ROLE_ARN="arn:aws:iam::072510399842:role/greenland-access-37f871283e3e69fdbfe97939a34079a8bfdfdd85"
+# Job: cmohsinm-workspace | Instance: p4d.24xlarge (8x A100 GPU)
+# SSM Managed Instance: mi-00b4a7a2d8b022958
+# EC2 Instance: i-0bbb43ee1228d971f
 
 echo "============================================"
 echo " Greenland Daily Auth (Local Laptop)"
