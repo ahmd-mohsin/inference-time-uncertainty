@@ -17,3 +17,11 @@ dependencies:
       - transformers>=4.40
       - datasets
       - huggingface_hub
+      - accelerate
+      - vllm
+      - ripser
+      - persim
+      - gudhi
+      - scikit-learn
+      - scipy
+      - matplotlib
