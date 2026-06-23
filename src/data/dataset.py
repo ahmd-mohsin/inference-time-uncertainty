@@ -126,9 +126,26 @@ def load_aime_2025(n_problems=-1):
     return problems
 
 
+def load_aime_2026(n_problems=-1):
+    logger.info("Loading AIME 2026 (math-ai/aime26)")
+    raw = load_dataset("math-ai/aime26")
+    split = "test" if "test" in raw else next(iter(raw.keys()))
+    data = list(raw[split])
+    if n_problems > 0: data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        answer = item.get("answer", "")
+        problems.append({"problem_id": i, "question": str(item.get("problem", "")),
+                         "gold_answer": str(int(answer)) if isinstance(answer, (int, float)) else str(answer).strip(),
+                         "source": "aime_2026", "level": "competition", "problem_type": "aime"})
+    logger.info(f"Loaded {len(problems)} AIME 2026 problems")
+    return problems
+
+
 def load_aime(year=2025, n_problems=-1):
     if year == 2024: return load_aime_2024(n_problems=n_problems)
     if year == 2025: return load_aime_2025(n_problems=n_problems)
+    if year == 2026: return load_aime_2026(n_problems=n_problems)
     logger.warning(f"AIME {year} not supported, fallback aime25")
     return load_aime_2025(n_problems=n_problems)
 
@@ -776,6 +793,7 @@ def get_inference_dataset(cfg):
     if name == "deepmath": return load_deepmath(n_problems=n)
     if name == "aime_2024": return load_aime_2024(n_problems=n)
     if name == "aime_2025": return load_aime_2025(n_problems=n)
+    if name == "aime_2026": return load_aime_2026(n_problems=n)
     if name.startswith("aime"):
         year = int(name.split("_")[-1]) if "_" in name else 2025
         return load_aime(year=year, n_problems=n)
