@@ -41,7 +41,7 @@ class ExperimentConfig:
     topology: TopologyConfig = field(default_factory=TopologyConfig)
     embedding: EmbeddingConfig = field(default_factory=EmbeddingConfig)
     dataset: str = "aime_2024"
-    n_problems: int = 5
+    n_problems: int = 30
     output_dir: str = "data/topological_outputs"
     seed: int = 42
     conditioned_chains: bool = True
