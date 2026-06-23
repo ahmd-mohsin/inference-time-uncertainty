@@ -1,7 +1,7 @@
 {
-  "n_problems": 5,
-  "n_ceiling": 2,
-  "n_scalable": 3,
-  "n_uncertain": 0,
+  "n_problems": 30,
+  "n_ceiling": 8,
+  "n_scalable": 21,
+  "n_uncertain": 1,
   "n_errors": 0
 }
