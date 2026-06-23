@@ -12,7 +12,7 @@ class SamplingConfig:
     top_p: float = 0.95
     dtype: str = "bfloat16"
     tensor_parallel_size: int = 8
-    use_vllm: bool = False
+    use_vllm: bool = True
     enable_thinking: bool = True
 
 
