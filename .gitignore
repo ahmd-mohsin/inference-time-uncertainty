@@ -2,6 +2,15 @@
 *.log
 logs/
 
+# Images / figures
+*.png
+*.jpg
+*.jpeg
+*.log
+# Large binary artifacts (model hidden states, embeddings)
+*.npz
+*.npy
+
 # Markdown
 
 
