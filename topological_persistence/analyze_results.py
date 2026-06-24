@@ -291,10 +291,18 @@ def validate_with_more_chains(results_dir: str, n_validation: int = 64,
         scales = pass_gain > delta
         already_solved = pass_curve.get(8, 0) > 0.5
 
-        if verdict == "CEILING_REACHED":
+        # Honest scoring: a SCALABLE prediction is correct ONLY if compute actually helped
+        # (pass@max meaningfully exceeds pass@8). The old `scales or already_solved` rule
+        # rescued every already-solvable problem and made SCALABLE nearly unfalsifiable
+        # (10/11 "correct" SCALABLE calls had not actually scaled). Problems already solved
+        # at 8 carry no scaling signal -> they are scored None (excluded), same as UNCERTAIN.
+        if already_solved and not scales:
+            # no headroom to test the prediction either way
+            prediction_correct = None
+        elif verdict == "CEILING_REACHED":
             prediction_correct = not scales
         elif verdict == "SCALABLE":
-            prediction_correct = scales or already_solved
+            prediction_correct = scales
         else:
             prediction_correct = None
 

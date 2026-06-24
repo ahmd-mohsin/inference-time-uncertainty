@@ -30,7 +30,7 @@ from topological_persistence.sampler import Chain
 from topological_persistence.embeddings import embed_chains, ncd_distance_matrix
 from topological_persistence.distances import compute_distance_matrix
 from topological_persistence.persistence import compute_topological_signature
-from topological_persistence.ceiling_detector import detect_ceiling, compare_topologies
+from topological_persistence.ceiling_detector import detect_ceiling, detect_ceiling_v2, compare_topologies
 from topological_persistence.conditioning import build_disagreement_workspace, build_conditioned_prompt
 from topological_persistence.pipeline import format_problem_prompt
 
@@ -171,7 +171,14 @@ def phase_c_topology(cfg, raw_path, hidden_path, out_dir):
         D_cond = compute_distance_matrix(emb_cond, cfg.topology.distance_metric)
         sig_cond = compute_topological_signature(D_cond, cfg.topology.max_homology_dim, cfg.topology.n_radii)
 
-        signal = detect_ceiling(sig_iid, sig_cond)
+        # Primary verdict: answer-distribution + spectral signals (point embeddings).
+        # H1 topology is computed above for reference/plots only.
+        points_iid = emb_iid.get("points")
+        points_cond = emb_cond.get("points")
+        signal = detect_ceiling_v2(
+            answers_iid=[c.answer for c in chains_iid],
+            points_iid=points_iid, points_cond=points_cond, sig_iid=sig_iid,
+        )
         comparison = compare_topologies(sig_iid, sig_cond)
 
         D_ncd = ncd_distance_matrix(chains_iid)
@@ -195,7 +202,10 @@ def phase_c_topology(cfg, raw_path, hidden_path, out_dir):
         with open(Path(out_dir) / f"problem_{pid}.json", "w") as f:
             json.dump(result, f, indent=2)
         results.append(result)
-        logger.info(f"  problem {pid}: verdict={signal.verdict} H1={signal.h1_n_features}")
+        logger.info(f"  problem {pid}: verdict={signal.verdict} "
+                    f"ent={signal.answer_entropy:.2f} uniq={signal.n_unique_answers} "
+                    f"eRank={signal.effective_rank:.2f} sgain={signal.spectral_gain} "
+                    f"(H1={signal.h1_n_features}, ref)")
 
     summary = {"n_problems": len(results),
                "n_ceiling": sum(1 for r in results if r["signal"]["verdict"] == "CEILING_REACHED"),

@@ -77,6 +77,42 @@ solution manifold in this data — the comparison runs correctly, but the measur
 - **stuck ceilings** (pids 14, 28, 29) — `pass@64 = 0`, correctly called CEILING. These are
   the cleanest true positives: no solution exists in the model's distribution.
 
+## Methodology pivot (applied in code — to be run on Qwen3-8B)
+
+The offline re-analysis (`spectral_reanalysis.py`, run on the surviving
+`hidden_states.npz`) settled the direction. AUC for predicting `actually_scales`:
+
+| Signal | source | AUC |
+|---|---|---|
+| answer entropy | trivial baseline | **0.98** |
+| NCD mean | Direction 10 | 0.94 |
+| unique answers | trivial baseline | 0.91 |
+| effective rank | Direction 2 | 0.44 |
+| H₁ features | Direction 1 (old core) | **0.33** |
+
+**Hidden-state geometry (both H₁ and spectral rank) loses to simply counting distinct
+answers.** Effective rank tracks *difficulty* (Spearman +0.69 vs coverage) but not
+*scalability*. Caveat: only 3 scaling positives on this saturated benchmark, so these
+AUCs are directional, not significant — which is itself the point (the benchmark can't
+test the hypothesis).
+
+Changes made to the pipeline:
+1. **`spectral.py`** (new) — effective rank, spectral gain (IID→conditioned), answer
+   entropy / unique-count / majority-fraction.
+2. **`ceiling_detector.detect_ceiling_v2`** — verdict now driven by answer entropy;
+   spectral rank + gain recorded as covariates; H₁ demoted to reference-only.
+3. **`config.py`** — Qwen3-8B, TP=1; representation `curve`→`point` (DTW concentrated
+   distances ~10× worse than mean-pooling); `normalize=True` (z-score per dim);
+   `max_homology_dim` 2→1.
+4. **`embeddings.normalize_points`** — fights distance concentration.
+5. **`analyze_results.py`** — dropped the `scales OR already_solved` rescue; already-solved
+   problems with no headroom are now scored `None` (excluded), not auto-correct.
+6. **`run_overnight.sh`** — Qwen3-8B, fresh dir, added spectral re-analysis stage.
+
+The Qwen3-8B run is the actual experiment: an 8B model has real headroom on AIME, so
+`actually_scales` becomes a measurable variable and we can finally ask whether *any*
+hidden-state / conditioning signal beats the answer-entropy baseline.
+
 ## What would make the claim defensible
 1. Report SCALABLE accuracy **only on problems unsolved at 8** (remove the `already_solved`
    disjunction in `analyze_results.py:297`).

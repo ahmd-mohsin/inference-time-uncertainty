@@ -125,8 +125,15 @@ def main():
     raw = json.load(open(d / "chains_raw.json"))
     val = {v["problem_id"]: v for v in json.load(open(d / "validation.json"))}
 
+    # only analyze problems present in all three sources (robust to partial runs)
+    npz_pids = {int(k.split("_")[0]) for k in H.files}
+    pids = sorted(npz_pids & set(val) & {int(k) for k in raw})
+    if not pids:
+        print("No problems present in hidden_states.npz + validation.json + chains_raw.json")
+        return
+
     rows = []
-    for pid in range(30):
+    for pid in pids:
         spid = str(pid)
         P = pooled(H, pid, "iid")
         Pc = pooled(H, pid, "cond")

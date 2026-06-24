@@ -201,6 +201,31 @@ def plot_summary_scatter(results, out_dir):
     plt.close()
 
 
+def plot_primary_signals(results, out_dir):
+    """Primary (answer-distribution + spectral) signals that now drive the verdict.
+
+    Skips gracefully if a run predates these fields (topology-only schema).
+    """
+    have = [r for r in results if r["signal"].get("answer_entropy") is not None]
+    if not have:
+        return
+    pids = [r["problem_id"] for r in have]
+    ent = [r["signal"]["answer_entropy"] for r in have]
+    erank = [r["signal"]["effective_rank"] for r in have]
+    colors = [_verdict_color(r["signal"]["verdict"]) for r in have]
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(max(8, len(pids) * 0.4), 7))
+    ax1.bar(pids, ent, color=colors)
+    ax1.set_title("Answer entropy (nats) — PRIMARY verdict signal")
+    ax1.set_xlabel("problem"); ax1.set_ylabel("entropy")
+    ax2.bar(pids, erank, color=colors)
+    ax2.set_title("Spectral effective rank — difficulty covariate")
+    ax2.set_xlabel("problem"); ax2.set_ylabel("eff. rank")
+    plt.tight_layout()
+    plt.savefig(Path(out_dir) / "08_primary_signals.png", dpi=150)
+    plt.close()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--results-dir", default="data/topological_outputs")
@@ -220,9 +245,11 @@ def main():
     plot_iid_vs_conditioned(results, args.out_dir)
     plot_mds_embeddings(results, args.out_dir)
     plot_summary_scatter(results, args.out_dir)
+    plot_primary_signals(results, args.out_dir)
 
-    print(f"Saved 7 figures to {args.out_dir}:")
-    for f in sorted(Path(args.out_dir).glob("*.png")):
+    figs = sorted(Path(args.out_dir).glob("*.png"))
+    print(f"Saved {len(figs)} figures to {args.out_dir}:")
+    for f in figs:
         print(f"  {f.name}")
 
 

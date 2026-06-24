@@ -139,12 +139,26 @@ def ncd_distance_matrix(chains: list[Chain]) -> np.ndarray:
     return D
 
 
+def normalize_points(points: np.ndarray) -> np.ndarray:
+    """Z-score each dimension across the K chains.
+
+    Fights high-dimensional distance concentration: without it, mean-pooled hidden states
+    are dominated by a few high-variance dims and all pairwise distances collapse to a
+    near-constant (the failure mode that made H1 features pure noise).
+    """
+    mu = points.mean(axis=0, keepdims=True)
+    sd = points.std(axis=0, keepdims=True) + 1e-8
+    return (points - mu) / sd
+
+
 def embed_chains(chains: list[Chain], cfg: EmbeddingConfig) -> dict:
     if not _has_hidden_states(chains):
         raise ValueError("No hidden states available. Hidden states are required for topological analysis.")
 
     if cfg.representation == "point":
         points = np.stack([get_point_embedding(c, cfg) for c in chains])
+        if getattr(cfg, "normalize", False):
+            points = normalize_points(points)
         return {"points": points, "type": "point"}
     elif cfg.representation == "curve":
         curves = [get_curve_embedding(c, cfg) for c in chains]

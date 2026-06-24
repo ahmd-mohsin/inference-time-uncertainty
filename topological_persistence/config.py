@@ -5,20 +5,27 @@ from typing import Optional
 
 @dataclass
 class SamplingConfig:
-    model_name: str = "Qwen/Qwen3-32B"
+    # Qwen3-8B (single GPU, TP=1): avoids the TP=8 reinit crashes that motivated
+    # run_robust.py, iterates faster, and -- crucially -- has real headroom on AIME so
+    # `actually_scales` is a measurable variable instead of saturated (Qwen3-32B solved
+    # 25/30 at pass@8, leaving only 3 scaling positives -> hypothesis untestable).
+    model_name: str = "Qwen/Qwen3-8B"
     n_chains: int = 8
     max_new_tokens: int = 16384
     temperature: float = 0.7
     top_p: float = 0.95
     dtype: str = "bfloat16"
-    tensor_parallel_size: int = 8
+    tensor_parallel_size: int = 1
     use_vllm: bool = True
     enable_thinking: bool = True
 
 
 @dataclass
 class TopologyConfig:
-    max_homology_dim: int = 2
+    # H1/persistent-homology is retained only as a REFERENCE signal now (it was
+    # non-predictive on K=8: AUC 0.33 for actually_scales). The decisive verdict comes
+    # from answer-distribution + spectral signals; see ceiling_detector.detect_ceiling.
+    max_homology_dim: int = 1          # H2 is meaningless on 8 points; drop it
     n_radii: int = 100
     distance_metric: str = "cosine"
     stability_window: int = 3
@@ -27,12 +34,17 @@ class TopologyConfig:
 
 @dataclass
 class EmbeddingConfig:
-    representation: str = "curve"
+    # Switched curve+DTW -> point. On raw high-D states, DTW over curves CONCENTRATES
+    # pairwise distances far worse than mean-pooling (measured CV ~3% vs ~14-62%),
+    # destroying what little variation exists. `normalize` z-scores each dim across the
+    # K chains before distance/spectral computation to fight distance concentration.
+    representation: str = "point"
     curve_distance: str = "dtw"
     step_pooling: str = "last_token"
     hidden_layer: int = -1
     max_steps_per_chain: int = 64
     subsample_tokens: int = 128
+    normalize: bool = True
 
 
 @dataclass
