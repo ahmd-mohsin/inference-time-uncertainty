@@ -1,0 +1,33 @@
+{
+  "problem_id": 7,
+  "question": "Let $N$ be the number of positive integer divisors of $17017^{17}$ that leave a remainder of $5$ when divided by $12$. Find the remainder when $N$ is divided by $1000$.",
+  "gold_answer": "244",
+  "n_chains_iid": 8,
+  "n_chains_conditioned": 8,
+  "answers_iid": [
+    "244",
+    "244",
+    "244",
+    "244",
+    "244",
+    "244",
+    "244",
+    "244"
+  ],
+  "answers_conditioned": [
+    "244",
+    "244",
+    "244",
+    "244",
+    "244",
+    "244",
+    "244",
+    "244"
+  ],
+  "signal": {
+    "h0_stabilization_radius": 0.9637905955314636,
+    "h1_max_lifetime": 0.0,
+    "h1_total_persistence": 0.0,
+    "h1_n_features": 0,
+    "betti_convergence_rate": 0.875,
+    "topology_frozen": 
