@@ -10,8 +10,10 @@ PROFILE="greenland"
 REGION="us-east-2"
 JOB_ROLE_ARN="arn:aws:iam::072510399842:role/greenland-access-37f871283e3e69fdbfe97939a34079a8bfdfdd85"
 # Job: cmohsinm-workspace | Instance: p4d.24xlarge (8x A100 GPU)
-# SSM Managed Instance: mi-00b4a7a2d8b022958
-# EC2 Instance: i-0bbb43ee1228d971f
+# SSM Managed Instance: mi-0e220ab52563a081e
+# EC2 Instance: i-0179f0ba840cdb5e4
+# Main Node IP: 10.3.219.28 | Namespace: greenland-kiroscienceinterns
+# Job submitted: 2026-06-24T17:41Z
 
 echo "============================================"
 echo " Greenland Daily Auth (Local Laptop)"
