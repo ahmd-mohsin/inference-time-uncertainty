@@ -144,7 +144,7 @@ def compare_topologies(
         "h1_features_conditioned": h1_cond.n_features if h1_cond else 0,
         "h1_max_lifetime_iid": h1_iid.max_lifetime if h1_iid else 0.0,
         "h1_max_lifetime_conditioned": h1_cond.max_lifetime if h1_cond else 0.0,
-        "new_topological_features": (
+        "new_topological_features": bool(
             (h1_cond.n_features if h1_cond else 0) > (h1_iid.n_features if h1_iid else 0)
         ),
     }

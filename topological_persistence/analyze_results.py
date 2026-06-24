@@ -26,8 +26,12 @@ logger = logging.getLogger(__name__)
 def load_results(results_dir: str) -> list[dict]:
     results = []
     for p in sorted(Path(results_dir).glob("problem_*.json")):
-        with open(p) as f:
-            results.append(json.load(f))
+        try:
+            with open(p) as f:
+                results.append(json.load(f))
+        except (json.JSONDecodeError, ValueError) as e:
+            # one corrupt/half-written problem file must not abort the whole run
+            logger.warning(f"Skipping unreadable {p.name}: {e}")
     return results
 
 

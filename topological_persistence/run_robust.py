@@ -40,6 +40,20 @@ logger = logging.getLogger(__name__)
 HIDDEN_SUBSAMPLE = 32
 
 
+class _NpJSONEncoder(json.JSONEncoder):
+    """JSON encoder that tolerates numpy scalars/arrays (np.bool_, np.float32, etc.).
+
+    Guards against the per-problem dump crashing on a stray numpy type leaking out of
+    the topology/spectral code (which already cost shard 7 problems 15 & 23 once).
+    """
+    def default(self, o):
+        if isinstance(o, np.generic):
+            return o.item()
+        if isinstance(o, np.ndarray):
+            return o.tolist()
+        return super().default(o)
+
+
 def _extract_answer(text: str) -> str:
     m = re.findall(r"\\boxed\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}", text)
     return m[-1].strip() if m else ""
@@ -211,7 +225,7 @@ def phase_c_topology(cfg, raw_path, hidden_path, out_dir, write_summary=True):
             "distance_matrix_iid": D_iid.tolist(), "distance_matrix_ncd": D_ncd.tolist(),
         }
         with open(Path(out_dir) / f"problem_{pid}.json", "w") as f:
-            json.dump(result, f, indent=2)
+            json.dump(result, f, indent=2, cls=_NpJSONEncoder)
         results.append(result)
         logger.info(f"  problem {pid}: verdict={signal.verdict} "
                     f"ent={signal.answer_entropy:.2f} uniq={signal.n_unique_answers} "
@@ -279,6 +293,10 @@ def main():
     p.add_argument("--num-shards", type=int, default=1)
     p.add_argument("--merge-only", action="store_true",
                    help="Skip generation; merge shard outputs and write summary.json")
+    p.add_argument("--phase-c-only", action="store_true",
+                   help="Recompute Phase C (topology+JSON) from an existing shard's "
+                        "chains_raw/hidden_states. No GPU generation. Use to recover from "
+                        "a Phase-C crash without regenerating chains.")
     args = p.parse_args()
 
     cfg = load_config()
@@ -298,6 +316,14 @@ def main():
         merge_hidden_states(args.output_dir, args.num_shards)
         write_summary_from_dir(args.output_dir)
         logger.info("MERGE COMPLETE")
+        return
+
+    if args.phase_c_only:
+        raw_path = Path(args.output_dir) / f"chains_raw{_suffix(args.shard_index, args.num_shards)}.json"
+        hidden_path = Path(args.output_dir) / f"hidden_states{_suffix(args.shard_index, args.num_shards)}.npz"
+        logger.info(f"PHASE-C-ONLY: recomputing topology/JSON from {raw_path.name}, {hidden_path.name}")
+        phase_c_topology(cfg, raw_path, hidden_path, args.output_dir, write_summary=False)
+        logger.info("PHASE-C-ONLY complete")
         return
 
     from src.data.dataset import get_inference_dataset
