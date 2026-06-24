@@ -45,7 +45,12 @@ def _extract_answer(text: str) -> str:
     return m[-1].strip() if m else ""
 
 
-def phase_a_generate(cfg, problems, out_dir):
+def _suffix(shard_index, num_shards):
+    """Per-shard filename suffix; empty string for the non-sharded (single-GPU) path."""
+    return f"_shard{shard_index}" if num_shards > 1 else ""
+
+
+def phase_a_generate(cfg, problems, out_dir, shard_index=0, num_shards=1):
     """One persistent vLLM generates IID + conditioned chains for all problems."""
     from vllm import LLM, SamplingParams
     logger.info(f"PHASE A: loading vLLM TP={cfg.sampling.tensor_parallel_size} (once)")
@@ -68,7 +73,7 @@ def phase_a_generate(cfg, problems, out_dir):
                            "n_tokens": len(o.token_ids) if o.token_ids else 0})
         return chains
 
-    raw_path = Path(out_dir) / "chains_raw.json"
+    raw_path = Path(out_dir) / f"chains_raw{_suffix(shard_index, num_shards)}.json"
     raw = {}
     if raw_path.exists():
         raw = json.load(open(raw_path))
@@ -100,7 +105,7 @@ def phase_a_generate(cfg, problems, out_dir):
     return raw_path
 
 
-def phase_b_hidden_states(cfg, raw_path, out_dir):
+def phase_b_hidden_states(cfg, raw_path, out_dir, shard_index=0, num_shards=1):
     """One HF load extracts subsampled hidden states for every saved chain."""
     from transformers import AutoModelForCausalLM, AutoTokenizer
     logger.info("PHASE B: loading HF model (once) for hidden states")
@@ -111,7 +116,7 @@ def phase_b_hidden_states(cfg, raw_path, out_dir):
     model.eval()
 
     raw = json.load(open(raw_path))
-    hidden_path = Path(out_dir) / "hidden_states.npz"
+    hidden_path = Path(out_dir) / f"hidden_states{_suffix(shard_index, num_shards)}.npz"
     store = {}
 
     @torch.no_grad()
@@ -144,8 +149,14 @@ def phase_b_hidden_states(cfg, raw_path, out_dir):
     return hidden_path
 
 
-def phase_c_topology(cfg, raw_path, hidden_path, out_dir):
-    """Per-problem topology + ceiling detection, writes problem_*.json."""
+def phase_c_topology(cfg, raw_path, hidden_path, out_dir, write_summary=True):
+    """Per-problem topology + ceiling detection, writes problem_*.json.
+
+    Per-problem JSON filenames key off the unique problem_id, so multiple shards write
+    to the same out_dir without collision. The aggregate summary.json is written only
+    when write_summary=True (the final/merge invocation), so a shard doesn't overwrite
+    it with a partial count.
+    """
     logger.info("PHASE C: computing topology + ceiling detection")
     raw = json.load(open(raw_path))
     H = np.load(hidden_path)
@@ -207,12 +218,50 @@ def phase_c_topology(cfg, raw_path, hidden_path, out_dir):
                     f"eRank={signal.effective_rank:.2f} sgain={signal.spectral_gain} "
                     f"(H1={signal.h1_n_features}, ref)")
 
-    summary = {"n_problems": len(results),
-               "n_ceiling": sum(1 for r in results if r["signal"]["verdict"] == "CEILING_REACHED"),
-               "n_scalable": sum(1 for r in results if r["signal"]["verdict"] == "SCALABLE"),
-               "n_uncertain": sum(1 for r in results if r["signal"]["verdict"] == "UNCERTAIN")}
+    if write_summary:
+        write_summary_from_dir(out_dir)
+    logger.info(f"PHASE C complete: {len(results)} problems this shard")
+
+
+def write_summary_from_dir(out_dir):
+    """Aggregate summary.json from ALL problem_*.json in out_dir (across shards)."""
+    all_results = []
+    for p in sorted(Path(out_dir).glob("problem_*.json")):
+        with open(p) as f:
+            all_results.append(json.load(f))
+    summary = {"n_problems": len(all_results),
+               "n_ceiling": sum(1 for r in all_results if r["signal"]["verdict"] == "CEILING_REACHED"),
+               "n_scalable": sum(1 for r in all_results if r["signal"]["verdict"] == "SCALABLE"),
+               "n_uncertain": sum(1 for r in all_results if r["signal"]["verdict"] == "UNCERTAIN")}
     json.dump(summary, open(Path(out_dir) / "summary.json", "w"), indent=2)
-    logger.info(f"PHASE C complete: {summary}")
+    logger.info(f"Summary written: {summary}")
+    return summary
+
+
+def merge_hidden_states(out_dir, num_shards):
+    """Merge per-shard hidden_states_shard*.npz into a single hidden_states.npz."""
+    merged = {}
+    for s in range(num_shards):
+        shard_path = Path(out_dir) / f"hidden_states_shard{s}.npz"
+        if shard_path.exists():
+            with np.load(shard_path) as z:
+                for k in z.files:
+                    merged[k] = z[k]
+    if merged:
+        np.savez_compressed(Path(out_dir) / "hidden_states.npz", **merged)
+        logger.info(f"Merged {len(merged)} hidden-state arrays from {num_shards} shards")
+
+
+def merge_chains_raw(out_dir, num_shards):
+    """Merge per-shard chains_raw_shard*.json into a single chains_raw.json."""
+    merged = {}
+    for s in range(num_shards):
+        shard_path = Path(out_dir) / f"chains_raw_shard{s}.json"
+        if shard_path.exists():
+            merged.update(json.load(open(shard_path)))
+    if merged:
+        json.dump(merged, open(Path(out_dir) / "chains_raw.json", "w"))
+        logger.info(f"Merged chains_raw for {len(merged)} problems from {num_shards} shards")
 
 
 def main():
@@ -222,6 +271,14 @@ def main():
     p.add_argument("--n-problems", type=int, default=30)
     p.add_argument("--n-chains", type=int, default=8)
     p.add_argument("--output-dir", default="data/topological_outputs_aime2026")
+    # Data-parallel sharding: launch N copies pinned to different GPUs via
+    # CUDA_VISIBLE_DEVICES, each with --shard-index i --num-shards N. Problems are
+    # round-robin assigned to shards. After all shards finish, run --merge-only once
+    # to combine chains_raw / hidden_states and write the aggregate summary.
+    p.add_argument("--shard-index", type=int, default=0)
+    p.add_argument("--num-shards", type=int, default=1)
+    p.add_argument("--merge-only", action="store_true",
+                   help="Skip generation; merge shard outputs and write summary.json")
     args = p.parse_args()
 
     cfg = load_config()
@@ -235,14 +292,29 @@ def main():
 
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
+    if args.merge_only:
+        logger.info(f"MERGE-ONLY: combining {args.num_shards} shards in {args.output_dir}")
+        merge_chains_raw(args.output_dir, args.num_shards)
+        merge_hidden_states(args.output_dir, args.num_shards)
+        write_summary_from_dir(args.output_dir)
+        logger.info("MERGE COMPLETE")
+        return
+
     from src.data.dataset import get_inference_dataset
     problems = get_inference_dataset({"dataset": {"name": cfg.dataset, "split": "test",
                                                    "n_problems": cfg.n_problems, "seed": cfg.seed}})
 
-    raw_path = phase_a_generate(cfg, problems, args.output_dir)
-    hidden_path = phase_b_hidden_states(cfg, raw_path, args.output_dir)
-    phase_c_topology(cfg, raw_path, hidden_path, args.output_dir)
-    logger.info("ALL PHASES COMPLETE")
+    # round-robin shard assignment (keeps load balanced across GPUs)
+    if args.num_shards > 1:
+        problems = [pr for k, pr in enumerate(problems) if k % args.num_shards == args.shard_index]
+        logger.info(f"SHARD {args.shard_index}/{args.num_shards}: {len(problems)} problems")
+
+    raw_path = phase_a_generate(cfg, problems, args.output_dir, args.shard_index, args.num_shards)
+    hidden_path = phase_b_hidden_states(cfg, raw_path, args.output_dir, args.shard_index, args.num_shards)
+    # each shard writes its own problem_*.json; summary is written by --merge-only
+    phase_c_topology(cfg, raw_path, hidden_path, args.output_dir,
+                     write_summary=(args.num_shards == 1))
+    logger.info(f"SHARD {args.shard_index} ALL PHASES COMPLETE")
 
 
 if __name__ == "__main__":

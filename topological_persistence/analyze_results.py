@@ -214,7 +214,8 @@ def print_analysis(analyses: list[dict]):
 
 
 def validate_with_more_chains(results_dir: str, n_validation: int = 64,
-                              dataset: str = None, model: str = None):
+                              dataset: str = None, model: str = None,
+                              shard_index: int = 0, num_shards: int = 1):
     """Generate N>>8 chains per problem to test whether the ceiling prediction holds.
 
     Ceiling test logic (using pass@k = P(>=1 correct in k samples)):
@@ -258,10 +259,15 @@ def validate_with_more_chains(results_dir: str, n_validation: int = 64,
     delta = 0.10
     ks = [4, 8, 16, 32, 64]
 
+    val_suffix = f"_shard{shard_index}" if num_shards > 1 else ""
+    val_path = Path(results_dir) / f"validation{val_suffix}.json"
+
     validation = []
     for i, problem in enumerate(problems):
         pid = problem.get("problem_id", i)
         if pid not in by_id:
+            continue
+        if num_shards > 1 and (pid % num_shards) != shard_index:
             continue
         gold = problem.get("gold_answer", "")
         verdict = by_id[pid]["signal"]["verdict"]
@@ -324,7 +330,7 @@ def validate_with_more_chains(results_dir: str, n_validation: int = 64,
                     f"gain={pass_gain:+.2f} scales={scales} pred_correct={prediction_correct}")
 
         # incremental save so a crash mid-run preserves progress
-        with open(Path(results_dir) / "validation.json", "w") as f:
+        with open(val_path, "w") as f:
             json.dump(validation, f, indent=2)
 
     print("\n" + "=" * 90)
@@ -356,7 +362,26 @@ def validate_with_more_chains(results_dir: str, n_validation: int = 64,
     solved = [v for v in validation if v["ceiling_kind"] == "solved"]
     print(f"  CEILING breakdown: {len(solved)} solved-ceiling, {len(stuck)} stuck-ceiling")
 
-    print(f"\nValidation saved to {Path(results_dir) / 'validation.json'}")
+    print(f"\nValidation saved to {val_path}")
+
+
+def merge_validation_shards(results_dir: str, num_shards: int):
+    """Combine validation_shard*.json into validation.json (sorted by problem_id)."""
+    merged = []
+    for s in range(num_shards):
+        sp = Path(results_dir) / f"validation_shard{s}.json"
+        if sp.exists():
+            merged.extend(json.load(open(sp)))
+    merged.sort(key=lambda v: v["problem_id"])
+    out = Path(results_dir) / "validation.json"
+    json.dump(merged, open(out, "w"), indent=2)
+
+    judged = [v for v in merged if v["prediction_correct"] is not None]
+    n_ok = sum(1 for v in judged if v["prediction_correct"])
+    print(f"\nMerged {len(merged)} problems from {num_shards} shards -> {out}")
+    print(f"Overall prediction accuracy: {n_ok}/{len(judged)} "
+          f"({n_ok/max(len(judged),1):.0%})")
+    return merged
 
 
 def main():
@@ -368,19 +393,31 @@ def main():
                         help="Number of chains for validation (default 64)")
     parser.add_argument("--dataset", default=None, help="Override dataset for validation")
     parser.add_argument("--model", default=None, help="Override model for validation")
+    # Data-parallel validation: one process per GPU, each --shard-index i --num-shards N.
+    parser.add_argument("--shard-index", type=int, default=0)
+    parser.add_argument("--num-shards", type=int, default=1)
+    parser.add_argument("--merge-only", action="store_true",
+                        help="Merge validation_shard*.json into validation.json and exit")
     args = parser.parse_args()
+
+    if args.merge_only:
+        merge_validation_shards(args.results_dir, args.num_shards)
+        return
 
     results = load_results(args.results_dir)
     if not results:
         print(f"No results found in {args.results_dir}")
         return
 
-    analyses = [analyze_problem(r) for r in results]
-    print_analysis(analyses)
+    # full per-problem analysis printout only on the single/primary process
+    if args.shard_index == 0:
+        analyses = [analyze_problem(r) for r in results]
+        print_analysis(analyses)
 
     if args.validate:
         validate_with_more_chains(args.results_dir, args.n_validation,
-                                  dataset=args.dataset, model=args.model)
+                                  dataset=args.dataset, model=args.model,
+                                  shard_index=args.shard_index, num_shards=args.num_shards)
 
 
 if __name__ == "__main__":
