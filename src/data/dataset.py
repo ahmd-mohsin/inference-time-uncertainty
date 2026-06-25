@@ -142,6 +142,21 @@ def load_aime_2026(n_problems=-1):
     return problems
 
 
+def load_aime_all(n_problems=-1):
+    """Combined AIME 2024+2025+2026 (90 problems) for max statistical power.
+
+    Re-indexes problem_id 0..N-1 globally so downstream shard/merge logic (which keys
+    files by problem_id) stays collision-free.
+    """
+    combined = load_aime_2024() + load_aime_2025() + load_aime_2026()
+    for i, p in enumerate(combined):
+        p["problem_id"] = i
+    if n_problems > 0:
+        combined = combined[:n_problems]
+    logger.info(f"Loaded {len(combined)} AIME (2024+2025+2026) problems")
+    return combined
+
+
 def load_aime(year=2025, n_problems=-1):
     if year == 2024: return load_aime_2024(n_problems=n_problems)
     if year == 2025: return load_aime_2025(n_problems=n_problems)
@@ -794,6 +809,7 @@ def get_inference_dataset(cfg):
     if name == "aime_2024": return load_aime_2024(n_problems=n)
     if name == "aime_2025": return load_aime_2025(n_problems=n)
     if name == "aime_2026": return load_aime_2026(n_problems=n)
+    if name in ("aime_all", "aime_combined"): return load_aime_all(n_problems=n)
     if name.startswith("aime"):
         year = int(name.split("_")[-1]) if "_" in name else 2025
         return load_aime(year=year, n_problems=n)

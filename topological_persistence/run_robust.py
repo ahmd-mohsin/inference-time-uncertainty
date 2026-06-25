@@ -135,16 +135,31 @@ def phase_b_hidden_states(cfg, raw_path, out_dir, shard_index=0, num_shards=1):
 
     @torch.no_grad()
     def extract(prompt, generation):
+        """Returns (last_layer_token_seq, multilayer_pooled).
+
+        last_layer_token_seq: subsampled per-token states from the FINAL layer
+            (unchanged schema -> topology/effective-rank consumers keep working).
+        multilayer_pooled: shape (3, hidden) = mean-pooled generation states at the
+            mid / three-quarter / last layers. Probing literature: mid-layers encode
+            'what the model knows' better than the output layer, which is committed to
+            the (here often wrong) emitted token. Cheap: 3 vectors, not 3 token-seqs.
+        """
         full = prompt + generation
         ids = tok(full, return_tensors="pt", truncation=True, max_length=16384 + 512)["input_ids"].to(model.device)
         plen = tok(prompt, return_tensors="pt")["input_ids"].shape[1]
         out = model(ids, output_hidden_states=True)
-        h = out.hidden_states[-1][0, plen:, :].cpu().float().numpy()
+        hs = out.hidden_states  # tuple len = n_layers+1 (idx 0 = embeddings)
+        L = len(hs) - 1
+        layer_idx = sorted({L // 2, (3 * L) // 4, L})  # mid, 3/4, last
+        last = hs[-1][0, plen:, :].cpu().float().numpy()
+        pooled = np.stack([hs[li][0, plen:, :].mean(axis=0).cpu().float().numpy()
+                           if (hs[li].shape[1] - plen) > 0 else np.zeros(hs[li].shape[-1], dtype=np.float32)
+                           for li in layer_idx])
         torch.cuda.empty_cache()
-        if h.shape[0] > 0:
-            idx = list(range(0, h.shape[0], HIDDEN_SUBSAMPLE)) or [0]
-            return h[idx]
-        return np.zeros((1, model.config.hidden_size), dtype=np.float32)
+        if last.shape[0] > 0:
+            idx = list(range(0, last.shape[0], HIDDEN_SUBSAMPLE)) or [0]
+            return last[idx], pooled
+        return np.zeros((1, model.config.hidden_size), dtype=np.float32), pooled
 
     for pid, d in raw.items():
         prompt = format_problem_prompt({"question": d["question"]}, cfg.sampling.model_name)
@@ -153,7 +168,9 @@ def phase_b_hidden_states(cfg, raw_path, out_dir, shard_index=0, num_shards=1):
                 key = f"{pid}_{tag}_{j}"
                 if key in store:
                     continue
-                store[key] = extract(prompt, c["text"])
+                last_seq, pooled = extract(prompt, c["text"])
+                store[key] = last_seq               # unchanged consumers
+                store[f"{key}__ml"] = pooled        # new: 3-layer pooled vectors
         logger.info(f"  extracted hidden states for problem {pid}")
         np.savez_compressed(hidden_path, **store)
 
