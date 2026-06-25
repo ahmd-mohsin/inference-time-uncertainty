@@ -43,7 +43,8 @@ pids=()
 for s in $(seq 0 $((NGPU-1))); do
   CUDA_VISIBLE_DEVICES=$s python -m topological_persistence.analyze_results \
     --results-dir "$DIR" --validate --n-validation "$NVAL" \
-    --dataset "$DATASET" --model "$MODEL" --shard-index "$s" --num-shards "$NGPU" \
+    --dataset "$DATASET" --model "$MODEL" --n-problems "$NPROB" \
+    --shard-index "$s" --num-shards "$NGPU" \
     > ~/logs/s_val_shard${s}.log 2>&1 &
   pids+=($!); echo "  val shard $s -> GPU $s (pid ${pids[-1]})"
 done

@@ -25,5 +25,59 @@
     "already_solved_at_8": true,
     "ceiling_kind": "solved",
     "prediction_correct": null
+  },
+  {
+    "problem_id": 13,
+    "gold": "197",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 6,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.35,
+      "8": 0.556,
+      "16": 0.852,
+      "32": 0.982,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.302,
+      "8": 0.516,
+      "16": 0.766,
+      "32": 0.95,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.44399999999999995,
+    "actually_scales": true,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": false
+  },
+  {
+    "problem_id": 21,
+    "gold": "315",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 0,
+    "n_correct_of_N": 0,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "maj_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": true
   }
 ]

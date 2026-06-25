@@ -219,7 +219,8 @@ def print_analysis(analyses: list[dict]):
 
 def validate_with_more_chains(results_dir: str, n_validation: int = 64,
                               dataset: str = None, model: str = None,
-                              shard_index: int = 0, num_shards: int = 1):
+                              shard_index: int = 0, num_shards: int = 1,
+                              n_problems: int = None):
     """Generate N>>8 chains per problem to test whether the ceiling prediction holds.
 
     Ceiling test logic (using pass@k = P(>=1 correct in k samples)):
@@ -242,11 +243,15 @@ def validate_with_more_chains(results_dir: str, n_validation: int = 64,
         cfg.dataset = dataset
     if model:
         cfg.sampling.model_name = model
+    if n_problems:
+        cfg.n_problems = n_problems
 
     results = load_results(results_dir)
     dataset_cfg = {"dataset": {"name": cfg.dataset, "split": "test",
                                 "n_problems": cfg.n_problems, "seed": cfg.seed}}
     problems = get_inference_dataset(dataset_cfg)
+    logger.info(f"Validation dataset '{cfg.dataset}': {len(problems)} problems loaded "
+                f"(n_problems={cfg.n_problems}); {len(results)} have detector results")
 
     logger.info(f"Loading vLLM (TP={cfg.sampling.tensor_parallel_size}) for validation...")
     llm = LLM(
@@ -397,6 +402,9 @@ def main():
                         help="Number of chains for validation (default 64)")
     parser.add_argument("--dataset", default=None, help="Override dataset for validation")
     parser.add_argument("--model", default=None, help="Override model for validation")
+    parser.add_argument("--n-problems", type=int, default=None,
+                        help="Problems to load from dataset for validation (MUST match "
+                             "generation, else validation covers the wrong subset)")
     # Data-parallel validation: one process per GPU, each --shard-index i --num-shards N.
     parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--num-shards", type=int, default=1)
@@ -421,7 +429,8 @@ def main():
     if args.validate:
         validate_with_more_chains(args.results_dir, args.n_validation,
                                   dataset=args.dataset, model=args.model,
-                                  shard_index=args.shard_index, num_shards=args.num_shards)
+                                  shard_index=args.shard_index, num_shards=args.num_shards,
+                                  n_problems=args.n_problems)
 
 
 if __name__ == "__main__":

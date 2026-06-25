@@ -1,36 +1,36 @@
 [
   {
-    "problem_id": 7,
-    "gold": "25",
+    "problem_id": 3,
+    "gold": "385",
     "verdict": "CEILING_REACHED",
     "h1_features": 1,
-    "n_correct_of_N": 64,
+    "n_correct_of_N": 0,
     "n_validation": 64,
     "pass_curve": {
-      "4": 1.0,
-      "8": 1.0,
-      "16": 1.0,
-      "32": 1.0,
-      "64": 1.0
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
     },
     "maj_curve": {
-      "4": 1.0,
-      "8": 1.0,
-      "16": 1.0,
-      "32": 1.0,
-      "64": 1.0
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
     },
     "pass_gain_8_to_max": 0.0,
     "actually_scales": false,
-    "already_solved_at_8": true,
-    "ceiling_kind": "solved",
-    "prediction_correct": null
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": true
   },
   {
-    "problem_id": 15,
-    "gold": "73",
+    "problem_id": 11,
+    "gold": "294",
     "verdict": "CEILING_REACHED",
-    "h1_features": 2,
+    "h1_features": 3,
     "n_correct_of_N": 63,
     "n_validation": 64,
     "pass_curve": {
@@ -54,8 +54,8 @@
     "prediction_correct": null
   },
   {
-    "problem_id": 23,
-    "gold": "45",
+    "problem_id": 19,
+    "gold": "321",
     "verdict": "CEILING_REACHED",
     "h1_features": 1,
     "n_correct_of_N": 62,
@@ -79,5 +79,32 @@
     "already_solved_at_8": true,
     "ceiling_kind": "solved",
     "prediction_correct": null
+  },
+  {
+    "problem_id": 27,
+    "gold": "699",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 12,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.56,
+      "8": 0.79,
+      "16": 0.974,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.538,
+      "8": 0.814,
+      "16": 0.976,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.20999999999999996,
+    "actually_scales": true,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": false
   }
 ]
