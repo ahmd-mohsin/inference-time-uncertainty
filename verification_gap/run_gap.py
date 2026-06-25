@@ -74,8 +74,15 @@ def main():
     args = p.parse_args()
 
     cfg = GapConfig(); cfg.model_name = args.model; cfg.dataset = args.dataset
-    cfg.n_problems = args.n_problems; cfg.n_chains = args.n_chains; cfg.output_dir = args.output_dir
-    out = Path(args.output_dir); out.mkdir(parents=True, exist_ok=True)
+    cfg.n_problems = args.n_problems; cfg.n_chains = args.n_chains
+    # auto-derive output dir from model+dataset if caller passed the sentinel "auto",
+    # so multi-model x multi-dataset sweeps never collide.
+    if args.output_dir == "auto":
+        tag = args.model.split("/")[-1].lower().replace(".", "")
+        cfg.output_dir = f"data/vgap_{tag}_{args.dataset}"
+    else:
+        cfg.output_dir = args.output_dir
+    out = Path(cfg.output_dir); out.mkdir(parents=True, exist_ok=True)
 
     if args.merge_only:
         merge(out, args.num_shards); return
