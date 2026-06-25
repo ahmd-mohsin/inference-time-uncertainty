@@ -25,5 +25,59 @@
     "already_solved_at_8": true,
     "ceiling_kind": null,
     "prediction_correct": null
+  },
+  {
+    "problem_id": 14,
+    "gold": "83",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 0,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "maj_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": true
+  },
+  {
+    "problem_id": 22,
+    "gold": "245",
+    "verdict": "SCALABLE",
+    "h1_features": 3,
+    "n_correct_of_N": 26,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.878,
+      "8": 0.988,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.864,
+      "8": 0.976,
+      "16": 0.998,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.01200000000000001,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": null,
+    "prediction_correct": null
   }
 ]

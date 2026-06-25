@@ -25,5 +25,86 @@
     "already_solved_at_8": true,
     "ceiling_kind": null,
     "prediction_correct": null
+  },
+  {
+    "problem_id": 9,
+    "gold": "156",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 3,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.186,
+      "8": 0.32,
+      "16": 0.598,
+      "32": 0.858,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.154,
+      "8": 0.262,
+      "16": 0.29,
+      "32": 0.246,
+      "64": 0.0
+    },
+    "pass_gain_8_to_max": 0.6799999999999999,
+    "actually_scales": true,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": false
+  },
+  {
+    "problem_id": 17,
+    "gold": "503",
+    "verdict": "SCALABLE",
+    "h1_features": 1,
+    "n_correct_of_N": 24,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.878,
+      "8": 0.986,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.67,
+      "8": 0.892,
+      "16": 0.99,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.014000000000000012,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": null,
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 25,
+    "gold": "132",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 3,
+    "n_correct_of_N": 18,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.748,
+      "8": 0.93,
+      "16": 0.998,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.77,
+      "8": 0.934,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.06999999999999995,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
   }
 ]

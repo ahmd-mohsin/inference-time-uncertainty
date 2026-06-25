@@ -1,1 +1,812 @@
-[]
+[
+  {
+    "problem_id": 0,
+    "gold": "277",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 2,
+    "n_correct_of_N": 64,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 1,
+    "gold": "62",
+    "verdict": "UNCERTAIN",
+    "h1_features": 2,
+    "n_correct_of_N": 61,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": null,
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 2,
+    "gold": "79",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 2,
+    "n_correct_of_N": 57,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 3,
+    "gold": "70",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 63,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 4,
+    "gold": "65",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 3,
+    "n_correct_of_N": 64,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 5,
+    "gold": "441",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 64,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 6,
+    "gold": "396",
+    "verdict": "UNCERTAIN",
+    "h1_features": 3,
+    "n_correct_of_N": 64,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": null,
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 7,
+    "gold": "244",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 0,
+    "n_correct_of_N": 61,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 8,
+    "gold": "29",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 2,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.102,
+      "8": 0.254,
+      "16": 0.45,
+      "32": 0.75,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.112,
+      "8": 0.212,
+      "16": 0.428,
+      "32": 0.766,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.746,
+    "actually_scales": true,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": false
+  },
+  {
+    "problem_id": 9,
+    "gold": "156",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 3,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.186,
+      "8": 0.32,
+      "16": 0.598,
+      "32": 0.858,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.154,
+      "8": 0.262,
+      "16": 0.29,
+      "32": 0.246,
+      "64": 0.0
+    },
+    "pass_gain_8_to_max": 0.6799999999999999,
+    "actually_scales": true,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": false
+  },
+  {
+    "problem_id": 10,
+    "gold": "896",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 3,
+    "n_correct_of_N": 34,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.97,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.862,
+      "8": 0.968,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 11,
+    "gold": "161",
+    "verdict": "UNCERTAIN",
+    "h1_features": 2,
+    "n_correct_of_N": 61,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": null,
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 12,
+    "gold": "39",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 2,
+    "n_correct_of_N": 17,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.696,
+      "8": 0.934,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.692,
+      "8": 0.866,
+      "16": 0.964,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.06599999999999995,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 13,
+    "gold": "681",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 2,
+    "n_correct_of_N": 0,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "maj_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": true
+  },
+  {
+    "problem_id": 14,
+    "gold": "83",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 0,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "maj_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": true
+  },
+  {
+    "problem_id": 15,
+    "gold": "178",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 64,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 16,
+    "gold": "243",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 2,
+    "n_correct_of_N": 12,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.576,
+      "8": 0.848,
+      "16": 0.976,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.566,
+      "8": 0.81,
+      "16": 0.958,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.15200000000000002,
+    "actually_scales": true,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": false
+  },
+  {
+    "problem_id": 17,
+    "gold": "503",
+    "verdict": "SCALABLE",
+    "h1_features": 1,
+    "n_correct_of_N": 24,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.878,
+      "8": 0.986,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.67,
+      "8": 0.892,
+      "16": 0.99,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.014000000000000012,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": null,
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 18,
+    "gold": "279",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 3,
+    "n_correct_of_N": 63,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 19,
+    "gold": "190",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 2,
+    "n_correct_of_N": 62,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 20,
+    "gold": "50",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 63,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 21,
+    "gold": "754",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 2,
+    "n_correct_of_N": 40,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.978,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.968,
+      "8": 0.998,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 22,
+    "gold": "245",
+    "verdict": "SCALABLE",
+    "h1_features": 3,
+    "n_correct_of_N": 26,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.878,
+      "8": 0.988,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.864,
+      "8": 0.976,
+      "16": 0.998,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.01200000000000001,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": null,
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 23,
+    "gold": "669",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 39,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.986,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.976,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 24,
+    "gold": "850",
+    "verdict": "SCALABLE",
+    "h1_features": 2,
+    "n_correct_of_N": 39,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.982,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.712,
+      "8": 0.794,
+      "16": 0.912,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": null,
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 25,
+    "gold": "132",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 3,
+    "n_correct_of_N": 18,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.748,
+      "8": 0.93,
+      "16": 0.998,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.77,
+      "8": 0.934,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.06999999999999995,
+    "actually_scales": false,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": null
+  },
+  {
+    "problem_id": 26,
+    "gold": "223",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 2,
+    "n_correct_of_N": 6,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.354,
+      "8": 0.584,
+      "16": 0.87,
+      "32": 0.982,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.308,
+      "8": 0.594,
+      "16": 0.836,
+      "32": 0.988,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.41600000000000004,
+    "actually_scales": true,
+    "already_solved_at_8": true,
+    "ceiling_kind": "solved",
+    "prediction_correct": false
+  },
+  {
+    "problem_id": 27,
+    "gold": "107",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 2,
+    "n_correct_of_N": 2,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.128,
+      "8": 0.208,
+      "16": 0.448,
+      "32": 0.766,
+      "64": 1.0
+    },
+    "maj_curve": {
+      "4": 0.128,
+      "8": 0.18,
+      "16": 0.36,
+      "32": 0.608,
+      "64": 1.0
+    },
+    "pass_gain_8_to_max": 0.792,
+    "actually_scales": true,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": false
+  },
+  {
+    "problem_id": 28,
+    "gold": "157",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 1,
+    "n_correct_of_N": 0,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "maj_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": true
+  },
+  {
+    "problem_id": 29,
+    "gold": "393",
+    "verdict": "CEILING_REACHED",
+    "h1_features": 3,
+    "n_correct_of_N": 0,
+    "n_validation": 64,
+    "pass_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "maj_curve": {
+      "4": 0.0,
+      "8": 0.0,
+      "16": 0.0,
+      "32": 0.0,
+      "64": 0.0
+    },
+    "pass_gain_8_to_max": 0.0,
+    "actually_scales": false,
+    "already_solved_at_8": false,
+    "ceiling_kind": "stuck",
+    "prediction_correct": true
+  }
+]
