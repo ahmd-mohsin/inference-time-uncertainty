@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
 # greenland-connect-topo.sh — Connect to Instance 2 (topological experiment)
-# Current job: cmohsinm-workspace (submitted 2026-06-24T17:41Z)
-#   SSM: mi-0e220ab52563a081e / EC2: i-0179f0ba840cdb5e4 / IP: 10.3.219.28 / p4d.24xlarge
-# Previous: mi-02b46ccb515620db7 (10.3.228.25), mi-00b4a7a2d8b022958 (10.3.152.202)
+# Current job: cmohsinm-workspace-uncertainity (submitted 2026-06-25T23:32Z)
+#   SSM: mi-0a7b3e00847947566 / EC2: i-0832beffb99d1dd09 / IP: 10.3.33.7 / p4d.24xlarge
+# Previous: mi-0e220ab52563a081e (10.3.219.28), mi-02b46ccb515620db7 (10.3.228.25)
 set -euo pipefail
 
 ACCOUNT="703671891219"
@@ -12,9 +12,9 @@ PROVIDER="isengard"
 PROFILE="greenland"
 REGION="us-east-2"
 JOB_ROLE_ARN="arn:aws:iam::072510399842:role/greenland-access-37f871283e3e69fdbfe97939a34079a8bfdfdd85"
-SSM_TARGET="mi-0e220ab52563a081e"
+SSM_TARGET="mi-0a7b3e00847947566"
 REMOTE_PORT="2222"
-LOCAL_PORT="1054"
+LOCAL_PORT="1056"
 SSH_USER="greenland-user"
 
 auth() {
@@ -30,7 +30,7 @@ auth() {
 
 tunnel() {
   echo ">> Opening SSM tunnel to Instance 2 (topo) on local port $LOCAL_PORT..."
-  echo ">> Target: $SSM_TARGET (10.3.219.28)"
+  echo ">> Target: $SSM_TARGET (10.3.33.7)"
   aws ssm start-session \
     --target "$SSM_TARGET" \
     --document-name AWS-StartPortForwardingSession \
