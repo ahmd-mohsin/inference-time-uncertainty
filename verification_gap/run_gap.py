@@ -97,12 +97,27 @@ def main():
 
     from vllm import LLM, SamplingParams
     from src.data.dataset import format_prompt
-    logger.info(f"Loading vLLM {cfg.model_name} (TP={cfg.tensor_parallel_size})")
+
+    # Clamp context to the model's real limit. Qwen2.5-7B caps at 32768; asking for
+    # max_new_tokens(32768)+1024 exceeds it and vLLM refuses to load. Read the model's
+    # max_position_embeddings and set max_model_len = min(want, model_cap). Generation
+    # budget then reserves PROMPT_RESERVE tokens for the prompt within that window.
+    from transformers import AutoConfig
+    PROMPT_RESERVE = 1024
+    try:
+        hf_cfg = AutoConfig.from_pretrained(cfg.model_name, trust_remote_code=True)
+        model_cap = int(getattr(hf_cfg, "max_position_embeddings", cfg.max_new_tokens))
+    except Exception:
+        model_cap = cfg.max_new_tokens
+    max_model_len = min(cfg.max_new_tokens + PROMPT_RESERVE, model_cap)
+    gen_max_tokens = max(1024, max_model_len - PROMPT_RESERVE)
+    logger.info(f"Loading vLLM {cfg.model_name} (TP={cfg.tensor_parallel_size}) "
+                f"model_cap={model_cap} max_model_len={max_model_len} gen_max_tokens={gen_max_tokens}")
     llm = LLM(model=cfg.model_name, dtype=cfg.dtype, tensor_parallel_size=cfg.tensor_parallel_size,
-              trust_remote_code=True, max_model_len=cfg.max_new_tokens + 1024,
+              trust_remote_code=True, max_model_len=max_model_len,
               enable_prefix_caching=True, gpu_memory_utilization=cfg.gpu_memory_utilization)
 
-    gen_sp = SamplingParams(n=cfg.n_chains, max_tokens=cfg.max_new_tokens,
+    gen_sp = SamplingParams(n=cfg.n_chains, max_tokens=gen_max_tokens,
                             temperature=cfg.gen_temperature, top_p=cfg.gen_top_p,
                             stop=["<|im_end|>", "<|endoftext|>"])
     ver_sp = SamplingParams(n=cfg.n_verify_samples, max_tokens=cfg.verify_max_tokens,
