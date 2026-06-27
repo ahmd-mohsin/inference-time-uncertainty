@@ -29,10 +29,9 @@ DIFF="rl_training/runs/difficulty.json"
 # distribute to workers
 $SSHL "for ip in 10.3.103.188 10.3.197.81 10.3.188.41; do rsync -az -e \"$SSHW\" ~/inference-time-uncertainty/rl_training/runs/difficulty.json greenland-user@\$ip:inference-time-uncertainty/rl_training/runs/ 2>/dev/null; done; echo distributed"
 
-# 2. launch arms (each writes its own eval JSON; base+grpo don't need DIFF)
-log "launching base (w1), grpo (w0), oursA (main)"
-launch 10.3.197.81 base ""
-launch 10.3.103.188 grpo ""
+# 2. launch arms. NOTE: base (w1) and grpo (w0) were launched manually in parallel with
+# the prepass (they don't need difficulty.json), so here we launch ONLY the C-dependent arms.
+log "launching oursA (main); base/grpo already running on w1/w0"
 launch main oursA "$DIFF"
 
 # 3. oursAB on w2 only if torch healthy

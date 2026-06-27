@@ -36,8 +36,25 @@ def build_args():
     return p.parse_args()
 
 
+def _resolve_local_model(model_id: str) -> str:
+    """Return a local snapshot dir for model_id if cached, else model_id unchanged.
+
+    Under HF_HUB_OFFLINE=1, TRL's colocate vLLM ModelConfig validation can fail to resolve
+    a bare HF id ('Qwen/Qwen3-8B') even when cached. Passing the concrete snapshot path
+    sidesteps any hub lookup for BOTH the HF trainer and vLLM.
+    """
+    if os.path.isdir(model_id):
+        return model_id
+    try:
+        from huggingface_hub import snapshot_download
+        return snapshot_download(model_id)  # offline -> returns cached snapshot dir
+    except Exception:
+        return model_id
+
+
 def main():
     a = build_args()
+    a.model = _resolve_local_model(a.model)
     cfg = RLConfig(model_name=a.model, dataset=a.dataset, n_problems=a.n_problems,
                    difficulty_json=a.difficulty_json, output_dir=a.output_dir,
                    num_generations=a.num_generations, num_train_steps=a.num_train_steps,
