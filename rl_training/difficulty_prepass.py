@@ -66,6 +66,17 @@ def main():
         per.append({"problem_id": p["problem_id"], "label": label,
                     "pass1": p1, f"pass{a.k}": pk, "n_correct": int(sum(mask))})
 
+    # Safeguard (docs/RL.md §4.3): if too few HARD problems for stable GRPO, relabel some
+    # 'solved' as 'hard' (lowest-pass1 first) so the targeted set has >= MIN_HARD problems.
+    MIN_HARD = 30
+    if counts["hard"] < MIN_HARD:
+        solved = sorted([p for p in per if p["label"] == "solved"], key=lambda x: x["pass1"])
+        need = MIN_HARD - counts["hard"]
+        for p in solved[:need]:
+            p["label"] = "hard"; p["relabeled"] = True
+            counts["hard"] += 1; counts["solved"] -= 1
+        print(f"  (relabeled {min(need, len(solved))} solved->hard to reach MIN_HARD={MIN_HARD})")
+
     Path(a.output).parent.mkdir(parents=True, exist_ok=True)
     json.dump({"model": a.model_path, "dataset": a.dataset, "k": a.k,
                "counts": counts, "per_problem": per}, open(a.output, "w"), indent=2)

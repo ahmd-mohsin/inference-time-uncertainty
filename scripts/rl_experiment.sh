@@ -36,12 +36,14 @@ case "$ARM" in
     run_eval "$MODEL" base
     ;;
   grpo|oursA)
-    [ "$ARM" = "grpo" ] && NOV="--no-novelty" || NOV="--novelty-lambda 0.5"
-    echo "===== ARM $ARM: GRPO train ($STEPS steps) ====="
+    # Clean ablation: grpo = standard GRPO on FULL data (no novelty, no C targeting) so it
+    # is a true control for Yue's crossover. oursA = novelty (A) + hard-targeting (C).
+    if [ "$ARM" = "grpo" ]; then NOV="--no-novelty"; USE_DIFF=""; else NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF"; fi
+    echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}) ====="
     accelerate launch --config_file "$ACC" --num_processes 8 --num_machines 1 \
       -m rl_training.train_grpo --model "$MODEL" --dataset "$DATASET" \
       --n-problems "$NPROB" --num-train-steps "$STEPS" --num-generations "$NGEN" \
-      --output-dir "$RUN" ${DIFF:+--difficulty-json "$DIFF"} $NOV
+      --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV
     run_eval "$RUN" "$ARM"
     ;;
   oursAB)
