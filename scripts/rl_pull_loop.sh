@@ -16,10 +16,12 @@ while :; do
   echo "[$TS] gathering worker results -> main, then main -> local"
   # workers push their JSON results to main under runs_<ip>/
   $SSHL "cd ~/inference-time-uncertainty && for ip in $WORKERS; do mkdir -p rl_training/runs_from_\$ip; rsync -az --include='*/' --include='*.json' --include='*.jsonl' --exclude='*' -e \"$SSHW\" greenland-user@\$ip:inference-time-uncertainty/rl_training/runs/ rl_training/runs_from_\$ip/ 2>/dev/null; done; echo gathered" 2>&1 | tail -1
-  # pull everything (main's own runs + gathered worker runs) to local, JSON only
-  rsync -az --include='*/' --include='*.json' --include='*.jsonl' --include='*.log' --exclude='*' \
+  # pull everything to local: JSON/JSONL results + LoRA adapters (small, resumable) + logs.
+  # adapter_model.safetensors lets us RESUME on a fresh instance if this one dies.
+  rsync -az --include='*/' --include='*.json' --include='*.jsonl' --include='*.log' \
+    --include='adapter_model.safetensors' --include='adapter_config.json' --exclude='*' \
     -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR" \
     greenland-user@localhost:inference-time-uncertainty/rl_training/ "$LOCAL/" 2>&1 | tail -1
-  echo "[$TS] pulled -> $LOCAL ; sleeping 1h"
-  sleep 3600
+  echo "[$TS] pulled -> $LOCAL ; sleeping 3h"
+  sleep 10800
 done
