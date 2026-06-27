@@ -1,246 +1,166 @@
-# Making RL Generalize, Not Just Sharpen: Expanding the Reasoning Boundary
+# Making RL Generalize, Not Just Sharpen
 
-## 0. One-line thesis
+## TL;DR
 
-Standard RLVR improves **pass@1** by concentrating probability on reasoning paths the base
-model already samples, but it **shrinks pass@k** (the reachable solution set). We aim to
-make the RL gradient *expand support* — sharpen the dominant correct mode **and** protect /
-grow the rare-but-valid tail — using **inter-rollout diversity (semantic distance between
-trajectory embeddings)** as the signal and **off-policy harvesting of the model's own
-rare high-k successes** as the support-expansion mechanism, without ProRL-scale brute-force
-training.
+Reinforcement learning with verifiable rewards (RLVR) makes a model **more reliable at
+answers it could already find** (pass@1 ↑) but **worse at finding answers it rarely finds**
+(pass@k ↓ at large k). It sharpens the peak and shaves off the tail. We are building an RL
+recipe that **sharpens the peak AND keeps/grows the tail** — by rewarding *correct-and-novel*
+reasoning and by feeding the model its own rare successes off-policy. Success is concrete:
+**erase the pass@k crossover** — beat plain GRPO at small k *and* match/beat the base model
+at large k, at small compute (not ProRL-scale brute force).
 
----
-
-## 1. The problem, precisely (why RL sharpens)
-
-Grounding paper: **Yue et al. 2025, "Does RL Really Incentivize Reasoning Capacity in LLMs
-Beyond the Base Model?"** (arXiv:2504.13837). Established findings:
-
-1. **RL sharpens but doesn't expand.** On pass@k curves, RLVR beats base at small k (k=1)
-   but the **base overtakes at large k** (k=128–1024) across every benchmark/model family.
-   RL improves sampling efficiency on already-solvable problems while *narrowing* the set of
-   solvable problems (e.g. Minerva-32B: base solves ~9% more at k=128).
-2. **The paths RL finds were already in the base.** Perplexity analysis: RL outputs sit in
-   the *low-perplexity (easy-to-sample) region of the base model's own distribution*. RL
-   redistributes mass onto pre-existing paths; it does not create new ones.
-3. **Distillation expands the boundary; RL doesn't.** Distillation pushes pass@k *above*
-   base because it injects **off-policy** paths from a stronger teacher.
-
-### Why — the mechanism (from §2.1, §4.1, §4.5 of the paper)
-
-- Objective `J(θ)=E_{y∼π_θ}[r]`, `r∈{0,1}` (exact match). Policy gradient *maximizes
-  log-prob of correct rollouts, minimizes incorrect.*
-- **On-policy ⇒ redistribution only.** PPO/GRPO learn solely from the current policy's own
-  samples. A path the base emits with prob ≈ 0 is never sampled → never gets gradient → RL
-  *cannot* add it. RL is structurally a mass-redistribution operator over existing support.
-- **Binary reward ⇒ novelty is uncredited.** Every correct rollout gets r=1 regardless of
-  *how* it solved it, so gradient flows to the **already-most-probable** correct path,
-  collapsing onto one mode and starving rare valid alternatives. (Fig 5: RL piles frequency
-  at accuracy≈1.0, *and* raises frequency at accuracy 0 — some problems become unsolvable.)
-- **It is NOT just lowered entropy.** §4.5 ablation: raising the RL model's temperature to
-  match the base model's entropy **still** underperforms base at large k. The paths are
-  *pruned*, not merely down-weighted — you cannot reheat them back. This is the crucial
-  result: the fix must *expand support*, not just *preserve entropy*.
-
-**Fix conditions implied by the diagnosis** — to expand rather than sharpen we must break at
-least one of:
-(a) on-policy-ness (get gradient on paths not currently sampled),
-(b) binary reward (credit novelty/coverage, not just correctness),
-(c) winner-take-all mode collapse (protect rare correct modes from the dominant one).
+Code: `rl_training/` (TRL GRPOTrainer). Running now: a 4-arm study on Qwen3-8B / AIME across
+4×8 A100 nodes (`base`, `grpo`, `oursA`, `oursAB`).
 
 ---
 
-## 2. Complete literature: what's been tried to make RL generalize
+## 1. What we are doing
 
-### 2.1 Entropy / exploration preservation (slows collapse; stays on-policy)
+We post-train a small reasoning model (Qwen3-8B) with GRPO on competition math (AIME
+2024+2025+2026), and we measure the **full pass@k curve (k = 1 … 256)**, not just pass@1.
+The whole study is one controlled ladder:
 
-- **Cui et al. 2025, "The Entropy Mechanism of RL for Reasoning LMs"** (arXiv:2505.22617).
-  Derives `R = -a·e^H + b` — downstream performance is *traded against* policy entropy.
-  Entropy collapse is driven by the **covariance between action probability and logit
-  change** (∝ advantage under PG); the covariance stays positive → entropy decreases
-  monotonically. Fix: **Clip-Cov / KL-Cov** — clip or KL-penalize the high-covariance
-  tokens to keep exploration alive.
-- **Wang et al. 2025, "Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive Effective
-  RL"** (arXiv:2506.01939). Only ~20% of tokens — high-entropy **"forking tokens"** — drive
-  reasoning; restricting policy gradient to them matches/beats full-gradient (Qwen3-32B:
-  +11.04 AIME'25). **This is branch-point credit assignment** (cf. our Direction 14A): the
-  decisions that matter are the contested forks.
-- **Takeaway:** these *slow* collapse and concentrate gradient where it matters, but remain
-  **on-policy** — they cannot add paths outside current support. They mitigate (c), touch
-  (b), but never (a).
-
-### 2.2 Prolonged training + KL control + task diversity — the rebuttal to "RL only sharpens"
-
-- **Liu et al. 2025, "ProRL: Prolonged RL Expands Reasoning Boundaries"**
-  (arXiv:2505.24864). Strongest claim that RL *does* expand: "novel reasoning strategies
-  inaccessible to base models, even under extensive sampling… scenarios where base models
-  fail entirely." Mechanism: **KL divergence control + reference-policy resetting + diverse
-  task suite + very long training.** Key condition: expansion correlates with **base-model
-  competence and training duration** — i.e. it works only when the base is competent enough
-  and you train long enough.
-- **This is the elephant.** Our contribution cannot be "RL can expand" (ProRL claimed it).
-  It must be **"RL expands *efficiently and reliably* via novelty-reward + off-policy
-  tail-harvesting, without ProRL's brute-force prolonged-training + reference-reset
-  machinery."** Position against ProRL as the efficient alternative.
-
-### 2.3 Exploration-budget allocation
-
-- **Knapsack RL** (arXiv:2509.25849). Not a diversity reward — an *allocation* method:
-  frame per-task rollout budget as a knapsack, give more rollouts to high-learning-signal
-  (hard) tasks, fixing GRPO's **zero-gradient problem** on always-pass / always-fail tasks
-  (+20–40% non-zero gradients; 2× compute efficiency). Relevant because the support
-  expansion we want happens precisely on the **hard problems where the gradient is currently
-  zero** — allocation is complementary to our reward change.
-
-### 2.4 Representation-space diversity (the closest prior to our measurement)
-
-- **Sun et al. 2025, "Representation-Based Exploration..."** (arXiv:2510.11686). A diversity
-  bonus **derived from the pre-trained model's hidden states** → +50% verifier efficiency at
-  inference; **pass@80 = GRPO's pass@256 (3× sample efficiency)**; argues "deliberate
-  exploration with the right notion of diversity is a path to discovery beyond sharpening."
-  **This essentially already did representation-space diversity** — so it is our *tool*, not
-  our novelty. We differentiate on *how it is used* (group-relative, applied to correct
-  rollouts, fused with off-policy harvesting), not *whether* representation diversity helps.
-
-### 2.5 Off-policy / distillation to inject new paths
-
-- The Yue paper's own contrast: distillation expands pass@k because it is **off-policy**
-  (teacher tokens carry paths the base couldn't sample). RL+SFT hybrids, success replay,
-  STaR / ReST-style self-training, and teacher-trace injection all live here — but mostly
-  studied as *separate SFT*, **not as an RL objective that expands support.** This is the
-  least-explored quadrant and our strongest opening.
-
----
-
-## 3. Our ideas and honest positioning
-
-| Idea | Closest prior work | Novelty |
+| Arm | What it is | Purpose |
 |---|---|---|
-| **#1 Vector reward with a novelty term** — reward a correct rollout *more* when it is distinct from the other correct rollouts in its group | Entropy preservation (Cui); rep-exploration (Sun) | **Partial.** Entropy/representation bonuses exist, but a **per-group novelty reward that specifically protects rare *correct* modes** ("reward correct-AND-distinct") is sharper than generic entropy and not standard. |
-| **#2 Semantic distance between trajectory embeddings** as the diversity metric (group-relative pairwise distance in representation space) | Sun et al. (hidden-state diversity bonus → 3× pass@k) | **Weakest / most done.** Use it as the **measurement tool** inside #1/#3, *not* as the headline novelty. Differentiator is *group-relative, correct-rollouts-only*, not *whether* representation diversity helps. |
-| **#3 Off-policy self-distillation of the model's own high-k tail** — sample at large k, harvest the rare correct paths the base finds, train on them off-policy to permanently widen support | Distillation (Yue); STaR / ReST self-training | **Strongest / least crowded.** "Harvest the model's own rare high-k successes and train off-policy to widen support" is not a well-trodden RL objective. Clean mechanism story below. |
+| **base** | the untrained model | the pass@k ceiling RL must not fall below |
+| **grpo** | standard GRPO, full data | reproduces the "RL sharpens" crossover (control) |
+| **oursA** | GRPO + group-relative **novelty reward** (Component A) + hard-targeting (C) | does rewarding *correct-and-different* protect the tail? |
+| **oursAB** | oursA + **off-policy tail harvesting** (Component B) | does feeding the model its own rare successes expand support? |
 
-**Strategic read:**
-- **#2 alone is not a paper** — fold it into #1/#3 as the metric.
-- **#3 is the sharpest**, because Yue's perplexity analysis *proves* the correct rare path is
-  in-support but low-probability. Harvesting those and training off-policy moves a low-prob
-  correct path to high-prob **without pruning the others** — directly attacking the cause of
-  sharpening (on-policy redistribution).
-- **Frame against ProRL:** same goal (boundary expansion), but efficient and mechanistic
-  rather than brute-force prolonged training.
+Each arm trains, then evaluates pass@k. The comparison of the four curves is the result.
 
 ---
 
-## 4. Methodology — how we build on them
+## 2. The gap (why standard RL sharpens but does not expand)
 
-The unifying objective: **sharpen the dominant correct mode while protecting and growing the
-rare-but-valid tail.** Three components, each tied to a fix-condition from §1.
+Grounding paper: **Yue et al. 2025, "Does RL Really Incentivize Reasoning Capacity Beyond the
+Base Model?"** (arXiv:2504.13837). What they established, and *why* it happens:
 
-### 4.1 Component A — Group-relative novelty reward (fixes b + c)
+- **The finding.** On pass@k curves, RLVR beats the base model at small k but the **base
+  overtakes it at large k** (k = 128–1024), across every model family and benchmark. So RL
+  *narrows* the set of solvable problems even as it raises average accuracy.
+- **The cause is structural, three layers deep:**
+  1. **On-policy ⇒ redistribution only.** PPO/GRPO learn only from the policy's *own*
+     samples. A reasoning path the model emits with probability ≈ 0 is never sampled, never
+     gets gradient, and so can never be reinforced. RL can only move probability *among paths
+     already in the support* — it cannot add new ones.
+  2. **Binary reward ⇒ novelty is uncredited.** Every correct rollout gets reward 1
+     regardless of *how* it solved the problem. The gradient therefore flows to whichever
+     correct path is *already most probable*, collapsing the distribution onto one mode and
+     starving rare-but-valid alternatives.
+  3. **It is not just low entropy.** Their key ablation: reheating the RL model's temperature
+     to match the base model's entropy *still* loses at large k. The rare paths are
+     **pruned**, not merely down-weighted — you cannot get them back by sampling hotter.
+- **The contrast that points to the fix.** Distillation *does* expand pass@k beyond the
+  base, because it injects **off-policy** paths from a teacher. The lever that works is
+  off-policy signal — exactly what on-policy RL lacks.
 
-Augment the scalar verifiable reward with a diversity term computed *within the GRPO group*
-and *only among correct rollouts*:
+**So the gap is:** to *expand* rather than *sharpen*, the recipe must break at least one of
+— (a) on-policy-only gradient, (b) correctness-only reward, (c) winner-take-all collapse.
 
+---
+
+## 3. What's been tried (and why it's not enough)
+
+| Line of work | Papers | What it does | Why it's insufficient alone |
+|---|---|---|---|
+| Entropy / exploration preservation | Cui et al. 2505.22617 (Clip-Cov/KL-Cov); Wang et al. 2506.01939 (forking tokens) | slow the entropy collapse; concentrate gradient on high-entropy decisions | **stays on-policy** — slows the tail loss, can't add paths (touches c, not a) |
+| Prolonged RL | ProRL, Liu et al. 2505.24864 | KL control + reference reset + diverse tasks + *very long* training → does expand the boundary | works by **brute force**; expensive; our efficient alternative is the contribution |
+| Exploration budget | Knapsack-RL 2509.25849 | give more rollouts to hard tasks (fix zero-gradient problems) | an *allocation* trick, not a reward change — complementary, we reuse the idea |
+| Representation diversity | Sun et al. 2510.11686 | hidden-state diversity bonus → ~3× pass@k efficiency | proves diversity-in-representation works; it is our **measurement tool**, not our novelty |
+| Off-policy / self-distillation | distillation (Yue); STaR / ReST | inject new paths via SFT on teacher/self traces | studied as *separate SFT*, **not as an RL objective that expands support** — our opening |
+
+**Where we sit:** ProRL already showed *RL can expand*. So our claim is not "RL can expand"
+— it is **"RL can expand efficiently and reliably, via a correct-and-novel reward + the
+model's own off-policy tail, without ProRL-scale training."**
+
+---
+
+## 4. The method (three components)
+
+Unifying objective: **keep the dominant correct mode sharp while protecting and growing the
+rare-but-valid tail.** Implemented in `rl_training/`, built on TRL's `GRPOTrainer` with LoRA
+and colocated vLLM.
+
+**Component A — group-relative novelty reward** (`rewards.py`, `semantic.py`). Within each
+GRPO group, give a correct rollout a bonus for being *semantically distant from the other
+correct rollouts*:
 ```
-r_i = correct_i · ( 1 + λ · novelty_i )
-novelty_i = mean pairwise semantic distance of rollout i to the OTHER correct rollouts,
-            in representation space (trajectory embedding; §4.4)
+reward_i = correct_i · (1 + λ · novelty_i)
+novelty_i = mean embedding distance of rollout i to the OTHER correct rollouts in the group
 ```
+The bonus applies **only to correct rollouts** — this is the crux that separates us from a
+generic entropy bonus (which would also reward diverse *wrong* answers). We reward
+*correct paths that differ from the consensus correct path*, i.e. we protect the rare valid
+mode the standard gradient crushes. Distance is measured with a pretrained sentence-embedding
+model (`all-MiniLM`), in approach space, not raw logits. (Fixes b + c.)
 
-- Restricting the bonus to **correct** rollouts is the key difference from entropy bonuses:
-  we are not rewarding random diversity (which entropy does, including diverse *wrong*
-  paths), we are rewarding *correct paths that are distinct from the consensus correct
-  path* — i.e. protecting the rare valid mode the standard gradient would crush.
-- `λ` controls the sharpen↔spread tradeoff. Connects to Cui's entropy mechanism: instead of
-  penalizing high-covariance tokens post-hoc, we make the *reward itself* resist collapse.
+**Component B — off-policy tail harvesting** (`harvest.py`). Periodically: sample the current
+policy at large k on the hard problems, **harvest the rare correct rollouts** (the tail
+on-policy RL never reinforces), and SFT on them off-policy. This injects a previously-≈0-prob
+correct path into the high-probability region — distillation's mechanism, but the teacher is
+*the model's own tail*, so no external model. (Fixes a — the support ceiling.)
 
-### 4.2 Component B — Off-policy tail harvesting (fixes a — the support ceiling)
-
-Standard RL never gets gradient on unsampled paths. So once per K steps:
-1. Sample the **base / current policy at large k** (e.g. k=64–256) on the hard problems
-   (those with low pass@1 but pass@k > 0 — exactly Yue's "in-support but low-prob" set).
-2. **Harvest** the rare correct rollouts (the tail the on-policy gradient would never
-   reinforce).
-3. Add them as **off-policy targets** (SFT-style log-likelihood, or importance-weighted into
-   the RL batch). This injects the path *into the high-probability region* the way
-   distillation does — but the teacher is the model's *own* tail, so no external model.
-- This is the mechanism that turns "redistribution within support" into "support
-  expansion," because the harvested path was effectively at p≈0 under the on-policy
-  distribution and now receives direct gradient.
-
-### 4.3 Component C — Hard-problem budget targeting (fixes the zero-gradient problem)
-
-Borrow Knapsack-RL's insight: concentrate the large-k harvesting (B) and the novelty bonus
-(A) on the **hard problems where the boundary actually needs expanding** (pass@1 ≈ 0,
-pass@k > 0). Easy problems are already solved; expansion there is wasted. This makes the
-method *efficient* — the answer to ProRL's brute force.
-
-### 4.4 Measuring "semantic distance between trajectories" (the §2.4 tool, used carefully)
-
-- Embed each rollout's reasoning (mean-pooled hidden states, or a sentence-embedding of the
-  reasoning text) → one vector per rollout.
-- novelty = mean cosine / Euclidean distance to the other correct rollouts in the group.
-- **Caveat from our own prior negative result** (topological diversity, see
-  `topological_persistence/METHODOLOGY.md`): raw high-dim hidden-state distances *concentrate*
-  and can be near-uninformative; normalize per-dim and validate the metric separates
-  genuinely different approaches before trusting it. Use approach-level embeddings, not raw
-  last-layer means, if concentration shows up.
+**Component C — hard-problem targeting** (`difficulty_prepass.py`). Pre-label every problem by
+sampling the base model k times: *solved* (pass@1 high), *hard* (low pass@1, pass@k > 0 — the
+in-support-but-low-prob set), *stuck* (pass@k = 0). Focus A and B on the **hard** set, where
+the boundary actually needs expanding. Easy problems are already solved; expansion there is
+wasted. (This is what makes it efficient vs ProRL.)
 
 ---
 
-## 5. The falsification experiment (cheap, decisive, before scale)
+## 5. What we expect
 
-**Claim to test:** novelty-reward + tail-harvesting **preserves base-level large-k pass@k
-while keeping the small-k gain** — i.e. it sharpens without shrinking the boundary.
+The decisive plot is the four pass@k curves overlaid. Concretely we expect:
 
-Setup (one small model, e.g. Qwen2.5-7B / Qwen3-4B, a verifiable-reward math set):
-1. **Baselines:** base model; standard GRPO. Reproduce Yue's crossover (GRPO wins pass@1,
-   base wins pass@256) — this is the control that must replicate.
-2. **Ours-A:** GRPO + group-relative novelty reward (Component A only).
-3. **Ours-AB:** + off-policy tail harvesting (Component B).
-4. **Metric:** the **whole pass@k curve, k=1…256**, not just pass@1. Plus boundary-coverage
-   (count of problems solved at any k).
+- **base**: high at large k, low at small k (broad but unreliable).
+- **grpo**: high at small k, **drops below base at large k** — reproduces the Yue crossover
+  (this must replicate, or our premise is wrong).
+- **oursA**: keeps grpo's small-k gain but the large-k drop is *reduced* — the novelty reward
+  alone slows the tail loss.
+- **oursAB**: the crossover **disappears** — matches/beats grpo at small k *and* matches/beats
+  base at large k. This is the win: sharpen the mode and keep the tail.
 
-> **Success = the pass@k crossover disappears: our model matches or beats GRPO at small k
-> AND matches or beats the *base model* at large k.** That is, literally, "sharpen the mode
-> and keep the tail." If novelty reward alone (Ours-A) closes the large-k gap, A is the
-> lever; if only Ours-AB does, support expansion genuinely requires off-policy injection
-> (the stronger, more interesting result).
+**The single success criterion:** the pass@k crossover is erased by oursAB (and ideally
+already softened by oursA). Two informative outcomes:
+- If **oursA alone** closes the large-k gap → the novelty reward is the lever (cheap, no
+  off-policy machinery needed).
+- If only **oursAB** closes it → support expansion genuinely requires off-policy injection
+  (the stronger, more mechanistically interesting result, and the one Yue's analysis predicts).
 
-**Ablations that make it publishable:** novelty on all-rollouts vs correct-only; harvested
-tail off-policy vs on-policy reuse; λ sweep (the sharpen↔spread frontier); hard-problem
-targeting on/off.
-
-**Failure modes to watch:** (i) novelty reward rewards diverse *wrong* paths → guard by
-gating on correctness; (ii) representation distance concentrates → §4.4 caveat; (iii)
-off-policy harvest destabilizes RL → importance-weight or interleave SFT steps.
+A clean **negative** result is also valuable: if neither closes the gap, it is direct evidence
+that on-policy reward shaping *cannot* expand support and only off-policy data can — sharpening
+the field's understanding of the boundary.
 
 ---
 
-## 6. Positioning paragraph (for the proposal / advisor)
+## 6. Practical decisions (so results are trustworthy)
 
-> Entropy-preservation methods (Clip-Cov/KL-Cov, forking-token gradients) slow policy
-> collapse but stay on-policy — they cannot add paths outside the base support. ProRL shows
-> RL *can* expand the boundary, but via prolonged training + reference-policy reset + a
-> diverse task suite (brute force). Sun et al. show a representation-space diversity bonus
-> yields ~3× pass@k. Our angle unifies and sharpens these: a **group-relative novelty reward
-> that protects rare *correct* modes** (not generic entropy), fused with **off-policy
-> harvesting of the model's own rare high-k successes** to widen support the way distillation
-> does — but self-supervised and targeted at the hard problems where the boundary is
-> actually stuck. The goal is to make the RL gradient *sharpen the dominant mode and grow the
-> tail at once*, efficiently, without ProRL-scale training. Success criterion: erase the
-> pass@k crossover — beat GRPO at small k and the base model at large k simultaneously.
+- **16k context, no truncation.** Reasoning models need room to think; truncation
+  contaminates correctness labels (a prior topological run had 41% of chains cut off → garbage
+  signal). Context window = 16384, generation budget ~14336. This makes runs ~10× slower but
+  the labels are clean.
+- **Answer extraction is `src/data/dataset.py:extract_numeric_answer`** — a 7-strategy
+  extractor (boxed-in-full-text, strip `<think>`, answer markers, bold, "= X", bare number,
+  trailing LaTeX) validated 18/18 on realistic reasoning output (incl. truncated-`<think>`,
+  multi-boxed, fractions, units). The earlier weak boxed-only extractor produced false
+  pass@k = 0.
+- **Clean ablation.** `grpo` runs on full data with **no** novelty and **no** hard-targeting,
+  so it is a true standard-GRPO control; "ours" arms add A (+C) and B.
+- **Validated end-to-end before scale.** A real eval produced a non-zero, rising pass@k curve
+  (0.44 → 0.50) with correctly extracted answers and a visible easy/hard spread — proof the
+  pipeline measures what it should.
 
 ---
 
-## 7. Reference list (arXiv ids)
+## 7. References (arXiv)
 
-- **2504.13837** — Yue et al., RL sharpens not expands (the problem).
+- **2504.13837** — Yue et al., RL sharpens, doesn't expand (*the gap*).
 - **2505.22617** — Cui et al., entropy mechanism (Clip-Cov/KL-Cov).
-- **2506.01939** — Wang et al., 80/20 forking tokens (branch-point gradient).
+- **2506.01939** — Wang et al., 80/20 forking tokens.
 - **2505.24864** — Liu et al., ProRL (prolonged RL expands boundary).
-- **2509.25849** — Knapsack RL (exploration-budget allocation).
-- **2510.11686** — Sun et al., representation-based exploration (hidden-state diversity, 3× pass@k).
-- **2601.16175** — TTT-Discover (test-time RL for discovery; reuse/horizon, cf. Directions 14–15).
+- **2509.25849** — Knapsack-RL (exploration-budget allocation).
+- **2510.11686** — Sun et al., representation-based exploration (3× pass@k).
 - **2407.21787** — Large Language Monkeys (coverage scales, selection plateaus).
+- **2601.16175** — TTT-Discover (test-time RL; composition/horizon, cf. questions_and_directions Dir 14–15).
