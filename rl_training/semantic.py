@@ -11,40 +11,33 @@
 
 import numpy as np
 
-_MODEL_CACHE = {}
+def embed_texts(texts, model_name: str = None) -> np.ndarray:
+    """Return (n, d) L2-normalized TF-IDF vectors for a list of texts.
 
-
-def get_embedder(model_name: str):
-    """Lazily load and cache a SentenceTransformer (one per process).
-
-    CRITICAL: under DeepSpeed ZeRO-3 (zero3_init_flag), ANY model instantiated inside the
-    training process has its params auto-partitioned (sharded to 1-D), which breaks the
-    sentence-transformer forward ('weight must be 2-D'). We must (a) disable zero.Init while
-    building it, and (b) keep it on CPU so it never participates in the sharded model's
-    device/comm. MiniLM is ~22M params — CPU encode is fine for the per-group novelty calc.
+    DESIGN: novelty must NOT instantiate a neural model inside the ZeRO-3 training process —
+    DeepSpeed partitions any such model's params at runtime (regardless of zero3_init_flag),
+    breaking its forward ('weight must be 2-D'). So we use a MODEL-FREE text representation:
+    char/word n-gram TF-IDF (pure sklearn/numpy, no torch). It still captures *approach*
+    diversity — different solution methods use different vocabulary/operators/structure —
+    which is exactly what the group-relative novelty reward needs. Immune to DeepSpeed,
+    needs no cache/download, and is fast on CPU. `model_name` is accepted for API
+    compatibility but ignored.
     """
-    if model_name not in _MODEL_CACHE:
-        from sentence_transformers import SentenceTransformer
-        # disable DeepSpeed zero.Init partitioning for this standalone model, if active
-        try:
-            import deepspeed
-            ctx = deepspeed.zero.Init(enabled=False)
-        except Exception:
-            import contextlib
-            ctx = contextlib.nullcontext()
-        with ctx:
-            _MODEL_CACHE[model_name] = SentenceTransformer(model_name, device="cpu")
-    return _MODEL_CACHE[model_name]
-
-
-def embed_texts(texts, model_name: str) -> np.ndarray:
-    """Return (n, d) normalized embeddings for a list of texts."""
     if not texts:
         return np.zeros((0, 1), dtype=np.float32)
-    model = get_embedder(model_name)
-    emb = model.encode(texts, normalize_embeddings=True, convert_to_numpy=True,
-                       show_progress_bar=False, batch_size=64)
-    return emb.astype(np.float32)
+    if len(texts) == 1:
+        return np.ones((1, 1), dtype=np.float32)
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    # word 1-2 grams capture method vocabulary ("substitution", "modular", "casework"...).
+    vec = TfidfVectorizer(ngram_range=(1, 2), max_features=4096, sublinear_tf=True)
+    try:
+        X = vec.fit_transform(texts).toarray().astype(np.float32)
+    except ValueError:
+        # empty vocabulary (all-blank/degenerate) -> no novelty signal
+        return np.zeros((len(texts), 1), dtype=np.float32)
+    norms = np.linalg.norm(X, axis=1, keepdims=True)
+    norms[norms == 0] = 1.0
+    return X / norms
 
 
 def pairwise_novelty(embeddings: np.ndarray, metric: str = "cosine") -> np.ndarray:
