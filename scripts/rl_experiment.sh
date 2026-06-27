@@ -20,10 +20,13 @@ DIFF="${4:-}"                              # difficulty.json for Component C (op
 NPROB=-1
 STEPS=500
 NGEN=8
-ACC=rl_training/accelerate_zero3.yaml
+MAXLEN=16384                               # reasoning models need room to think
+ACC=rl_training/accelerate_zero3_offload.yaml   # CPU-offload to fit 16k completions
 RUN=rl_training/runs/${ARM}
 EVALDIR=rl_training/runs/eval
 mkdir -p "$RUN" "$EVALDIR" ~/logs
+# fight long-context fragmentation OOM
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # Pre-download the model ONCE (single process) so the 8 ZeRO-3 ranks don't race the HF
 # cache and hit "missing shard" OSErrors. No-op if already cached.
@@ -34,7 +37,8 @@ export HF_HUB_OFFLINE=1
 
 run_eval () {  # $1 = model path/dir, $2 = tag
   python -m rl_training.evaluate_passk --model-path "$1" --dataset "$DATASET" \
-    --n-samples 256 --n-problems "$NPROB" --output-dir "$EVALDIR" --tag "$2"
+    --n-samples 256 --n-problems "$NPROB" --max-new-tokens "$MAXLEN" \
+    --output-dir "$EVALDIR" --tag "$2"
 }
 
 case "$ARM" in
@@ -50,6 +54,7 @@ case "$ARM" in
     accelerate launch --config_file "$ACC" --num_processes 8 --num_machines 1 \
       -m rl_training.train_grpo --model "$MODEL" --dataset "$DATASET" \
       --n-problems "$NPROB" --num-train-steps "$STEPS" --num-generations "$NGEN" \
+      --max-completion-length "$MAXLEN" \
       --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV
     run_eval "$RUN" "$ARM"
     ;;
@@ -61,11 +66,12 @@ case "$ARM" in
       accelerate launch --config_file "$ACC" --num_processes 8 --num_machines 1 \
         -m rl_training.train_grpo --model "$CUR" --dataset "$DATASET" \
         --n-problems "$NPROB" --num-train-steps "$SEG" --num-generations "$NGEN" \
+        --max-completion-length "$MAXLEN" \
         --output-dir "$RUN/seg$r" ${DIFF:+--difficulty-json "$DIFF"} --novelty-lambda 0.5
       echo "--- segment $r: harvest tail + SFT ---"
       python -m rl_training.harvest --mode harvest --model-path "$RUN/seg$r" \
         --dataset "$DATASET" ${DIFF:+--difficulty-json "$DIFF"} --k 64 --max-keep 2 \
-        --out-jsonl "$RUN/harvest$r.jsonl"
+        --max-new-tokens "$MAXLEN" --out-jsonl "$RUN/harvest$r.jsonl"
       python -m rl_training.harvest --mode sft --model-path "$RUN/seg$r" \
         --out-jsonl "$RUN/harvest$r.jsonl" --output-dir "$RUN/seg${r}_sft" --epochs 1
       CUR="$RUN/seg${r}_sft"

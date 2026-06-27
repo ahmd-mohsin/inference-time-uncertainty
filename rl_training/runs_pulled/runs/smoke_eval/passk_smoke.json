@@ -1,0 +1,37 @@
+{
+  "tag": "smoke",
+  "model": "Qwen/Qwen3-8B",
+  "dataset": "aime_all",
+  "n_problems": 2,
+  "n_samples": 8,
+  "pass_at_k_curve": {
+    "1": 0.0,
+    "2": 0.0,
+    "4": 0.0,
+    "8": 0.0
+  },
+  "per_problem": [
+    {
+      "problem_id": 0,
+      "gold": "204",
+      "n_correct": 0,
+      "pass_at_k": {
+        "1": 0.0,
+        "2": 0.0,
+        "4": 0.0,
+        "8": 0.0
+      }
+    },
+    {
+      "problem_id": 1,
+      "gold": "113",
+      "n_correct": 0,
+      "pass_at_k": {
+        "1": 0.0,
+        "2": 0.0,
+        "4": 0.0,
+        "8": 0.0
+      }
+    }
+  ]
+}

@@ -32,25 +32,33 @@ class RLConfig:
 
     # --- GRPO core (maps to trl.GRPOConfig) ---
     num_generations: int = 8         # G = group size (also drives novelty grouping)
-    max_completion_length: int = 4096   # TRL 1.7 GRPOConfig has no max_prompt_length
+    # 16k: reasoning models need room to think (truncation contaminates labels, as the
+    # topo runs showed at 41% cut-off). Long completions are memory-heavy, so we OFFLOAD
+    # optimizer+params to CPU (ZeRO-3 offload) and shrink per-device batch -> see
+    # accelerate_zero3_offload.yaml + per_device_train_batch_size below.
+    max_completion_length: int = 16384
+    vllm_max_model_length_long: int = 18432   # 16384 + prompt headroom
     gen_temperature: float = 1.0
     gen_top_p: float = 1.0
     learning_rate: float = 1e-6
     beta: float = 0.0                # KL coeff; 0 = TRL default (no ref-KL)
     epsilon: float = 0.2
     num_train_steps: int = 500
-    per_device_train_batch_size: int = 8
-    gradient_accumulation_steps: int = 4
+    # 16k completions are activation-heavy: one sequence per device at a time, recover
+    # effective batch via grad accumulation. 8 gen/prompt * 1 device-bs means each step
+    # processes a group; grad-accum 8 -> effective 8 prompts/update.
+    per_device_train_batch_size: int = 1
+    gradient_accumulation_steps: int = 8
     scale_rewards: str = "group"     # TRL default
     use_vllm: bool = True
     vllm_mode: str = "colocate"
-    # Colocate memory: vLLM holds full model + KV cache on each GPU alongside training.
-    # sleep_mode needs vLLM's cumem allocator (unsupported on this platform) -> OFF.
-    # Instead give vLLM a healthy fraction (0.45) for weights+KV; ZeRO-3 shards the
-    # training states across GPUs so the remainder suffices. Cap KV context to 8192.
-    vllm_gpu_memory_utilization: float = 0.45
+    # For 16k completions on 40GB A100: ZeRO-3 CPU-offloads optimizer+params (frees GPU),
+    # vLLM gets a smaller fraction (it still needs the full model for gen, but a 0.35
+    # fraction + 18k KV context is enough since training activations are now the priority).
+    # expandable_segments fights the fragmentation OOM seen at long context.
+    vllm_gpu_memory_utilization: float = 0.35
     vllm_enable_sleep_mode: bool = False
-    vllm_max_model_length: int = 8192
+    vllm_max_model_length: int = 18432   # 16384 + prompt headroom
 
     # --- Component A: group-relative semantic-novelty reward ---
     novelty_enabled: bool = True
