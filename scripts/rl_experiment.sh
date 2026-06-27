@@ -41,13 +41,15 @@ run_eval () {  # $1 = model path/dir, $2 = tag
     --output-dir "$EVALDIR" --tag "$2"
 }
 
-# ---- vLLM SERVER mode: dedicate GPUs 0-1 to a generation server (TP=2), train on 2-7.
+# ---- vLLM SERVER mode: dedicate 1 GPU to a generation server (TP=1), train on the other 7.
 # 16k-context 8B training + generation does not fit COLOCATE on one 40GB card, so we split.
-VLLM_GPUS="0,1"; TRAIN_GPUS="2,3,4,5,6,7"; NTRAIN=6; VLLM_PID=""
+# TP=1 (single GPU) avoids the custom_all_reduce CUDA error that TP=2 hits in this container;
+# an 8B model + 16k KV fits on one 40GB A100 at 0.9 util.
+VLLM_GPUS="0"; TRAIN_GPUS="1,2,3,4,5,6,7"; NTRAIN=7; VLLM_PID=""
 start_vllm () {  # $1 = model path/id
-  echo ">> starting vLLM server on GPUs $VLLM_GPUS (TP=2, 16k) ..."
+  echo ">> starting vLLM server on GPU $VLLM_GPUS (TP=1, 16k) ..."
   CUDA_VISIBLE_DEVICES=$VLLM_GPUS HF_HUB_OFFLINE=1 trl vllm-serve --model "$1" \
-    --tensor_parallel_size 2 --max_model_len 16384 --gpu_memory_utilization 0.9 \
+    --tensor_parallel_size 1 --max_model_len 16384 --gpu_memory_utilization 0.9 \
     --port 8000 > ~/logs/vllm_${ARM}.log 2>&1 &
   VLLM_PID=$!
   # wait until the server answers (up to ~10 min for load+graph capture)
