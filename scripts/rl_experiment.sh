@@ -41,6 +41,30 @@ run_eval () {  # $1 = model path/dir, $2 = tag
     --output-dir "$EVALDIR" --tag "$2"
 }
 
+# ---- vLLM SERVER mode: dedicate GPUs 0-1 to a generation server (TP=2), train on 2-7.
+# 16k-context 8B training + generation does not fit COLOCATE on one 40GB card, so we split.
+VLLM_GPUS="0,1"; TRAIN_GPUS="2,3,4,5,6,7"; NTRAIN=6; VLLM_PID=""
+start_vllm () {  # $1 = model path/id
+  echo ">> starting vLLM server on GPUs $VLLM_GPUS (TP=2, 16k) ..."
+  CUDA_VISIBLE_DEVICES=$VLLM_GPUS HF_HUB_OFFLINE=1 trl vllm-serve --model "$1" \
+    --tensor_parallel_size 2 --max_model_len 16384 --gpu_memory_utilization 0.9 \
+    --port 8000 > ~/logs/vllm_${ARM}.log 2>&1 &
+  VLLM_PID=$!
+  # wait until the server answers (up to ~10 min for load+graph capture)
+  for _ in $(seq 1 120); do
+    curl -sf http://localhost:8000/health >/dev/null 2>&1 && { echo ">> vLLM server up"; return 0; }
+    sleep 5
+  done
+  echo ">> vLLM server FAILED to come up"; return 1
+}
+stop_vllm () { [ -n "$VLLM_PID" ] && kill "$VLLM_PID" 2>/dev/null || true; }
+trap stop_vllm EXIT
+# training uses TRAIN_GPUS (6 procs); vLLM is reached over HTTP (server mode in GRPOConfig)
+train_launch () {  # passes through all args to accelerate/train_grpo on the training GPUs
+  CUDA_VISIBLE_DEVICES=$TRAIN_GPUS accelerate launch --config_file "$ACC" \
+    --num_processes $NTRAIN --num_machines 1 -m rl_training.train_grpo "$@"
+}
+
 case "$ARM" in
   base)
     echo "===== ARM base: eval only ====="
@@ -51,11 +75,12 @@ case "$ARM" in
     # is a true control for Yue's crossover. oursA = novelty (A) + hard-targeting (C).
     if [ "$ARM" = "grpo" ]; then NOV="--no-novelty"; USE_DIFF=""; else NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF"; fi
     echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}) ====="
-    accelerate launch --config_file "$ACC" --num_processes 8 --num_machines 1 \
-      -m rl_training.train_grpo --model "$MODEL" --dataset "$DATASET" \
+    start_vllm "$MODEL" || exit 1
+    train_launch --model "$MODEL" --dataset "$DATASET" \
       --n-problems "$NPROB" --num-train-steps "$STEPS" --num-generations "$NGEN" \
       --max-completion-length "$MAXLEN" \
       --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV
+    stop_vllm
     run_eval "$RUN" "$ARM"
     ;;
   oursAB)
@@ -63,11 +88,12 @@ case "$ARM" in
     SEG=$((STEPS/4)); CUR="$MODEL"
     for r in 0 1 2 3; do
       echo "--- segment $r: GRPO $SEG steps ---"
-      accelerate launch --config_file "$ACC" --num_processes 8 --num_machines 1 \
-        -m rl_training.train_grpo --model "$CUR" --dataset "$DATASET" \
+      start_vllm "$CUR" || exit 1
+      train_launch --model "$CUR" --dataset "$DATASET" \
         --n-problems "$NPROB" --num-train-steps "$SEG" --num-generations "$NGEN" \
         --max-completion-length "$MAXLEN" \
         --output-dir "$RUN/seg$r" ${DIFF:+--difficulty-json "$DIFF"} --novelty-lambda 0.5
+      stop_vllm
       echo "--- segment $r: harvest tail + SFT ---"
       python -m rl_training.harvest --mode harvest --model-path "$RUN/seg$r" \
         --dataset "$DATASET" ${DIFF:+--difficulty-json "$DIFF"} --k 64 --max-keep 2 \

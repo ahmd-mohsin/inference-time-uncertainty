@@ -89,9 +89,7 @@ def main():
         max_steps=cfg.num_train_steps, scale_rewards=cfg.scale_rewards,
         reward_weights=reward_weights,
         use_vllm=cfg.use_vllm, vllm_mode=cfg.vllm_mode,
-        vllm_gpu_memory_utilization=cfg.vllm_gpu_memory_utilization,
-        vllm_enable_sleep_mode=cfg.vllm_enable_sleep_mode,
-        vllm_max_model_length=cfg.vllm_max_model_length,
+        vllm_server_host=cfg.vllm_server_host, vllm_server_port=cfg.vllm_server_port,
         logging_steps=10, save_steps=cfg.save_steps, log_completions=cfg.log_completions,
         bf16=True, gradient_checkpointing=True,
     )

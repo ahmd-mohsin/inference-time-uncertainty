@@ -44,19 +44,21 @@ class RLConfig:
     beta: float = 0.0                # KL coeff; 0 = TRL default (no ref-KL)
     epsilon: float = 0.2
     num_train_steps: int = 500
-    # Each arm runs on a full 8-GPU node (4 nodes x 8 A100 = 32 GPUs). ZeRO-3 shards the
-    # training states across the 8 GPUs, so memory is comfortable at 16k context; bs=2
-    # per device with grad-accum 4 -> effective 8 prompts/update.
-    per_device_train_batch_size: int = 2
-    gradient_accumulation_steps: int = 4
+    # 14k-token sequences are activation-heavy. At bs=2 the training fwd/bwd OOMs even with
+    # ZeRO-3 sharding alongside colocate vLLM (35.9/39.5 GB used). bs=1 + grad-accum 8 keeps
+    # the effective batch (8 prompts/update) while halving activation memory; gradient
+    # checkpointing is on; vLLM fraction trimmed to 0.30 to leave training more headroom.
+    per_device_train_batch_size: int = 1
+    gradient_accumulation_steps: int = 8
     scale_rewards: str = "group"     # TRL default
     use_vllm: bool = True
-    vllm_mode: str = "colocate"
-    # colocate vLLM: 0.4 fraction holds model+KV for generation; ZeRO-3 sharding leaves
-    # the rest for training. vLLM context = 16384 (matches max_model_len). expandable
-    # segments reduces long-context fragmentation.
-    vllm_gpu_memory_utilization: float = 0.4
-    vllm_enable_sleep_mode: bool = False
+    # SERVER mode: a dedicated `trl vllm-serve` process holds the model + 16k KV cache on
+    # its own GPUs (e.g. node GPUs 0-1, TP=2); training runs ZeRO-3 on the remaining GPUs
+    # (2-7) and talks to it over HTTP. This removes the colocate memory conflict that makes
+    # 16k-context 8B training impossible on a single 40GB card.
+    vllm_mode: str = "server"
+    vllm_server_host: str = "0.0.0.0"
+    vllm_server_port: int = 8000
     vllm_max_model_length: int = 16384
 
     # --- Component A: group-relative semantic-novelty reward ---
