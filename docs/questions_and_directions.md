@@ -481,3 +481,288 @@ diversity structure) that can break through.
   diverse set might be equivalent to maximizing a submodular facility-location
   objective where the "facilities" are solution strategies and the "coverage" is
   reward.
+
+---
+
+## Direction 14: Inter-Rollout Disagreement as the Dense Learning Signal for Discovery
+
+**Grounding paper:** "Learning to Discover at Test Time" (TTT-Discover), arXiv:2601.16175.
+Test-time RL on a *single* problem; 512 rollouts/step (8 groups × 64) sharing a reused
+initial state; entropic objective `J_β = E_s[log E_a[e^{βR(s,a)}]]` to chase the *max*
+(not mean) reward; PUCT reuse with `Q =` max-reward-of-descendants and `P(s) =`
+reward-rank; LoRA r32, 50 steps, ~$500/problem.
+
+### The core observation that motivates everything below
+
+TTT-Discover compresses each of its ~25,600 rollouts into a **single scalar** `R(s)`.
+But for a discovery problem the reward is **flat almost everywhere**: near the state of
+the art, nearly every rollout returns `≈ r_sota` or `0` (invalid). The paper itself
+reports the symptom — late in training "even smaller improvements vanish," and the
+temperature `β` is "challenging" to set because reward *differences* disappear. So the
+extrinsic signal carries almost no gradient exactly when discovery is hardest.
+
+Yet the 64 rollouts in a group still **disagree richly** — on the high-level approach, on
+intermediate decisions, on which sub-structure to exploit — even when their final rewards
+are identical. That disagreement is:
+- **Dense** — it exists at every decision point, and it persists when reward is flat;
+- **Localizing** — the decisions rollouts *contest* are precisely where the solution space
+  still branches, i.e. the frontier of what is unexplored;
+- **Free** — it is already computed; TTT-Discover discards 100% of it.
+
+**Meta-thesis:** Use inter-rollout disagreement as the dense learning signal the flat
+scalar reward cannot provide — for credit assignment, exploration, ceiling detection, and
+recombination. This is the DAD disagreement thesis (this repo) carried from *answering* to
+*discovery*: there the disputed claim is the unit of uncertainty; here the contested
+decision is the unit of unexplored solution space.
+
+Below, six concrete mechanisms (A–F), ordered roughly from "drop-in reward shaping" to
+"new action type." They are additive to TTT-Discover's Algorithm 1, not replacements.
+
+### 14A. Branch-point credit assignment (disagreement → dense advantage)
+
+A scalar `R(s)` gives **no credit assignment**: it cannot say *which* token/decision made
+the kernel fast. But siblings in a rollout group that share a prefix and then diverge form
+a natural **counterfactual**: align the 64 rollouts, find the token positions where high-
+and low-reward siblings split (the *pivotal* decisions), and concentrate the policy
+gradient there. A decision is important iff sibling rollouts that chose differently ended
+with different reward — an empirical, per-decision advantage estimated from the group, not
+a hand-designed shaping. Turns 64 noisy scalars into a dense, localized signal.
+
+**Question:** Does pivotal-token-weighted RL beat uniform per-token GRPO at the same rollout
+budget on a discovery task, *and* does the set of pivotal decisions concentrate (few high-
+leverage forks) or spread (many)?
+
+### 14B. Consensus / novelty decomposition (train on the disagreement residual)
+
+Decompose every rollout into a **consensus part** (what nearly all rollouts agree on — the
+boilerplate, the already-known approach) and a **novelty residual** (where it departs from
+the pack). Discovery lives entirely in the residual that *also* raised reward. Up-weight
+the gradient on novelty residuals of above-consensus-reward rollouts; down-weight the
+consensus (the model already knows it). This is a principled antidote to mode collapse:
+the policy is pushed to reinforce *what was new and worked*, not to re-memorize the shared
+prefix that every rollout already contains.
+
+**Question:** Is the "reward gain attributable to the novelty residual" a better predictor
+of a genuine discovery (a basin jump, e.g. AlphaEvolve's symmetric → TTT-Discover's
+asymmetric step function) than total reward?
+
+### 14C. Disagreement-shaped advantage — a tuning-free replacement for β
+
+TTT-Discover's `β` is fragile because it must convert vanishing reward gaps into usable
+advantages with a hand-set temperature. Replace it: shape the advantage by **how far a
+rollout's trajectory departs from the group consensus, scaled by its reward delta**. A
+rollout that is *both* high-reward *and* far-from-consensus gets the strongest push — that
+is the discovery direction by definition. The effective temperature now comes from the
+*empirical disagreement spread of the batch*, not a hyperparameter: when the group is
+spread out, exploration is cheap and the shaping is gentle; when it has collapsed, a small
+reward gain at large representational distance is amplified. Self-annealing, no β.
+
+**Question:** Does disagreement-shaped advantage match or beat the adaptive-β entropic
+objective on the paper's own benchmarks (Erdős bound, TriMul kernel) without per-task
+tuning?
+
+### 14D. Disagreement collapse as a basin-exhaustion detector → forced jump
+
+As test-time RL proceeds, the policy *converges* — rollouts collapse onto the one trick it
+found. Track inter-rollout disagreement (entropy over approaches / mean pairwise distance
+in an "approach embedding"). **When disagreement falls below threshold while reward
+plateaus, the current basin is exhausted** — more rollouts here are wasted. That is the
+trigger to act: re-seed `reuse` from a *low-reward-but-high-disagreement* buffered state,
+inject a perturbation, or force a contrastive approach ("solve unlike the last K"). This
+gives the search an explicit, measured fuel gauge for *when to stop refining and jump* —
+which AlphaEvolve and TTT-Discover lack (they rely on the PUCT exploration bonus, which is
+content-blind reward-rank). Connects directly to this repo's ceiling-detection work, now
+as an *online* trigger inside a discovery loop rather than an offline verdict.
+
+**Question:** Across a run, does the *rate of SOTA improvement* correlate with inter-rollout
+disagreement rather than mean reward? And does a forced re-spread (when disagreement
+collapses) re-accelerate discovery vs. letting naive RL continue?
+
+### 14E. Cross-rollout synthesis as a first-class action (directed crossover)
+
+Disagreeing rollouts often hold *complementary partial strengths*: rollout A has a clever
+data layout, B a clever loop fusion, C a better numerical trick. TTT-Discover only ever
+*selects* (max) or *reuses* a single state. Add an action type conditioned on a **set of
+disagreeing rollouts**, explicitly tasked to *recombine their distinct ideas* into one
+candidate — and let the reward of the synthesis train the model to be a good recombiner.
+This is evolutionary crossover, but (i) the parents are chosen by *measured disagreement*
+(maximize complementary coverage, not just top-reward), and (ii) the crossover operator is
+the learned policy itself, improving over the run — exactly the DAD "disagreement
+workspace," repurposed from resolving answers to fusing solution fragments.
+
+**Question:** Does disagreement-selected synthesis (pick parents that disagree most while
+both being valid) find higher-reward children than reward-greedy parent selection or iid
+best-of-N at equal execution budget?
+
+### 14F. Free process-verifier from resolved disagreements (prune before you execute)
+
+When rollouts disagree on an *intermediate* claim ("this bound is tight" / "this fusion is
+legal") and the downstream reward later reveals who was right, you get a **labeled example
+for free**: contested-claim → correct-resolution, supervised by ground-truth reward. Train
+a lightweight process verifier on the model's *own* resolved disagreements; then use it to
+**prune rollouts at the branch point before the expensive transition** (math actions get a
+10-minute code execution each — pruning duds pre-execution is the dominant cost lever).
+Disagreement becomes self-generated process supervision, and the verifier compounds within
+the run.
+
+**Question:** Can a verifier trained only on intra-run resolved disagreements prune
+≥50% of rollouts pre-execution with negligible loss of best-found reward — i.e. buy the
+same discovery for a fraction of TTT-Discover's $500?
+
+### Why disagreement is the *right* signal for discovery (the unifying argument)
+
+1. Discovery reward is sparse and flat near SOTA → the scalar has ~no gradient.
+2. The generative distribution nonetheless stays structured: rollouts disagree.
+3. Disagreement is therefore a **dense signal that survives a flat reward**.
+4. Disagreement **localizes the frontier**: contested decisions = where solution space
+   still branches = where the next discovery can come from.
+5. Hence: credit-assign on the contested decisions (14A/B), explore along the
+   disagreement gradient (14C), detect exhaustion when it collapses (14D), recombine
+   across it (14E), and distill a verifier from how it resolves (14F).
+
+### The cheap decisive test (no test-time RL, one small model)
+
+Pick a domain with clean continuous reward and public harness (TriMul-style GPU kernels:
+reward = 1/runtime). With a small model, sample one group of ~64 candidate solutions.
+Measure, per batch: (a) **mean pairwise disagreement** (in an approach-embedding or via
+branch-point analysis) and (b) **best reward found**. Then the single question the whole
+direction rides on:
+
+> **Across rollout groups, does higher inter-rollout disagreement predict a higher best
+> reward (and the appearance of structurally novel solutions), more than mean reward
+> does?** And: do high-reward rollouts share *identifiable pivotal decisions* that
+> low-reward siblings lack?
+
+If yes → disagreement carries the discovery signal and 14A–F are justified; build the
+RL loop around it. If no → disagreement near SOTA is just noise on this domain, and we
+pivot before spending a single test-time-training dollar. One small model, an afternoon,
+zero RL — the opposite of an expensive commitment.
+
+---
+
+## Direction 15: Composition, Not Gradient — Discovery as Horizon Extension Driven by Disagreement
+
+*(This direction is grounded in a literature synthesis; the papers are mapped at the end.)*
+
+### The tension the literature refuses to resolve
+
+Two findings, both well-evidenced, are in direct contradiction if read naively:
+
+- **"RL only sharpens"** (Yue et al., arXiv:2504.13837): RLVR-trained models beat the base
+  model at small `k` but the **base model overtakes them at large pass@k**; coverage is
+  "bounded by the base model"; RL "does not elicit fundamentally new reasoning patterns" —
+  it re-weights mass onto paths already in the base support. Distillation adds new patterns;
+  RL does not.
+- **TTT-Discover** (arXiv:2601.16175): test-time *RL* on a single problem produces genuinely
+  new SOTA (a 600-piece asymmetric step function no human or prior AI found).
+
+Both cannot be true unless **the discovery in TTT-Discover does not come from the RL
+gradient at all.** Resolution: TTT-Discover's real engine is `state reuse` — it feeds a
+solution back as the *initial state* of the next attempt (`s_{i+1} ∼ reuse(H_i)`,
+"adds an extra timestep to its trajectory"). That **extends the effective horizon** so the
+policy *composes* improvements across attempts, reaching solutions no single base-model
+rollout could express in one shot. The entropic-`β` RL is just local polishing on top.
+
+**Thesis (Direction 15):** Discovery at test time is **composition across attempts**, not a
+better gradient. The base model is a fixed library of *moves*; what's "new" is a *path*
+through that library longer than any single rollout. Therefore the lever that matters is
+**which solutions you reuse/compose, and where you splice them** — and *disagreement is the
+correct operator for choosing both*. This subsumes Direction 14 under a cleaner principle
+and yields a falsifiable claim the cited papers never test.
+
+### Why disagreement is the composition operator (the logic)
+
+1. RL can't add moves to the library (2504.13837). So gains must come from *recombining*
+   existing moves over a longer horizon.
+2. Recombination is only useful between attempts that **differ** — two near-identical
+   rollouts compose into nothing new. The value of composing A and B is exactly their
+   *complementary disagreement*: A solves a sub-part B doesn't, and vice-versa.
+3. The right splice point is a **contested decision** — a token/step where rollouts
+   genuinely branch. Splicing at a consensus point changes nothing; splicing at a branch
+   point swaps a real sub-strategy.
+4. So "disagreement-directed composition" = pick maximally-complementary parents (where to
+   get moves) and splice at their branch points (where to join them). This is a *measured*,
+   model-derived replacement for AlphaEvolve's hand-crafted crossover/diversity heuristics —
+   which TTT-Discover dropped and never replaced.
+
+### The three sub-claims, each falsifiable and cheap before any RL
+
+**15A. Horizon, not gradient, is the discovery lever.**
+Ablate TTT-Discover into: (i) RL + reuse (full), (ii) RL, no reuse (every attempt from
+`<empty>`), (iii) **no RL, reuse only** — i.e. iteratively re-prompt the *frozen* base model
+with its own best-so-far as the initial state, no weight update. If (iii) recovers most of
+the SOTA gain, the discovery is **composition/horizon**, and the expensive RL is doing
+little. *Prediction from 2504.13837:* (iii) should be surprisingly strong.
+
+**15B. Disagreement-directed splicing beats reward-greedy reuse.**
+Replace TTT-Discover's reward-rank reuse with: select the *pair* (or set) of buffered
+solutions that **maximizes complementary disagreement** subject to both being valid, and
+prompt the model to compose them at their contested decisions. Compare best-found reward
+vs. (a) reuse-the-single-best and (b) iid best-of-N, at equal execution budget. This is
+Direction 14E sharpened into the *primary* search operator rather than an add-on.
+
+**15C. Selection is the hidden ceiling, and it scales with disagreement.**
+From Large Language Monkeys (arXiv:2407.21787): coverage scales 4 orders of magnitude but
+**selection (majority vote / reward model) plateaus after a few hundred samples** — the
+answer is present yet unpickable. From Sample-Scrutinize-Scale (arXiv:2502.01839):
+**self-verification accuracy itself improves with more samples** ("implicit scaling").
+Synthesis claim: the quantity that makes a candidate *selectable* is whether its winning
+decisions **survive cross-examination by disagreeing siblings** — i.e. a candidate whose
+contested choices are confirmed correct by the resolved disagreements (Direction 14F) is
+both more likely right *and* identifiable without ground truth. So disagreement is not only
+the *generation* operator (15B) but the *selection* operator that breaks the pass@k →
+pass@1 gap these papers leave open.
+
+### Why this is more fundamental than Directions 13–14
+
+- Direction 13 framed discovery as a *max-reward RL objective*. The literature
+  (2504.13837) says that objective **cannot exceed the base model's reach** — so 13's
+  premise is partly wrong, and Direction 15 explains *why TTT-Discover works anyway*
+  (composition, not gradient).
+- Direction 14 used disagreement as a *learning signal inside RL*. Direction 15 says the
+  RL may be largely unnecessary: disagreement is the **search-and-selection** operator over
+  a frozen base library, and the whole thing may not need gradients at all — which makes it
+  ~100× cheaper than TTT-Discover's \$500/problem if 15A holds.
+- It connects to **representation-based exploration** (Sun et al., arXiv:2510.11686): their
+  result that a *hidden-state* diversity bonus buys 3× sample efficiency is evidence that
+  the useful notion of "different attempt" lives in representation space — exactly where
+  15B should measure complementary disagreement (approach-embedding distance), not in
+  surface tokens.
+- It respects **compute-optimal scaling** (Snell et al., arXiv:2408.03314): the
+  sample-vs-revise-vs-reuse choice should switch by problem difficulty — 15A's ablation
+  directly measures *for which problems* reuse/composition is the active ingredient.
+
+### The single decisive experiment (frozen model, no RL, cheap)
+
+On a clean-reward public harness (GPU kernels: reward = 1/runtime; or the Erdős
+step-function with the released validator):
+
+1. **Baseline:** iid best-of-N with a small frozen model (the Large-Language-Monkeys curve).
+2. **Reuse-only (15A):** iteratively re-prompt the frozen model with its best-so-far as
+   initial state, N total rollouts — *no weight updates*.
+3. **Disagreement-composition (15B):** same budget, but each new attempt is seeded by the
+   max-complementary-disagreement pair from the buffer, spliced at contested decisions.
+
+Measure best-found reward vs. compute for all three.
+
+> **The bet: (2) ≫ (1) — composition beats iid sampling with zero training — and (3) ≫ (2)
+> — disagreement-directed composition beats reward-greedy reuse.** If both hold, we have a
+> training-free discovery method that explains TTT-Discover's result as horizon extension,
+> beats naive reuse via disagreement, and costs a small fraction of \$500/problem. If (2) ≈
+> (1), composition isn't the engine and the gradient really matters — pivot back to 14.
+
+### Literature map (for grounding)
+
+- **2407.21787 Large Language Monkeys** — coverage scales, *selection* plateaus → the
+  pass@k→pass@1 gap (motivates 15C).
+- **2502.01839 Sample, Scrutinize & Scale** — verification *scales* with samples, weak
+  out-of-box → selection is improvable (15C).
+- **2504.13837 RL only sharpens** — RL bounded by base support, base wins at large pass@k →
+  discovery must be composition, not gradient (15A, core tension).
+- **2510.11686 Representation-based exploration** — hidden-state diversity bonus = 3×
+  efficiency → measure disagreement in representation space (15B).
+- **2408.03314 Compute-optimal TTS** — best strategy is difficulty-dependent → reuse is the
+  active ingredient only for some problems (15A ablation).
+- **AlphaEvolve / 2506.13131** — evolutionary crossover works but needs hand-crafted
+  diversity/fitness → replace with measured disagreement (15B).
+- **2601.16175 TTT-Discover** — the artifact to explain; reuse extends horizon, RL polishes.
