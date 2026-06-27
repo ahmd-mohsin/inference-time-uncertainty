@@ -92,6 +92,9 @@ def main():
         vllm_server_host=cfg.vllm_server_host, vllm_server_port=cfg.vllm_server_port,
         logging_steps=10, save_steps=cfg.save_steps, log_completions=cfg.log_completions,
         bf16=True, gradient_checkpointing=True,
+        # non-reentrant checkpointing required with LoRA — reentrant recompute mismatches
+        # metadata and raises CheckpointError mid-step.
+        gradient_checkpointing_kwargs={"use_reentrant": False},
     )
 
     peft_config = LoraConfig(
