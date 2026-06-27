@@ -15,12 +15,25 @@ _MODEL_CACHE = {}
 
 
 def get_embedder(model_name: str):
-    """Lazily load and cache a SentenceTransformer (one per process)."""
+    """Lazily load and cache a SentenceTransformer (one per process).
+
+    CRITICAL: under DeepSpeed ZeRO-3 (zero3_init_flag), ANY model instantiated inside the
+    training process has its params auto-partitioned (sharded to 1-D), which breaks the
+    sentence-transformer forward ('weight must be 2-D'). We must (a) disable zero.Init while
+    building it, and (b) keep it on CPU so it never participates in the sharded model's
+    device/comm. MiniLM is ~22M params — CPU encode is fine for the per-group novelty calc.
+    """
     if model_name not in _MODEL_CACHE:
         from sentence_transformers import SentenceTransformer
-        import torch
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        _MODEL_CACHE[model_name] = SentenceTransformer(model_name, device=device)
+        # disable DeepSpeed zero.Init partitioning for this standalone model, if active
+        try:
+            import deepspeed
+            ctx = deepspeed.zero.Init(enabled=False)
+        except Exception:
+            import contextlib
+            ctx = contextlib.nullcontext()
+        with ctx:
+            _MODEL_CACHE[model_name] = SentenceTransformer(model_name, device="cpu")
     return _MODEL_CACHE[model_name]
 
 
