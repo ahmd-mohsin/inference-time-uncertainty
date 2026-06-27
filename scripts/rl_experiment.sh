@@ -25,6 +25,13 @@ RUN=rl_training/runs/${ARM}
 EVALDIR=rl_training/runs/eval
 mkdir -p "$RUN" "$EVALDIR" ~/logs
 
+# Pre-download the model ONCE (single process) so the 8 ZeRO-3 ranks don't race the HF
+# cache and hit "missing shard" OSErrors. No-op if already cached.
+echo ">> pre-fetching $MODEL into HF cache (avoids multi-rank download race)..."
+python -c "from huggingface_hub import snapshot_download; snapshot_download('$MODEL')" 2>&1 | tail -1
+# after the cache is complete, force offline so the 8 ranks never re-check the hub (race)
+export HF_HUB_OFFLINE=1
+
 run_eval () {  # $1 = model path/dir, $2 = tag
   python -m rl_training.evaluate_passk --model-path "$1" --dataset "$DATASET" \
     --n-samples 256 --n-problems "$NPROB" --output-dir "$EVALDIR" --tag "$2"

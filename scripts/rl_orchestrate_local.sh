@@ -14,15 +14,18 @@ LOCAL="/Users/cmohsinm/inference-time-uncertainty"
 
 log(){ echo "[$(date +%H:%M:%S)] $*"; }
 
-# ---- 1. wait for all 4 setups ----
-log "waiting for env setup on 4 nodes..."
+# ---- 1. wait until env is IMPORTABLE on all 4 nodes (not process-watching: pgrep
+#         self-matches the ssh command string, so we test the real signal — imports). ----
+log "waiting for importable env (trl+vllm+torch) on 4 nodes..."
+IMP="source ~/miniconda3/etc/profile.d/conda.sh && conda activate topo 2>/dev/null && python -c 'import trl,peft,sentence_transformers,vllm,torch; assert torch.cuda.device_count()==8' 2>/dev/null && echo READY || echo NOTYET"
 while :; do
-  R=$($SSHL "st(){ pgrep -f greenland-setup-env >/dev/null && echo RUN || echo DONE; }; echo -n main:\$(st)' '; for ip in $WORKERS; do echo -n \$ip:\$($SSHW greenland-user@\$ip \"\$(declare -f st); st\" 2>/dev/null)' '; done" 2>/dev/null)
-  echo "  $R"
-  echo "$R" | grep -q RUN || break
+  M=$($SSHL "$IMP" 2>/dev/null | tail -1)
+  WK=""; for ip in $WORKERS; do WK="$WK $ip:$($SSHL "$SSHW greenland-user@$ip \"$IMP\"" 2>/dev/null | tail -1)"; done
+  echo "  main:$M$WK"
+  [ "$M" = "READY" ] && ! echo "$WK" | grep -q NOTYET && break
   sleep 120
 done
-log "all setups finished"
+log "all envs importable"
 
 # ---- 2. verify env health on main (imports) ----
 log "verifying trl/peft/sentence-transformers/vllm on main..."

@@ -32,8 +32,7 @@ class RLConfig:
 
     # --- GRPO core (maps to trl.GRPOConfig) ---
     num_generations: int = 8         # G = group size (also drives novelty grouping)
-    max_prompt_length: int = 1024
-    max_completion_length: int = 4096
+    max_completion_length: int = 4096   # TRL 1.7 GRPOConfig has no max_prompt_length
     gen_temperature: float = 1.0
     gen_top_p: float = 1.0
     learning_rate: float = 1e-6
@@ -45,7 +44,13 @@ class RLConfig:
     scale_rewards: str = "group"     # TRL default
     use_vllm: bool = True
     vllm_mode: str = "colocate"
-    vllm_gpu_memory_utilization: float = 0.3   # leave room for training under colocate
+    # Colocate memory: vLLM holds full model + KV cache on each GPU alongside training.
+    # sleep_mode needs vLLM's cumem allocator (unsupported on this platform) -> OFF.
+    # Instead give vLLM a healthy fraction (0.45) for weights+KV; ZeRO-3 shards the
+    # training states across GPUs so the remainder suffices. Cap KV context to 8192.
+    vllm_gpu_memory_utilization: float = 0.45
+    vllm_enable_sleep_mode: bool = False
+    vllm_max_model_length: int = 8192
 
     # --- Component A: group-relative semantic-novelty reward ---
     novelty_enabled: bool = True
