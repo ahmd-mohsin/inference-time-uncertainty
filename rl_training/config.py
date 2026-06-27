@@ -32,33 +32,32 @@ class RLConfig:
 
     # --- GRPO core (maps to trl.GRPOConfig) ---
     num_generations: int = 8         # G = group size (also drives novelty grouping)
-    # 16k: reasoning models need room to think (truncation contaminates labels, as the
-    # topo runs showed at 41% cut-off). Long completions are memory-heavy, so we OFFLOAD
-    # optimizer+params to CPU (ZeRO-3 offload) and shrink per-device batch -> see
-    # accelerate_zero3_offload.yaml + per_device_train_batch_size below.
-    max_completion_length: int = 16384
-    vllm_max_model_length_long: int = 18432   # 16384 + prompt headroom
+    # Context window = 16384 ("max token length"). Generation budget fits within it with
+    # headroom for the (short) AIME prompt. This is the fix for the smoke truncation:
+    # completions are NOT capped tiny (1024 truncated every chain -> pass@k=0), they get
+    # ~14k tokens to think, inside a 16k context.
+    max_model_len: int = 16384
+    max_completion_length: int = 14336
     gen_temperature: float = 1.0
     gen_top_p: float = 1.0
     learning_rate: float = 1e-6
     beta: float = 0.0                # KL coeff; 0 = TRL default (no ref-KL)
     epsilon: float = 0.2
     num_train_steps: int = 500
-    # 16k completions are activation-heavy: one sequence per device at a time, recover
-    # effective batch via grad accumulation. 8 gen/prompt * 1 device-bs means each step
-    # processes a group; grad-accum 8 -> effective 8 prompts/update.
-    per_device_train_batch_size: int = 1
-    gradient_accumulation_steps: int = 8
+    # Each arm runs on a full 8-GPU node (4 nodes x 8 A100 = 32 GPUs). ZeRO-3 shards the
+    # training states across the 8 GPUs, so memory is comfortable at 16k context; bs=2
+    # per device with grad-accum 4 -> effective 8 prompts/update.
+    per_device_train_batch_size: int = 2
+    gradient_accumulation_steps: int = 4
     scale_rewards: str = "group"     # TRL default
     use_vllm: bool = True
     vllm_mode: str = "colocate"
-    # For 16k completions on 40GB A100: ZeRO-3 CPU-offloads optimizer+params (frees GPU),
-    # vLLM gets a smaller fraction (it still needs the full model for gen, but a 0.35
-    # fraction + 18k KV context is enough since training activations are now the priority).
-    # expandable_segments fights the fragmentation OOM seen at long context.
-    vllm_gpu_memory_utilization: float = 0.35
+    # colocate vLLM: 0.4 fraction holds model+KV for generation; ZeRO-3 sharding leaves
+    # the rest for training. vLLM context = 16384 (matches max_model_len). expandable
+    # segments reduces long-context fragmentation.
+    vllm_gpu_memory_utilization: float = 0.4
     vllm_enable_sleep_mode: bool = False
-    vllm_max_model_length: int = 18432   # 16384 + prompt headroom
+    vllm_max_model_length: int = 16384
 
     # --- Component A: group-relative semantic-novelty reward ---
     novelty_enabled: bool = True

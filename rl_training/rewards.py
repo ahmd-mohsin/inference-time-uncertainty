@@ -21,7 +21,10 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.data.dataset import extract_boxed_answer, answers_match
+# extract_numeric_answer is the robust 7-strategy extractor (boxed in full text, strip
+# <think>, answer markers, bold, "= X", bare number, trailing LaTeX) — far better for
+# reasoning-model output than boxed-only. Use it everywhere we read a model's answer.
+from src.data.dataset import extract_numeric_answer, answers_match
 from rl_training.semantic import embed_texts, pairwise_novelty
 
 
@@ -35,7 +38,7 @@ def _content(c):
 
 
 def _is_correct(text: str, gold: str) -> bool:
-    pred = extract_boxed_answer(text)
+    pred = extract_numeric_answer(text)
     if pred is None:
         return False
     try:

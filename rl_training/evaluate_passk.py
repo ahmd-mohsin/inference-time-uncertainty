@@ -5,7 +5,7 @@
 # OUR curve matches/beats GRPO at small k AND matches/beats the BASE model at large k
 # (i.e. the Yue et al. sharpening crossover disappears).
 #
-# Reuses: src.data.dataset (get_inference_dataset, format_prompt, extract_boxed_answer,
+# Reuses: src.data.dataset (get_inference_dataset, format_prompt, extract_numeric_answer,
 # answers_match) and verification_gap.run_gap.pass_at_k (exact combinatorial formula).
 
 import argparse, json, os, sys
@@ -13,7 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.data.dataset import get_inference_dataset, format_prompt, extract_boxed_answer, answers_match
+from src.data.dataset import get_inference_dataset, format_prompt, extract_numeric_answer, answers_match
 from verification_gap.run_gap import pass_at_k
 from rl_training.config import EvalConfig
 
@@ -48,7 +48,7 @@ def evaluate(cfg: EvalConfig):
         gold = str(p.get("gold_answer", ""))
         mask = []
         for s in o.outputs:
-            pred = extract_boxed_answer(s.text)
+            pred = extract_numeric_answer(s.text)
             mask.append(bool(pred is not None and answers_match(pred, gold)))
         pk = {k: pass_at_k(mask, k) for k in ks}
         for k in ks:

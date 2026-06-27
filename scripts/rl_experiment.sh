@@ -20,8 +20,8 @@ DIFF="${4:-}"                              # difficulty.json for Component C (op
 NPROB=-1
 STEPS=500
 NGEN=8
-MAXLEN=16384                               # reasoning models need room to think
-ACC=rl_training/accelerate_zero3_offload.yaml   # CPU-offload to fit 16k completions
+MAXLEN=14336                               # generation budget inside 16k context window
+ACC=rl_training/accelerate_zero3.yaml      # ZeRO-3 across the node's 8 GPUs (no offload needed)
 RUN=rl_training/runs/${ARM}
 EVALDIR=rl_training/runs/eval
 mkdir -p "$RUN" "$EVALDIR" ~/logs

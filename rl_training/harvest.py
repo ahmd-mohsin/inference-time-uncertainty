@@ -16,7 +16,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.data.dataset import (get_inference_dataset, format_prompt,
-                              extract_boxed_answer, normalize_answer, answers_match)
+                              extract_numeric_answer, normalize_answer, answers_match)
 
 
 def harvest(model_path, dataset, difficulty_json, k, max_keep, max_new_tokens,
@@ -60,7 +60,7 @@ def harvest(model_path, dataset, difficulty_json, k, max_keep, max_new_tokens,
             for s in o.outputs:
                 if kept >= max_keep:
                     break
-                pred = extract_boxed_answer(s.text)
+                pred = extract_numeric_answer(s.text)
                 if pred is None or not answers_match(pred, gold):
                     continue
                 # dedup by normalized reasoning signature so we keep DISTINCT correct paths
