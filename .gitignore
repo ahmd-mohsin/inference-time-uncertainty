@@ -19,3 +19,8 @@ logs/
 *.pyo
 __pycache__/
 Task_5/
+# Reference repos (not ours) + RL checkpoints
+external/
+rl_training/checkpoints/
+rl_training/runs/
+*.safetensors

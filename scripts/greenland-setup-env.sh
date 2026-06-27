@@ -68,6 +68,18 @@ pip install --quiet \
 echo "  ✓ Topology deps installed"
 echo ""
 
+# ---- RL post-training dependencies (rl_training/, docs/RL.md) ----
+echo "[5b/6] Installing RL post-training deps (trl, peft, deepspeed, sentence-transformers)..."
+pip install --quiet \
+    trl \
+    peft \
+    deepspeed \
+    sentence-transformers \
+    math-verify \
+    latex2sympy2-extended
+echo "  ✓ RL deps installed"
+echo ""
+
 # ---- Verification ----
 echo "[6/6] Verifying full setup..."
 echo ""
