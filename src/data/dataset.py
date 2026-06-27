@@ -431,15 +431,29 @@ def extract_numeric_answer(text: str) -> Optional[str]:
     if boxed_tail:
         return boxed_tail
 
-    # 3) Explicit answer markers (search in tail)
+    # helper: pull the numeric/LaTeX core out of a captured phrase, dropping any leading
+    # prose ("the value is 88") and trailing unit words ("100 degrees"). Returns "" if the
+    # phrase has no numeric/LaTeX content, so prose-only captures are rejected.
+    def _core(s):
+        s = s.strip().strip("$").strip("\\()").strip().rstrip(".,;:").strip()
+        # trailing unit/word suffix: "100 degrees", "12 cm" -> keep the number
+        mnum = re.search(r"([\-\+]?\d[\d,\.]*(?:\s*/\s*\d+)?)\s*[a-zA-Z°%]*\s*$", s)
+        mlatex = re.search(r"([\-\+]?\\(?:d?frac|tfrac|sqrt)\s*\{[^{}]*\}(?:\s*\{[^{}]*\})?)\s*$", s)
+        if mlatex:
+            return mlatex.group(1).strip()
+        if mnum:
+            return mnum.group(1).replace(",", "").strip()
+        return ""
+
+    # 3) Explicit answer markers (search in tail) — validate the captured token is numeric
     for pat in _ANSWER_MARKERS:
         m = None
         for m in re.finditer(pat, tail, re.IGNORECASE):
             pass  # keep the LAST occurrence
         if m:
-            ans = m.group(1).strip().strip("$").strip("\\()").strip().rstrip(".,;:")
-            if ans:
-                return ans
+            core = _core(m.group(1))
+            if core:
+                return core
 
     # 4) Bold **X** — scan original text for safety
     for cand in reversed(re.findall(r"\*\*([^\*]{1,80})\*\*", text)):
@@ -447,17 +461,17 @@ def extract_numeric_answer(text: str) -> Optional[str]:
         if re.match(r"^[\-\+]?\d", cand) or re.match(r"^\\?(?:frac|dfrac|sqrt)", cand):
             return cand.rstrip(".,;:")
 
-    # 5) Trailing "= X" on last meaningful line
-    for line in reversed([ln for ln in tail.splitlines() if ln.strip()]):
-        eq = re.search(r"=\s*\$?([^\$\n=]{1,40})\$?\s*$", line.strip())
+    # 5) Trailing "= X" on last meaningful line (reject prose via _core)
+    last_lines = [ln for ln in tail.splitlines() if ln.strip()]
+    if last_lines:
+        eq = re.search(r"=\s*([^=]{1,40})$", last_lines[-1].strip())
         if eq:
-            ans = eq.group(1).strip().strip("$").rstrip(".,;:").strip()
-            if ans and (re.match(r"^[\-\+]?\d", ans) or re.match(r"^\\?(?:frac|dfrac|sqrt)", ans)):
-                return ans
-        break  # only inspect the last non-empty line
+            core = _core(eq.group(1))
+            if core:
+                return core
 
-    # 6) Bare number at the very end
-    bare = re.search(r"([\-\+]?\d[\d,\.]*(?:/\d+)?)\s*\.?\s*$", tail)
+    # 6) Bare number / unit-suffixed number at the very end (e.g. "... is 360", "100 degrees")
+    bare = re.search(r"([\-\+]?\d[\d,\.]*(?:/\d+)?)\s*[a-zA-Z°%]*\.?\s*$", tail)
     if bare:
         return bare.group(1).replace(",", "").strip()
 
