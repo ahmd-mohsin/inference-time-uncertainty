@@ -81,7 +81,10 @@ class RLConfig:
     output_dir: str = "rl_training/runs/exp"
     run_name: str = "rl_expand"
     log_completions: bool = True
-    save_steps: int = 100
+    # Save often: with 16k-token generation each GRPO step takes minutes, and instances can
+    # die. Checkpointing every 10 steps gives a resumable point (~adapter + optimizer state)
+    # without much overhead, so a fresh instance can continue rather than restart from base.
+    save_steps: int = 10
 
 
 @dataclass
