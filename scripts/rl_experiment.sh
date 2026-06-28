@@ -86,12 +86,17 @@ case "$ARM" in
     # Clean ablation: grpo = standard GRPO on FULL data (no novelty, no C targeting) so it
     # is a true control for Yue's crossover. oursA = novelty (A) + hard-targeting (C).
     if [ "$ARM" = "grpo" ]; then NOV="--no-novelty"; USE_DIFF=""; else NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF"; fi
-    echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}) ====="
+    # AUTO-RESUME: if a checkpoint dir already exists (e.g. pulled from a dead instance),
+    # resume from the highest-numbered one so a new instance continues instead of restarting.
+    RESUME=""
+    LASTCKPT=$(ls -d "$RUN"/checkpoint-* 2>/dev/null | sort -t- -k2 -n | tail -1)
+    [ -n "$LASTCKPT" ] && { RESUME="--resume-from $LASTCKPT"; echo ">> RESUMING from $LASTCKPT"; }
+    echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}; resume=${LASTCKPT:-none}) ====="
     start_vllm "$MODEL" || exit 1
     if ! train_launch --model "$MODEL" --dataset "$DATASET" \
       --n-problems "$NPROB" --num-train-steps "$STEPS" --num-generations "$NGEN" \
       --max-completion-length "$MAXLEN" \
-      --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV; then
+      --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV $RESUME; then
       stop_vllm; echo "!! $ARM GRPO training FAILED"; exit 1
     fi
     stop_vllm

@@ -90,7 +90,8 @@ def main():
         reward_weights=reward_weights,
         use_vllm=cfg.use_vllm, vllm_mode=cfg.vllm_mode,
         vllm_server_host=cfg.vllm_server_host, vllm_server_port=cfg.vllm_server_port,
-        logging_steps=10, save_steps=cfg.save_steps, log_completions=cfg.log_completions,
+        logging_steps=10, save_steps=cfg.save_steps, save_total_limit=cfg.save_total_limit,
+        log_completions=cfg.log_completions,
         bf16=True, gradient_checkpointing=True,
         # non-reentrant checkpointing required with LoRA — reentrant recompute mismatches
         # metadata and raises CheckpointError mid-step.
