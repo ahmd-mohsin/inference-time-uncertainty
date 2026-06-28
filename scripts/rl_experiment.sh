@@ -90,7 +90,21 @@ case "$ARM" in
     # resume from the highest-numbered one so a new instance continues instead of restarting.
     RESUME=""
     LASTCKPT=$(ls -d "$RUN"/checkpoint-* 2>/dev/null | sort -t- -k2 -n | tail -1)
-    [ -n "$LASTCKPT" ] && { RESUME="--resume-from $LASTCKPT"; echo ">> RESUMING from $LASTCKPT"; }
+    if [ -n "$LASTCKPT" ]; then
+      RESUME="--resume-from $LASTCKPT"; echo ">> RESUMING from $LASTCKPT"
+      # transformers reloads save_steps/save_total_limit FROM the checkpoint's trainer_state on
+      # resume, overriding our args ("X (from args) != Y (from trainer_state.json)") — so a stale
+      # checkpoint silently keeps the OLD save cadence. Rewrite them to match the config first.
+      python - "$LASTCKPT/trainer_state.json" <<'PY' || true
+import json, sys
+p = sys.argv[1]
+try:
+    d = json.load(open(p)); d["save_steps"] = 10; d["save_total_limit"] = 3
+    json.dump(d, open(p, "w"), indent=2); print(">> patched save_steps=10 in", p)
+except Exception as e:
+    print(">> could not patch trainer_state:", e)
+PY
+    fi
     echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}; resume=${LASTCKPT:-none}) ====="
     start_vllm "$MODEL" || exit 1
     if ! train_launch --model "$MODEL" --dataset "$DATASET" \
