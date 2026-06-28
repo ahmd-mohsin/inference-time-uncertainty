@@ -82,9 +82,11 @@ case "$ARM" in
     echo "===== ARM base: eval only ====="
     run_eval "$MODEL" base
     ;;
-  grpo|oursA)
+  grpo|oursA|oursAB_cont)
     # Clean ablation: grpo = standard GRPO on FULL data (no novelty, no C targeting) so it
     # is a true control for Yue's crossover. oursA = novelty (A) + hard-targeting (C).
+    # oursAB_cont = oursAB continued as plain GRPO+novelty from its seg0 checkpoint (the
+    # alternating harvest loop was too fragile under time pressure; this keeps Component A).
     if [ "$ARM" = "grpo" ]; then NOV="--no-novelty"; USE_DIFF=""; else NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF"; fi
     # AUTO-RESUME: if a checkpoint dir already exists (e.g. pulled from a dead instance),
     # resume from the highest-numbered one so a new instance continues instead of restarting.
