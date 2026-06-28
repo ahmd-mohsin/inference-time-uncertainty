@@ -6,8 +6,8 @@
 set -uo pipefail
 PORT=1060
 SSHL="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=12 -p $PORT greenland-user@localhost"
-SSHW="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=8 -p 2222"
-WORKERS="10.3.103.188 10.3.197.81 10.3.188.41"
+SSHW="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=8 -o PreferredAuthentications=password,keyboard-interactive -o PubkeyAuthentication=no -p 2222"
+WORKERS="10.3.165.207 10.3.77.29 10.3.120.148"
 LOCAL="/Users/cmohsinm/inference-time-uncertainty/rl_training/runs_pulled"
 mkdir -p "$LOCAL"
 
@@ -22,6 +22,6 @@ while :; do
     --include='adapter_model.safetensors' --include='adapter_config.json' --exclude='*' \
     -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR" \
     greenland-user@localhost:inference-time-uncertainty/rl_training/ "$LOCAL/" 2>&1 | tail -1
-  echo "[$TS] pulled -> $LOCAL ; sleeping 3h"
-  sleep 10800
+  echo "[$TS] pulled -> $LOCAL ; sleeping 1h"
+  sleep 3600
 done
