@@ -21,9 +21,14 @@ NPROB=-1
 STEPS=500
 NGEN=8
 MAXLEN=14336                               # generation budget inside 16k context window
-ACC=rl_training/accelerate_zero3.yaml      # ZeRO-3 across the node's 8 GPUs (no offload needed)
-RUN=rl_training/runs/${ARM}
-EVALDIR=rl_training/runs/eval
+ACC=rl_training/accelerate_zero2.yaml      # ZeRO-2: shard optimizer+grads, keep params whole.
+                                           # ZeRO-3 partitioned params and broke gradient-
+                                           # checkpoint recompute (CheckpointError) with LoRA.
+# ABSOLUTE paths: under HF_HUB_OFFLINE=1 a *relative* checkpoint dir (e.g. rl_training/runs/grpo)
+# is misread by transformers/vLLM as a HF repo id -> "Invalid repository ID". Absolute dirs
+# resolve as local model paths for both the trainer-resume and the pass@k eval.
+RUN="$PWD/rl_training/runs/${ARM}"
+EVALDIR="$PWD/rl_training/runs/eval"
 mkdir -p "$RUN" "$EVALDIR" ~/logs
 # fight long-context fragmentation OOM
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
@@ -78,10 +83,12 @@ case "$ARM" in
     if [ "$ARM" = "grpo" ]; then NOV="--no-novelty"; USE_DIFF=""; else NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF"; fi
     echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}) ====="
     start_vllm "$MODEL" || exit 1
-    train_launch --model "$MODEL" --dataset "$DATASET" \
+    if ! train_launch --model "$MODEL" --dataset "$DATASET" \
       --n-problems "$NPROB" --num-train-steps "$STEPS" --num-generations "$NGEN" \
       --max-completion-length "$MAXLEN" \
-      --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV
+      --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV; then
+      stop_vllm; echo "!! $ARM GRPO training FAILED"; exit 1
+    fi
     stop_vllm
     run_eval "$RUN" "$ARM"
     ;;
@@ -91,18 +98,28 @@ case "$ARM" in
     for r in 0 1 2 3; do
       echo "--- segment $r: GRPO $SEG steps ---"
       start_vllm "$CUR" || exit 1
-      train_launch --model "$CUR" --dataset "$DATASET" \
+      # FAIL-FAST: if a GRPO segment crashes, do NOT spin through the rest (the missing
+      # seg${r} dir then gets misread as a HF repo id and every later segment dies too).
+      if ! train_launch --model "$CUR" --dataset "$DATASET" \
         --n-problems "$NPROB" --num-train-steps "$SEG" --num-generations "$NGEN" \
         --max-completion-length "$MAXLEN" \
-        --output-dir "$RUN/seg$r" ${DIFF:+--difficulty-json "$DIFF"} --novelty-lambda 0.5
+        --output-dir "$RUN/seg$r" ${DIFF:+--difficulty-json "$DIFF"} --novelty-lambda 0.5; then
+        stop_vllm; echo "!! segment $r GRPO FAILED — aborting oursAB"; exit 1
+      fi
       stop_vllm
       echo "--- segment $r: harvest tail + SFT ---"
       python -m rl_training.harvest --mode harvest --model-path "$RUN/seg$r" \
         --dataset "$DATASET" ${DIFF:+--difficulty-json "$DIFF"} --k 64 --max-keep 2 \
         --max-new-tokens "$MAXLEN" --out-jsonl "$RUN/harvest$r.jsonl"
-      python -m rl_training.harvest --mode sft --model-path "$RUN/seg$r" \
-        --out-jsonl "$RUN/harvest$r.jsonl" --output-dir "$RUN/seg${r}_sft" --epochs 1
-      CUR="$RUN/seg${r}_sft"
+      # if harvest produced no rollouts, skip SFT and carry the GRPO checkpoint forward
+      if [ -s "$RUN/harvest$r.jsonl" ]; then
+        python -m rl_training.harvest --mode sft --model-path "$RUN/seg$r" \
+          --out-jsonl "$RUN/harvest$r.jsonl" --output-dir "$RUN/seg${r}_sft" --epochs 1 \
+          && CUR="$RUN/seg${r}_sft" || CUR="$RUN/seg$r"
+      else
+        echo "-- no harvest rollouts for seg$r; carrying GRPO checkpoint forward"
+        CUR="$RUN/seg$r"
+      fi
     done
     run_eval "$CUR" oursAB
     ;;

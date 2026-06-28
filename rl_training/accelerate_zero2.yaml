@@ -1,0 +1,33 @@
+# DeepSpeed ZeRO-2 accelerate config for GRPO post-training (LoRA).
+#
+# WHY ZeRO-2 (not ZeRO-3): with LoRA the trainable params are tiny (~50M); the frozen 8B
+# base (~16GB bf16) fits on a single 40GB A100, so there is no need to PARTITION params.
+# ZeRO-3 *did* partition them, and that broke gradient-checkpoint recompute — ZeRO-3 frees/
+# re-gathers params between the forward pass and the checkpoint recompute, so the recomputed
+# activations had different tensor metadata than the forward ('CheckpointError'). ZeRO-2
+# shards only optimizer state + gradients and leaves params fully materialized, so recompute
+# is identical -> no CheckpointError. (It also can't shard the novelty embedder.)
+#
+# num_machines / num_processes are OVERRIDDEN on the command line per node by the launch
+# script (scripts/rl_*.sh).
+compute_environment: LOCAL_MACHINE
+debug: false
+deepspeed_config:
+  deepspeed_multinode_launcher: standard
+  offload_optimizer_device: none
+  offload_param_device: none
+  zero_stage: 2
+  zero3_save_16bit_model: false
+distributed_type: DEEPSPEED
+downcast_bf16: 'no'
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 8
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false
