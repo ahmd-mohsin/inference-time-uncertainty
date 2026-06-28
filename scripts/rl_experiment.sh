@@ -94,14 +94,17 @@ case "$ARM" in
     LASTCKPT=$(ls -d "$RUN"/checkpoint-* 2>/dev/null | sort -t- -k2 -n | tail -1)
     if [ -n "$LASTCKPT" ]; then
       RESUME="--resume-from $LASTCKPT"; echo ">> RESUMING from $LASTCKPT"
-      # transformers reloads save_steps/save_total_limit FROM the checkpoint's trainer_state on
-      # resume, overriding our args ("X (from args) != Y (from trainer_state.json)") — so a stale
-      # checkpoint silently keeps the OLD save cadence. Rewrite them to match the config first.
+      # transformers reloads save_steps FROM the checkpoint's trainer_state on resume,
+      # overriding our args ("X (from args) != Y (from trainer_state.json)") — so a stale
+      # checkpoint silently keeps the OLD save cadence. Rewrite save_steps to match the config.
+      # NOTE: only set keys that are valid TrainerState fields. save_total_limit is a
+      # TrainingArguments field, NOT a TrainerState field — adding it makes TrainerState(**json)
+      # raise "unexpected keyword argument 'save_total_limit'" on resume. Only touch save_steps.
       python - "$LASTCKPT/trainer_state.json" <<'PY' || true
 import json, sys
 p = sys.argv[1]
 try:
-    d = json.load(open(p)); d["save_steps"] = 10; d["save_total_limit"] = 3
+    d = json.load(open(p)); d["save_steps"] = 10; d.pop("save_total_limit", None)
     json.dump(d, open(p, "w"), indent=2); print(">> patched save_steps=10 in", p)
 except Exception as e:
     print(">> could not patch trainer_state:", e)
