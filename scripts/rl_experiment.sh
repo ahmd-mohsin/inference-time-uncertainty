@@ -37,6 +37,11 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 # cache and hit "missing shard" OSErrors. No-op if already cached.
 echo ">> pre-fetching $MODEL into HF cache (avoids multi-rank download race)..."
 python -c "from huggingface_hub import snapshot_download; snapshot_download('$MODEL')" 2>&1 | tail -1
+# also pre-fetch the datasets (the load_dataset builder cache lives under ~/.cache/huggingface/
+# datasets/, NOT hub/ — so a hub-only cache copy is insufficient and the offline ranks would
+# hit 'OfflineModeIsEnabled'). Populate it once here while still online.
+echo ">> pre-fetching AIME datasets into cache..."
+python -c "from datasets import load_dataset; [load_dataset(d) for d in ['math-ai/aime24','math-ai/aime25','math-ai/aime26']]" 2>&1 | tail -1
 # after the cache is complete, force offline so the 8 ranks never re-check the hub (race)
 export HF_HUB_OFFLINE=1
 
