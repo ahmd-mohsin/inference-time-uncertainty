@@ -46,8 +46,12 @@ python -c "from datasets import load_dataset; [load_dataset(d) for d in ['math-a
 export HF_HUB_OFFLINE=1
 
 run_eval () {  # $1 = model path/dir, $2 = tag
+  # 256 samples x 90 problems x 16k tokens on 1 GPU = ~5 DAYS (measured). Make it tractable:
+  # 64 samples still gives pass@{1,2,4,8,16,32,64} (enough for the crossover curve); use all 8
+  # GPUs via tensor parallelism; 8k tokens is plenty for AIME solutions. ~32x faster (~4h).
   python -m rl_training.evaluate_passk --model-path "$1" --dataset "$DATASET" \
-    --n-samples 256 --n-problems "$NPROB" --max-new-tokens "$MAXLEN" \
+    --n-samples 64 --n-problems "$NPROB" --max-new-tokens 8192 \
+    --tensor-parallel-size 8 \
     --output-dir "$EVALDIR" --tag "$2"
 }
 
