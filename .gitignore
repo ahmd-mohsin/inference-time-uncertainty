@@ -23,4 +23,15 @@ Task_5/
 external/
 rl_training/checkpoints/
 rl_training/runs/
+rl_training/runs_pulled/
+rl_training/recovered/
+# Model weights & optimizer/checkpoint state (large binaries)
 *.safetensors
+*.pth
+*.pt
+*.bin
+*.ckpt
+# DeepSpeed ZeRO optimizer shards
+global_step*/
+bf16_zero_pp_rank_*
+zero_pp_rank_*
