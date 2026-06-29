@@ -6,8 +6,8 @@
 set -uo pipefail
 PORT=1060
 SSHL="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=12 -p $PORT greenland-user@localhost"
-SSHW="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o PreferredAuthentications=publickey -p 2222"
-WORKERS="10.3.169.214 10.3.98.108 10.3.95.64"
+SSHW="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=8 -o PreferredAuthentications=password,keyboard-interactive -o PubkeyAuthentication=no -p 2222"
+WORKERS="10.3.165.207 10.3.77.29 10.3.120.148"
 LOCAL="/Users/cmohsinm/inference-time-uncertainty/rl_training/runs_pulled"
 mkdir -p "$LOCAL"
 
