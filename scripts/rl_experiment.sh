@@ -123,7 +123,14 @@ PY
     if [ -z "$LASTCKPT" ] && [ -n "${INIT_ADAPTER:-}" ] && [ -f "${INIT_ADAPTER}/adapter_model.safetensors" ]; then
       INIT="--init-adapter $INIT_ADAPTER"; echo ">> WARM-START from adapter $INIT_ADAPTER"
     fi
-    echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}; resume=${LASTCKPT:-none}; warmstart=${INIT_ADAPTER:-none}) ====="
+    # EFFECTIVE-STEP accounting: warm-start resets the counter, so to hit a cumulative target
+    # set EFFECTIVE_DONE to the effective steps already trained on prior instances. This run's
+    # step budget is then (STEPS - EFFECTIVE_DONE) so cumulative lands on STEPS. (See
+    # runs_pulled/EFFECTIVE_STEPS.md.) Only applied on a warm-start (fresh counter).
+    if [ -n "$INIT" ] && [ -n "${EFFECTIVE_DONE:-}" ] && [ "${EFFECTIVE_DONE}" -gt 0 ] 2>/dev/null; then
+      STEPS=$((STEPS - EFFECTIVE_DONE)); echo ">> EFFECTIVE_DONE=$EFFECTIVE_DONE -> this run trains $STEPS more steps to reach the cumulative target"
+    fi
+    echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}; resume=${LASTCKPT:-none}; warmstart=${INIT_ADAPTER:-none}; eff_done=${EFFECTIVE_DONE:-0}) ====="
     start_vllm "$MODEL" || exit 1
     if ! train_launch --model "$MODEL" --dataset "$DATASET" \
       --n-problems "$NPROB" --num-train-steps "$STEPS" --num-generations "$NGEN" \
