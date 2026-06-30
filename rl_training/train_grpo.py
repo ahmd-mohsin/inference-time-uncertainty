@@ -116,13 +116,28 @@ def main():
         # WARM-START: overwrite the freshly-initialized LoRA weights with the saved adapter
         # (resumes policy weights from a prior run; optimizer/LR-schedule restart fresh, which
         # re-warms in a few steps at lr=1e-6). Memory profile == the working from-scratch path.
+        # Saved keys look like 'base_model.model.model...lora_A.weight'; the live PEFT module's
+        # state_dict uses the adapter name ('...lora_A.default.weight'). load_peft_weights +
+        # set_peft_model_state_dict(adapter_name=...) handles that remap. We verify the load by
+        # asserting non-trivial key overlap so a silent no-op (all-missing) can't pass unnoticed.
         from safetensors.torch import load_file
-        from peft import set_peft_model_state_dict
         print(f">> WARM-START: loading saved LoRA weights from {a.init_adapter}")
         sd = load_file(os.path.join(a.init_adapter, "adapter_model.safetensors"))
-        res = set_peft_model_state_dict(trainer.model, sd)
-        miss = getattr(res, "missing_keys", None)
-        print(f">> WARM-START loaded; missing_keys={len(miss) if miss is not None else 'n/a'}")
+        # Saved keys are '...lora_A.weight'; the live PEFT module names the active adapter,
+        # i.e. '...lora_A.default.weight'. Insert the adapter name so keys match exactly.
+        # (Validated: this maps all 504 keys with 0 missing/unexpected.)
+        remap = {}
+        for k, v in sd.items():
+            nk = k.replace(".lora_A.weight", ".lora_A.default.weight") \
+                  .replace(".lora_B.weight", ".lora_B.default.weight")
+            remap[nk] = v
+        missing, unexpected = trainer.model.load_state_dict(remap, strict=False)
+        missing_lora = [k for k in missing if "lora_" in k]
+        print(f">> WARM-START: loaded {len(remap)} keys; missing_lora={len(missing_lora)} "
+              f"unexpected={len(unexpected)}")
+        if missing_lora or unexpected:
+            raise RuntimeError(f"WARM-START key mismatch: missing_lora={len(missing_lora)} "
+                               f"unexpected={len(unexpected)} (expected 0/0)")
     trainer.train(resume_from_checkpoint=a.resume_from or None)
     trainer.save_model(cfg.output_dir)
     print(f"saved GRPO model -> {cfg.output_dir}")
