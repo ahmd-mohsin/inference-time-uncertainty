@@ -33,6 +33,8 @@ def build_args():
     p.add_argument("--no-novelty", action="store_true", help="ablation: plain GRPO")
     p.add_argument("--no-vllm", action="store_true")
     p.add_argument("--resume-from", default="", help="checkpoint dir to resume (Component B loop)")
+    p.add_argument("--init-adapter", default="", help="warm-start: load this saved LoRA adapter "
+                   "dir as the starting weights (no optimizer state needed, unlike --resume-from)")
     return p.parse_args()
 
 
@@ -98,15 +100,30 @@ def main():
         gradient_checkpointing_kwargs={"use_reentrant": False},
     )
 
-    peft_config = LoraConfig(
-        r=cfg.lora_r, lora_alpha=cfg.lora_alpha, lora_dropout=cfg.lora_dropout,
-        target_modules=list(cfg.lora_target_modules), task_type="CAUSAL_LM",
-    ) if cfg.use_lora else None
-
-    trainer = GRPOTrainer(
-        model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
-        train_dataset=train_dataset, peft_config=peft_config,
-    )
+    # WARM-START: if a saved LoRA adapter is given, load base model + apply that adapter as
+    # TRAINABLE, and hand the already-PEFT model to GRPOTrainer (peft_config=None). This resumes
+    # the policy weights from a prior run when optimizer state was lost (so --resume-from can't
+    # be used). Optimizer/LR-schedule restart fresh — negligible for LoRA at lr=1e-6.
+    if a.init_adapter:
+        import torch
+        from transformers import AutoModelForCausalLM
+        from peft import PeftModel
+        print(f">> WARM-START: loading base + LoRA adapter from {a.init_adapter}")
+        base = AutoModelForCausalLM.from_pretrained(cfg.model_name, torch_dtype=torch.bfloat16)
+        model_obj = PeftModel.from_pretrained(base, a.init_adapter, is_trainable=True)
+        trainer = GRPOTrainer(
+            model=model_obj, args=grpo_args, reward_funcs=reward_funcs,
+            train_dataset=train_dataset, peft_config=None,
+        )
+    else:
+        peft_config = LoraConfig(
+            r=cfg.lora_r, lora_alpha=cfg.lora_alpha, lora_dropout=cfg.lora_dropout,
+            target_modules=list(cfg.lora_target_modules), task_type="CAUSAL_LM",
+        ) if cfg.use_lora else None
+        trainer = GRPOTrainer(
+            model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
+            train_dataset=train_dataset, peft_config=peft_config,
+        )
     trainer.train(resume_from_checkpoint=a.resume_from or None)
     trainer.save_model(cfg.output_dir)
     print(f"saved GRPO model -> {cfg.output_dir}")

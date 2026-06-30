@@ -116,12 +116,19 @@ except Exception as e:
     print(">> could not patch trainer_state:", e)
 PY
     fi
-    echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}; resume=${LASTCKPT:-none}) ====="
+    # WARM-START fallback: if no full checkpoint to --resume-from, but INIT_ADAPTER points to a
+    # saved LoRA adapter dir (e.g. pulled from a dead instance, optimizer state lost), warm-start
+    # the policy weights from it. Skipped if we already have a full checkpoint to resume.
+    INIT=""
+    if [ -z "$LASTCKPT" ] && [ -n "${INIT_ADAPTER:-}" ] && [ -f "${INIT_ADAPTER}/adapter_model.safetensors" ]; then
+      INIT="--init-adapter $INIT_ADAPTER"; echo ">> WARM-START from adapter $INIT_ADAPTER"
+    fi
+    echo "===== ARM $ARM: GRPO train ($STEPS steps; C=${USE_DIFF:-off}; resume=${LASTCKPT:-none}; warmstart=${INIT_ADAPTER:-none}) ====="
     start_vllm "$MODEL" || exit 1
     if ! train_launch --model "$MODEL" --dataset "$DATASET" \
       --n-problems "$NPROB" --num-train-steps "$STEPS" --num-generations "$NGEN" \
       --max-completion-length "$MAXLEN" \
-      --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV $RESUME; then
+      --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV $RESUME $INIT; then
       stop_vllm; echo "!! $ARM GRPO training FAILED"; exit 1
     fi
     stop_vllm
