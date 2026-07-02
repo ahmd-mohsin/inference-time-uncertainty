@@ -18,9 +18,48 @@ from verification_gap.run_gap import pass_at_k
 from rl_training.config import EvalConfig
 
 
+def _resolve_model_path(model_path: str) -> str:
+    """If model_path is a LoRA adapter dir (adapter_config.json but no config.json), merge the
+    adapter into its base model and return the merged full-model dir. vLLM cannot load a bare
+    adapter as a model (it needs a config.json / full weights). A trained arm's output dir
+    (oursA/grpo/oursAB) is an adapter; the base arm passes a full HF id and skips this."""
+    p = Path(model_path)
+    if not (p / "adapter_config.json").exists() or (p / "config.json").exists():
+        return model_path  # already a full model (or a HF repo id)
+
+    import torch
+    from peft import PeftModel
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    acfg = json.load(open(p / "adapter_config.json"))
+    base = acfg.get("base_model_name_or_path") or "Qwen/Qwen3-8B"
+    # the recorded base may be a resolved snapshot path from another host; fall back to the hub id
+    if not Path(base).exists() and Path(base).is_absolute():
+        base = "Qwen/Qwen3-8B"
+    merged_dir = str(p / "merged_full")
+    if (Path(merged_dir) / "config.json").exists():
+        print(f"[eval] reusing merged model at {merged_dir}")
+        return merged_dir
+
+    print(f"[eval] merging LoRA adapter {p} into base {base} -> {merged_dir}")
+    model = AutoModelForCausalLM.from_pretrained(base, torch_dtype=torch.bfloat16,
+                                                 trust_remote_code=True)
+    model = PeftModel.from_pretrained(model, str(p))
+    model = model.merge_and_unload()
+    Path(merged_dir).mkdir(parents=True, exist_ok=True)
+    model.save_pretrained(merged_dir, safe_serialization=True)
+    AutoTokenizer.from_pretrained(base, trust_remote_code=True).save_pretrained(merged_dir)
+    del model
+    torch.cuda.empty_cache()
+    print(f"[eval] merged model saved -> {merged_dir}")
+    return merged_dir
+
+
 def evaluate(cfg: EvalConfig):
     from vllm import LLM, SamplingParams
     from transformers import AutoConfig
+
+    cfg.model_path = _resolve_model_path(cfg.model_path)
 
     problems = get_inference_dataset({"dataset": {"name": cfg.dataset, "split": "test",
                                                   "n_problems": cfg.n_problems, "seed": cfg.seed}})
