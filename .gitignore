@@ -10,7 +10,7 @@ logs/
 # Large binary artifacts (model hidden states, embeddings)
 *.npz
 *.npy
-
+*.pdf
 # Markdown
 
 
