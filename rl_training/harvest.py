@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.data.dataset import (get_inference_dataset, format_prompt,
                               extract_numeric_answer, normalize_answer, answers_match)
+from rl_training.model_utils import merge_adapter_if_needed
 
 
 def harvest(model_path, dataset, difficulty_json, k, max_keep, max_new_tokens,
@@ -24,6 +25,9 @@ def harvest(model_path, dataset, difficulty_json, k, max_keep, max_new_tokens,
     """Sample model at k on HARD problems; write distinct correct (prompt, completion) pairs."""
     from vllm import LLM, SamplingParams
     from transformers import AutoConfig
+
+    # A GRPO segment saves a bare LoRA adapter; vLLM needs a full model -> merge first.
+    model_path = merge_adapter_if_needed(model_path)
 
     problems = get_inference_dataset({"dataset": {"name": dataset, "split": "test",
                                                   "n_problems": n_problems, "seed": 42}})
@@ -80,6 +84,9 @@ def sft_step(model_path, sft_jsonl, output_dir, lr, epochs, use_lora=True,
     """Off-policy SFT on harvested rollouts (TRL SFTTrainer). Saves to output_dir."""
     from datasets import load_dataset
     from trl import SFTTrainer, SFTConfig
+    # SFT base must be a full model: if the GRPO segment output is a bare adapter, merge it so we
+    # SFT a clean full model + one fresh LoRA (not a bare adapter or a stacked double-adapter).
+    model_path = merge_adapter_if_needed(model_path)
     ds = load_dataset("json", data_files=sft_jsonl, split="train")
     # SFTTrainer with prompt+completion columns trains on completion tokens only.
     args = SFTConfig(output_dir=output_dir, num_train_epochs=epochs, learning_rate=lr,

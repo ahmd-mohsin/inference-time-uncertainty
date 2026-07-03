@@ -56,6 +56,11 @@ def _resolve_local_model(model_id: str) -> str:
 
 def main():
     a = build_args()
+    # oursAB feeds a previous segment's output (seg_r_sft / seg_r) in as --model. If that is a
+    # bare LoRA adapter, merge it into its base so GRPOTrainer/vLLM get a loadable full model,
+    # then attach a fresh LoRA on top for this segment.
+    from rl_training.model_utils import merge_adapter_if_needed
+    a.model = merge_adapter_if_needed(a.model)
     a.model = _resolve_local_model(a.model)
     cfg = RLConfig(model_name=a.model, dataset=a.dataset, n_problems=a.n_problems,
                    difficulty_json=a.difficulty_json, output_dir=a.output_dir,
