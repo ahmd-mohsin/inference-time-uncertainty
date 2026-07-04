@@ -29,6 +29,10 @@ def build_args():
     p.add_argument("--lr", type=float, default=RLConfig.learning_rate)
     p.add_argument("--beta", type=float, default=RLConfig.beta)
     p.add_argument("--max-completion-length", type=int, default=RLConfig.max_completion_length)
+    p.add_argument("--gradient-accumulation-steps", type=int,
+                   default=RLConfig.gradient_accumulation_steps,
+                   help="override grad-accum (used by the DP-vLLM launcher to hold the effective "
+                        "batch constant when training on fewer ranks)")
     p.add_argument("--novelty-lambda", type=float, default=RLConfig.novelty_lambda)
     p.add_argument("--no-novelty", action="store_true", help="ablation: plain GRPO")
     p.add_argument("--no-vllm", action="store_true")
@@ -67,6 +71,7 @@ def main():
                    num_generations=a.num_generations, num_train_steps=a.num_train_steps,
                    learning_rate=a.lr, beta=a.beta,
                    max_completion_length=a.max_completion_length,
+                   gradient_accumulation_steps=a.gradient_accumulation_steps,
                    novelty_lambda=a.novelty_lambda,
                    novelty_enabled=not a.no_novelty, use_vllm=not a.no_vllm)
 
