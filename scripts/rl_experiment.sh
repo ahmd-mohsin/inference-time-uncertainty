@@ -144,15 +144,34 @@ PY
   oursAB)
     echo "===== ARM oursAB: alternating GRPO + harvest (Comp A+B) ====="
     SEG=$((STEPS/4)); CUR="$MODEL"
+    # RESUME support (added 2026-07-05): warm-start a partially-trained pipeline after an instance
+    # death. SEG_START = first segment to (re)run (0-3); segments < SEG_START are assumed complete
+    # and their seg${r}_sft (or seg${r}) dir is carried forward as CUR. INIT_ADAPTER warm-starts
+    # the SEG_START segment's GRPO from a saved adapter (our mid-segment checkpoint). SEG_DONE =
+    # steps already trained within SEG_START (so it trains SEG-SEG_DONE more). save_steps=10 in
+    # config gives a resumable checkpoint every 10 steps within every segment.
+    SEG_START="${SEG_START:-0}"; SEG_DONE="${SEG_DONE:-0}"
+    if [ "$SEG_START" -gt 0 ]; then
+      prev=$((SEG_START-1))
+      CUR="$RUN/seg${prev}_sft"; [ -d "$CUR" ] || CUR="$RUN/seg${prev}"
+      echo ">> RESUME: carrying forward completed segment $prev -> CUR=$CUR"
+    fi
     for r in 0 1 2 3; do
-      echo "--- segment $r: GRPO $SEG steps ---"
+      [ "$r" -lt "$SEG_START" ] && { echo "-- skipping completed segment $r"; continue; }
+      THIS_SEG=$SEG; INIT_ARG=""
+      if [ "$r" = "$SEG_START" ] && [ -n "${INIT_ADAPTER:-}" ] && [ -f "${INIT_ADAPTER}/adapter_model.safetensors" ]; then
+        INIT_ARG="--init-adapter $INIT_ADAPTER"
+        [ "${SEG_DONE:-0}" -gt 0 ] 2>/dev/null && THIS_SEG=$((SEG - SEG_DONE))
+        echo ">> RESUME: warm-start segment $r from $INIT_ADAPTER; train $THIS_SEG more (SEG_DONE=$SEG_DONE)"
+      fi
+      echo "--- segment $r: GRPO $THIS_SEG steps ---"
       start_vllm "$CUR" || exit 1
       # FAIL-FAST: if a GRPO segment crashes, do NOT spin through the rest (the missing
       # seg${r} dir then gets misread as a HF repo id and every later segment dies too).
       if ! train_launch --model "$CUR" --dataset "$DATASET" \
-        --n-problems "$NPROB" --num-train-steps "$SEG" --num-generations "$NGEN" \
+        --n-problems "$NPROB" --num-train-steps "$THIS_SEG" --num-generations "$NGEN" \
         --max-completion-length "$MAXLEN" \
-        --output-dir "$RUN/seg$r" ${DIFF:+--difficulty-json "$DIFF"} --novelty-lambda 0.5; then
+        --output-dir "$RUN/seg$r" ${DIFF:+--difficulty-json "$DIFF"} --novelty-lambda 0.5 $INIT_ARG; then
         stop_vllm; echo "!! segment $r GRPO FAILED — aborting oursAB"; exit 1
       fi
       stop_vllm
