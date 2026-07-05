@@ -75,7 +75,20 @@ start_vllm () {  # $1 = model path/id
   done
   echo ">> vLLM server FAILED to come up"; return 1
 }
-stop_vllm () { [ -n "$VLLM_PID" ] && kill "$VLLM_PID" 2>/dev/null || true; }
+stop_vllm () {
+  # Kill the vLLM server AND its EngineCore worker(s), then WAIT for GPU0 memory to actually
+  # release. Without the wait, the next stage (harvest's own vLLM) launches while GPU0 is still
+  # occupied and OOMs ("Free memory on device cuda:0 ... less than desired GPU memory utilization").
+  [ -n "$VLLM_PID" ] && kill "$VLLM_PID" 2>/dev/null || true
+  pkill -9 -f "trl vllm-serve" 2>/dev/null || true
+  pkill -9 -f "VLLM::EngineCore" 2>/dev/null; pkill -9 -f "EngineCore" 2>/dev/null || true
+  for _ in $(seq 1 30); do
+    u=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | sort -n | head -1)
+    [ "${u:-99999}" -lt 2000 ] 2>/dev/null && break
+    sleep 3
+  done
+  VLLM_PID=""
+}
 trap stop_vllm EXIT
 # training uses TRAIN_GPUS (6 procs); vLLM is reached over HTTP (server mode in GRPOConfig)
 train_launch () {  # passes through all args to accelerate/train_grpo on the training GPUs
@@ -176,7 +189,9 @@ PY
       fi
       stop_vllm
       echo "--- segment $r: harvest tail + SFT ---"
-      python -m rl_training.harvest --mode harvest --model-path "$RUN/seg$r" \
+      # Pin harvest's vLLM to GPU0 (freed + verified idle by stop_vllm above). Explicit pinning
+      # avoids it trying to spread across the just-vacated training GPUs.
+      CUDA_VISIBLE_DEVICES=0 python -m rl_training.harvest --mode harvest --model-path "$RUN/seg$r" \
         --dataset "$DATASET" ${DIFF:+--difficulty-json "$DIFF"} --k 64 --max-keep 2 \
         --max-new-tokens "$MAXLEN" --out-jsonl "$RUN/harvest$r.jsonl"
       # if harvest produced no rollouts, skip SFT and carry the GRPO checkpoint forward
