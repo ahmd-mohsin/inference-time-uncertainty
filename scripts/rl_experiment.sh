@@ -63,8 +63,16 @@ run_eval () {  # $1 = model path/dir, $2 = tag
 # an 8B model + 16k KV fits on one 40GB A100 at 0.9 util.
 VLLM_GPUS="0"; TRAIN_GPUS="1,2,3,4,5,6,7"; NTRAIN=7; VLLM_PID=""
 start_vllm () {  # $1 = model path/id
+  # vLLM cannot serve a bare LoRA adapter dir (e.g. a prior segment's seg${r}_sft output) — it
+  # needs a full model with config.json. Merge adapter->base first if needed (idempotent).
+  local M="$1"
+  if [ -f "$M/adapter_config.json" ] && [ ! -f "$M/config.json" ]; then
+    echo ">> vLLM model is a bare adapter; merging into base ..."
+    M=$(CUDA_VISIBLE_DEVICES=$VLLM_GPUS python -c "from rl_training.model_utils import merge_adapter_if_needed as m; print(m('$M'))" 2>/dev/null | tail -1)
+    echo ">> serving merged model: $M"
+  fi
   echo ">> starting vLLM server on GPU $VLLM_GPUS (TP=1, 16k) ..."
-  CUDA_VISIBLE_DEVICES=$VLLM_GPUS HF_HUB_OFFLINE=1 trl vllm-serve --model "$1" \
+  CUDA_VISIBLE_DEVICES=$VLLM_GPUS HF_HUB_OFFLINE=1 trl vllm-serve --model "$M" \
     --tensor_parallel_size 1 --max_model_len 16384 --gpu_memory_utilization 0.9 \
     --port 8000 > ~/logs/vllm_${ARM}.log 2>&1 &
   VLLM_PID=$!
