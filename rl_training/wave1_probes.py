@@ -198,11 +198,37 @@ def probe_brittleness(a):
           f"({100*flips/max(1,len(R)):.1f}%)")
 
 
+# ---------- #6: checkpoint-ensemble (post-hoc, NO GPU) ----------
+def probe_ckpt_ensemble(a):
+    """Coverage-union across checkpoints: given several passk eval JSONs (--ensemble-evals a,b,c),
+    a problem is 'solved' if ANY checkpoint solves it within k. Tests whether coverage is
+    distributed across training time and reassemblable for free at inference.
+    Compares the ensemble's solvable-count to each single checkpoint's."""
+    paths = [p for p in a.ensemble_evals.split(",") if p]
+    evals = {p: {x["problem_id"]: x for x in json.load(open(p))["per_problem"]} for p in paths}
+    any_e = next(iter(evals.values()))
+    ids = sorted(any_e); K = sorted(int(k) for k in any_e[ids[0]]["pass_at_k"])
+    def solv(ev, pid, k): return ev[pid]["pass_at_k"][str(k)] > 0.5
+    rows = {}
+    for k in K:
+        singles = {p: sum(solv(ev, pid, k) for pid in ids) for p, ev in evals.items()}
+        ens = sum(any(solv(ev, pid, k) for ev in evals.values()) for pid in ids)
+        rows[k] = {"single_solvable": singles, "ensemble_solvable": ens, "best_single": max(singles.values())}
+    json.dump({"k_values": K, "per_k": rows}, open(a.out, "w"), indent=2)
+    print("#6 ckpt_ensemble (solvable problems, ensemble vs best single checkpoint):")
+    for k in K:
+        r = rows[k]
+        gain = r["ensemble_solvable"] - r["best_single"]
+        print(f"  k={k:>3}: ensemble={r['ensemble_solvable']} best_single={r['best_single']} "
+              f"gain={gain:+d}{'  <-- ensemble beats any single' if gain>0 else ''}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--probe", required=True,
-                    choices=["gen_verify", "prompt_recover", "modes", "brittleness"])
-    ap.add_argument("--model", required=True)
+                    choices=["gen_verify", "prompt_recover", "modes", "brittleness", "ckpt_ensemble"])
+    ap.add_argument("--model", default="", help="model path/id (not needed for ckpt_ensemble)")
+    ap.add_argument("--ensemble-evals", default="", help="comma-sep passk eval jsons (ckpt_ensemble)")
     ap.add_argument("--dataset", default="math500")
     ap.add_argument("--n-problems", type=int, default=-1)
     ap.add_argument("--k", type=int, default=32)
@@ -213,7 +239,8 @@ def main():
     a = ap.parse_args()
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     {"gen_verify": probe_gen_verify, "prompt_recover": probe_prompt_recover,
-     "modes": probe_modes, "brittleness": probe_brittleness}[a.probe](a)
+     "modes": probe_modes, "brittleness": probe_brittleness,
+     "ckpt_ensemble": probe_ckpt_ensemble}[a.probe](a)
 
 
 if __name__ == "__main__":
