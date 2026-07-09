@@ -8,7 +8,7 @@
 # Reuses: src.data.dataset (get_inference_dataset, format_prompt, extract_numeric_answer,
 # answers_match) and verification_gap.run_gap.pass_at_k (exact combinatorial formula).
 
-import argparse, json, os, sys
+import argparse, json, os, signal, sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -16,6 +16,32 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.data.dataset import get_inference_dataset, format_prompt, extract_numeric_answer, answers_match
 from verification_gap.run_gap import pass_at_k
 from rl_training.config import EvalConfig
+
+
+class _Timeout(Exception):
+    pass
+
+
+def _score_one(text, gold, per_completion_timeout=5):
+    """Extract+match a single completion, guarded by a hard SIGALRM timeout. answers_match ->
+    _canonical_via_sympy can hang FOREVER on a pathological expression (parse_expr/nsimplify
+    spin; the try/except there only catches exceptions, not infinite loops). A 1.5B model over
+    128k samples reliably emits such a completion — that hung a base eval for 16.5h. Cap each
+    match at a few seconds and treat a timeout as 'incorrect' (a stuck parse is not a match)."""
+    def _alarm(signum, frame):
+        raise _Timeout()
+    old = signal.signal(signal.SIGALRM, _alarm)
+    signal.setitimer(signal.ITIMER_REAL, per_completion_timeout)
+    try:
+        pred = extract_numeric_answer(text)
+        return bool(pred is not None and answers_match(pred, gold))
+    except _Timeout:
+        return False
+    except Exception:
+        return False
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, old)
 
 
 def evaluate(cfg: EvalConfig):
@@ -51,10 +77,7 @@ def evaluate(cfg: EvalConfig):
     per_problem, curve_acc = [], {k: [] for k in ks}
     for p, o in zip(problems, outs):
         gold = str(p.get("gold_answer", ""))
-        mask = []
-        for s in o.outputs:
-            pred = extract_numeric_answer(s.text)
-            mask.append(bool(pred is not None and answers_match(pred, gold)))
+        mask = [_score_one(s.text, gold) for s in o.outputs]
         pk = {k: pass_at_k(mask, k) for k in ks}
         for k in ks:
             curve_acc[k].append(pk[k])
