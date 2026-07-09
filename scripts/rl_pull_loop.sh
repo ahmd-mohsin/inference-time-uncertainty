@@ -7,7 +7,8 @@ set -uo pipefail
 PORT=1060
 SSHL="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=12 -p $PORT greenland-user@localhost"
 SSHW="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o PreferredAuthentications=publickey -p 2222"
-WORKERS="10.3.169.214 10.3.98.108 10.3.95.64"
+WORKERS="10.3.249.209 10.3.111.235"
+INTERVAL="${PULL_INTERVAL:-1800}"          # 30 min — instances die ~24h, capture often
 LOCAL="/Users/cmohsinm/inference-time-uncertainty/rl_training/runs_pulled"
 mkdir -p "$LOCAL"
 
@@ -22,6 +23,6 @@ while :; do
     --include='adapter_model.safetensors' --include='adapter_config.json' --exclude='*' \
     -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR" \
     greenland-user@localhost:inference-time-uncertainty/rl_training/ "$LOCAL/" 2>&1 | tail -1
-  echo "[$TS] pulled -> $LOCAL ; sleeping 1h"
-  sleep 3600
+  echo "[$TS] pulled -> $LOCAL ; sleeping ${INTERVAL}s"
+  sleep "$INTERVAL"
 done
