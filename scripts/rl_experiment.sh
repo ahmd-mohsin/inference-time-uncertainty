@@ -18,9 +18,16 @@ MODEL="${2:-Qwen/Qwen2.5-7B-Instruct}"
 DATASET="${3:-aime_all}"
 DIFF="${4:-}"                              # difficulty.json for Component C (optional)
 NPROB=-1
-STEPS=500
+STEPS="${RL_STEPS:-500}"
 NGEN=8
-MAXLEN=14336                               # generation budget inside 16k context window
+MAXLEN="${RL_MAXLEN:-14336}"              # generation budget inside context window
+# --- eval knobs (env-overridable; defaults preserve the 8B/AIME behavior) ---------------
+# For the 1.5B/MATH-500 study we push to k=256, shorter solutions (4k), on the fast model.
+EVAL_NSAMPLES="${RL_EVAL_NSAMPLES:-32}"
+EVAL_MAXNEW="${RL_EVAL_MAXNEW:-8192}"
+CTXLEN="${RL_CTXLEN:-16384}"              # vLLM max_model_len (1.5B is 4k-friendly)
+# datasets to prefetch while online (AIME for 8B; math500 for the 1.5B study)
+PREFETCH_DATASETS="${RL_PREFETCH:-math-ai/aime24,math-ai/aime25,math-ai/aime26}"
 ACC=rl_training/accelerate_zero2.yaml      # ZeRO-2: shard optimizer+grads, keep params whole.
                                            # ZeRO-3 partitioned params and broke gradient-
                                            # checkpoint recompute (CheckpointError) with LoRA.
@@ -40,8 +47,8 @@ python -c "from huggingface_hub import snapshot_download; snapshot_download('$MO
 # also pre-fetch the datasets (the load_dataset builder cache lives under ~/.cache/huggingface/
 # datasets/, NOT hub/ — so a hub-only cache copy is insufficient and the offline ranks would
 # hit 'OfflineModeIsEnabled'). Populate it once here while still online.
-echo ">> pre-fetching AIME datasets into cache..."
-python -c "from datasets import load_dataset; [load_dataset(d) for d in ['math-ai/aime24','math-ai/aime25','math-ai/aime26']]" 2>&1 | tail -1
+echo ">> pre-fetching datasets into cache ($PREFETCH_DATASETS)..."
+python -c "from datasets import load_dataset; [load_dataset(d) for d in '$PREFETCH_DATASETS'.split(',') if d]" 2>&1 | tail -1
 # after the cache is complete, force offline so the 8 ranks never re-check the hub (race)
 export HF_HUB_OFFLINE=1
 
@@ -52,7 +59,7 @@ run_eval () {  # $1 = model path/dir, $2 = tag
   # across GPUs. Instead cut the workload: 32 samples still gives pass@{1,2,4,8,16,32} (enough
   # to see the crossover), 8k tokens covers AIME solutions. ~32x less work than the original.
   python -m rl_training.evaluate_passk --model-path "$1" --dataset "$DATASET" \
-    --n-samples 32 --n-problems "$NPROB" --max-new-tokens 8192 \
+    --n-samples "$EVAL_NSAMPLES" --n-problems "$NPROB" --max-new-tokens "$EVAL_MAXNEW" \
     --tensor-parallel-size 1 \
     --output-dir "$EVALDIR" --tag "$2"
 }
@@ -73,7 +80,7 @@ start_vllm () {  # $1 = model path/id
   fi
   echo ">> starting vLLM server on GPU $VLLM_GPUS (TP=1, 16k) ..."
   CUDA_VISIBLE_DEVICES=$VLLM_GPUS HF_HUB_OFFLINE=1 trl vllm-serve --model "$M" \
-    --tensor_parallel_size 1 --max_model_len 16384 --gpu_memory_utilization 0.9 \
+    --tensor_parallel_size 1 --max_model_len "$CTXLEN" --gpu_memory_utilization 0.9 \
     --port 8000 > ~/logs/vllm_${ARM}.log 2>&1 &
   VLLM_PID=$!
   # wait until the server answers (up to ~10 min for load+graph capture)
