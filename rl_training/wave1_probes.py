@@ -25,6 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.data.dataset import (get_inference_dataset, format_prompt,
                               extract_numeric_answer, answers_match)
 from rl_training.model_utils import merge_adapter_if_needed
+from rl_training.safe_match import safe_is_correct
 
 
 def get_llm(model, max_len):
@@ -72,8 +73,7 @@ def probe_gen_verify(a):
     fout = open(a.out, "a")
     for p, o in zip(probs, gen):
         gold = str(p.get("gold_answer", ""))
-        gen_correct = [bool((pr := extract_numeric_answer(s.text)) is not None and answers_match(pr, gold))
-                       for s in o.outputs]
+        gen_correct = [safe_is_correct(s.text, gold)[0] for s in o.outputs]
         can_generate = any(gen_correct)
         # (2) verification: ask the model if the GOLD answer is correct for this problem
         vprompt = build_verify_prompt(p["question"], gold, model)
@@ -119,7 +119,7 @@ def probe_prompt_recover(a):
             q = (pref + p["question"]) if pref else p["question"]
             pr2 = dict(p); pr2["question"] = q
             out = llm.generate([format_prompt(pr2, model)], sp(a.k, a.max_new_tokens - 1024))[0]
-            solved = any(answers_match(extract_numeric_answer(s.text), gold) for s in out.outputs)
+            solved = any(safe_is_correct(s.text, gold)[0] for s in out.outputs)
             rec["variant_solved"][vi] = solved
         rec["default_solved"] = rec["variant_solved"][0]
         rec["recovered_by_variant"] = (not rec["variant_solved"][0]) and any(rec["variant_solved"][i] for i in range(1, len(PROMPT_VARIANTS)))
@@ -146,7 +146,7 @@ def probe_modes(a):
     fout = open(a.out, "a")
     for p, o in zip(probs, gen):
         gold = str(p.get("gold_answer", ""))
-        correct = [s.text for s in o.outputs if answers_match(extract_numeric_answer(s.text), gold)]
+        correct = [s.text for s in o.outputs if safe_is_correct(s.text, gold)[0]]
         n_modes = 0
         if len(correct) >= 2:
             emb = embed_texts(correct)               # (n,d) L2-normalized
@@ -188,7 +188,7 @@ def probe_brittleness(a):
         for f in PERTURB:
             pr2 = dict(p); pr2["question"] = f(p["question"])
             out = llm.generate([format_prompt(pr2, model)], sp(1, a.max_new_tokens - 1024, temp=0.0))[0]
-            res.append(bool(answers_match(extract_numeric_answer(out.outputs[0].text), gold)))
+            res.append(safe_is_correct(out.outputs[0].text, gold)[0])
         fout.write(json.dumps({"problem_id": p["problem_id"], "perturb_correct": res,
                                "flip": len(set(res)) > 1}) + "\n"); fout.flush()
     fout.close(); Path(a.out + ".DONE").touch()

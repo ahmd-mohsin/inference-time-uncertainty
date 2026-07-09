@@ -14,6 +14,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.data.dataset import get_inference_dataset, format_prompt, extract_numeric_answer, answers_match
+from rl_training.safe_match import safe_is_correct
 from verification_gap.run_gap import pass_at_k
 
 
@@ -52,8 +53,7 @@ def main():
     per, counts = [], {"solved": 0, "hard": 0, "stuck": 0}
     for p, o in zip(problems, outs):
         gold = str(p.get("gold_answer", ""))
-        mask = [bool((pred := extract_numeric_answer(s.text)) is not None and answers_match(pred, gold))
-                for s in o.outputs]
+        mask = [safe_is_correct(s.text, gold)[0] for s in o.outputs]   # timeout-guarded (sympy can hang)
         p1 = pass_at_k(mask, 1)
         pk = pass_at_k(mask, a.k)
         if pk == 0.0:
