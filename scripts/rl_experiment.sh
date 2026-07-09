@@ -211,7 +211,12 @@ PY
         --max-new-tokens "$MAXLEN" --out-jsonl "$RUN/harvest$r.jsonl"
       # if harvest produced no rollouts, skip SFT and carry the GRPO checkpoint forward
       if [ -s "$RUN/harvest$r.jsonl" ]; then
-        python -m rl_training.harvest --mode sft --model-path "$RUN/seg$r" \
+        # PIN SFT to a single GPU. Without this it auto-spreads across all 8 GPUs via HF
+        # device_map, and trl 1.7.0's _chunked_cross_entropy_loss crashes with "indices should
+        # be on the same device as the indexed tensor (cuda:7)" (hidden[valid] cross-device) —
+        # this silently failed EVERY segment's SFT, so Component B never distilled. Single-GPU
+        # keeps hidden+valid co-located; 623 examples don't need model parallelism.
+        CUDA_VISIBLE_DEVICES=0 python -m rl_training.harvest --mode sft --model-path "$RUN/seg$r" \
           --out-jsonl "$RUN/harvest$r.jsonl" --output-dir "$RUN/seg${r}_sft" --epochs 1 \
           && CUR="$RUN/seg${r}_sft" || CUR="$RUN/seg$r"
       else
