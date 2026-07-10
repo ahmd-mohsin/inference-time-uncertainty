@@ -22,10 +22,9 @@
 import argparse, json, os, sys
 from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.data.dataset import (get_inference_dataset, format_prompt,
-                              extract_numeric_answer, answers_match)
+from src.data.dataset import get_inference_dataset, format_prompt
 from rl_training.model_utils import merge_adapter_if_needed
-from rl_training.safe_match import safe_is_correct
+from rl_training.safe_match import safe_is_correct  # all answer-matching goes through this (timeout-guarded)
 
 
 def get_llm(model, max_len):
@@ -60,10 +59,43 @@ def done_ids(out_jsonl):
 
 
 # ---------- #9: generation vs verification ----------
-def probe_gen_verify(a):
-    """For each problem: (1) can the model GENERATE a correct answer in k samples? (2) given a
-    correct candidate, can it VERIFY it as correct? Gap = verifies-but-can't-generate."""
+def _wrong_candidate(gold):
+    """A PLAUSIBLE wrong answer for the negative control. We must present a known-wrong
+    candidate alongside the gold one so verification is scored as DISCRIMINATION (YES-on-correct
+    minus YES-on-wrong), never raw yes-rate — otherwise a yes-biased model 'verifies' everything
+    and fabricates a gap. Numeric gold -> perturb the number (off-by-one / scaled); non-numeric
+    -> a generic distractor. Returns a string distinct from gold."""
+    g = str(gold).strip()
+    try:
+        val = float(g)
+        if abs(val - round(val)) < 1e-9:          # integer-valued
+            iv = int(round(val))
+            cand = iv + 1 if iv != -1 else iv + 2  # +1 (avoid landing on 0 as the only option)
+            return str(cand)
+        return str(round(val + 1, 6))              # non-integer: shift by 1
+    except (ValueError, TypeError):
+        # non-numeric (fraction/set/expr): a simple, obviously-different string
+        return "0" if g not in ("0", "$0$") else "1"
+
+
+def _verify_yes_rate(llm, model, question, candidate, verify_k):
+    """Ask the model verify_k times whether `candidate` is correct for `question`; return the
+    fraction of PARSEABLE verdicts that were YES, and how many parsed (to flag base-model
+    template mismatch where few verdicts parse)."""
     from verification_gap.verifier import build_verify_prompt, parse_verdict
+    vprompt = build_verify_prompt(question, candidate, model)
+    vout = llm.generate([vprompt], sp(verify_k, 512))[0]
+    verds = [parse_verdict(s.text) for s in vout.outputs]
+    verds = [v for v in verds if v is not None]
+    return ((sum(verds) / len(verds)) if verds else None), len(verds)
+
+
+def probe_gen_verify(a):
+    """For each problem: (1) can the model GENERATE a correct answer in k samples? (2) does it
+    VERIFY the GOLD answer as correct AND REJECT a plausible wrong answer? The verification
+    signal is DISCRIMINATION = yes_rate(correct) - yes_rate(wrong) in [-1, 1]; the gen-verify
+    GAP = can't-generate but discriminates (disc >= a.disc_thresh). Raw yes-rate alone is
+    meaningless under a yes-biased model, hence the mandatory wrong-answer control."""
     llm, model = get_llm(a.model, a.max_new_tokens)
     probs = load_problems(a.dataset, a.n_problems)
     done = done_ids(a.out)
@@ -75,26 +107,43 @@ def probe_gen_verify(a):
         gold = str(p.get("gold_answer", ""))
         gen_correct = [safe_is_correct(s.text, gold)[0] for s in o.outputs]
         can_generate = any(gen_correct)
-        # (2) verification: ask the model if the GOLD answer is correct for this problem
-        vprompt = build_verify_prompt(p["question"], gold, model)
-        vout = llm.generate([vprompt], sp(a.verify_k, 512))[0]
-        # use the verifier's own VERDICT: YES/NO parser; verify_rate = fraction judged correct
-        verds = [parse_verdict(s.text) for s in vout.outputs]
-        verds = [v for v in verds if v is not None]
-        verify_rate = (sum(verds) / len(verds)) if verds else 0.0
-        fout.write(json.dumps({"problem_id": p["problem_id"], "can_generate": can_generate,
-                               "gen_pass_frac": sum(gen_correct)/len(gen_correct),
-                               "verify_rate": verify_rate,
-                               "gap": (not can_generate) and verify_rate > 0.5}) + "\n"); fout.flush()
+        # (2) verification with a NEGATIVE CONTROL: gold candidate AND a plausible wrong one.
+        wrong = _wrong_candidate(gold)
+        yes_correct, n_c = _verify_yes_rate(llm, model, p["question"], gold, a.verify_k)
+        yes_wrong,   n_w = _verify_yes_rate(llm, model, p["question"], wrong, a.verify_k)
+        # discrimination is only defined if BOTH sides produced parseable verdicts
+        disc = (yes_correct - yes_wrong) if (yes_correct is not None and yes_wrong is not None) else None
+        fout.write(json.dumps({
+            "problem_id": p["problem_id"], "can_generate": can_generate,
+            "gen_pass_frac": sum(gen_correct)/len(gen_correct),
+            "yes_rate_correct": yes_correct, "yes_rate_wrong": yes_wrong,
+            "n_verdicts_correct": n_c, "n_verdicts_wrong": n_w, "wrong_candidate": wrong,
+            "discrimination": disc,
+            # the gap claim: cannot generate a correct answer, yet reliably discriminates correct
+            # from wrong when shown them -> the capability is present but inaccessible to sampling.
+            "gap": (not can_generate) and (disc is not None and disc >= a.disc_thresh),
+        }) + "\n"); fout.flush()
     fout.close(); Path(a.out + ".DONE").touch()
     _summarize_gen_verify(a.out)
 
 
 def _summarize_gen_verify(out):
     R = [json.loads(l) for l in open(out) if l.strip()]
+    ungen = [r for r in R if not r["can_generate"]]
+    scored = [r for r in R if r.get("discrimination") is not None]
+    ungen_scored = [r for r in ungen if r.get("discrimination") is not None]
     gap = [r for r in R if r["gap"]]
-    print(f"#9 gen_verify: {len(R)} problems | can't-generate-but-verifies (GAP)={len(gap)} "
-          f"| mean verify_rate on ungenerated={sum(r['verify_rate'] for r in R if not r['can_generate'])/max(1,sum(1 for r in R if not r['can_generate'])):.3f}")
+    def _mean(xs): return (sum(xs) / len(xs)) if xs else float("nan")
+    print(f"#9 gen_verify: {len(R)} problems | {len(scored)} with valid discrimination "
+          f"(verdicts parsed on both sides).")
+    print(f"  mean discrimination (all)      = {_mean([r['discrimination'] for r in scored]):.3f} "
+          f"(yes_correct - yes_wrong; >0 means real verification)")
+    print(f"  mean discrimination (ungen)    = {_mean([r['discrimination'] for r in ungen_scored]):.3f} "
+          f"on {len(ungen_scored)} problems the model CANNOT generate")
+    print(f"  GAP (can't-generate & discriminates) = {len(gap)}  <- the gen-verify gap")
+    if len(scored) < 0.5 * len(R):
+        print(f"  WARNING: only {len(scored)}/{len(R)} problems had parseable verdicts on both "
+              f"sides — likely a base (non-chat) model; interpret with care.")
 
 
 # ---------- #11: prompt-rephrasing recovery ----------
@@ -132,12 +181,33 @@ def probe_prompt_recover(a):
           f"RECOVERED by a rephrasing={len(rec)} ({100*len(rec)/max(1,len(unsolved)):.1f}% of unsolved)")
 
 
-# ---------- #5: solution-mode clustering ----------
+# ---------- #5: solution-mode (LEXICAL) diversity ----------
+# HONEST SCOPE: rl_training.semantic.embed_texts is TF-IDF word n-grams, NOT neural sentence
+# embeddings (it is model-free by design so it survives DeepSpeed ZeRO-3 in the training reward).
+# So this probe measures LEXICAL diversity of correct chains — distinct solution VOCABULARY /
+# operator structure — not guaranteed-semantic method identity. We therefore (a) label it as
+# lexical, and (b) never rely on one arbitrary threshold: we persist the full greedy-distinct
+# count across a THRESHOLD SWEEP so the trend (does RL reduce diversity?) is judged by the whole
+# curve, and also store mean pairwise distance (threshold-free) as the primary scalar.
+_MODE_THRESH_SWEEP = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+
+
+def _greedy_modes(emb, thresh):
+    """Greedy distinct-cluster count: a vector is a new mode if its cosine distance to every
+    kept representative exceeds `thresh`."""
+    kept = [emb[0]]
+    for v in emb[1:]:
+        if all(float(1 - v @ k) > thresh for k in kept):
+            kept.append(v)
+    return len(kept)
+
+
 def probe_modes(a):
-    """For problems the model solves, how many DISTINCT correct solution methods does it produce?
-    Cluster correct CoTs by TF-IDF novelty (reuse Component A embedding)."""
-    from rl_training.semantic import embed_texts
-    import numpy as np
+    """For problems the model solves, how LEXICALLY diverse are its correct chains? Reports, per
+    problem: n_correct, mean pairwise cosine distance (threshold-free diversity), and distinct
+    'modes' at each threshold in a sweep. Aggregate trend across arms answers: does RL collapse
+    solution diversity even where pass@k is unchanged?"""
+    from rl_training.semantic import embed_texts, pairwise_novelty
     llm, model = get_llm(a.model, a.max_new_tokens)
     probs = load_problems(a.dataset, a.n_problems)
     done = done_ids(a.out)
@@ -147,24 +217,32 @@ def probe_modes(a):
     for p, o in zip(probs, gen):
         gold = str(p.get("gold_answer", ""))
         correct = [s.text for s in o.outputs if safe_is_correct(s.text, gold)[0]]
-        n_modes = 0
+        rec = {"problem_id": p["problem_id"], "n_correct": len(correct),
+               "mean_pairwise_dist": None, "modes_by_thresh": {}}
         if len(correct) >= 2:
-            emb = embed_texts(correct)               # (n,d) L2-normalized
-            # greedy distinct-mode count: a rollout is a new mode if cos-dist>thresh to all kept
-            kept = [emb[0]]
-            for v in emb[1:]:
-                if all(float(1 - v @ k) > a.mode_thresh for k in kept):
-                    kept.append(v)
-            n_modes = len(kept)
+            emb = embed_texts(correct)                       # (n,d) L2-normalized TF-IDF
+            rec["mean_pairwise_dist"] = float(pairwise_novelty(emb).mean())  # threshold-free
+            rec["modes_by_thresh"] = {str(t): _greedy_modes(emb, t) for t in _MODE_THRESH_SWEEP}
         elif len(correct) == 1:
-            n_modes = 1
-        fout.write(json.dumps({"problem_id": p["problem_id"], "n_correct": len(correct),
-                               "n_distinct_modes": n_modes}) + "\n"); fout.flush()
+            rec["mean_pairwise_dist"] = 0.0
+            rec["modes_by_thresh"] = {str(t): 1 for t in _MODE_THRESH_SWEEP}
+        fout.write(json.dumps(rec) + "\n"); fout.flush()
     fout.close(); Path(a.out + ".DONE").touch()
-    R = [json.loads(l) for l in open(a.out) if l.strip()]
+    _summarize_modes(a.out)
+
+
+def _summarize_modes(out):
+    R = [json.loads(l) for l in open(out) if l.strip()]
     solved = [r for r in R if r["n_correct"] > 0]
-    mm = sum(r["n_distinct_modes"] for r in solved) / max(1, len(solved))
-    print(f"#5 modes: {len(solved)} solved problems | mean distinct correct modes = {mm:.2f}")
+    multi = [r for r in solved if r["n_correct"] >= 2]      # diversity only defined with >=2
+    def _mean(xs): return (sum(xs) / len(xs)) if xs else float("nan")
+    print(f"#5 modes (LEXICAL diversity): {len(solved)} solved, {len(multi)} with >=2 correct chains.")
+    print(f"  mean pairwise TF-IDF distance = {_mean([r['mean_pairwise_dist'] for r in multi]):.3f} "
+          f"(threshold-free; lower under RL => diversity collapse)")
+    print(f"  distinct-mode count by threshold (mean over solved problems):")
+    for t in _MODE_THRESH_SWEEP:
+        vals = [r["modes_by_thresh"].get(str(t), 0) for r in solved]
+        print(f"    thresh={t}: {_mean(vals):.2f} modes")
 
 
 # ---------- #10: prompt-perturbation brittleness ----------
@@ -233,8 +311,11 @@ def main():
     ap.add_argument("--n-problems", type=int, default=-1)
     ap.add_argument("--k", type=int, default=32)
     ap.add_argument("--verify-k", type=int, default=8)
+    ap.add_argument("--disc-thresh", type=float, default=0.5,
+                    help="#9: min (yes_correct - yes_wrong) discrimination to count a gen-verify gap")
     ap.add_argument("--max-new-tokens", type=int, default=3072)
-    ap.add_argument("--mode-thresh", type=float, default=0.3)
+    ap.add_argument("--mode-thresh", type=float, default=0.3,
+                    help="#5: cosine-distance threshold for a 'distinct' mode (a sweep is also reported)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
