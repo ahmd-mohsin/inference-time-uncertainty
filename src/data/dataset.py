@@ -188,6 +188,28 @@ def load_amc(n_problems=-1, cache_dir=None):
     return problems
 
 
+def load_math_full(n_problems=-1, seed=42, split="train", cache_dir=None):
+    """Full Hendrycks MATH via nlile/hendrycks-MATH-benchmark (hendrycks/competition_math was
+    removed from the Hub). test=500 (== MATH-500), train=12000 with a pre-extracted 'answer' and
+    a 'level' field. Used for the LEVEL-5 large-n crossover eval (train has 3495 level-5 problems
+    -> tight CIs, and unlike MATH-500 base is not saturated at k=256)."""
+    logger.info(f"Loading full MATH (nlile/hendrycks-MATH-benchmark, split={split})")
+    raw = load_dataset("nlile/hendrycks-MATH-benchmark", cache_dir=cache_dir)
+    data = list(raw[split]); random.seed(seed); random.shuffle(data)
+    if n_problems > 0: data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        gold = str(item.get("answer", "")).strip()
+        if not gold:
+            gold = extract_boxed_answer(item.get("solution", "")) or ""
+        m = re.search(r"\d+", str(item.get("level", "")))
+        problems.append({"problem_id": i, "question": item["problem"], "gold_answer": gold,
+                         "source": "math_full", "level": m.group(0) if m else "",
+                         "problem_type": item.get("subject", item.get("type", ""))})
+    logger.info(f"Loaded {len(problems)} full-MATH problems (split={split})")
+    return problems
+
+
 def load_competition_math(n_problems=-1, seed=42, cache_dir=None):
     logger.info("Loading Competition MATH (hendrycks/competition_math)")
     raw = load_dataset("hendrycks/competition_math", cache_dir=cache_dir)
@@ -830,6 +852,8 @@ def get_inference_dataset(cfg):
     if name in ("amo", "amo_bench"): return load_amo_bench(n_problems=n)
     if name == "amc": return load_amc(n_problems=n)
     if name == "competition_math": return load_competition_math(n_problems=n, seed=seed)
+    if name in ("math_full", "math_train"): return load_math_full(n_problems=n, seed=seed, split="train")
+    if name == "math_full_test": return load_math_full(n_problems=n, seed=seed, split="test")
     if name == "olympiad_bench": return load_olympiad_bench(n_problems=n, seed=seed)
     raise ValueError(f"Unknown inference dataset: {name}")
 
