@@ -42,9 +42,20 @@ def _fast_prefilter(pred, gold):
         return None                    # undecided -> fall through to full answers_match
 
 
+# The answer lives at the END of a solution (\boxed{}, "answer is", final line). extract_numeric_answer
+# uses regexes with nested quantifiers (e.g. \boxed{...} matching) that CATASTROPHICALLY BACKTRACK on
+# long adversarial completions — a C-level regex loop that SIGALRM cannot interrupt (hung eval shards
+# 4h+). So we cap the text fed to extraction to its TAIL; the real answer is always near the end, and
+# a 1.5B's runaway repetition (the backtracking trigger) is thereby excluded.
+MAX_MATCH_CHARS = 2000
+
+
 def safe_is_correct(text, gold, timeout=5):
-    """Extract a numeric answer from `text` and match against `gold`. Length-guarded (primary)
-    plus a SIGALRM backstop. A stuck/oversized/erroring match counts as NOT correct."""
+    """Extract a numeric answer from `text` and match against `gold`. Guards BOTH the extraction
+    (tail-truncation, since its regexes backtrack on long input) and the match (length filter +
+    SIGALRM backstop). A stuck/oversized/erroring result counts as NOT correct."""
+    if text and len(text) > MAX_MATCH_CHARS:
+        text = text[-MAX_MATCH_CHARS:]     # answer is at the tail; drop runaway prefix that backtracks
     try:
         pred = extract_numeric_answer(text)
     except Exception:
