@@ -19,7 +19,16 @@ from rl_training.config import EvalConfig
 from rl_training.safe_match import safe_is_correct
 
 
-def evaluate(cfg: EvalConfig, shard_index=0, num_shards=1):
+def _load_subset_ids(difficulty_json, labels):
+    """problem_ids whose difficulty label is in `labels` (e.g. {'hard'}). None if no json."""
+    if not difficulty_json or not os.path.exists(difficulty_json):
+        return None
+    d = json.load(open(difficulty_json))
+    return {p["problem_id"] for p in d.get("per_problem", []) if p.get("label") in labels}
+
+
+def evaluate(cfg: EvalConfig, shard_index=0, num_shards=1, difficulty_json="",
+             subset_labels=("hard",), seed=None):
     from vllm import LLM, SamplingParams
     from transformers import AutoConfig
     from rl_training.model_utils import merge_adapter_if_needed
@@ -30,6 +39,15 @@ def evaluate(cfg: EvalConfig, shard_index=0, num_shards=1):
 
     problems = get_inference_dataset({"dataset": {"name": cfg.dataset, "split": "test",
                                                   "n_problems": cfg.n_problems, "seed": cfg.seed}})
+    # HARD-BAND SUBSET (methodology fix): MATH-500 is near-saturated at 1.5B (base solves most at
+    # k=256), so the crossover has little room. Restricting to the difficulty-labeled 'hard' band
+    # (low pass@1 but pass@k>0 — where coverage expansion is actually possible) is where the
+    # crossover and the method's advantage should be largest. Filter BEFORE the shard stride so the
+    # shards remain a disjoint cover of the SAME filtered set.
+    keep = _load_subset_ids(difficulty_json, set(subset_labels))
+    if keep is not None:
+        problems = [p for p in problems if p["problem_id"] in keep]
+        print(f"[subset] {len(problems)} problems with label in {set(subset_labels)} (from {difficulty_json})")
     # DATA-PARALLEL SHARDING: with num_shards>1 this process handles only a STRIDED slice of the
     # problems (problems[shard_index::num_shards]). Strided (not contiguous) so every shard gets a
     # balanced easy/hard mix. pass@k is independent across problems, so N shards on N GPUs give an
@@ -48,9 +66,12 @@ def evaluate(cfg: EvalConfig, shard_index=0, num_shards=1):
     llm = LLM(model=cfg.model_path, dtype="bfloat16", trust_remote_code=True,
               tensor_parallel_size=cfg.tensor_parallel_size, max_model_len=max_model_len,
               gpu_memory_utilization=cfg.gpu_memory_utilization, enable_prefix_caching=True)
+    # SEED (methodology fix): distinct sampling seed per replicate so 3 seeds give independent
+    # pass@k estimates for bootstrap CIs. vLLM SamplingParams.seed makes generation reproducible.
     sp = SamplingParams(n=cfg.n_samples, max_tokens=max_model_len - 1024,
                         temperature=cfg.temperature, top_p=cfg.top_p,
-                        stop=["<|im_end|>", "<|endoftext|>"])
+                        stop=["<|im_end|>", "<|endoftext|>"],
+                        seed=seed if seed is not None else None)
 
     prompts = [format_prompt(p, cfg.model_path) for p in problems]
     outs = llm.generate(prompts, sp)
@@ -69,6 +90,7 @@ def evaluate(cfg: EvalConfig, shard_index=0, num_shards=1):
     curve = {k: (float(sum(v) / len(v)) if v else 0.0) for k, v in curve_acc.items()}
     out = {"tag": cfg.tag, "model": cfg.model_path, "dataset": cfg.dataset,
            "n_problems": len(problems), "n_samples": cfg.n_samples,
+           "subset": list(subset_labels) if keep is not None else "all", "seed": seed,
            "pass_at_k_curve": curve, "per_problem": per_problem}
     Path(cfg.output_dir).mkdir(parents=True, exist_ok=True)
     if num_shards > 1:
@@ -108,6 +130,7 @@ def merge_shards(output_dir, tag, num_shards):
              for k in ks}
     out = {"tag": tag, "model": parts[0]["model"], "dataset": parts[0]["dataset"],
            "n_problems": len(per_problem), "n_samples": parts[0]["n_samples"],
+           "subset": parts[0].get("subset", "all"), "seed": parts[0].get("seed"),
            "pass_at_k_curve": curve, "per_problem": per_problem, "merged_from_shards": num_shards}
     fp = od / f"passk_{tag}.json"
     json.dump(out, open(fp, "w"), indent=2)
@@ -131,6 +154,12 @@ def main():
     ap.add_argument("--num-shards", type=int, default=1, help="data-parallel shards (1 GPU each)")
     ap.add_argument("--merge", action="store_true",
                     help="merge passk_{tag}.shard*-of-{num_shards}.json into passk_{tag}.json and exit")
+    ap.add_argument("--difficulty-json", default="",
+                    help="restrict eval to labeled problems (methodology: hard-band subset)")
+    ap.add_argument("--subset-labels", default="hard",
+                    help="comma-sep difficulty labels to keep (e.g. 'hard' or 'hard,stuck')")
+    ap.add_argument("--seed", type=int, default=None,
+                    help="vLLM sampling seed for this replicate (multi-seed CIs)")
     a = ap.parse_args()
     if a.merge:
         merge_shards(a.output_dir, a.tag, a.num_shards)
@@ -139,7 +168,10 @@ def main():
                      n_samples=a.n_samples, max_new_tokens=a.max_new_tokens,
                      tensor_parallel_size=a.tensor_parallel_size,
                      output_dir=a.output_dir, tag=a.tag)
-    evaluate(cfg, shard_index=a.shard_index, num_shards=a.num_shards)
+    evaluate(cfg, shard_index=a.shard_index, num_shards=a.num_shards,
+             difficulty_json=a.difficulty_json,
+             subset_labels=tuple(s for s in a.subset_labels.split(",") if s),
+             seed=a.seed)
 
 
 if __name__ == "__main__":

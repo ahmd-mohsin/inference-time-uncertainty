@@ -5,6 +5,10 @@
 # use all 8 GPUs — ~8x faster than a single-GPU eval (128k rollouts: ~2.5h -> ~20min).
 #
 # Usage: bash scripts/run_eval_sharded.sh <model_path_or_id> <tag> [dataset] [n_samples] [max_new]
+# Env knobs (methodology fixes):
+#   DIFF_JSON=<path>       restrict eval to a difficulty band (hard-band subset)
+#   SUBSET_LABELS=hard     which labels to keep (default 'hard' when DIFF_JSON set)
+#   EVAL_SEED=<int>        vLLM sampling seed for this replicate (multi-seed CIs)
 set -uo pipefail
 source ~/miniconda3/etc/profile.d/conda.sh; conda activate digte
 cd ~/inference-time-uncertainty
@@ -13,6 +17,11 @@ export HF_HUB_OFFLINE=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 MODEL="${1:?model path/id}"; TAG="${2:?tag e.g. base|grpo|oursA|oursABC}"
 DS="${3:-math500}"; NSAMP="${4:-256}"; MAXNEW="${5:-4096}"
 NG="${NUM_GPUS:-$(nvidia-smi --query-gpu=count --format=csv,noheader | head -1)}"
+DIFF_JSON="${DIFF_JSON:-}"; SUBSET_LABELS="${SUBSET_LABELS:-hard}"; EVAL_SEED="${EVAL_SEED:-}"
+# build the optional flag string once (empty unless a subset/seed is requested)
+EXTRA=""
+[ -n "$DIFF_JSON" ] && EXTRA="$EXTRA --difficulty-json $DIFF_JSON --subset-labels $SUBSET_LABELS"
+[ -n "$EVAL_SEED" ] && EXTRA="$EXTRA --seed $EVAL_SEED"
 OUT="$PWD/rl_training/runs/eval"; mkdir -p "$OUT" ~/logs
 
 # A bare LoRA adapter must be merged into a full model ONCE before the shards start (else 8
@@ -22,13 +31,13 @@ MERGED=$(CUDA_VISIBLE_DEVICES=0 python -c "from rl_training.model_utils import m
 [ -z "$MERGED" ] && MERGED="$MODEL"
 echo ">> shards will load: $MERGED"
 
-echo ">> launching $NG shards for tag=$TAG (n_samples=$NSAMP, dataset=$DS) ..."
+echo ">> launching $NG shards for tag=$TAG (n_samples=$NSAMP, dataset=$DS, extra='$EXTRA') ..."
 pids=()
 for s in $(seq 0 $((NG-1))); do
   CUDA_VISIBLE_DEVICES=$s python -m rl_training.evaluate_passk \
     --model-path "$MERGED" --dataset "$DS" --n-problems -1 \
     --n-samples "$NSAMP" --max-new-tokens "$MAXNEW" --tensor-parallel-size 1 \
-    --output-dir "$OUT" --tag "$TAG" --shard-index "$s" --num-shards "$NG" \
+    --output-dir "$OUT" --tag "$TAG" --shard-index "$s" --num-shards "$NG" $EXTRA \
     > ~/logs/eval_${TAG}_shard${s}.log 2>&1 &
   pids+=($!)
   sleep 2   # stagger starts so the merge/cache reads don't collide

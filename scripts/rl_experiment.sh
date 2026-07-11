@@ -116,12 +116,19 @@ case "$ARM" in
     echo "===== ARM base: eval only ====="
     run_eval "$MODEL" base
     ;;
-  grpo|oursA|oursAB_cont)
-    # Clean ablation: grpo = standard GRPO on FULL data (no novelty, no C targeting) so it
-    # is a true control for Yue's crossover. oursA = novelty (A) + hard-targeting (C).
-    # oursAB_cont = oursAB continued as plain GRPO+novelty from its seg0 checkpoint (the
-    # alternating harvest loop was too fragile under time pressure; this keeps Component A).
-    if [ "$ARM" = "grpo" ]; then NOV="--no-novelty"; USE_DIFF=""; else NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF"; fi
+  grpo|grpo_long|oursA|oursC|oursAB_cont)
+    # ABLATION MATRIX (methodology fixes #2, #3). Each arm toggles novelty (A) and hard-targeting (C):
+    #   grpo       : standard GRPO, FULL data, no novelty, no C  -> control for Yue's crossover
+    #   grpo_long  : grpo but RL_STEPS extended (compute-matched to oursABC's total updates) so a
+    #                reviewer cannot attribute oursABC's coverage to "just more training".
+    #   oursA      : novelty (A) + hard-targeting (C)            -> the sharpness arm
+    #   oursC      : hard-targeting (C) ONLY, no novelty         -> isolates C (is targeting enough?)
+    #   oursAB_cont: plain GRPO+novelty continued from a seg checkpoint (legacy)
+    case "$ARM" in
+      grpo|grpo_long) NOV="--no-novelty"; USE_DIFF="" ;;
+      oursC)          NOV="--no-novelty"; USE_DIFF="$DIFF" ;;   # C only
+      *)              NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF" ;;  # oursA / oursAB_cont: A(+C)
+    esac
     # AUTO-RESUME: if a checkpoint dir already exists (e.g. pulled from a dead instance),
     # resume from the highest-numbered one so a new instance continues instead of restarting.
     RESUME=""
@@ -225,6 +232,27 @@ PY
       fi
     done
     run_eval "$CUR" oursAB
+    ;;
+  oursB|sft_random)
+    # ABLATION #3 (B-only) + CONTROL #2 (random-correct SFT). No GRPO — pure Component B from
+    # BASE, so any pass@k change is attributable to harvest->SFT alone (isolates B from A/C/RL).
+    #   oursB      : harvest the HARD-band tail from base, SFT on it (does B alone lift coverage?)
+    #   sft_random : harvest correct rollouts from ALL problems (--all-problems), SFT on it. The
+    #                control: if oursB helps but sft_random doesn't, the gain is the HARD TAIL,
+    #                not generic SFT regularization / extra training data.
+    ALLFLAG=""; [ "$ARM" = "sft_random" ] && ALLFLAG="--all-problems"
+    echo "===== ARM $ARM: harvest($ARM) + SFT from BASE (no GRPO) ====="
+    CUDA_VISIBLE_DEVICES=0 python -m rl_training.harvest --mode harvest --model-path "$MODEL" \
+      --dataset "$DATASET" ${DIFF:+--difficulty-json "$DIFF"} --k 64 --max-keep 2 \
+      --max-new-tokens "$MAXLEN" --out-jsonl "$RUN/harvest.jsonl" $ALLFLAG
+    if [ -s "$RUN/harvest.jsonl" ]; then
+      CUDA_VISIBLE_DEVICES=0 python -m rl_training.harvest --mode sft --model-path "$MODEL" \
+        --out-jsonl "$RUN/harvest.jsonl" --output-dir "$RUN/sft" --epochs 1 \
+        && CUR="$RUN/sft" || { echo "!! $ARM SFT failed"; exit 1; }
+    else
+      echo "!! $ARM: harvest produced no rollouts"; exit 1
+    fi
+    run_eval "$CUR" "$ARM"
     ;;
   *) echo "unknown arm $ARM"; exit 1 ;;
 esac

@@ -22,8 +22,13 @@ from rl_training.safe_match import safe_is_correct
 
 
 def harvest(model_path, dataset, difficulty_json, k, max_keep, max_new_tokens,
-            temperature, tensor_parallel_size, out_jsonl, n_problems=-1):
-    """Sample model at k on HARD problems; write distinct correct (prompt, completion) pairs."""
+            temperature, tensor_parallel_size, out_jsonl, n_problems=-1, all_problems=False):
+    """Sample model at k on HARD problems; write distinct correct (prompt, completion) pairs.
+
+    all_problems=True is the CONTROL for methodology fix #2: harvest correct rollouts from ALL
+    problems (not just the hard band). If Component B's coverage gain comes specifically from the
+    rare HARD-problem tail, the hard-band harvest should help and this all-problems 'random correct'
+    SFT should NOT — isolating the tail effect from generic SFT regularization."""
     from vllm import LLM, SamplingParams
     from transformers import AutoConfig
 
@@ -33,11 +38,13 @@ def harvest(model_path, dataset, difficulty_json, k, max_keep, max_new_tokens,
     problems = get_inference_dataset({"dataset": {"name": dataset, "split": "test",
                                                   "n_problems": n_problems, "seed": 42}})
     keep_ids = None
-    if difficulty_json and os.path.exists(difficulty_json):
+    if difficulty_json and os.path.exists(difficulty_json) and not all_problems:
         diff = json.load(open(difficulty_json))
         keep_ids = {d["problem_id"] for d in diff.get("per_problem", []) if d["label"] == "hard"}
     if keep_ids is not None:
         problems = [p for p in problems if p["problem_id"] in keep_ids]
+    if all_problems:
+        print(f"harvest: --all-problems CONTROL — harvesting from all {len(problems)} problems (not just hard)")
     if not problems:
         print("harvest: no hard problems; nothing to do"); return 0
 
@@ -122,10 +129,13 @@ def main():
     ap.add_argument("--output-dir", default="rl_training/runs/sft")
     ap.add_argument("--lr", type=float, default=1e-6)
     ap.add_argument("--epochs", type=int, default=1)
+    ap.add_argument("--all-problems", action="store_true",
+                    help="CONTROL: harvest from ALL problems, not just the hard band (isolates tail effect)")
     a = ap.parse_args()
     if a.mode == "harvest":
         harvest(a.model_path, a.dataset, a.difficulty_json, a.k, a.max_keep,
-                a.max_new_tokens, a.temperature, a.tensor_parallel_size, a.out_jsonl)
+                a.max_new_tokens, a.temperature, a.tensor_parallel_size, a.out_jsonl,
+                all_problems=a.all_problems)
     else:
         sft_step(a.model_path, a.out_jsonl, a.output_dir, a.lr, a.epochs)
 
