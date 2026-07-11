@@ -28,7 +28,7 @@ def _load_subset_ids(difficulty_json, labels):
 
 
 def evaluate(cfg: EvalConfig, shard_index=0, num_shards=1, difficulty_json="",
-             subset_labels=("hard",), seed=None):
+             subset_labels=("hard",), seed=None, level=""):
     from vllm import LLM, SamplingParams
     from transformers import AutoConfig
     from rl_training.model_utils import merge_adapter_if_needed
@@ -48,6 +48,13 @@ def evaluate(cfg: EvalConfig, shard_index=0, num_shards=1, difficulty_json="",
     if keep is not None:
         problems = [p for p in problems if p["problem_id"] in keep]
         print(f"[subset] {len(problems)} problems with label in {set(subset_labels)} (from {difficulty_json})")
+    # LEVEL filter (methodology): for datasets that carry a MATH difficulty level (math500,
+    # competition_math), keep only the requested level(s) — e.g. --level 5 for the hard-at-large-k
+    # subset that has coverage headroom AND enough problems for tight CIs.
+    if level:
+        want = set(str(level).split(","))
+        problems = [p for p in problems if str(p.get("level", "")) in want]
+        print(f"[level] {len(problems)} problems at level(s) {want}")
     # DATA-PARALLEL SHARDING: with num_shards>1 this process handles only a STRIDED slice of the
     # problems (problems[shard_index::num_shards]). Strided (not contiguous) so every shard gets a
     # balanced easy/hard mix. pass@k is independent across problems, so N shards on N GPUs give an
@@ -90,7 +97,8 @@ def evaluate(cfg: EvalConfig, shard_index=0, num_shards=1, difficulty_json="",
     curve = {k: (float(sum(v) / len(v)) if v else 0.0) for k, v in curve_acc.items()}
     out = {"tag": cfg.tag, "model": cfg.model_path, "dataset": cfg.dataset,
            "n_problems": len(problems), "n_samples": cfg.n_samples,
-           "subset": list(subset_labels) if keep is not None else "all", "seed": seed,
+           "subset": list(subset_labels) if keep is not None else "all",
+           "level": level or "all", "seed": seed,
            "pass_at_k_curve": curve, "per_problem": per_problem}
     Path(cfg.output_dir).mkdir(parents=True, exist_ok=True)
     if num_shards > 1:
@@ -130,7 +138,8 @@ def merge_shards(output_dir, tag, num_shards):
              for k in ks}
     out = {"tag": tag, "model": parts[0]["model"], "dataset": parts[0]["dataset"],
            "n_problems": len(per_problem), "n_samples": parts[0]["n_samples"],
-           "subset": parts[0].get("subset", "all"), "seed": parts[0].get("seed"),
+           "subset": parts[0].get("subset", "all"), "level": parts[0].get("level", "all"),
+           "seed": parts[0].get("seed"),
            "pass_at_k_curve": curve, "per_problem": per_problem, "merged_from_shards": num_shards}
     fp = od / f"passk_{tag}.json"
     json.dump(out, open(fp, "w"), indent=2)
@@ -160,6 +169,8 @@ def main():
                     help="comma-sep difficulty labels to keep (e.g. 'hard' or 'hard,stuck')")
     ap.add_argument("--seed", type=int, default=None,
                     help="vLLM sampling seed for this replicate (multi-seed CIs)")
+    ap.add_argument("--level", default="",
+                    help="MATH difficulty level filter, e.g. '5' or '4,5' (math500/competition_math)")
     a = ap.parse_args()
     if a.merge:
         merge_shards(a.output_dir, a.tag, a.num_shards)
@@ -171,7 +182,7 @@ def main():
     evaluate(cfg, shard_index=a.shard_index, num_shards=a.num_shards,
              difficulty_json=a.difficulty_json,
              subset_labels=tuple(s for s in a.subset_labels.split(",") if s),
-             seed=a.seed)
+             seed=a.seed, level=a.level)
 
 
 if __name__ == "__main__":

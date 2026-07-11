@@ -17,11 +17,12 @@ export HF_HUB_OFFLINE=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 MODEL="${1:?model path/id}"; TAG="${2:?tag e.g. base|grpo|oursA|oursABC}"
 DS="${3:-math500}"; NSAMP="${4:-256}"; MAXNEW="${5:-4096}"
 NG="${NUM_GPUS:-$(nvidia-smi --query-gpu=count --format=csv,noheader | head -1)}"
-DIFF_JSON="${DIFF_JSON:-}"; SUBSET_LABELS="${SUBSET_LABELS:-hard}"; EVAL_SEED="${EVAL_SEED:-}"
-# build the optional flag string once (empty unless a subset/seed is requested)
+DIFF_JSON="${DIFF_JSON:-}"; SUBSET_LABELS="${SUBSET_LABELS:-hard}"; EVAL_SEED="${EVAL_SEED:-}"; LEVEL="${LEVEL:-}"
+# build the optional flag string once (empty unless a subset/seed/level is requested)
 EXTRA=""
 [ -n "$DIFF_JSON" ] && EXTRA="$EXTRA --difficulty-json $DIFF_JSON --subset-labels $SUBSET_LABELS"
 [ -n "$EVAL_SEED" ] && EXTRA="$EXTRA --seed $EVAL_SEED"
+[ -n "$LEVEL" ] && EXTRA="$EXTRA --level $LEVEL"
 OUT="$PWD/rl_training/runs/eval"; mkdir -p "$OUT" ~/logs
 
 # A bare LoRA adapter must be merged into a full model ONCE before the shards start (else 8
