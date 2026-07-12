@@ -233,6 +233,61 @@ PY
     done
     run_eval "$CUR" oursAB
     ;;
+  oursAB2)
+    # IMPROVED A+B+C (fixes oursABC reverting pass@1 to base). Three levers vs oursAB:
+    #  (1) SELECTIVE + CAPPED harvest: --max-pass-rate 0.25 (only distill the RARE tail, not
+    #      easy problems that just reinforce the dominant mode) + --max-total 300 (gentler set).
+    #  (2) LIGHTER SFT: SFT_LR (default 5e-7, was 1e-6) and SFT_EPOCHS (default 1) — restore
+    #      coverage without flattening A's sharpened peak.
+    #  (3) RE-SHARPEN: novelty-lambda ramps UP on post-harvest segments (LAMBDAS below), and the
+    #      pipeline ends on a short GRPO+novelty re-sharpen (RESHARPEN steps) NOT on an SFT — so
+    #      the last thing touching the model restores sharpness on the re-injected modes.
+    echo "===== ARM oursAB2: selective harvest + light SFT + re-sharpen ====="
+    SEG=$((STEPS/4)); CUR="$MODEL"
+    SFT_LR="${SFT_LR:-5e-7}"; SFT_EPOCHS="${SFT_EPOCHS:-1}"
+    MAXPASS="${HARVEST_MAX_PASS_RATE:-0.25}"; MAXTOT="${HARVEST_MAX_TOTAL:-300}"
+    RESHARPEN="${RESHARPEN_STEPS:-40}"
+    # per-segment novelty lambda (ramps up so post-harvest RL re-sharpens harder)
+    LAMBDAS=(0.5 0.7 0.9 1.1)
+    for r in 0 1 2 3; do
+      LAM=${LAMBDAS[$r]}
+      echo "--- oursAB2 segment $r: GRPO $SEG steps (novelty-lambda=$LAM) ---"
+      start_vllm "$CUR" || exit 1
+      if ! train_launch --model "$CUR" --dataset "$DATASET" \
+        --n-problems "$NPROB" --num-train-steps "$SEG" --num-generations "$NGEN" \
+        --max-completion-length "$MAXLEN" \
+        --output-dir "$RUN/seg$r" ${DIFF:+--difficulty-json "$DIFF"} --novelty-lambda "$LAM"; then
+        stop_vllm; echo "!! oursAB2 segment $r GRPO FAILED"; exit 1
+      fi
+      stop_vllm
+      echo "--- oursAB2 segment $r: SELECTIVE harvest (max_pass_rate=$MAXPASS, max_total=$MAXTOT) + light SFT (lr=$SFT_LR) ---"
+      CUDA_VISIBLE_DEVICES=0 python -m rl_training.harvest --mode harvest --model-path "$RUN/seg$r" \
+        --dataset "$DATASET" ${DIFF:+--difficulty-json "$DIFF"} --k 64 --max-keep 2 \
+        --max-pass-rate "$MAXPASS" --max-total "$MAXTOT" \
+        --max-new-tokens "$MAXLEN" --out-jsonl "$RUN/harvest$r.jsonl"
+      if [ -s "$RUN/harvest$r.jsonl" ]; then
+        CUDA_VISIBLE_DEVICES=0 python -m rl_training.harvest --mode sft --model-path "$RUN/seg$r" \
+          --out-jsonl "$RUN/harvest$r.jsonl" --output-dir "$RUN/seg${r}_sft" --epochs "$SFT_EPOCHS" --lr "$SFT_LR" \
+          && CUR="$RUN/seg${r}_sft" || CUR="$RUN/seg$r"
+      else
+        echo "-- oursAB2 seg$r: no rare-tail rollouts; carrying GRPO checkpoint forward"; CUR="$RUN/seg$r"
+      fi
+    done
+    # (3) FINAL RE-SHARPEN: a short GRPO+novelty pass so the pipeline does NOT end on a flattening
+    # SFT. This is the key fix for pass@1 reverting to base.
+    if [ "$RESHARPEN" -gt 0 ] 2>/dev/null; then
+      echo "--- oursAB2 FINAL re-sharpen: GRPO $RESHARPEN steps (novelty-lambda=1.1) from $CUR ---"
+      start_vllm "$CUR" || exit 1
+      if train_launch --model "$CUR" --dataset "$DATASET" \
+        --n-problems "$NPROB" --num-train-steps "$RESHARPEN" --num-generations "$NGEN" \
+        --max-completion-length "$MAXLEN" \
+        --output-dir "$RUN/resharpen" ${DIFF:+--difficulty-json "$DIFF"} --novelty-lambda 1.1; then
+        CUR="$RUN/resharpen"
+      else echo "!! re-sharpen failed; using pre-resharpen model"; fi
+      stop_vllm
+    fi
+    run_eval "$CUR" oursAB2
+    ;;
   oursB|sft_random)
     # ABLATION #3 (B-only) + CONTROL #2 (random-correct SFT). No GRPO — pure Component B from
     # BASE, so any pass@k change is attributable to harvest->SFT alone (isolates B from A/C/RL).

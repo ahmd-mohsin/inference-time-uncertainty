@@ -22,13 +22,21 @@ from rl_training.safe_match import safe_is_correct
 
 
 def harvest(model_path, dataset, difficulty_json, k, max_keep, max_new_tokens,
-            temperature, tensor_parallel_size, out_jsonl, n_problems=-1, all_problems=False):
+            temperature, tensor_parallel_size, out_jsonl, n_problems=-1, all_problems=False,
+            max_pass_rate=1.0, max_total=0):
     """Sample model at k on HARD problems; write distinct correct (prompt, completion) pairs.
 
     all_problems=True is the CONTROL for methodology fix #2: harvest correct rollouts from ALL
-    problems (not just the hard band). If Component B's coverage gain comes specifically from the
-    rare HARD-problem tail, the hard-band harvest should help and this all-problems 'random correct'
-    SFT should NOT — isolating the tail effect from generic SFT regularization."""
+    problems (not just the hard band).
+
+    SELECTIVE HARVEST (levers to stop Component B from flattening pass@1): our full-pipeline result
+    showed oursABC recovers base-level COVERAGE but loses A's pass@1 gain — because SFT on the whole
+    correct set pulls the model back toward base breadth. Two knobs make B target only the TRULY-LOST
+    tail:
+      max_pass_rate: skip a problem if the model already solves it easily (correct_frac > this among
+                     the k samples). Harvesting easy problems just reinforces the dominant mode and
+                     flattens the sharpened peak; we only want the RARE successes (the tail RL kills).
+      max_total    : hard cap on total harvested rollouts (a gentler, smaller SFT set)."""
     from vllm import LLM, SamplingParams
     from transformers import AutoConfig
 
@@ -63,18 +71,31 @@ def harvest(model_path, dataset, difficulty_json, k, max_keep, max_new_tokens,
     prompts = [format_prompt(p, model_path) for p in problems]
     outs = llm.generate(prompts, sp)
 
-    n_written = 0
+    n_written = 0; n_skipped_easy = 0
     Path(out_jsonl).parent.mkdir(parents=True, exist_ok=True)
     with open(out_jsonl, "w") as f:
         for p, prompt, o in zip(problems, prompts, outs):
             gold = str(p.get("gold_answer", ""))
+            # score all k first so we know how RARE this problem's success is
+            scored = [safe_is_correct(s.text, gold) for s in o.outputs]
+            n_correct = sum(1 for ok, _ in scored if ok)
+            if n_correct == 0:
+                continue
+            correct_frac = n_correct / max(1, len(scored))
+            # SELECTIVE: only harvest the genuinely-rare tail. If the model already solves this
+            # problem easily (correct_frac > max_pass_rate), re-SFTing it just reinforces the
+            # dominant mode and flattens pass@1 — exactly what over-broad B did. Skip it.
+            if correct_frac > max_pass_rate:
+                n_skipped_easy += 1
+                continue
             seen, kept = set(), 0
-            for s in o.outputs:
+            for (ok, pred), s in zip(scored, o.outputs):
                 if kept >= max_keep:
                     break
-                ok, pred = safe_is_correct(s.text, gold)   # timeout-guarded (sympy can hang)
                 if not ok:
                     continue
+                if max_total and n_written >= max_total:
+                    break
                 # dedup by normalized reasoning signature so we keep DISTINCT correct paths
                 sig = normalize_answer(pred) + "|" + str(len(s.text) // 200)
                 if sig in seen:
@@ -83,7 +104,10 @@ def harvest(model_path, dataset, difficulty_json, k, max_keep, max_new_tokens,
                 f.write(json.dumps({"prompt": prompt, "completion": s.text,
                                     "problem_id": p["problem_id"]}) + "\n")
                 kept += 1; n_written += 1
-    print(f"harvest: wrote {n_written} correct tail rollouts -> {out_jsonl}")
+            if max_total and n_written >= max_total:
+                print(f"harvest: hit max_total={max_total} cap"); break
+    print(f"harvest: wrote {n_written} tail rollouts (skipped {n_skipped_easy} easy problems, "
+          f"correct_frac>{max_pass_rate}) -> {out_jsonl}")
     return n_written
 
 
@@ -131,11 +155,15 @@ def main():
     ap.add_argument("--epochs", type=int, default=1)
     ap.add_argument("--all-problems", action="store_true",
                     help="CONTROL: harvest from ALL problems, not just the hard band (isolates tail effect)")
+    ap.add_argument("--max-pass-rate", type=float, default=1.0,
+                    help="selective harvest: skip problems the model already solves with correct_frac>this (keep only rare tail)")
+    ap.add_argument("--max-total", type=int, default=0,
+                    help="cap total harvested rollouts (0=unlimited); a gentler, smaller SFT set")
     a = ap.parse_args()
     if a.mode == "harvest":
         harvest(a.model_path, a.dataset, a.difficulty_json, a.k, a.max_keep,
                 a.max_new_tokens, a.temperature, a.tensor_parallel_size, a.out_jsonl,
-                all_problems=a.all_problems)
+                all_problems=a.all_problems, max_pass_rate=a.max_pass_rate, max_total=a.max_total)
     else:
         sft_step(a.model_path, a.out_jsonl, a.output_dir, a.lr, a.epochs)
 
