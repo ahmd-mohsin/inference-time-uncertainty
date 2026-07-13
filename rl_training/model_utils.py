@@ -20,7 +20,7 @@ def is_adapter_dir(path: str) -> bool:
     return (p / "adapter_config.json").exists() and not (p / "config.json").exists()
 
 
-def merge_adapter_if_needed(model_path: str, base_fallback: str = "Qwen/Qwen3-8B",
+def merge_adapter_if_needed(model_path: str, base_fallback: str = "Qwen/Qwen2.5-Math-1.5B",
                             cleanup_reuse: bool = True) -> str:
     """If `model_path` is a bare LoRA adapter dir, merge it into its base model and return the
     merged full-model dir (`<model_path>/merged_full`). Otherwise return `model_path` unchanged.
