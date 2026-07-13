@@ -249,8 +249,22 @@ PY
     RESHARPEN="${RESHARPEN_STEPS:-40}"
     # per-segment novelty lambda (ramps up so post-harvest RL re-sharpens harder)
     LAMBDAS=(0.5 0.7 0.9 1.1)
+    # RESUME (survives instance death): if a segment's output already exists on disk (pulled from a
+    # dead instance + restored, or from an earlier run on this box), skip it and carry the completed
+    # model forward. A segment is "done" if seg${r}_sft/ has an adapter (harvest+SFT finished) or
+    # seg${r}/ has one (GRPO done, harvest yielded nothing). First incomplete segment resumes fresh.
     for r in 0 1 2 3; do
+      if [ -f "$RUN/seg${r}_sft/adapter_model.safetensors" ]; then
+        CUR="$RUN/seg${r}_sft"; echo ">> RESUME: segment $r already complete (seg${r}_sft) -> CUR=$CUR"; continue
+      elif [ -f "$RUN/seg$r/adapter_model.safetensors" ] && [ -s "$RUN/harvest$r.jsonl" ] 2>/dev/null; then
+        # GRPO done + harvest done but SFT maybe missing: fall through to (re)do SFT below only.
+        :
+      fi
       LAM=${LAMBDAS[$r]}
+      # skip the GRPO re-train if seg$r GRPO adapter already exists (resume mid-segment)
+      if [ -f "$RUN/seg$r/adapter_model.safetensors" ]; then
+        echo ">> RESUME: segment $r GRPO already done, skipping to harvest/SFT"
+      else
       echo "--- oursAB2 segment $r: GRPO $SEG steps (novelty-lambda=$LAM) ---"
       start_vllm "$CUR" || exit 1
       if ! train_launch --model "$CUR" --dataset "$DATASET" \
@@ -260,7 +274,10 @@ PY
         stop_vllm; echo "!! oursAB2 segment $r GRPO FAILED"; exit 1
       fi
       stop_vllm
+      fi   # end resume-skip of GRPO
       echo "--- oursAB2 segment $r: SELECTIVE harvest (max_pass_rate=$MAXPASS, max_total=$MAXTOT) + light SFT (lr=$SFT_LR) ---"
+      # resume: skip harvest if we already have its output
+      [ -s "$RUN/harvest$r.jsonl" ] || \
       CUDA_VISIBLE_DEVICES=0 python -m rl_training.harvest --mode harvest --model-path "$RUN/seg$r" \
         --dataset "$DATASET" ${DIFF:+--difficulty-json "$DIFF"} --k 64 --max-keep 2 \
         --max-pass-rate "$MAXPASS" --max-total "$MAXTOT" \
@@ -275,7 +292,9 @@ PY
     done
     # (3) FINAL RE-SHARPEN: a short GRPO+novelty pass so the pipeline does NOT end on a flattening
     # SFT. This is the key fix for pass@1 reverting to base.
-    if [ "$RESHARPEN" -gt 0 ] 2>/dev/null; then
+    if [ -f "$RUN/resharpen/adapter_model.safetensors" ]; then
+      CUR="$RUN/resharpen"; echo ">> RESUME: re-sharpen already done -> CUR=$CUR"
+    elif [ "$RESHARPEN" -gt 0 ] 2>/dev/null; then
       echo "--- oursAB2 FINAL re-sharpen: GRPO $RESHARPEN steps (novelty-lambda=1.1) from $CUR ---"
       start_vllm "$CUR" || exit 1
       if train_launch --model "$CUR" --dataset "$DATASET" \
