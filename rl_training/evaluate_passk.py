@@ -70,9 +70,14 @@ def evaluate(cfg: EvalConfig, shard_index=0, num_shards=1, difficulty_json="",
         cap = cfg.max_new_tokens
     max_model_len = min(cfg.max_new_tokens + 1024, cap)
 
+    # Env overrides for stability when running many shards/node: EVAL_GPU_MEM lowers memory
+    # pressure; EVAL_ENFORCE_EAGER=1 skips CUDA-graph capture (which hangs under 8-way contention).
+    _gm = float(os.environ.get("EVAL_GPU_MEM", cfg.gpu_memory_utilization))
+    _eager = os.environ.get("EVAL_ENFORCE_EAGER", "0") == "1"
     llm = LLM(model=cfg.model_path, dtype="bfloat16", trust_remote_code=True,
               tensor_parallel_size=cfg.tensor_parallel_size, max_model_len=max_model_len,
-              gpu_memory_utilization=cfg.gpu_memory_utilization, enable_prefix_caching=True)
+              gpu_memory_utilization=_gm, enable_prefix_caching=True,
+              enforce_eager=_eager)
     # SEED (methodology fix): distinct sampling seed per replicate so 3 seeds give independent
     # pass@k estimates for bootstrap CIs. vLLM SamplingParams.seed makes generation reproducible.
     sp = SamplingParams(n=cfg.n_samples, max_tokens=max_model_len - 1024,
@@ -171,6 +176,8 @@ def main():
                     help="vLLM sampling seed for this replicate (multi-seed CIs)")
     ap.add_argument("--level", default="",
                     help="MATH difficulty level filter, e.g. '5' or '4,5' (math500/competition_math)")
+    ap.add_argument("--temperature", type=float, default=None,
+                    help="sampling temperature override (default uses EvalConfig.temperature=1.0); for temp-robustness sweeps")
     a = ap.parse_args()
     if a.merge:
         merge_shards(a.output_dir, a.tag, a.num_shards)
@@ -179,6 +186,8 @@ def main():
                      n_samples=a.n_samples, max_new_tokens=a.max_new_tokens,
                      tensor_parallel_size=a.tensor_parallel_size,
                      output_dir=a.output_dir, tag=a.tag)
+    if a.temperature is not None:
+        cfg.temperature = a.temperature
     evaluate(cfg, shard_index=a.shard_index, num_shards=a.num_shards,
              difficulty_json=a.difficulty_json,
              subset_labels=tuple(s for s in a.subset_labels.split(",") if s),

@@ -23,6 +23,7 @@ EXTRA=""
 [ -n "$DIFF_JSON" ] && EXTRA="$EXTRA --difficulty-json $DIFF_JSON --subset-labels $SUBSET_LABELS"
 [ -n "$EVAL_SEED" ] && EXTRA="$EXTRA --seed $EVAL_SEED"
 [ -n "$LEVEL" ] && EXTRA="$EXTRA --level $LEVEL"
+[ -n "${TEMP:-}" ] && EXTRA="$EXTRA --temperature $TEMP"
 OUT="$PWD/rl_training/runs/eval"; mkdir -p "$OUT" ~/logs
 
 # A bare LoRA adapter must be merged into a full model ONCE before the shards start (else 8

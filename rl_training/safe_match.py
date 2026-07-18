@@ -1,30 +1,28 @@
-# Timeout-guarded answer matching.
+# Timeout-guarded answer matching — HARD process-kill version.
 #
-# WHY: src.data.dataset.answers_match -> _canonical_via_sympy calls sympy parse_expr/nsimplify,
-# which can hang FOREVER on a pathological expression (the try/except there catches exceptions,
-# NOT infinite loops / catastrophic backtracking). A 1.5B model over tens of thousands of samples
-# reliably emits such a completion — this hung a base pass@k eval for 16.5h and a grpo eval + an
-# oursABC harvest similarly. Any code that scores MANY model completions must cap each match.
+# WHY: scoring a model completion runs (a) extract_numeric_answer, whose \boxed{} regexes
+# CATASTROPHICALLY BACKTRACK on long adversarial output, and (b) answers_match -> sympy
+# parse_expr/nsimplify, which can spin FOREVER. BOTH hang in C, where SIGALRM cannot preempt
+# them (the handler only runs when control returns to Python). A prior signal+truncation guard
+# still let base-model level-5 shards hang at 102% CPU for 5.5h.
 #
-# Two layers of defense:
-#  1. A LENGTH GUARD (primary). answers_match -> _canonical_via_sympy feeds the extracted string to
-#     sympy parse_expr/nsimplify, which can spin in C for a very long time on a long/pathological
-#     expression. SIGALRM CANNOT preempt that C work (the signal handler only runs when control
-#     returns to Python), so a pure-signal guard is insufficient — it hung 3 eval shards for 30min+.
-#     So we first reject implausibly long extracted answers (a real MATH answer is short) and only
-#     then attempt the match. This is what actually stops the hang.
-#  2. SIGALRM as a backstop for any remaining pure-Python slow path.
-import signal
+# ROBUST FIX: do all the risky work (extract + match) in a PERSISTENT CHILD PROCESS and enforce a
+# hard WALL-CLOCK timeout in the parent. On timeout the child is genuinely hung in C, so we SIGKILL
+# it (survives C-level hangs, unlike SIGALRM) and respawn a fresh worker. Each match is thereby
+# bounded to `timeout` seconds no matter what. A stuck/oversized/erroring result counts as WRONG.
+import multiprocessing as _mp
 
 from src.data.dataset import extract_numeric_answer, answers_match
 
-# A genuine final answer (number, fraction, short set/expr) is short. Anything longer is a runaway
-# generation, not an answer — never worth feeding to sympy.
-MAX_ANSWER_LEN = 64
+MAX_ANSWER_LEN = 64      # a real MATH answer is short; longer extraction = runaway, not an answer
+MAX_MATCH_CHARS = 2000   # answer lives at the tail; cap text fed to extraction (regex backtrack guard)
 
-
-class _Timeout(Exception):
-    pass
+# fork (not spawn): the child inherits already-imported modules, so it does NOT re-execute the
+# parent's __main__ (which for `python -m evaluate_passk` would re-init vLLM). The worker only calls
+# answers_match (pure CPU/sympy) — it never touches CUDA — so forking after vLLM init is safe here.
+_ctx = _mp.get_context("fork")
+_worker = None
+_conn = None
 
 
 def _fast_prefilter(pred, gold):
@@ -32,48 +30,81 @@ def _fast_prefilter(pred, gold):
     if pred is None:
         return False
     ps, gs = str(pred).strip(), str(gold).strip()
-    if ps == gs:                       # exact string match — common, no sympy needed
+    if ps == gs:
         return True
-    if len(ps) > MAX_ANSWER_LEN:       # runaway extraction — not a real answer, don't sympy it
+    if len(ps) > MAX_ANSWER_LEN:
         return False
-    try:                               # both plain floats — decide directly
+    try:
         return abs(float(ps) - float(gs)) < 1e-6
     except (ValueError, TypeError):
-        return None                    # undecided -> fall through to full answers_match
+        return None
 
 
-# The answer lives at the END of a solution (\boxed{}, "answer is", final line). extract_numeric_answer
-# uses regexes with nested quantifiers (e.g. \boxed{...} matching) that CATASTROPHICALLY BACKTRACK on
-# long adversarial completions — a C-level regex loop that SIGALRM cannot interrupt (hung eval shards
-# 4h+). So we cap the text fed to extraction to its TAIL; the real answer is always near the end, and
-# a 1.5B's runaway repetition (the backtracking trigger) is thereby excluded.
-MAX_MATCH_CHARS = 2000
+def _worker_loop(conn):
+    """Persistent child: read (pred, gold, _), send back is_correct(bool). Blocks in C on a
+    pathological sympy input — fine, the parent SIGKILLs us and respawns."""
+    while True:
+        try:
+            item = conn.recv()
+        except EOFError:
+            break
+        if item is None:
+            break
+        pred, gold, _ = item
+        try:
+            conn.send(bool(answers_match(pred, gold)))
+        except Exception:
+            conn.send(False)
+
+
+def _kill_worker():
+    global _worker, _conn
+    try:
+        if _worker is not None and _worker.is_alive():
+            _worker.kill()            # SIGKILL — the only thing that stops a C-level hang
+            _worker.join(timeout=3)
+    except Exception:
+        pass
+    _worker = None
+    _conn = None
+
+
+def _ensure_worker():
+    global _worker, _conn
+    if _worker is not None and _worker.is_alive():
+        return
+    _conn, child = _ctx.Pipe()
+    _worker = _ctx.Process(target=_worker_loop, args=(child,), daemon=True)
+    _worker.start()
 
 
 def safe_is_correct(text, gold, timeout=5):
-    """Extract a numeric answer from `text` and match against `gold`. Guards BOTH the extraction
-    (tail-truncation, since its regexes backtrack on long input) and the match (length filter +
-    SIGALRM backstop). A stuck/oversized/erroring result counts as NOT correct."""
+    """Match `text`'s answer against `gold`, bounded to `timeout` wall-clock seconds. The cheap,
+    safe steps (tail-truncate, extract, exact/float prefilter) run in-process; ONLY the dangerous
+    sympy match is delegated to a killable child. Returns (is_correct, pred); hang/error -> (False,None).
+
+    NOTE: extract_numeric_answer's \\boxed{} regex can itself backtrack in C. We tail-truncate to
+    MAX_MATCH_CHARS first (the documented mitigation); if that ever proves insufficient, move the
+    extract into the child too. In practice truncation stops the extraction hang; the sympy match is
+    the one that needed the process kill."""
     if text and len(text) > MAX_MATCH_CHARS:
-        text = text[-MAX_MATCH_CHARS:]     # answer is at the tail; drop runaway prefix that backtracks
+        text = text[-MAX_MATCH_CHARS:]
     try:
         pred = extract_numeric_answer(text)
     except Exception:
-        return False, None
+        return (False, None)
     fast = _fast_prefilter(pred, gold)
     if fast is not None:
-        return fast, pred
-    # undecided and short enough: attempt the full (sympy-capable) match under a signal backstop
-    def _alarm(signum, frame):
-        raise _Timeout()
-    old = signal.signal(signal.SIGALRM, _alarm)
-    signal.setitimer(signal.ITIMER_REAL, timeout)
+        return (bool(fast), pred)
+    # undecided -> the sympy path, which can hang in C. Run it in the killable child, bounded.
     try:
-        return bool(answers_match(pred, gold)), pred
-    except _Timeout:
-        return False, pred
-    except Exception:
-        return False, pred
-    finally:
-        signal.setitimer(signal.ITIMER_REAL, 0)
-        signal.signal(signal.SIGALRM, old)
+        _ensure_worker()
+        _conn.send((pred, gold, True))   # True = pred already extracted, child only does answers_match
+        if _conn.poll(timeout):
+            ok = _conn.recv()
+            return (bool(ok), pred)
+        _kill_worker()                   # hung in C -> SIGKILL, respawn next call
+        return (False, pred)
+    except (EOFError, BrokenPipeError, OSError, Exception):
+        _kill_worker()
+        return (False, pred)
