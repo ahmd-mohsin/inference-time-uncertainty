@@ -7,7 +7,7 @@ set -uo pipefail
 PORT=1060
 SSHL="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=12 -p $PORT greenland-user@localhost"
 SSHW="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o PreferredAuthentications=publickey -p 2222"
-WORKERS="10.3.139.64 10.3.188.21"
+WORKERS="10.3.108.239 10.3.30.98"
 INTERVAL="${PULL_INTERVAL:-1800}"          # 30 min — instances die ~24h, capture often
 LOCAL="/Users/cmohsinm/inference-time-uncertainty/rl_training/runs_pulled"
 mkdir -p "$LOCAL"

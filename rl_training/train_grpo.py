@@ -35,6 +35,16 @@ def build_args():
                         "batch constant when training on fewer ranks)")
     p.add_argument("--novelty-lambda", type=float, default=RLConfig.novelty_lambda)
     p.add_argument("--no-novelty", action="store_true", help="ablation: plain GRPO")
+    # EXPERIMENT A: fragile-band curriculum (oversample base-pass@1 in [lo,hi])
+    p.add_argument("--curriculum", action="store_true",
+                   help="ExpA: oversample fragile-band problems (needs --difficulty-json with pass1)")
+    p.add_argument("--frag-lo", type=float, default=0.02)
+    p.add_argument("--frag-hi", type=float, default=0.30)
+    p.add_argument("--frag-oversample", type=int, default=3)
+    # EXPERIMENT C: rarity-weighted correctness bonus (instead of / with semantic novelty)
+    p.add_argument("--rarity-bonus", action="store_true",
+                   help="ExpC: add rarity-weighted correctness reward (up-weights rare-correct modes)")
+    p.add_argument("--rarity-lambda", type=float, default=0.5)
     p.add_argument("--no-vllm", action="store_true")
     p.add_argument("--resume-from", default="", help="checkpoint dir to resume (Component B loop)")
     p.add_argument("--init-adapter", default="", help="warm-start: load this saved LoRA adapter "
@@ -79,8 +89,11 @@ def main():
     from peft import LoraConfig
 
     train_dataset = build_dataset(cfg.dataset, cfg.model_name, cfg.n_problems, cfg.seed,
-                                  cfg.difficulty_json, cfg.hard_only)
-    print(f"train dataset: {len(train_dataset)} problems (hard-targeted={bool(cfg.difficulty_json)})")
+                                  cfg.difficulty_json, cfg.hard_only,
+                                  curriculum=a.curriculum, frag_lo=a.frag_lo, frag_hi=a.frag_hi,
+                                  frag_oversample=a.frag_oversample)
+    print(f"train dataset: {len(train_dataset)} rows (curriculum={a.curriculum}, "
+          f"hard-targeted={bool(cfg.difficulty_json) and not a.curriculum})")
 
     # reward functions: correctness always; novelty optional (ablation)
     reward_funcs = [correctness_reward]
@@ -88,6 +101,10 @@ def main():
     if cfg.novelty_enabled:
         reward_funcs.append(make_novelty_bonus(cfg.embedding_model, cfg.novelty_lambda,
                                                cfg.novelty_metric, cfg.novelty_correct_only))
+        reward_weights.append(1.0)
+    if a.rarity_bonus:  # EXPERIMENT C
+        from rl_training.rewards import make_rarity_bonus
+        reward_funcs.append(make_rarity_bonus(a.rarity_lambda))
         reward_weights.append(1.0)
 
     grpo_args = GRPOConfig(

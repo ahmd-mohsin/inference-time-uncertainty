@@ -12,6 +12,7 @@ OUT="$PWD/rl_training/runs/eval"; mkdir -p "$OUT" ~/logs
 EXTRA=""
 [ -n "${DIFF_JSON:-}" ] && EXTRA="$EXTRA --difficulty-json $DIFF_JSON --subset-labels ${SUBSET_LABELS:-hard}"
 [ -n "${EVAL_SEED:-}" ] && EXTRA="$EXTRA --seed $EVAL_SEED"
+[ -n "${LEVEL:-}" ] && EXTRA="$EXTRA --level $LEVEL"
 pids=()
 for s in ${IDX//,/ }; do
   CUDA_VISIBLE_DEVICES=$s python -m rl_training.evaluate_passk --model-path "$MODEL" --dataset "$DS" \

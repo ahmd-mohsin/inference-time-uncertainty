@@ -99,3 +99,36 @@ def make_novelty_bonus(embedding_model: str, lam: float, metric: str = "cosine",
 
     novelty_bonus.__name__ = "novelty_bonus"
     return novelty_bonus
+
+
+def make_rarity_bonus(lam: float = 0.5):
+    """EXPERIMENT C — RARITY-WEIGHTED CORRECTNESS ('you found the needle, don't forget it').
+
+    GRPO's group-relative advantage drives LOW-PROBABILITY correct modes toward zero: a correct
+    rollout in a group that is already mostly correct gets small advantage, while a correct rollout
+    that is RARE in its group (most peers wrong) is exactly the fragile-tail solution we must
+    protect. This reward adds, for each CORRECT rollout, a bonus proportional to how rare
+    correctness is in its group:  bonus_i = lam * (1 - correct_frac_group) for correct i, else 0.
+    A lone correct rollout among 7 wrong (cfrac=1/8) gets ~lam*0.875; a correct rollout in an
+    all-correct group gets ~0. Up-weights the gradient on rare-correct modes at the reward level,
+    directly counteracting mode collapse — a purely count-based alternative to the semantic
+    novelty bonus (no embedding model needed)."""
+    def rarity_bonus(prompts, completions, gold_answer=None, log_metric=None, **kwargs):
+        texts = [_content(c) for c in completions]
+        gold = gold_answer if gold_answer is not None else [""] * len(texts)
+        n = len(texts)
+        bonus = [0.0] * n
+        correct = [_is_correct(texts[i], gold[i]) for i in range(n)]
+        groups = defaultdict(list)
+        for i, p in enumerate(prompts):
+            groups[p if isinstance(p, str) else str(p)].append(i)
+        for _, idxs in groups.items():
+            cfrac = float(np.mean([correct[i] for i in idxs])) if idxs else 0.0
+            for i in idxs:
+                if correct[i]:
+                    bonus[i] = lam * (1.0 - cfrac)   # rarer correctness -> bigger bonus
+        if log_metric and n:
+            log_metric("rarity_bonus_mean", float(np.mean(bonus)))
+        return bonus
+    rarity_bonus.__name__ = "rarity_bonus"
+    return rarity_bonus
