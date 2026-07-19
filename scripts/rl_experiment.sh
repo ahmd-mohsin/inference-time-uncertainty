@@ -116,7 +116,7 @@ case "$ARM" in
     echo "===== ARM base: eval only ====="
     run_eval "$MODEL" base
     ;;
-  grpo|grpo_long|oursA|oursC|oursAB_cont)
+  grpo|grpo_long|oursA|oursC|oursAB_cont|expA|expC|expAC)
     # ABLATION MATRIX (methodology fixes #2, #3). Each arm toggles novelty (A) and hard-targeting (C):
     #   grpo       : standard GRPO, FULL data, no novelty, no C  -> control for Yue's crossover
     #   grpo_long  : grpo but RL_STEPS extended (compute-matched to oursABC's total updates) so a
@@ -124,9 +124,16 @@ case "$ARM" in
     #   oursA      : novelty (A) + hard-targeting (C)            -> the sharpness arm
     #   oursC      : hard-targeting (C) ONLY, no novelty         -> isolates C (is targeting enough?)
     #   oursAB_cont: plain GRPO+novelty continued from a seg checkpoint (legacy)
+    #   expA       : plain GRPO + FRAGILE-BAND CURRICULUM (oversample base-pass@1 in [.02,.30])
+    #   expC       : plain GRPO + RARITY-WEIGHTED correctness reward
+    #   expAC      : GRPO + curriculum + rarity (both new levers)
+    EXTRA_FLAGS=""
     case "$ARM" in
       grpo|grpo_long) NOV="--no-novelty"; USE_DIFF="" ;;
       oursC)          NOV="--no-novelty"; USE_DIFF="$DIFF" ;;   # C only
+      expA)           NOV="--no-novelty"; USE_DIFF="$DIFF"; EXTRA_FLAGS="--curriculum --frag-lo 0.02 --frag-hi 0.30 --frag-oversample 3" ;;
+      expC)           NOV="--no-novelty"; USE_DIFF="";      EXTRA_FLAGS="--rarity-bonus --rarity-lambda 0.5" ;;
+      expAC)          NOV="--no-novelty"; USE_DIFF="$DIFF"; EXTRA_FLAGS="--curriculum --frag-lo 0.02 --frag-hi 0.30 --frag-oversample 3 --rarity-bonus --rarity-lambda 0.5" ;;
       *)              NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF" ;;  # oursA / oursAB_cont: A(+C)
     esac
     # AUTO-RESUME: if a checkpoint dir already exists (e.g. pulled from a dead instance),
@@ -170,7 +177,7 @@ PY
     if ! train_launch --model "$MODEL" --dataset "$DATASET" \
       --n-problems "$NPROB" --num-train-steps "$STEPS" --num-generations "$NGEN" \
       --max-completion-length "$MAXLEN" \
-      --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV $RESUME $INIT; then
+      --output-dir "$RUN" ${USE_DIFF:+--difficulty-json "$USE_DIFF"} $NOV ${EXTRA_FLAGS:-} $RESUME $INIT; then
       stop_vllm; echo "!! $ARM GRPO training FAILED"; exit 1
     fi
     stop_vllm
