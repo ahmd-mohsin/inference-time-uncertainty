@@ -45,6 +45,10 @@ def build_args():
     p.add_argument("--rarity-bonus", action="store_true",
                    help="ExpC: add rarity-weighted correctness reward (up-weights rare-correct modes)")
     p.add_argument("--rarity-lambda", type=float, default=0.5)
+    # METHOD 3: coverage-in-the-loop reward (marginal pass@k contribution: lam/n_correct_in_group)
+    p.add_argument("--coverage-reward", action="store_true",
+                   help="M3: reward correct rollouts by marginal group-coverage value (lam/n_correct)")
+    p.add_argument("--coverage-lambda", type=float, default=1.0)
     p.add_argument("--no-vllm", action="store_true")
     p.add_argument("--resume-from", default="", help="checkpoint dir to resume (Component B loop)")
     p.add_argument("--init-adapter", default="", help="warm-start: load this saved LoRA adapter "
@@ -105,6 +109,10 @@ def main():
     if a.rarity_bonus:  # EXPERIMENT C
         from rl_training.rewards import make_rarity_bonus
         reward_funcs.append(make_rarity_bonus(a.rarity_lambda))
+        reward_weights.append(1.0)
+    if a.coverage_reward:  # METHOD 3: coverage-in-the-loop
+        from rl_training.rewards import make_coverage_reward
+        reward_funcs.append(make_coverage_reward(a.coverage_lambda))
         reward_weights.append(1.0)
 
     grpo_args = GRPOConfig(

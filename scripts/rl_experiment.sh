@@ -116,7 +116,7 @@ case "$ARM" in
     echo "===== ARM base: eval only ====="
     run_eval "$MODEL" base
     ;;
-  grpo|grpo_long|oursA|oursC|oursAB_cont|expA|expC|expAC|oursA_rar)
+  grpo|grpo_long|oursA|oursC|oursAB_cont|expA|expC|expAC|oursA_rar|expM3|expM3A)
     # ABLATION MATRIX (methodology fixes #2, #3). Each arm toggles novelty (A) and hard-targeting (C):
     #   grpo       : standard GRPO, FULL data, no novelty, no C  -> control for Yue's crossover
     #   grpo_long  : grpo but RL_STEPS extended (compute-matched to oursABC's total updates) so a
@@ -135,6 +135,8 @@ case "$ARM" in
       expC)           NOV="--no-novelty"; USE_DIFF="";      EXTRA_FLAGS="--rarity-bonus --rarity-lambda 0.5" ;;
       expAC)          NOV="--no-novelty"; USE_DIFF="$DIFF"; EXTRA_FLAGS="--curriculum --frag-lo 0.02 --frag-hi 0.30 --frag-oversample 3 --rarity-bonus --rarity-lambda 0.5" ;;
       oursA_rar)      NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF"; EXTRA_FLAGS="--rarity-bonus --rarity-lambda 0.5" ;;  # HYBRID: novelty(A) + rarity(C)
+      expM3)          NOV="--no-novelty"; USE_DIFF="";      EXTRA_FLAGS="--coverage-reward --coverage-lambda 1.0" ;;  # M3: GRPO + coverage-in-the-loop
+      expM3A)         NOV="--no-novelty"; USE_DIFF="$DIFF"; EXTRA_FLAGS="--coverage-reward --coverage-lambda 1.0 --curriculum --frag-lo 0.02 --frag-hi 0.30 --frag-oversample 3" ;;  # M3 + fragile curriculum
       *)              NOV="--novelty-lambda 0.5"; USE_DIFF="$DIFF" ;;  # oursA / oursAB_cont: A(+C)
     esac
     # AUTO-RESUME: if a checkpoint dir already exists (e.g. pulled from a dead instance),

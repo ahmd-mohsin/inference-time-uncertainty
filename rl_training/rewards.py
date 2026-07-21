@@ -132,3 +132,50 @@ def make_rarity_bonus(lam: float = 0.5):
         return bonus
     rarity_bonus.__name__ = "rarity_bonus"
     return rarity_bonus
+
+
+def make_coverage_reward(lam: float = 1.0):
+    """METHOD 3 — COVERAGE-IN-THE-LOOP (optimize the pass@k margin, not pass@1).
+
+    KEY SUBTLETY: a reward that is CONSTANT across a group is a NO-OP in GRPO, because the
+    group-relative advantage subtracts the group mean (a flat '1[any correct]' bonus cancels
+    exactly -> zero gradient). So we do NOT broadcast a constant. Instead we reward each correct
+    rollout by its MARGINAL contribution to group coverage: the fewer peers also got it right,
+    the more this rollout is *the* thing keeping the problem solvable, so the bigger its reward.
+
+        reward_i = correct_i * (1 + lam / n_correct_in_group)
+
+    - A LONE correct rollout (n_correct=1) gets 1 + lam  -> maximally protected (it alone provides
+      coverage of this problem; if the policy forgets it, pass@k drops).
+    - One of many correct rollouts (n_correct=8) gets 1 + lam/8 -> ~baseline (redundant; losing it
+      doesn't hurt coverage).
+    This is non-constant within the group (survives GRPO normalization) and its gradient points
+    toward PRESERVING at-least-one-correct (the pass@k quantity), rather than maximizing the
+    fraction correct (pass@1). Correctness is still required (0 for wrong), so it never rewards
+    diverse-wrong. Emitted as a SEPARATE reward fn (summed by TRL) so plain correctness is logged
+    too; ablate by removing it."""
+    def coverage_reward(prompts, completions, gold_answer=None, log_metric=None, **kwargs):
+        texts = [_content(c) for c in completions]
+        gold = gold_answer if gold_answer is not None else [""] * len(texts)
+        n = len(texts)
+        r = [0.0] * n
+        correct = [_is_correct(texts[i], gold[i]) for i in range(n)]
+        groups = defaultdict(list)
+        for i, p in enumerate(prompts):
+            groups[p if isinstance(p, str) else str(p)].append(i)
+        n_lone = 0
+        for _, idxs in groups.items():
+            nc = sum(correct[i] for i in idxs)
+            if nc == 0:
+                continue
+            if nc == 1:
+                n_lone += 1
+            for i in idxs:
+                if correct[i]:
+                    r[i] = lam / nc          # marginal coverage value; lone solver -> lam, redundant -> lam/nc
+        if log_metric and n:
+            log_metric("coverage_reward_mean", float(np.mean(r)))
+            log_metric("lone_solver_groups", float(n_lone))
+        return r
+    coverage_reward.__name__ = "coverage_reward"
+    return coverage_reward
