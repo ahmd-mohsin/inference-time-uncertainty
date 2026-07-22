@@ -26,6 +26,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # reasoning-model output than boxed-only. Use it everywhere we read a model's answer.
 from src.data.dataset import extract_numeric_answer, answers_match
 from rl_training.semantic import embed_texts, pairwise_novelty
+# safe_is_correct runs the dangerous sympy answer-match in a killable fork-child with a hard
+# wall-clock SIGKILL timeout. WITHOUT this, a single sympy hang in one rank freezes that rank's
+# reward computation, the other ranks block on the next NCCL allgather, and the whole run dies
+# on a 30-min watchdog timeout (observed: WorkNCCL _ALLGATHER_BASE ran 1800066ms then aborted).
+from rl_training.safe_match import safe_is_correct
 
 
 def _content(c):
@@ -38,11 +43,10 @@ def _content(c):
 
 
 def _is_correct(text: str, gold: str) -> bool:
-    pred = extract_numeric_answer(text)
-    if pred is None:
-        return False
+    # Delegate to the timeout-bounded scorer (fork-child + SIGKILL); a hang counts as WRONG.
     try:
-        return bool(answers_match(pred, gold))
+        ok, _pred = safe_is_correct(text, gold, timeout=5)
+        return bool(ok)
     except Exception:
         return False
 
