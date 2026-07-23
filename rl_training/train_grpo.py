@@ -49,6 +49,21 @@ def build_args():
     p.add_argument("--coverage-reward", action="store_true",
                    help="M3: reward correct rollouts by marginal group-coverage value (lam/n_correct)")
     p.add_argument("--coverage-lambda", type=float, default=1.0)
+    # TECHNIQUE 1 — coverage as a CONSTRAINT on a bank of base-correct traces (not a reward).
+    #   --support-ratchet : SOFT form (Lagrangian one-sided penalty added to loss)
+    #   --projection      : HARD form (projected gradient: restore feasibility each step)
+    # Both need --ratchet-bank (built by rl_training/coverage_bank.py).
+    p.add_argument("--support-ratchet", action="store_true",
+                   help="T1-soft: add mu*one-sided floor penalty on the base-correct bank")
+    p.add_argument("--projection", action="store_true",
+                   help="T1-hard: projected-gradient feasibility restoration on the bank")
+    p.add_argument("--ratchet-bank", default="", help="bank jsonl (prompt,completion,ref_logprob)")
+    p.add_argument("--ratchet-alpha", type=float, default=0.5, help="floor: p_theta >= alpha*p_ref")
+    p.add_argument("--ratchet-mu", type=float, default=0.5, help="Lagrange weight (soft form)")
+    p.add_argument("--ratchet-dual", action="store_true", help="dual-ascent on mu (soft form)")
+    p.add_argument("--proj-max-steps", type=int, default=5, help="correction sub-steps/step (hard)")
+    p.add_argument("--proj-lr", type=float, default=1e-5, help="correction sub-step lr (hard)")
+    p.add_argument("--proj-every", type=int, default=1, help="project every N steps (hard; amortize)")
     p.add_argument("--no-vllm", action="store_true")
     p.add_argument("--resume-from", default="", help="checkpoint dir to resume (Component B loop)")
     p.add_argument("--init-adapter", default="", help="warm-start: load this saved LoRA adapter "
@@ -143,10 +158,31 @@ def main():
         r=cfg.lora_r, lora_alpha=cfg.lora_alpha, lora_dropout=cfg.lora_dropout,
         target_modules=list(cfg.lora_target_modules), task_type="CAUSAL_LM",
     ) if cfg.use_lora else None
-    trainer = GRPOTrainer(
-        model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
-        train_dataset=train_dataset, peft_config=peft_config,
-    )
+    # TECHNIQUE 1: swap in a coverage-constrained trainer if requested (needs a bank).
+    if a.support_ratchet or a.projection:
+        if not a.ratchet_bank or not os.path.exists(a.ratchet_bank):
+            raise SystemExit(f"--support-ratchet/--projection require --ratchet-bank (got {a.ratchet_bank!r})")
+        from rl_training.coverage_bank import load_bank
+        from rl_training.coverage_trainer import (RatchetGRPOTrainer, ProjectionGRPOTrainer)
+        from rl_training.projection import ProjectionConfig
+        bank = load_bank(a.ratchet_bank)
+        if a.support_ratchet:
+            trainer = RatchetGRPOTrainer(
+                model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
+                train_dataset=train_dataset, peft_config=peft_config,
+                bank=bank, alpha=a.ratchet_alpha, mu=a.ratchet_mu, dual=a.ratchet_dual)
+        else:
+            pc = ProjectionConfig(alpha=a.ratchet_alpha, max_steps=a.proj_max_steps,
+                                  lr=a.proj_lr, every=a.proj_every)
+            trainer = ProjectionGRPOTrainer(
+                model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
+                train_dataset=train_dataset, peft_config=peft_config,
+                bank=bank, proj_cfg=pc)
+    else:
+        trainer = GRPOTrainer(
+            model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
+            train_dataset=train_dataset, peft_config=peft_config,
+        )
     if a.init_adapter:
         # WARM-START: overwrite the freshly-initialized LoRA weights with the saved adapter
         # (resumes policy weights from a prior run; optimizer/LR-schedule restart fresh, which
