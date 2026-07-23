@@ -36,10 +36,19 @@ def sequence_logprob(logits: torch.Tensor, labels: torch.Tensor,
     summed log-prob over masked positions. Summed (not mean) because the floor is reference-relative
     (ell_ref - ell_theta), so per-token length cancels and a raw sum is the correct comparable.
     """
-    logp = torch.log_softmax(logits.float(), dim=-1)                     # (B,T,V)
-    tok_logp = torch.gather(logp, -1, labels.unsqueeze(-1)).squeeze(-1)  # (B,T)
-    tok_logp = tok_logp * mask
-    return tok_logp.sum(dim=-1)                                          # (B,)
+    # Memory-efficient: log p(label) = logit[label] - logsumexp(logits). We avoid materializing the
+    # full (B,T,V) log_softmax tensor (V~151k for Qwen -> 14GB+ OOM); instead gather the target logit
+    # and use logsumexp over V, both O(B*T). Row-by-row over T keeps the peak at one (B,V) slice.
+    logits = logits.float()
+    B, T, V = logits.shape
+    gathered = torch.gather(logits, -1, labels.unsqueeze(-1)).squeeze(-1)  # (B,T) target logits
+    # logsumexp over vocab per (b,t); chunk over T to cap peak memory on huge V.
+    lse = torch.empty((B, T), dtype=logits.dtype, device=logits.device)
+    step = max(1, 256 // max(1, V // 4096))                               # ~ up to 256 positions/chunk
+    for s in range(0, T, step):
+        lse[:, s:s + step] = torch.logsumexp(logits[:, s:s + step, :], dim=-1)
+    tok_logp = (gathered - lse) * mask                                    # (B,T)
+    return tok_logp.sum(dim=-1)                                           # (B,)
 
 
 def ratchet_penalty(policy_logp: torch.Tensor, ref_logp: torch.Tensor,

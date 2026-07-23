@@ -29,17 +29,33 @@ from rl_training.projection import (ProjectionConfig, ProjectionState, violation
                                     max_violation, should_project, batches)
 
 
-def _tokenize_bank(bank, tokenizer, max_len=4096):
+def _tokenize_bank(bank, tokenizer, max_len=1280):
     """Pre-tokenize the bank ONCE: returns list of (input_ids, comp_mask, ref_logprob) python lists.
-    comp_mask marks ONLY completion tokens (prompt tokens are context, not scored)."""
+    comp_mask marks ONLY completion tokens (prompt tokens are context, not scored).
+
+    max_len caps total length to bound the per-trace (T,V) logits memory in the constraint forward
+    pass (V~151k for Qwen). We keep the prompt (needed as context) and TRUNCATE the completion from
+    the FRONT, preserving the tail that contains the boxed answer — the constraint then floors the
+    policy's prob on that answer-bearing tail. NOTE: ref_logprob was computed on the FULL trace, so
+    for truncated traces the floor is slightly conservative (policy logp of the tail < full); this is
+    safe (one-sided) but we log how many traces were truncated so the effect is auditable."""
     pad = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
     items = []
+    n_trunc = 0
     for r in bank:
         pids = tokenizer(r["prompt"], add_special_tokens=False)["input_ids"]
         cids = tokenizer(r["completion"], add_special_tokens=False)["input_ids"]
-        ids = (pids + cids)[:max_len]
-        m = ([0] * len(pids) + [1] * len(cids))[:max_len]
+        budget = max_len - len(pids)
+        if budget < 1:                          # pathological: prompt alone exceeds max_len
+            pids = pids[-(max_len // 2):]; budget = max_len - len(pids)
+        if len(cids) > budget:                  # keep the answer-bearing TAIL of the completion
+            cids = cids[-budget:]; n_trunc += 1
+        ids = pids + cids
+        m = [0] * len(pids) + [1] * len(cids)
         items.append((ids, m, float(r["ref_logprob"])))
+    if n_trunc:
+        print(f">> _tokenize_bank: truncated {n_trunc}/{len(bank)} traces to max_len={max_len} "
+              f"(kept answer tail; floor is conservative on these)")
     return items, pad
 
 
@@ -71,7 +87,7 @@ try:
 
     class RatchetGRPOTrainer(GRPOTrainer):
         def __init__(self, *args, bank=None, tokenizer=None, alpha=0.5, mu=0.5,
-                     bank_batch=16, dual=False, dual_kappa=0.0, dual_eta=0.1, **kw):
+                     bank_batch=2, dual=False, dual_kappa=0.0, dual_eta=0.1, **kw):
             super().__init__(*args, **kw)
             tk = tokenizer or self.processing_class
             self._items, self._pad = _tokenize_bank(bank, tk)

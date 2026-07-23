@@ -45,7 +45,7 @@ class ProjectionConfig:
     alpha: float = 0.5          # floor slack: p_theta >= alpha * p_ref (alpha=1 forbids ANY drop)
     max_steps: int = 5          # cap on correction sub-steps per GRPO step (bounded cost)
     lr: float = 1e-5            # correction sub-step lr (small; only fixes violations)
-    batch_size: int = 16        # banked traces per correction sub-step
+    batch_size: int = 4         # banked traces per correction sub-step (small: huge vocab)
     tol: float = 0.0            # stop when max_violation <= tol (in nats)
     every: int = 1              # run projection every `every` GRPO steps (amortize cost)
 

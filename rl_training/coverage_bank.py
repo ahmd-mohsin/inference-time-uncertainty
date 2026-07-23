@@ -36,7 +36,7 @@ def build_bank_traces(base_model, dataset, difficulty_json, out_jsonl, k=64, max
     return n
 
 
-def add_ref_logprobs(base_model, in_jsonl, out_jsonl, batch_size=8, device="cuda"):
+def add_ref_logprobs(base_model, in_jsonl, out_jsonl, batch_size=2, device="cuda"):
     """Step 2: compute ref_logprob = summed teacher-forced log pi_base(completion|prompt) for each
     banked trace under the BASE model, write bank with the extra field. Uses HF (not vLLM) because we
     need exact per-token log-probs on given text, which vLLM does not expose cleanly."""
