@@ -130,48 +130,62 @@ try:
             self._items, self._pad = _tokenize_bank(bank, tk)
             self._cfg = proj_cfg or ProjectionConfig()
             self._pstate = ProjectionState()
+            self._wcursor = 0
             # dedicated optimizer for correction sub-steps (small lr, only touches policy params)
             self._corr_opt = torch.optim.SGD([p for p in self.model.parameters() if p.requires_grad],
                                              lr=self._cfg.lr)
             print(f">> ProjectionGRPOTrainer: bank={len(self._items)} alpha={self._cfg.alpha} "
                   f"max_steps={self._cfg.max_steps} lr={self._cfg.lr}")
 
-        def _all_logp(self, model, dev):
-            """Policy + ref logp over the WHOLE bank (to detect violations). No grad."""
+        def _scan_logp(self, model, dev, which):
+            """Policy + ref logp over the banked traces in `which` (indices). No grad.
+            Scanning a SUBSAMPLE (not all 1172) each step keeps projection cost bounded: a full-bank
+            scan every step made each step ~10min (1172 forward passes x max_steps). We instead check
+            a rotating window of `check_sample` traces, correct any violators found, and rotate — so
+            over several steps the whole bank is covered without paying the full scan every step."""
             pl, rl = [], []
             with torch.no_grad():
-                for s in range(0, len(self._items), self._cfg.batch_size):
-                    idxs = list(range(s, min(s + self._cfg.batch_size, len(self._items))))
+                for s in range(0, len(which), self._cfg.batch_size):
+                    idxs = which[s:s + self._cfg.batch_size]
                     p, r = _bank_batch_logp(model, self._items, idxs, self._pad, dev)
                     pl += p.tolist(); rl += r.tolist()
             return pl, rl
 
+        def _next_window(self):
+            """Rotating window of check_sample bank indices to scan this projection step."""
+            n = len(self._items); w = min(self._cfg.check_sample, n)
+            idxs = [(self._wcursor + j) % n for j in range(w)]
+            self._wcursor = (self._wcursor + w) % n
+            return idxs
+
         def training_step(self, model, inputs, num_items_in_batch=None):
-            # 1) normal GRPO step (TRL does forward/backward/opt.step internally via Trainer loop);
-            #    we get the loss value back.
+            # 1) normal GRPO step (TRL does forward/backward/opt.step internally via Trainer loop).
             loss = super().training_step(model, inputs, num_items_in_batch)
             self._pstate.step += 1
             if not should_project(self._pstate.step, self._cfg):
                 return loss
-            # 2) PROJECTION: bounded correction sub-steps on violating banked traces.
+            # 2) PROJECTION on a ROTATING WINDOW of the bank (bounded cost). Scan `check_sample`
+            #    traces this step; correct any violators found within them, up to max_steps sub-steps.
+            #    Over many steps the rotating window covers the whole bank without a full scan/step.
             dev = next(model.parameters()).device
+            window = self._next_window()
             corr = 0
             for _ in range(self._cfg.max_steps):
-                pl, rl = self._all_logp(model, dev)
+                pl, rl = self._scan_logp(model, dev, window)
                 if max_violation(pl, rl, self._cfg.alpha) <= self._cfg.tol:
                     break
-                vio = violations(pl, rl, self._cfg.alpha)
-                if not vio:
+                vlocal = violations(pl, rl, self._cfg.alpha)          # indices INTO window
+                if not vlocal:
                     break
+                vio = [window[i] for i in vlocal]                     # -> bank indices
                 for bt in batches(vio, self._cfg.batch_size):
                     self._corr_opt.zero_grad()
                     p, r = _bank_batch_logp(model, self._items, bt, self._pad, dev)
-                    # minimize the one-sided floor gap on violators == raise their logprob
                     gap = ratchet_penalty(p, r, alpha=self._cfg.alpha, reduction="mean")
                     gap.backward()
                     self._corr_opt.step()
                 corr += 1
-            pl, rl = self._all_logp(model, dev)
+            pl, rl = self._scan_logp(model, dev, window)
             self._pstate.record(max_violation(pl, rl, self._cfg.alpha), len(violations(pl, rl, self._cfg.alpha)), corr)
             try:
                 self.log({"proj_max_violation": self._pstate.last_max_violation,
