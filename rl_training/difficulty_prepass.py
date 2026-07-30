@@ -29,13 +29,44 @@ def main():
     ap.add_argument("--max-new-tokens", type=int, default=4096)
     ap.add_argument("--tensor-parallel-size", type=int, default=1)
     ap.add_argument("--output", default="rl_training/runs/difficulty.json")
+    # DATA-PARALLEL SHARDING (mirror evaluate_passk): with num_shards>1 this process labels only a
+    # strided slice problems[shard_index::num_shards] and writes {output}.shard{i}-of-{N}.json.
+    # --merge concatenates all shard files into {output} and recomputes counts + MIN_HARD relabel.
+    ap.add_argument("--shard-index", type=int, default=0)
+    ap.add_argument("--num-shards", type=int, default=1)
+    ap.add_argument("--merge", action="store_true", help="merge shard files into --output and exit")
     a = ap.parse_args()
+
+    def _shard_path(i):
+        return f"{a.output}.shard{i}-of-{a.num_shards}.json"
+
+    if a.merge:
+        per = []
+        for i in range(a.num_shards):
+            per += json.load(open(_shard_path(i)))["per_problem"]
+        counts = {"solved": 0, "hard": 0, "stuck": 0}
+        for p in per:
+            counts[p["label"]] = counts.get(p["label"], 0) + 1
+        MIN_HARD = 30
+        if counts["hard"] < MIN_HARD:
+            solved = sorted([p for p in per if p["label"] == "solved"], key=lambda x: x["pass1"])
+            for p in solved[:MIN_HARD - counts["hard"]]:
+                p["label"] = "hard"; p["relabeled"] = True
+                counts["hard"] += 1; counts["solved"] -= 1
+        Path(a.output).parent.mkdir(parents=True, exist_ok=True)
+        json.dump({"model": "merged", "dataset": a.dataset, "k": a.k,
+                   "counts": counts, "per_problem": per}, open(a.output, "w"), indent=2)
+        print(f"merged {a.num_shards} shards -> {a.output}: {counts}")
+        return
 
     from vllm import LLM, SamplingParams
     from transformers import AutoConfig
 
     problems = get_inference_dataset({"dataset": {"name": a.dataset, "split": "test",
                                                   "n_problems": a.n_problems, "seed": 42}})
+    if a.num_shards > 1:
+        problems = problems[a.shard_index::a.num_shards]
+        print(f"[shard {a.shard_index}/{a.num_shards}] {len(problems)} problems")
     try:
         cap = int(getattr(AutoConfig.from_pretrained(a.model_path, trust_remote_code=True),
                           "max_position_embeddings", a.max_new_tokens))
@@ -65,6 +96,15 @@ def main():
         counts[label] += 1
         per.append({"problem_id": p["problem_id"], "label": label,
                     "pass1": p1, f"pass{a.k}": pk, "n_correct": int(sum(mask))})
+
+    # When sharding, each shard writes only its slice (raw labels); MIN_HARD relabel happens at
+    # --merge over the full set. Single-shard runs keep the original inline relabel below.
+    if a.num_shards > 1:
+        Path(a.output).parent.mkdir(parents=True, exist_ok=True)
+        json.dump({"model": a.model_path, "dataset": a.dataset, "k": a.k, "shard": a.shard_index,
+                   "counts": counts, "per_problem": per}, open(_shard_path(a.shard_index), "w"), indent=2)
+        print(f"[shard {a.shard_index}] {counts} -> {_shard_path(a.shard_index)}")
+        return
 
     # Safeguard (docs/RL.md §4.3): if too few HARD problems for stable GRPO, relabel some
     # 'solved' as 'hard' (lowest-pass1 first) so the targeted set has >= MIN_HARD problems.
