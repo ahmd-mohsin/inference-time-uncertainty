@@ -229,6 +229,34 @@ def load_competition_math(n_problems=-1, seed=42, cache_dir=None):
     return problems
 
 
+def load_omni_math(n_problems=-1, seed=42, cache_dir=None, min_difficulty=0.0):
+    """Omni-MATH (KbsdJames/Omni-MATH): 4428 competition problems with symbolic LaTeX answers
+    and a numeric 'difficulty' field (0-10). Verifier uses safe_is_correct (sympy/latex-aware),
+    so symbolic answers are OK. Optionally keep only difficulty>=min_difficulty (harder subset)."""
+    logger.info(f"Loading Omni-MATH (KbsdJames/Omni-MATH) min_difficulty={min_difficulty}")
+    raw = load_dataset("KbsdJames/Omni-MATH")
+    split = "test" if "test" in raw else next(iter(raw.keys()))
+    data = list(raw[split])
+    def _diff(x):
+        try: return float(x)
+        except Exception: return 0.0
+    if min_difficulty > 0:
+        data = [it for it in data if _diff(it.get("difficulty")) >= min_difficulty]
+    random.seed(seed); random.shuffle(data)
+    if n_problems > 0: data = data[:n_problems]
+    problems = []
+    for i, item in enumerate(data):
+        ans = str(item.get("answer", "")).strip().strip("$").strip()
+        dom = item.get("domain", [])
+        dom = (dom[0] if isinstance(dom, list) and dom else str(dom))
+        problems.append({"problem_id": i, "question": str(item.get("problem", "")),
+                         "gold_answer": ans, "source": "omni_math", "level": "olympiad",
+                         "problem_type": str(dom), "answer_type": "symbolic",
+                         "difficulty": _diff(item.get("difficulty"))})
+    logger.info(f"Loaded {len(problems)} Omni-MATH problems")
+    return problems
+
+
 def load_olympiad_bench(n_problems=-1, seed=42, cache_dir=None, numeric_only=True):
     logger.info("Loading OlympiadBench (math-ai/olympiadbench)")
     raw = load_dataset("math-ai/olympiadbench")
@@ -855,6 +883,9 @@ def get_inference_dataset(cfg):
     if name in ("math_full", "math_train"): return load_math_full(n_problems=n, seed=seed, split="train")
     if name == "math_full_test": return load_math_full(n_problems=n, seed=seed, split="test")
     if name == "olympiad_bench": return load_olympiad_bench(n_problems=n, seed=seed)
+    if name in ("omni_math", "omni_math_hard"):
+        md = 5.0 if name == "omni_math_hard" else 0.0
+        return load_omni_math(n_problems=n, seed=seed, min_difficulty=md)
     raise ValueError(f"Unknown inference dataset: {name}")
 
 # ======================================================================
