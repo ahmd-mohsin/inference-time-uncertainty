@@ -64,6 +64,11 @@ def build_args():
     p.add_argument("--proj-max-steps", type=int, default=5, help="correction sub-steps/step (hard)")
     p.add_argument("--proj-lr", type=float, default=1e-5, help="correction sub-step lr (hard)")
     p.add_argument("--proj-every", type=int, default=1, help="project every N steps (hard; amortize)")
+    p.add_argument("--proj-batch-size", type=int, default=4,
+                   help="banked traces per correction forward/backward (hard); set 1 for large "
+                        "models — the extra teacher-forced backward OOMs 14B on 40GB at bs>1")
+    p.add_argument("--proj-check-sample", type=int, default=32,
+                   help="rotating-window traces scanned per projection (hard)")
     p.add_argument("--no-vllm", action="store_true")
     p.add_argument("--resume-from", default="", help="checkpoint dir to resume (Component B loop)")
     p.add_argument("--init-adapter", default="", help="warm-start: load this saved LoRA adapter "
@@ -173,7 +178,8 @@ def main():
                 bank=bank, alpha=a.ratchet_alpha, mu=a.ratchet_mu, dual=a.ratchet_dual)
         else:
             pc = ProjectionConfig(alpha=a.ratchet_alpha, max_steps=a.proj_max_steps,
-                                  lr=a.proj_lr, every=a.proj_every)
+                                  lr=a.proj_lr, every=a.proj_every,
+                                  batch_size=a.proj_batch_size, check_sample=a.proj_check_sample)
             trainer = ProjectionGRPOTrainer(
                 model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
                 train_dataset=train_dataset, peft_config=peft_config,
