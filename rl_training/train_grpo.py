@@ -69,6 +69,9 @@ def build_args():
                         "models — the extra teacher-forced backward OOMs 14B on 40GB at bs>1")
     p.add_argument("--proj-check-sample", type=int, default=32,
                    help="rotating-window traces scanned per projection (hard)")
+    p.add_argument("--no-lora", action="store_true",
+                   help="FULL fine-tuning instead of LoRA (crossover-magnitude sweep: LoRA caps "
+                        "drift, likely compressing the coverage phenomenon). Needs ZeRO-3.")
     p.add_argument("--no-vllm", action="store_true")
     p.add_argument("--resume-from", default="", help="checkpoint dir to resume (Component B loop)")
     p.add_argument("--init-adapter", default="", help="warm-start: load this saved LoRA adapter "
@@ -107,7 +110,8 @@ def main():
                    max_completion_length=a.max_completion_length,
                    gradient_accumulation_steps=a.gradient_accumulation_steps,
                    novelty_lambda=a.novelty_lambda,
-                   novelty_enabled=not a.no_novelty, use_vllm=not a.no_vllm)
+                   novelty_enabled=not a.no_novelty, use_vllm=not a.no_vllm,
+                   use_lora=not a.no_lora)
 
     from trl import GRPOTrainer, GRPOConfig
     from peft import LoraConfig
