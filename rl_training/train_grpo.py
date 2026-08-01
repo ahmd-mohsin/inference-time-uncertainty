@@ -35,6 +35,9 @@ def build_args():
                         "batch constant when training on fewer ranks)")
     p.add_argument("--novelty-lambda", type=float, default=RLConfig.novelty_lambda)
     p.add_argument("--no-novelty", action="store_true", help="ablation: plain GRPO")
+    p.add_argument("--lora-r", type=int, default=RLConfig.lora_r,
+                   help="LoRA rank (crossover-magnitude sweep: higher r = more drift capacity than "
+                        "the default r=32, which may compress the coverage phenomenon). alpha=2*r.")
     # EXPERIMENT A: fragile-band curriculum (oversample base-pass@1 in [lo,hi])
     p.add_argument("--curriculum", action="store_true",
                    help="ExpA: oversample fragile-band problems (needs --difficulty-json with pass1)")
@@ -111,7 +114,7 @@ def main():
                    gradient_accumulation_steps=a.gradient_accumulation_steps,
                    novelty_lambda=a.novelty_lambda,
                    novelty_enabled=not a.no_novelty, use_vllm=not a.no_vllm,
-                   use_lora=not a.no_lora)
+                   use_lora=not a.no_lora, lora_r=a.lora_r, lora_alpha=2 * a.lora_r)
 
     from trl import GRPOTrainer, GRPOConfig
     from peft import LoraConfig
