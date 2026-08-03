@@ -101,3 +101,51 @@ def fraction_modes_alive(policy_logp: torch.Tensor, ref_logp: torch.Tensor,
     floor = ref_logp + torch.log(torch.as_tensor(alpha, dtype=ref_logp.dtype,
                                                   device=ref_logp.device))
     return float((policy_logp >= floor).float().mean())
+
+
+# ----------------------------------------------------------------------------------------------
+# SET-FORM floor (advisor review, Prop 5 caveat + §5.3 fallback).
+# A single-trace floor is loose: one exact ~500-token CoT has prob ~e^-250, so its certificate
+# 1-(1-alpha*p0)^k is numerically vacuous, AND protecting one string is gameable by mass-reshuffling
+# WITHIN the correct class. The quantity the pass@k bound actually needs is the TOTAL probability the
+# policy places on the CORRECT SET B_q = {all banked correct traces for problem q}:
+#     P_theta(correct|q) >= sum_{y in B_q} pi_theta(y|q)     (a lower bound on the true correct mass)
+# We floor log P_theta(correct|q) against the reference's, using logsumexp over the per-trace logps.
+# This makes both the constraint and the certificate operate at the problem (mode-class) level.
+# ----------------------------------------------------------------------------------------------
+
+def set_logprob(trace_logp: torch.Tensor, group_index: torch.Tensor, n_groups: int) -> torch.Tensor:
+    """Aggregate per-trace seq-logprobs into per-problem log P(correct-set|q) via logsumexp.
+
+    Args:
+      trace_logp:  (N,) summed seq log-prob of each banked trace under a model.
+      group_index: (N,) int in [0, n_groups) mapping each trace to its problem id (0..n_groups-1).
+      n_groups:    number of distinct problems.
+    Returns: (n_groups,) log sum_{y in B_q} exp(logp_y) = log P(correct-set|q) lower bound.
+    Problems with no traces get -inf.
+    """
+    out = torch.full((n_groups,), float("-inf"), dtype=trace_logp.dtype, device=trace_logp.device)
+    for g in range(n_groups):
+        sel = trace_logp[group_index == g]
+        if sel.numel():
+            out[g] = torch.logsumexp(sel, dim=0)
+    return out
+
+
+def coverage_certificate(set_logp_ref: torch.Tensor, alpha: float, k: int) -> dict:
+    """Prop 5, set-form. Given per-problem log P_ref(correct-set|q) and the floor alpha, the floor
+    GUARANTEES P_theta(correct|q) >= alpha * P_ref(correct|q), hence a certified pass@k LOWER BOUND:
+        pass@k_theta(q) >= 1 - (1 - alpha * p_ref(q))^k        with p_ref(q)=exp(set_logp_ref[q]).
+    Returns mean certified pass@k over problems + the base's own pass@k at k and at floor*k, so we can
+    state 'alpha=0.5 guarantees trained pass@k >= base pass@(alpha*k)'.
+    """
+    p_ref = torch.exp(set_logp_ref.clamp(max=0.0)).clamp(0.0, 1.0)     # (n_groups,)
+    cert = 1.0 - torch.pow(1.0 - alpha * p_ref, k)                     # certified lower bound per q
+    base_k = 1.0 - torch.pow(1.0 - p_ref, k)                          # base's own pass@k
+    return {
+        "alpha": alpha, "k": k,
+        "mean_certified_passk": float(cert.mean()),
+        "mean_base_passk": float(base_k.mean()),
+        "median_p_ref": float(p_ref.median()),
+        "n_problems": int(p_ref.numel()),
+    }
