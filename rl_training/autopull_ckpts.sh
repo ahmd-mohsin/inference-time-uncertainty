@@ -3,7 +3,7 @@
 # Runs on the LAPTOP, detached. Polls every 3min; pulls any checkpoint-N/model.safetensors
 # not yet local. Self-reconnects the SSM tunnel. Kills itself after both final ckpts pulled.
 set -uo pipefail
-SSM=mi-02337d3d916d28624
+SSM=mi-078ccb3b4e7d4fbb5
 LP=1066
 LB=/Users/cmohsinm/inference-time-uncertainty/rl_training/runs_pulled/round2_forks
 mkdir -p "$LB/grpo" "$LB/floor"
