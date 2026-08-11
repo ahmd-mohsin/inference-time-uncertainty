@@ -11,6 +11,7 @@ cd $HOME/inference-time-uncertainty
 export PATH=$HOME/.local/bin:$PATH
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export VLLM_ATTENTION_BACKEND=FLASHINFER
+export HF_HUB_ENABLE_HF_TRANSFER=0
 PY=/usr/bin/python3
 mkdir -p $HOME/logs
 [ -z "${HF_TOKEN:-}" ] && [ -f "$HOME/.hf_token" ] && export HF_TOKEN=$(cat "$HOME/.hf_token")
