@@ -61,8 +61,10 @@ def main():
         for n in sorted(names):
             if re.match(r"checkpoint-(\d+)$", n) and n not in pushed:
                 d = os.path.join(a.run_dir, n)
-                # only push once the checkpoint is fully written (model.safetensors present)
-                if not os.path.exists(os.path.join(d, "model.safetensors")):
+                # only push once the checkpoint is COMPLETE: model + trainer_state (needed for --resume-from).
+                # trainer_state.json is written last by HF Trainer, so its presence means the dir is done.
+                if not (os.path.exists(os.path.join(d, "model.safetensors"))
+                        and os.path.exists(os.path.join(d, "trainer_state.json"))):
                     continue
                 t0 = time.time()
                 try:
