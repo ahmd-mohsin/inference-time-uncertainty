@@ -13,7 +13,8 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export VLLM_ATTENTION_BACKEND=FLASHINFER
 PY=/usr/bin/python3
 mkdir -p $HOME/logs
-[ -z "${HF_TOKEN:-}" ] && { echo "ERR: HF_TOKEN not set"; exit 1; }
+[ -z "${HF_TOKEN:-}" ] && [ -f "$HOME/.hf_token" ] && export HF_TOKEN=$(cat "$HOME/.hf_token")
+[ -z "${HF_TOKEN:-}" ] && { echo "ERR: HF_TOKEN not set (no env, no ~/.hf_token)"; exit 1; }
 
 FORK="${1:?fork: grpo|floor}"
 STEPS="${2:-400}"
