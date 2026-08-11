@@ -13,6 +13,7 @@ Usage:
 Token from env HF_TOKEN. Never printed.
 """
 import argparse, os, sys, time, re
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "0"   # hf_transfer miscomputes size on 13-15GB files -> abort; force standard downloader
 from huggingface_hub import HfApi
 
 def latest_ckpt(names):

@@ -28,9 +28,14 @@ mkdir -p "$BASE" "$RUN"; rm -f "$RUN/TRAIN_DONE"
 VLLM_GPUS="0"; TRAIN_GPUS="1,2,3,4,5,6,7"; NTRAIN=7
 
 # 1) fetch the round-1 fork's LATEST checkpoint from HF -> flat dir BASE (the round-2 starting model)
+# skip if already flattened (config.json + model.safetensors present) — makes relaunch cheap/idempotent
+if [ -f "$BASE/config.json" ] && [ -f "$BASE/model.safetensors" ]; then
+  echo ">> [r1-fetch] BASE already has flattened model — skip download"
+else
 echo ">> [r1-fetch] download latest $R1REPO -> $BASE"
-$PY - <<PY
+HF_HUB_ENABLE_HF_TRANSFER=0 $PY - <<PY
 import os
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"]="0"
 from huggingface_hub import HfApi, snapshot_download
 tok=os.environ["HF_TOKEN"]; api=HfApi(token=tok)
 f=list(api.list_repo_files("$R1REPO", repo_type="model"))
@@ -38,12 +43,17 @@ cks=sorted({int(x.split('-')[1].split('/')[0]) for x in f if x.startswith('check
 assert cks, "no r1 checkpoint in $R1REPO"
 ck=f"checkpoint-{cks[-1]}"; print("latest r1:", ck)
 snapshot_download("$R1REPO", repo_type="model", allow_patterns=f"{ck}/*", local_dir="$BASE/dl", token=tok)
-import shutil, glob
+import shutil
 src=os.path.join("$BASE","dl",ck)
 for fn in os.listdir(src):
     shutil.move(os.path.join(src,fn), os.path.join("$BASE",fn))
+shutil.rmtree(os.path.join("$BASE","dl"), ignore_errors=True)
+assert os.path.exists(os.path.join("$BASE","config.json")), "FLATTEN FAILED: no config.json in BASE"
+assert os.path.exists(os.path.join("$BASE","model.safetensors")), "FLATTEN FAILED: no model.safetensors"
 print("r1 fork model ready at $BASE")
 PY
+fi
+[ -f "$BASE/config.json" ] || { echo ">> FATAL: $BASE has no config.json after fetch"; exit 1; }
 
 # 2) if round-2 was already partway (prior node), resume its latest checkpoint from HF
 echo ">> [r2-resume] pull latest round-2 checkpoint from $R2REPO if any"
