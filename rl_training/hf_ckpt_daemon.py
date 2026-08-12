@@ -26,6 +26,8 @@ def main():
     ap.add_argument("--run-dir", required=True)
     ap.add_argument("--repo", required=True)          # e.g. muahmed7338/cov-r1-grpo-7b
     ap.add_argument("--every", type=int, default=60)  # poll seconds
+    ap.add_argument("--reap", action="store_true",     # delete local ckpts after push (keep newest)
+                    help="after a successful push, rm local checkpoint dirs except the newest — keeps disk flat")
     a = ap.parse_args()
     tok = os.environ.get("HF_TOKEN")
     if not tok:
@@ -77,6 +79,17 @@ def main():
                                       repo_type="model", commit_message=f"ckpt {n}")
                     pushed.add(n)
                     print(f"[hf-daemon] pushed {n} in {int(time.time()-t0)}s", flush=True)
+                    # free local disk: once safely on HF, delete every local checkpoint EXCEPT the
+                    # newest pushed (kept so training's own --resume-from has a warm local copy).
+                    # This is what keeps ephemeral/nvme disk flat instead of growing ~95GB/ckpt.
+                    if a.reap:
+                        newest = latest_ckpt(list(pushed))
+                        for old in sorted(pushed):
+                            if old != newest:
+                                p = os.path.join(a.run_dir, old)
+                                if os.path.isdir(p):
+                                    import shutil as _sh; _sh.rmtree(p, ignore_errors=True)
+                                    print(f"[hf-daemon] reaped local {old}", flush=True)
                 except Exception as e:
                     print(f"[hf-daemon] push {n} FAILED: {e}", flush=True)
         # stop when training wrote a DONE sentinel
