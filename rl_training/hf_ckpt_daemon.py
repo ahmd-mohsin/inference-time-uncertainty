@@ -34,14 +34,19 @@ def main():
     api.create_repo(a.repo, private=True, exist_ok=True, repo_type="model")
 
     if a.mode == "resume":
-        # find the highest checkpoint-N present in the repo, download it into run-dir
+        # find the highest RESUMABLE checkpoint-N (has both model.safetensors AND trainer_state.json;
+        # a node that died mid-push can leave a higher-numbered ckpt with the model but no trainer_state,
+        # which --resume-from would choke on) and download it into run-dir.
         try:
             files = api.list_repo_files(a.repo, repo_type="model")
         except Exception as e:
             print(f"resume: repo empty/unreadable ({e}); starting fresh"); return
-        cks = latest_ckpt(sorted({f.split("/")[0] for f in files if f.startswith("checkpoint-")}))
+        fset = set(files)
+        resumable = [n for n in {f.split("/")[0] for f in files if f.startswith("checkpoint-")}
+                     if f"{n}/model.safetensors" in fset and f"{n}/trainer_state.json" in fset]
+        cks = latest_ckpt(sorted(resumable))
         if not cks:
-            print("resume: no checkpoint in repo; starting fresh"); return
+            print("resume: no complete/resumable checkpoint in repo; starting fresh"); return
         from huggingface_hub import snapshot_download
         dst = os.path.join(a.run_dir, cks)
         os.makedirs(dst, exist_ok=True)
