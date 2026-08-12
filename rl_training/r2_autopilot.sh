@@ -5,10 +5,11 @@
 # go_r2_direct.sh (which starts FRESH from the flat local r1_${fork}_ckpt; HF has the durable
 # checkpoints for the resume path). Exits when BOTH arms have pushed checkpoint-100 to HF.
 set -uo pipefail
-SSM=mi-034b6f5fa55f69183
+SSM=mi-038a86af96d89bc6c
 LP=1066
-IP_grpo=10.3.226.26
-IP_floor=10.3.31.11
+IP_grpo=10.3.85.133
+IP_floor=10.3.202.183
+NVLOG=/tmp/instance_storage/gu/logs   # logs live on nvme now
 LOG=/tmp/r2_autopilot.log
 HFTOK=$(cat /Users/cmohsinm/.hf_token 2>/dev/null || echo HF_TOKEN_REDACTED)
 echo "=== r2 autopilot start $(date -u +%H:%MZ) ssm=$SSM ===" > $LOG
@@ -39,14 +40,15 @@ for round in $(seq 1 400); do
     eval "ip=\$IP_${fork}"
     if hf_has100 "muahmed7338/cov-r2-from-${fork}-7b"; then
       echo "$(date -u +%H:%MZ) $fork DONE (ckpt-100 on HF)" >> $LOG; continue; fi
-    step=$(w $ip "tr '\r' '\n' < ~/logs/r2_${fork}_train.log 2>/dev/null|grep -aoE '[0-9]+/100'|tail -1")
-    trainup=$(w $ip "pgrep -f 'accelerate.commands.launch'|wc -l")
+    step=$(w $ip "tr '\r' '\n' < $NVLOG/r2_${fork}_train.log 2>/dev/null|grep -aoE '[0-9]+/100'|tail -1")
+    trainup=$(w $ip "pgrep -f 'go_r2_nvme'|wc -l")
     trainup=${trainup:-0}
-    echo "$(date -u +%H:%MZ) $fork step=${step:-?} trainer=${trainup}" >> $LOG
+    echo "$(date -u +%H:%MZ) $fork step=${step:-?} driver=${trainup}" >> $LOG
     if [ "${trainup}" -lt 1 ]; then
-      echo "$(date -u +%H:%MZ) $fork TRAINER DEAD -> relaunch" >> $LOG
-      w $ip "for p in \$(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 \$p 2>/dev/null; done; pkill -9 -f vllm_serve; pkill -9 -f go_r2_direct; pkill -9 -f accelerate; sleep 4"
-      w $ip "(setsid bash ~/go_r2_resume.sh $fork >~/logs/r2_${fork}_driver.log 2>&1 </dev/null &); sleep 3; echo RELAUNCHED"
+      echo "$(date -u +%H:%MZ) $fork DRIVER DEAD -> relaunch" >> $LOG
+      # kill GPU procs by PID only (pattern-pkill self-kills via shareProcessNamespace); no launch in same call
+      w $ip "for p in \$(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 \$p 2>/dev/null; done; sleep 4"
+      w $ip "(setsid bash ~/go_r2_nvme.sh $fork >$NVLOG/r2_${fork}_driver.log 2>&1 </dev/null &); sleep 3; echo RELAUNCHED"
     fi
   done
   if hf_has100 muahmed7338/cov-r2-from-grpo-7b && hf_has100 muahmed7338/cov-r2-from-floor-7b; then
