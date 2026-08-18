@@ -5,10 +5,10 @@
 # go_r2_direct.sh (which starts FRESH from the flat local r1_${fork}_ckpt; HF has the durable
 # checkpoints for the resume path). Exits when BOTH arms have pushed checkpoint-100 to HF.
 set -uo pipefail
-SSM=mi-038a86af96d89bc6c
+SSM=mi-07180669e9142ee76
 LP=1066
-IP_grpo=10.3.85.133
-IP_floor=10.3.202.183
+IP_grpo=10.3.56.222
+IP_floor=10.3.3.172
 NVLOG=/tmp/instance_storage/gu/logs   # logs live on nvme now
 LOG=/tmp/r2_autopilot.log
 HFTOK=$(cat /Users/cmohsinm/.hf_token 2>/dev/null || echo HF_TOKEN_REDACTED)
