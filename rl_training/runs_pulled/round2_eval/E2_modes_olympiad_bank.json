@@ -1,0 +1,5878 @@
+{
+  "bank": "rl_training/runs_pulled/coverage_7b_mi036f/banks/bank_olympiad_7b.jsonl",
+  "dist_thresh": 0.15,
+  "n_problems": 305,
+  "per_problem": {
+    "0": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        }
+      }
+    },
+    "2": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "6": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "7": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip",
+            "counting"
+          ]
+        }
+      }
+    },
+    "8": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "11": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo",
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "12": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "14": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "15": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "20": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "23": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "number_theory",
+            "counting"
+          ]
+        }
+      }
+    },
+    "24": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "26": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "28": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution",
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "counting"
+          ]
+        }
+      }
+    },
+    "29": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "generating_fn"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "generating_fn"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "30": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "35": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        }
+      }
+    },
+    "37": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring"
+          ]
+        }
+      }
+    },
+    "40": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "41": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory",
+            "inequality",
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "counting"
+          ]
+        }
+      }
+    },
+    "42": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo",
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "46": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "factoring",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "47": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "factoring",
+            "calculus"
+          ]
+        }
+      }
+    },
+    "48": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "51": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "53": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "factoring"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "55": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "56": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "trig"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig",
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig",
+            "factoring",
+            "counting"
+          ]
+        }
+      }
+    },
+    "57": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        }
+      }
+    },
+    "60": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "inequality"
+          ]
+        }
+      }
+    },
+    "61": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "63": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "66": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "67": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig",
+            "algebraic_manip"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "trig",
+            "factoring"
+          ]
+        }
+      }
+    },
+    "69": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "inequality"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "71": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "73": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality",
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "74": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "calculus"
+          ]
+        }
+      }
+    },
+    "75": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "factoring",
+            "number_theory"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "inequality",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "factoring",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "78": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "81": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo",
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        }
+      }
+    },
+    "82": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo"
+          ]
+        }
+      }
+    },
+    "84": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "casework",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "86": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "casework",
+            "inequality"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework"
+          ]
+        }
+      }
+    },
+    "88": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "89": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "93": {
+      "n_traces": 3,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        }
+      }
+    },
+    "94": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo",
+            "trig"
+          ]
+        }
+      }
+    },
+    "97": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "coordinate_geo",
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring"
+          ]
+        }
+      }
+    },
+    "100": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip",
+            "counting"
+          ]
+        }
+      }
+    },
+    "101": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        }
+      }
+    },
+    "108": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "number_theory",
+            "counting"
+          ]
+        }
+      }
+    },
+    "109": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "112": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "algebraic_manip",
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "factoring",
+            "counting"
+          ]
+        }
+      }
+    },
+    "113": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "115": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "inequality",
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "116": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "117": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        }
+      }
+    },
+    "119": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig",
+            "factoring"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "120": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "factoring"
+          ]
+        }
+      }
+    },
+    "121": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "123": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "trig"
+          ]
+        }
+      }
+    },
+    "125": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig",
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig",
+            "factoring"
+          ]
+        }
+      }
+    },
+    "126": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "127": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "generating_fn"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "generating_fn"
+          ]
+        }
+      }
+    },
+    "128": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig",
+            "number_theory"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig",
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        }
+      }
+    },
+    "129": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo",
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "factoring"
+          ]
+        }
+      }
+    },
+    "130": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "inequality",
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        }
+      }
+    },
+    "131": {
+      "n_traces": 2,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "132": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "133": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "134": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "135": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "136": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "137": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "138": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "139": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "142": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "144": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "147": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "150": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        }
+      }
+    },
+    "153": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "158": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "159": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "160": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "162": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "calculus",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "163": {
+      "n_traces": 2,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "165": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig",
+            "calculus",
+            "counting"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "166": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality",
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "167": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "generating_fn"
+          ]
+        }
+      }
+    },
+    "170": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "counting"
+          ]
+        }
+      }
+    },
+    "172": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "casework",
+            "factoring"
+          ]
+        }
+      }
+    },
+    "175": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "casework"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "inequality",
+            "algebraic_manip"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "180": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "181": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "182": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "184": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "185": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        }
+      }
+    },
+    "189": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "191": {
+      "n_traces": 2,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "192": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "194": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "195": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        }
+      }
+    },
+    "196": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "197": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "198": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "199": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "200": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "201": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "203": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip",
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "counting"
+          ]
+        }
+      }
+    },
+    "204": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "208": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "counting"
+          ]
+        }
+      }
+    },
+    "210": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "inequality"
+          ]
+        }
+      }
+    },
+    "212": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "214": {
+      "n_traces": 3,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "218": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "coordinate_geo"
+          ]
+        }
+      }
+    },
+    "219": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "substitution",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "222": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "223": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "224": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "227": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "229": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution",
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "231": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "233": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "inequality"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "234": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory",
+            "counting"
+          ]
+        }
+      }
+    },
+    "235": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "236": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig",
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig",
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig"
+          ]
+        }
+      }
+    },
+    "237": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig"
+          ]
+        }
+      }
+    },
+    "239": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "242": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "inequality"
+          ]
+        }
+      }
+    },
+    "245": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "generating_fn"
+          ]
+        }
+      }
+    },
+    "247": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "248": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "250": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "252": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "253": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "256": {
+      "n_traces": 2,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "261": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "counting"
+          ]
+        }
+      }
+    },
+    "262": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "264": {
+      "n_traces": 3,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "269": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig",
+            "calculus"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "271": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "272": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "273": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "casework"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        }
+      }
+    },
+    "274": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "279": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework"
+          ]
+        }
+      }
+    },
+    "280": {
+      "n_traces": 3,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        }
+      }
+    },
+    "282": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "283": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "284": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "285": {
+      "n_traces": 2,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "casework"
+          ]
+        }
+      }
+    },
+    "287": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "288": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        }
+      }
+    },
+    "294": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "295": {
+      "n_traces": 2,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "coordinate_geo",
+            "trig",
+            "counting"
+          ]
+        }
+      }
+    },
+    "297": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "300": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "301": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig"
+          ]
+        }
+      }
+    },
+    "302": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "contradiction"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "304": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "306": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "counting",
+            "generating_fn"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "generating_fn"
+          ]
+        }
+      }
+    },
+    "309": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "312": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "313": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig",
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "315": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "316": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "generating_fn"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "317": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "318": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality",
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework"
+          ]
+        }
+      }
+    },
+    "320": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig",
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "trig",
+            "factoring"
+          ]
+        }
+      }
+    },
+    "321": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "322": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "324": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "330": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "333": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "336": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "trig"
+          ]
+        }
+      }
+    },
+    "337": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "338": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "339": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "341": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "343": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "calculus"
+          ]
+        }
+      }
+    },
+    "344": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "345": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "349": {
+      "n_traces": 2,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "356": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "360": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "361": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "363": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "365": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "368": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "casework",
+            "inequality"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality",
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "376": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "378": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring",
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "379": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "380": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "382": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution",
+            "factoring",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "384": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "386": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "387": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "389": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        }
+      }
+    },
+    "390": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "391": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "393": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        }
+      }
+    },
+    "396": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo",
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        }
+      }
+    },
+    "397": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "casework",
+            "inequality"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "inequality",
+            "counting"
+          ]
+        }
+      }
+    },
+    "398": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        }
+      }
+    },
+    "399": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "403": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "404": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "407": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "number_theory",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "410": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality"
+          ]
+        }
+      }
+    },
+    "411": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "substitution"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "412": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig"
+          ]
+        }
+      }
+    },
+    "413": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "414": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "415": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "casework",
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "casework"
+          ]
+        }
+      }
+    },
+    "416": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "calculus",
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "calculus",
+            "number_theory",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "418": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "419": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        }
+      }
+    },
+    "421": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "422": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "426": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "428": {
+      "n_traces": 3,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        }
+      }
+    },
+    "429": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        }
+      }
+    },
+    "431": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "inequality"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        }
+      }
+    },
+    "432": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "contradiction",
+            "casework"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "433": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "435": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "439": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "440": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "trig",
+            "calculus"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig"
+          ]
+        }
+      }
+    },
+    "441": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "generating_fn"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "induction"
+          ]
+        }
+      }
+    },
+    "442": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "trig"
+          ]
+        }
+      }
+    },
+    "443": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "factoring",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "444": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "algebraic_manip",
+            "counting"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory",
+            "counting"
+          ]
+        }
+      }
+    },
+    "448": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework"
+          ]
+        }
+      }
+    },
+    "449": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "calculus"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "450": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "synthetic_geo",
+            "casework",
+            "substitution"
+          ]
+        }
+      }
+    },
+    "451": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "factoring",
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "coordinate_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "factoring"
+          ]
+        }
+      }
+    },
+    "453": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution",
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "454": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "generating_fn"
+          ]
+        }
+      }
+    },
+    "456": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "457": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "counting"
+          ]
+        }
+      }
+    },
+    "460": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "463": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "465": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring",
+            "calculus",
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "calculus",
+            "number_theory"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "calculus",
+            "number_theory",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "466": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip",
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "467": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "generating_fn"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "induction",
+            "generating_fn"
+          ]
+        }
+      }
+    },
+    "468": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "calculus",
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "calculus"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "calculus",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "469": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "calculus",
+            "inequality"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "470": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "472": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "counting"
+          ]
+        }
+      }
+    },
+    "473": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "induction",
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "474": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "475": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo",
+            "trig"
+          ]
+        }
+      }
+    },
+    "476": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution",
+            "counting"
+          ]
+        }
+      }
+    },
+    "477": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "478": {
+      "n_traces": 3,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "480": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "484": {
+      "n_traces": 4,
+      "n_modes": 4,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "3": {
+          "n_traces": 1,
+          "top_strategies": [
+            "contradiction",
+            "factoring",
+            "calculus"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "485": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "486": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "inequality",
+            "counting"
+          ]
+        }
+      }
+    },
+    "487": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "induction"
+          ]
+        }
+      }
+    },
+    "489": {
+      "n_traces": 3,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "492": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "casework"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "494": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "496": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "substitution"
+          ]
+        }
+      }
+    },
+    "497": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "498": {
+      "n_traces": 3,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "501": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "503": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "trig"
+          ]
+        }
+      }
+    },
+    "504": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "506": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "contradiction"
+          ]
+        }
+      }
+    },
+    "509": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework",
+            "number_theory"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "510": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "substitution"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "factoring",
+            "counting"
+          ]
+        }
+      }
+    },
+    "511": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "512": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "514": {
+      "n_traces": 2,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory",
+            "generating_fn"
+          ]
+        }
+      }
+    },
+    "515": {
+      "n_traces": 3,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "518": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "520": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "522": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "524": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "generating_fn"
+          ]
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": [
+            "substitution",
+            "generating_fn"
+          ]
+        }
+      }
+    },
+    "525": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "526": {
+      "n_traces": 2,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "inequality",
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "527": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "528": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "533": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "factoring"
+          ]
+        }
+      }
+    },
+    "535": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "number_theory",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "536": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo",
+            "inequality"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "538": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "539": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "542": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "generating_fn"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "counting"
+          ]
+        }
+      }
+    },
+    "543": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "casework"
+          ]
+        },
+        "0": {
+          "n_traces": 3,
+          "top_strategies": []
+        }
+      }
+    },
+    "546": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 3,
+          "top_strategies": [
+            "inequality"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "inequality",
+            "counting"
+          ]
+        }
+      }
+    },
+    "547": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory",
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory",
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "549": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo",
+            "inequality"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "550": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "number_theory"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "factoring"
+          ]
+        }
+      }
+    },
+    "553": {
+      "n_traces": 3,
+      "n_modes": 2,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory",
+            "counting"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "number_theory"
+          ]
+        }
+      }
+    },
+    "555": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory",
+            "inequality"
+          ]
+        }
+      }
+    },
+    "556": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "1": {
+          "n_traces": 1,
+          "top_strategies": []
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "algebraic_manip"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "558": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": []
+        }
+      }
+    },
+    "562": {
+      "n_traces": 4,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 4,
+          "top_strategies": []
+        }
+      }
+    },
+    "563": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        },
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "trig"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo",
+            "factoring",
+            "algebraic_manip"
+          ]
+        }
+      }
+    },
+    "564": {
+      "n_traces": 1,
+      "n_modes": 1,
+      "modes": {
+        "0": {
+          "n_traces": 1,
+          "top_strategies": [
+            "substitution",
+            "synthetic_geo",
+            "factoring"
+          ]
+        }
+      }
+    },
+    "566": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "synthetic_geo",
+            "casework",
+            "coordinate_geo"
+          ]
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "synthetic_geo"
+          ]
+        }
+      }
+    },
+    "567": {
+      "n_traces": 4,
+      "n_modes": 2,
+      "modes": {
+        "0": {
+          "n_traces": 2,
+          "top_strategies": [
+            "coordinate_geo",
+            "synthetic_geo",
+            "counting"
+          ]
+        },
+        "1": {
+          "n_traces": 2,
+          "top_strategies": []
+        }
+      }
+    },
+    "569": {
+      "n_traces": 4,
+      "n_modes": 3,
+      "modes": {
+        "2": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring"
+          ]
+        },
+        "0": {
+          "n_traces": 2,
+          "top_strategies": []
+        },
+        "1": {
+          "n_traces": 1,
+          "top_strategies": [
+            "factoring",
+            "number_theory"
+          ]
+        }
+      }
+    }
+  },
+  "summary": {
+    "n_problems": 305,
+    "traces_per_problem_mean": 3.459016393442623,
+    "modes_per_problem_mean": 2.2131147540983607,
+    "modes_per_problem_median": 2.0,
+    "modes_per_problem_max": 4,
+    "problems_multi_mode": 233,
+    "note": "HEURISTIC strategy proxy (LLM-free). Thin bank (<=4 traces/problem) undercounts modes; the real bank needs 128-1024 witnesses/problem (run `sample` on GPU) + an LLM strategy judge for the final tables."
+  }
+}
