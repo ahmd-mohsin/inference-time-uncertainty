@@ -1,0 +1,324 @@
+{
+  "models": {
+    "base": {
+      "N": 1024,
+      "dataset": "olympiad_bench",
+      "subset": [
+        "hard"
+      ],
+      "path": "rl_training/runs_pulled/round1_fork/passk_base_r1_frag.json",
+      "n": 329
+    },
+    "grpo": {
+      "N": 1024,
+      "dataset": "olympiad_bench",
+      "subset": [
+        "hard"
+      ],
+      "path": "rl_training/runs_pulled/round2_eval/passk_r2_grpo_frag.json",
+      "n": 329
+    },
+    "floor": {
+      "N": 1024,
+      "dataset": "olympiad_bench",
+      "subset": [
+        "hard"
+      ],
+      "path": "rl_training/runs_pulled/round2_eval/passk_r2_floor_frag.json",
+      "n": 329
+    }
+  },
+  "n_common": 329,
+  "budgets": [
+    16,
+    64,
+    256,
+    1024,
+    4096,
+    16384
+  ],
+  "taus": [
+    0.5,
+    0.9
+  ],
+  "pass1": {
+    "base": 0.1728278162993921,
+    "grpo": 0.3780276405775076,
+    "floor": 0.29861440919452886
+  },
+  "eff_support": {
+    "16": {
+      "base@tau0.5": 258,
+      "grpo@tau0.5": 287,
+      "floor@tau0.5": 284,
+      "base@tau0.9": 163,
+      "grpo@tau0.9": 218,
+      "floor@tau0.9": 213
+    },
+    "64": {
+      "base@tau0.5": 307,
+      "grpo@tau0.5": 316,
+      "floor@tau0.5": 314,
+      "base@tau0.9": 271,
+      "grpo@tau0.9": 291,
+      "floor@tau0.9": 292
+    },
+    "256": {
+      "base@tau0.5": 321,
+      "grpo@tau0.5": 324,
+      "floor@tau0.5": 326,
+      "base@tau0.9": 307,
+      "grpo@tau0.9": 316,
+      "floor@tau0.9": 320
+    },
+    "1024": {
+      "base@tau0.5": 329,
+      "grpo@tau0.5": 327,
+      "floor@tau0.5": 329,
+      "base@tau0.9": 321,
+      "grpo@tau0.9": 324,
+      "floor@tau0.9": 326
+    },
+    "4096": {
+      "base@tau0.5": 329,
+      "grpo@tau0.5": 327,
+      "floor@tau0.5": 329,
+      "base@tau0.9": 329,
+      "grpo@tau0.9": 327,
+      "floor@tau0.9": 329
+    },
+    "16384": {
+      "base@tau0.5": 329,
+      "grpo@tau0.5": 327,
+      "floor@tau0.5": 329,
+      "base@tau0.9": 329,
+      "grpo@tau0.9": 327,
+      "floor@tau0.9": 329
+    }
+  },
+  "fragile": {
+    "band": [
+      0.0,
+      0.05
+    ],
+    "ref": "base",
+    "n_fragile": 81,
+    "recoverable@K16_tau0.5": {
+      "base": 10,
+      "grpo": 42,
+      "floor": 36
+    },
+    "recoverable@K64_tau0.5": {
+      "base": 59,
+      "grpo": 69,
+      "floor": 66
+    },
+    "recoverable@K256_tau0.5": {
+      "base": 73,
+      "grpo": 76,
+      "floor": 78
+    },
+    "recoverable@K1024_tau0.5": {
+      "base": 81,
+      "grpo": 79,
+      "floor": 81
+    },
+    "recoverable@K4096_tau0.5": {
+      "base": 81,
+      "grpo": 79,
+      "floor": 81
+    },
+    "recoverable@K16384_tau0.5": {
+      "base": 81,
+      "grpo": 79,
+      "floor": 81
+    },
+    "mean_phat": {
+      "base": 0.023558063271604937,
+      "grpo": 0.05887104552469136,
+      "floor": 0.04498215663580247
+    }
+  },
+  "lost_preserved": {
+    "K16_tau0.5": {
+      "grpo": {
+        "recoverable": 287,
+        "lost_vs_ref": 4,
+        "gained_vs_ref": 33
+      },
+      "floor": {
+        "recoverable": 284,
+        "lost_vs_ref": 0,
+        "gained_vs_ref": 26
+      },
+      "base": {
+        "recoverable": 258
+      }
+    },
+    "K16_tau0.9": {
+      "grpo": {
+        "recoverable": 218,
+        "lost_vs_ref": 4,
+        "gained_vs_ref": 59
+      },
+      "floor": {
+        "recoverable": 213,
+        "lost_vs_ref": 1,
+        "gained_vs_ref": 51
+      },
+      "base": {
+        "recoverable": 163
+      }
+    },
+    "K64_tau0.5": {
+      "grpo": {
+        "recoverable": 316,
+        "lost_vs_ref": 4,
+        "gained_vs_ref": 13
+      },
+      "floor": {
+        "recoverable": 314,
+        "lost_vs_ref": 1,
+        "gained_vs_ref": 8
+      },
+      "base": {
+        "recoverable": 307
+      }
+    },
+    "K64_tau0.9": {
+      "grpo": {
+        "recoverable": 291,
+        "lost_vs_ref": 3,
+        "gained_vs_ref": 23
+      },
+      "floor": {
+        "recoverable": 292,
+        "lost_vs_ref": 0,
+        "gained_vs_ref": 21
+      },
+      "base": {
+        "recoverable": 271
+      }
+    },
+    "K256_tau0.5": {
+      "grpo": {
+        "recoverable": 324,
+        "lost_vs_ref": 2,
+        "gained_vs_ref": 5
+      },
+      "floor": {
+        "recoverable": 326,
+        "lost_vs_ref": 1,
+        "gained_vs_ref": 6
+      },
+      "base": {
+        "recoverable": 321
+      }
+    },
+    "K256_tau0.9": {
+      "grpo": {
+        "recoverable": 316,
+        "lost_vs_ref": 4,
+        "gained_vs_ref": 13
+      },
+      "floor": {
+        "recoverable": 320,
+        "lost_vs_ref": 1,
+        "gained_vs_ref": 14
+      },
+      "base": {
+        "recoverable": 307
+      }
+    },
+    "K1024_tau0.5": {
+      "grpo": {
+        "recoverable": 327,
+        "lost_vs_ref": 2,
+        "gained_vs_ref": 0
+      },
+      "floor": {
+        "recoverable": 329,
+        "lost_vs_ref": 0,
+        "gained_vs_ref": 0
+      },
+      "base": {
+        "recoverable": 329
+      }
+    },
+    "K1024_tau0.9": {
+      "grpo": {
+        "recoverable": 324,
+        "lost_vs_ref": 2,
+        "gained_vs_ref": 5
+      },
+      "floor": {
+        "recoverable": 326,
+        "lost_vs_ref": 1,
+        "gained_vs_ref": 6
+      },
+      "base": {
+        "recoverable": 321
+      }
+    },
+    "K4096_tau0.5": {
+      "grpo": {
+        "recoverable": 327,
+        "lost_vs_ref": 2,
+        "gained_vs_ref": 0
+      },
+      "floor": {
+        "recoverable": 329,
+        "lost_vs_ref": 0,
+        "gained_vs_ref": 0
+      },
+      "base": {
+        "recoverable": 329
+      }
+    },
+    "K4096_tau0.9": {
+      "grpo": {
+        "recoverable": 327,
+        "lost_vs_ref": 2,
+        "gained_vs_ref": 0
+      },
+      "floor": {
+        "recoverable": 329,
+        "lost_vs_ref": 0,
+        "gained_vs_ref": 0
+      },
+      "base": {
+        "recoverable": 329
+      }
+    },
+    "K16384_tau0.5": {
+      "grpo": {
+        "recoverable": 327,
+        "lost_vs_ref": 2,
+        "gained_vs_ref": 0
+      },
+      "floor": {
+        "recoverable": 329,
+        "lost_vs_ref": 0,
+        "gained_vs_ref": 0
+      },
+      "base": {
+        "recoverable": 329
+      }
+    },
+    "K16384_tau0.9": {
+      "grpo": {
+        "recoverable": 327,
+        "lost_vs_ref": 2,
+        "gained_vs_ref": 0
+      },
+      "floor": {
+        "recoverable": 329,
+        "lost_vs_ref": 0,
+        "gained_vs_ref": 0
+      },
+      "base": {
+        "recoverable": 329
+      }
+    }
+  }
+}
