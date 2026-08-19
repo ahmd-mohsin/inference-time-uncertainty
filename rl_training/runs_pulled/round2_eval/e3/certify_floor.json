@@ -1,0 +1,6758 @@
+{
+  "alpha": 0.5,
+  "conf": 0.95,
+  "rows": [
+    {
+      "problem_id": 0,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 14.99652099609375,
+      "delta_lcb": 14.99652099609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 0,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 6.20172119140625,
+      "delta_lcb": 3.18511676892934,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 0,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 16.842926025390625,
+      "delta_lcb": 16.842926025390625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 2,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.513702392578125,
+      "delta_lcb": -2.2832576706136223,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.1019515406135741
+    },
+    {
+      "problem_id": 2,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -2.8377685546875,
+      "delta_lcb": -2.8377685546875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.05855618521207019
+    },
+    {
+      "problem_id": 2,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.80047607421875,
+      "delta_lcb": -0.80047607421875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.4491151010930431
+    },
+    {
+      "problem_id": 6,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 8.895807266235352,
+      "delta_lcb": -0.8125681363133612,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.44371707580534475
+    },
+    {
+      "problem_id": 7,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -0.1297149658203125,
+      "delta_lcb": -17.55698322703377,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.3719146944115393e-08
+    },
+    {
+      "problem_id": 7,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 13.6171875,
+      "delta_lcb": 13.6171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 7,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.6301422119140625,
+      "delta_lcb": 2.6301422119140625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 8,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 2.8159685134887695,
+      "delta_lcb": -0.1727666960500267,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.8413338784662864
+    },
+    {
+      "problem_id": 11,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 18.659423828125,
+      "delta_lcb": -36.780123774738854,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.0631516092863799e-16
+    },
+    {
+      "problem_id": 11,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 9.51947021484375,
+      "delta_lcb": -27.566498079217368,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.0666501500730583e-12
+    },
+    {
+      "problem_id": 12,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 12.17376708984375,
+      "delta_lcb": 12.17376708984375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 12,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 3.0304718017578125,
+      "delta_lcb": 3.0304718017578125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 12,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.127738952636719,
+      "delta_lcb": 4.127738952636719,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 12,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 3.3935089111328125,
+      "delta_lcb": 3.3935089111328125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 14,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": -0.3863525390625,
+      "delta_lcb": -1.475689130943404,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.2286211228564219
+    },
+    {
+      "problem_id": 14,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -7.09722900390625,
+      "delta_lcb": -7.09722900390625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0008273944564639827
+    },
+    {
+      "problem_id": 15,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.918914794921875,
+      "delta_lcb": 0.918914794921875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 15,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 10.821273803710938,
+      "delta_lcb": -30.130537798370455,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 8.212468133389259e-14
+    },
+    {
+      "problem_id": 15,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 5.0589599609375,
+      "delta_lcb": 5.0589599609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 20,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 1.6427268981933594,
+      "delta_lcb": -0.15248155846910882,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.8585747272427541
+    },
+    {
+      "problem_id": 23,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 6.3774464925130205,
+      "delta_lcb": 0.6895702427379842,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 23,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 31.9281005859375,
+      "delta_lcb": 31.9281005859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 24,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 3.073455810546875,
+      "delta_lcb": -18.098845144679895,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.379657940542636e-08
+    },
+    {
+      "problem_id": 24,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.7751121520996094,
+      "delta_lcb": -1.170454153496187,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3102260190365921
+    },
+    {
+      "problem_id": 26,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -2.83929443359375,
+      "delta_lcb": -2.83929443359375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.058466903697937084
+    },
+    {
+      "problem_id": 26,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 5.3954620361328125,
+      "delta_lcb": -4.952535460758712,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.007065471972508388
+    },
+    {
+      "problem_id": 26,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -4.08245849609375,
+      "delta_lcb": -4.08245849609375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.01686594976867312
+    },
+    {
+      "problem_id": 28,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 10.451126098632812,
+      "delta_lcb": -75.64551174143516,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.404661470328913e-33
+    },
+    {
+      "problem_id": 28,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.8679122924804688,
+      "delta_lcb": 1.8679122924804688,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 28,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 22.6561279296875,
+      "delta_lcb": 22.6561279296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 29,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -0.2778778076171875,
+      "delta_lcb": -0.2778778076171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.7573893630712742
+    },
+    {
+      "problem_id": 29,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.9314689636230469,
+      "delta_lcb": -6.369697372239186,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.001712677450888843
+    },
+    {
+      "problem_id": 29,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.2768058776855469,
+      "delta_lcb": 1.2768058776855469,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 30,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 15.5010986328125,
+      "delta_lcb": 15.5010986328125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 30,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.2963409423828125,
+      "delta_lcb": 1.2963409423828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 35,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.0330657958984375,
+      "delta_lcb": 1.0330657958984375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 35,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 0.43527475992838544,
+      "delta_lcb": -0.5814653438260398,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.559078523773232
+    },
+    {
+      "problem_id": 37,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.4381866455078125,
+      "delta_lcb": 0.4381866455078125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 37,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.875762939453125,
+      "delta_lcb": 1.875762939453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 37,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.117256164550781,
+      "delta_lcb": -13.078602930119828,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.0894641130174127e-06
+    },
+    {
+      "problem_id": 40,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": -3.6206283569335938,
+      "delta_lcb": -11.918072812492408,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 6.668785407181518e-06
+    },
+    {
+      "problem_id": 40,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.113960266113281,
+      "delta_lcb": -15.34738686179557,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.161297615341797e-07
+    },
+    {
+      "problem_id": 41,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.1580352783203125,
+      "delta_lcb": -2.3349827483485575,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.09681215268156716
+    },
+    {
+      "problem_id": 41,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 10.347015380859375,
+      "delta_lcb": 10.347015380859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 41,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.71331787109375,
+      "delta_lcb": 0.71331787109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 42,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 3.568073272705078,
+      "delta_lcb": -10.0633187525954,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.261438214641046e-05
+    },
+    {
+      "problem_id": 42,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 5.213890075683594,
+      "delta_lcb": -2.3886524988287867,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.09175323820995612
+    },
+    {
+      "problem_id": 46,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.265834808349609,
+      "delta_lcb": -25.158991982993594,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.1846460523151196e-11
+    },
+    {
+      "problem_id": 46,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 9.780731201171875,
+      "delta_lcb": 9.780731201171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 46,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -8.3682861328125,
+      "delta_lcb": -8.3682861328125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0002321130239307431
+    },
+    {
+      "problem_id": 47,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.5906295776367188,
+      "delta_lcb": -0.7089741898525164,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.492148789831411
+    },
+    {
+      "problem_id": 47,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 6.753021240234375,
+      "delta_lcb": 6.753021240234375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 47,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -4.080322265625,
+      "delta_lcb": -4.080322265625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.016902017835588787
+    },
+    {
+      "problem_id": 48,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 6.8712717692057295,
+      "delta_lcb": -2.41813461786509,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.08908764506031955
+    },
+    {
+      "problem_id": 48,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.91473388671875,
+      "delta_lcb": 3.91473388671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 51,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 4.873046875,
+      "delta_lcb": -1.2916422512467785,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.2748190903010618
+    },
+    {
+      "problem_id": 53,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 17.035614013671875,
+      "delta_lcb": 17.035614013671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 53,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 7.684745788574219,
+      "delta_lcb": 7.684745788574219,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 53,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -12.14892578125,
+      "delta_lcb": -12.14892578125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 5.294056502683699e-06
+    },
+    {
+      "problem_id": 55,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.1090596516927085,
+      "delta_lcb": -1.1004378438485092,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3327253700439772
+    },
+    {
+      "problem_id": 55,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.5292205810546875,
+      "delta_lcb": 0.5292205810546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 56,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 11.7147216796875,
+      "delta_lcb": -37.4427703350168,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 5.480389888041943e-17
+    },
+    {
+      "problem_id": 56,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.3988189697265625,
+      "delta_lcb": 2.3988189697265625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 56,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.025146484375,
+      "delta_lcb": 4.025146484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 57,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 14.726730346679688,
+      "delta_lcb": 14.726730346679688,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 57,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 4.25506591796875,
+      "delta_lcb": -3.63311287416517,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.026433771201010245
+    },
+    {
+      "problem_id": 60,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.396148681640625,
+      "delta_lcb": -26.13038927855254,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.484521663775326e-12
+    },
+    {
+      "problem_id": 60,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 2.7544403076171875,
+      "delta_lcb": -6.4765888808239875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0015390516240066808
+    },
+    {
+      "problem_id": 61,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 9.30539321899414,
+      "delta_lcb": -1.8768852884773484,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.15306612085755153
+    },
+    {
+      "problem_id": 63,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 1.9805164337158203,
+      "delta_lcb": -1.366248047303353,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.2550621476346542
+    },
+    {
+      "problem_id": 66,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 6.583967844645183,
+      "delta_lcb": 1.6495012099775455,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 66,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 13.53143310546875,
+      "delta_lcb": 13.53143310546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 67,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 8.642654418945312,
+      "delta_lcb": -41.38421158363685,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.0643029632187265e-18
+    },
+    {
+      "problem_id": 67,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.8356552124023438,
+      "delta_lcb": 0.8356552124023438,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 67,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 13.640716552734375,
+      "delta_lcb": 13.640716552734375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 69,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 5.51507568359375,
+      "delta_lcb": 5.51507568359375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 69,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 3.66180419921875,
+      "delta_lcb": 3.66180419921875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 69,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 17.7972412109375,
+      "delta_lcb": 17.7972412109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 71,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 7.838813781738281,
+      "delta_lcb": 7.294443467187764,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 71,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.19537353515625,
+      "delta_lcb": -19.1589991003583,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.77916926080253e-09
+    },
+    {
+      "problem_id": 73,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 3.2397689819335938,
+      "delta_lcb": 3.2397689819335938,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 73,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 7.455863952636719,
+      "delta_lcb": -2.0021909231309394,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.13503909861148788
+    },
+    {
+      "problem_id": 73,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 7.78228759765625,
+      "delta_lcb": 7.78228759765625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 74,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 2.6851908365885415,
+      "delta_lcb": -2.7093180405574446,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.06658219759424383
+    },
+    {
+      "problem_id": 74,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -8.381103515625,
+      "delta_lcb": -8.381103515625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.00022915692762639125
+    },
+    {
+      "problem_id": 75,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 17.170440673828125,
+      "delta_lcb": 17.170440673828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 75,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 9.266712188720703,
+      "delta_lcb": 9.266712188720703,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 75,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 13.887725830078125,
+      "delta_lcb": 13.887725830078125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 75,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.052001953125,
+      "delta_lcb": 1.052001953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 78,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 25.964691162109375,
+      "delta_lcb": 25.964691162109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 78,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 9.585052490234375,
+      "delta_lcb": 9.585052490234375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 78,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 13.971549987792969,
+      "delta_lcb": 1.8865868088930302,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 81,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 12.530329386393229,
+      "delta_lcb": -5.302368734973863,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.004979784136477685
+    },
+    {
+      "problem_id": 81,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 5.3783721923828125,
+      "delta_lcb": 5.3783721923828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 82,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.3257064819335938,
+      "delta_lcb": -5.009625238240194,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0066734037742284475
+    },
+    {
+      "problem_id": 82,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.5286102294921875,
+      "delta_lcb": 3.5286102294921875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 82,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -9.991973876953125,
+      "delta_lcb": -9.991973876953125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.5765781406262625e-05
+    },
+    {
+      "problem_id": 84,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.9351348876953125,
+      "delta_lcb": 1.9351348876953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 84,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 12.720703125,
+      "delta_lcb": 12.720703125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 84,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -1.3874435424804688,
+      "delta_lcb": -4.212379131969457,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.014811088852460361
+    },
+    {
+      "problem_id": 86,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.123016357421875,
+      "delta_lcb": 2.123016357421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 86,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": -0.641448974609375,
+      "delta_lcb": -0.641448974609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.5265289439740907
+    },
+    {
+      "problem_id": 86,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.01068115234375,
+      "delta_lcb": 0.01068115234375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 86,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -2.0181121826171875,
+      "delta_lcb": -2.0181121826171875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.13290613090423037
+    },
+    {
+      "problem_id": 88,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.4633941650390625,
+      "delta_lcb": 2.4633941650390625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 88,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -4.011199951171875,
+      "delta_lcb": -4.011199951171875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.018111649097698475
+    },
+    {
+      "problem_id": 89,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 6.171846389770508,
+      "delta_lcb": -0.6283915408829159,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.5334491424594102
+    },
+    {
+      "problem_id": 93,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 1.9192543029785156,
+      "delta_lcb": -2.5294610930212844,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0797019606572414
+    },
+    {
+      "problem_id": 94,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.8664321899414062,
+      "delta_lcb": -2.2518452126130084,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.10520491990513402
+    },
+    {
+      "problem_id": 94,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.501365661621094,
+      "delta_lcb": 4.501365661621094,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 97,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -5.683830261230469,
+      "delta_lcb": -71.70543388309902,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 7.223135169898995e-32
+    },
+    {
+      "problem_id": 97,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 0.907257080078125,
+      "delta_lcb": -12.264568093972976,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.7159126666957275e-06
+    },
+    {
+      "problem_id": 100,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -1.08587646484375,
+      "delta_lcb": -1.08587646484375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3376057566073181
+    },
+    {
+      "problem_id": 100,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 21.998001098632812,
+      "delta_lcb": 21.998001098632812,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 100,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -7.287109375,
+      "delta_lcb": -7.287109375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0006843032607012526
+    },
+    {
+      "problem_id": 101,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.6688995361328125,
+      "delta_lcb": 2.6688995361328125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 101,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.098602294921875,
+      "delta_lcb": -5.220436628474034,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.005404968647939445
+    },
+    {
+      "problem_id": 108,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 9.01678466796875,
+      "delta_lcb": 9.01678466796875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 108,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 23.45379638671875,
+      "delta_lcb": 23.45379638671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 109,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 18.848983764648438,
+      "delta_lcb": 18.848983764648438,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 109,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 6.177742004394531,
+      "delta_lcb": -21.499208577000637,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.602696617544372e-10
+    },
+    {
+      "problem_id": 109,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.768524169921875,
+      "delta_lcb": 0.768524169921875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 112,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 7.789703369140625,
+      "delta_lcb": 7.789703369140625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 112,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 10.219375610351562,
+      "delta_lcb": 10.219375610351562,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 113,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -1.377288818359375,
+      "delta_lcb": -1.377288818359375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.2522615536649712
+    },
+    {
+      "problem_id": 113,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.880218505859375,
+      "delta_lcb": 1.880218505859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 115,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 11.83914566040039,
+      "delta_lcb": 7.73368018356925,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 115,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.042694091796875,
+      "delta_lcb": 1.042694091796875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 115,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -0.021636962890625,
+      "delta_lcb": -0.021636962890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.9785954370302661
+    },
+    {
+      "problem_id": 116,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.747283935546875,
+      "delta_lcb": -0.747283935546875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.47365127464772794
+    },
+    {
+      "problem_id": 116,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 8.623291015625,
+      "delta_lcb": 8.623291015625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 116,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 36.65168762207031,
+      "delta_lcb": -8.203058266015951,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0002738148894007626
+    },
+    {
+      "problem_id": 117,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.285614013671875,
+      "delta_lcb": 0.285614013671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 117,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 1.76080322265625,
+      "delta_lcb": 1.76080322265625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 117,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 6.360992431640625,
+      "delta_lcb": 6.360992431640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 117,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 8.810699462890625,
+      "delta_lcb": 8.810699462890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 119,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.9107646942138672,
+      "delta_lcb": -5.166459580783359,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.00570473024479519
+    },
+    {
+      "problem_id": 119,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -7.84161376953125,
+      "delta_lcb": -7.84161376953125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0003930342618829537
+    },
+    {
+      "problem_id": 119,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 1.01141357421875,
+      "delta_lcb": 1.01141357421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 120,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.28667449951171875,
+      "delta_lcb": 0.28667449951171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 120,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.0720863342285156,
+      "delta_lcb": -7.494364051921163,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0005562103255279361
+    },
+    {
+      "problem_id": 120,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 3.4107818603515625,
+      "delta_lcb": 3.4107818603515625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 121,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 6.847798665364583,
+      "delta_lcb": -5.847865590854384,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0028860526058411924
+    },
+    {
+      "problem_id": 121,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 6.552398681640625,
+      "delta_lcb": 6.552398681640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 123,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 4.320899963378906,
+      "delta_lcb": -26.535373642612598,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.9911187261177274e-12
+    },
+    {
+      "problem_id": 123,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 5.481620788574219,
+      "delta_lcb": -45.2389428425224,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.254118567442458e-20
+    },
+    {
+      "problem_id": 125,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 6.5032196044921875,
+      "delta_lcb": 2.5255298252279044,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 125,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 6.01885986328125,
+      "delta_lcb": 6.01885986328125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 126,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.671222686767578,
+      "delta_lcb": -1.0757240287919254,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.341050735335111
+    },
+    {
+      "problem_id": 126,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 18.504364013671875,
+      "delta_lcb": 18.504364013671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 126,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.79071044921875,
+      "delta_lcb": 1.79071044921875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 127,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.903553009033203,
+      "delta_lcb": 4.566193704727873,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 127,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -2.224313735961914,
+      "delta_lcb": -2.224313735961914,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.1081416068713749
+    },
+    {
+      "problem_id": 127,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.8837051391601562,
+      "delta_lcb": 0.8837051391601562,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 128,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -1.1597900390625,
+      "delta_lcb": -1.1597900390625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3135520076453193
+    },
+    {
+      "problem_id": 128,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 0.09588623046875,
+      "delta_lcb": 0.09588623046875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 128,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.668388366699219,
+      "delta_lcb": 4.668388366699219,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 128,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -0.873992919921875,
+      "delta_lcb": -0.873992919921875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.4172820445777083
+    },
+    {
+      "problem_id": 129,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.155971527099609,
+      "delta_lcb": -9.77036602833031,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 5.711944088947894e-05
+    },
+    {
+      "problem_id": 129,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 4.4900054931640625,
+      "delta_lcb": 4.4900054931640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 129,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 17.491668701171875,
+      "delta_lcb": 17.491668701171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 130,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 42.99658203125,
+      "delta_lcb": 42.99658203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 130,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.3655853271484375,
+      "delta_lcb": 2.3655853271484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 130,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.0766143798828125,
+      "delta_lcb": 0.0766143798828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 130,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 10.564971923828125,
+      "delta_lcb": 10.564971923828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 131,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.40071868896484375,
+      "delta_lcb": -25.60222453279316,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 7.60492895004243e-12
+    },
+    {
+      "problem_id": 132,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 5.960439046223958,
+      "delta_lcb": -9.4872596786007,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 7.581156695547517e-05
+    },
+    {
+      "problem_id": 132,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.5317230224609375,
+      "delta_lcb": -0.5317230224609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.5875916633204797
+    },
+    {
+      "problem_id": 133,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 2.540477752685547,
+      "delta_lcb": -0.38385498802831064,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.6812302065527047
+    },
+    {
+      "problem_id": 134,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 25.31114959716797,
+      "delta_lcb": -126.92009892236834,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 7.5735831068440735e-56
+    },
+    {
+      "problem_id": 134,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 8.465164184570312,
+      "delta_lcb": 8.465164184570312,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 134,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.5879058837890625,
+      "delta_lcb": 0.5879058837890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 135,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 5.6175079345703125,
+      "delta_lcb": 5.6175079345703125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 135,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -10.25146484375,
+      "delta_lcb": -10.25146484375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.5305745552240734e-05
+    },
+    {
+      "problem_id": 135,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 11.16385269165039,
+      "delta_lcb": -47.08369871010298,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.5629478243383534e-21
+    },
+    {
+      "problem_id": 136,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.077648162841797,
+      "delta_lcb": -5.357020128755055,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.004714935094424675
+    },
+    {
+      "problem_id": 136,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 7.5726318359375,
+      "delta_lcb": 7.5726318359375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 136,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.1318817138671875,
+      "delta_lcb": 2.1318817138671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 137,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": -0.8346824645996094,
+      "delta_lcb": -1.74801166989428,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.17411980714544953
+    },
+    {
+      "problem_id": 137,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 7.780364990234375,
+      "delta_lcb": -69.74093507999798,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 5.151061463303959e-31
+    },
+    {
+      "problem_id": 138,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 13.328852335611979,
+      "delta_lcb": 1.485562865262617,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 138,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.56036376953125,
+      "delta_lcb": 1.56036376953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 139,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 0.8432044982910156,
+      "delta_lcb": -2.8195084423593917,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.059635249667943285
+    },
+    {
+      "problem_id": 142,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.8684234619140625,
+      "delta_lcb": 1.8684234619140625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 144,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 16.4583740234375,
+      "delta_lcb": 16.4583740234375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 147,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 26.1317138671875,
+      "delta_lcb": 26.1317138671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 147,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -5.560455322265625,
+      "delta_lcb": -5.560455322265625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0038470243629217683
+    },
+    {
+      "problem_id": 147,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -1.8848876953125,
+      "delta_lcb": -1.8848876953125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.15184611150199917
+    },
+    {
+      "problem_id": 147,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -2.6253662109375,
+      "delta_lcb": -2.6253662109375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.07241323365978701
+    },
+    {
+      "problem_id": 150,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 1.9396031697591145,
+      "delta_lcb": 0.16274439080805259,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 150,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.85333251953125,
+      "delta_lcb": -0.85333251953125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.42599293407392685
+    },
+    {
+      "problem_id": 153,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 6.0796966552734375,
+      "delta_lcb": 6.0796966552734375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 158,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 6.131988525390625,
+      "delta_lcb": 6.131988525390625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 158,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 12.201187133789062,
+      "delta_lcb": 12.201187133789062,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 158,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.508148193359375,
+      "delta_lcb": -1.6155865343613502,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.19877404843320487
+    },
+    {
+      "problem_id": 159,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.9190053939819336,
+      "delta_lcb": -19.745407337170633,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.658756413560057e-09
+    },
+    {
+      "problem_id": 159,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 5.030029296875,
+      "delta_lcb": 5.030029296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 159,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.6949005126953125,
+      "delta_lcb": 1.6949005126953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 160,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 6.9065093994140625,
+      "delta_lcb": 6.9065093994140625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 160,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.717041015625,
+      "delta_lcb": -10.7004742800388,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.253424783442983e-05
+    },
+    {
+      "problem_id": 160,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.2113037109375,
+      "delta_lcb": 1.2113037109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 162,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 19.912577311197918,
+      "delta_lcb": -24.24202767901028,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.963610664130312e-11
+    },
+    {
+      "problem_id": 162,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.319793701171875,
+      "delta_lcb": -0.319793701171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.7262988562223094
+    },
+    {
+      "problem_id": 163,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.4120025634765625,
+      "delta_lcb": -3.1950935655659336,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.040962692499267234
+    },
+    {
+      "problem_id": 165,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 1.0909423828125,
+      "delta_lcb": 1.0909423828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 165,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": -5.73980712890625,
+      "delta_lcb": -5.73980712890625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.003215388370977625
+    },
+    {
+      "problem_id": 165,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 9.159698486328125,
+      "delta_lcb": 9.159698486328125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 165,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 2.2901763916015625,
+      "delta_lcb": 2.2901763916015625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 166,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 1.475830078125,
+      "delta_lcb": 1.475830078125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 166,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 31.348480224609375,
+      "delta_lcb": 31.348480224609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 166,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.3153266906738281,
+      "delta_lcb": -4.525274004317136,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.010831746084594822
+    },
+    {
+      "problem_id": 167,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 7.677012125651042,
+      "delta_lcb": -14.59897254737438,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.5682175846415633e-07
+    },
+    {
+      "problem_id": 167,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.932133674621582,
+      "delta_lcb": 1.932133674621582,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 170,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.1538848876953125,
+      "delta_lcb": 1.1538848876953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 172,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.5943565368652344,
+      "delta_lcb": -0.6385075553023714,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.5280799663609091
+    },
+    {
+      "problem_id": 172,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -1.87847900390625,
+      "delta_lcb": -1.87847900390625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.15282237130440274
+    },
+    {
+      "problem_id": 172,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.6524200439453125,
+      "delta_lcb": 0.6524200439453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 175,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 11.7027587890625,
+      "delta_lcb": 11.7027587890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 175,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.682861328125,
+      "delta_lcb": 2.682861328125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 175,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 5.9395751953125,
+      "delta_lcb": 5.9395751953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 175,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 2.388671875,
+      "delta_lcb": 2.388671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 180,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.7943191528320312,
+      "delta_lcb": 0.7943191528320312,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 181,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.606689453125,
+      "delta_lcb": 2.606689453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 181,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.1103973388671875,
+      "delta_lcb": 0.1103973388671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 181,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -3.41754150390625,
+      "delta_lcb": -3.41754150390625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.03279295727389955
+    },
+    {
+      "problem_id": 182,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 21.2725830078125,
+      "delta_lcb": 21.2725830078125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 184,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 8.482635498046875,
+      "delta_lcb": 8.482635498046875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 185,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 16.06329345703125,
+      "delta_lcb": 16.06329345703125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 185,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.973882039388021,
+      "delta_lcb": -1.09871329159061,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3332996673927077
+    },
+    {
+      "problem_id": 189,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": -0.06881237030029297,
+      "delta_lcb": -2.604230042172861,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.07396006140829992
+    },
+    {
+      "problem_id": 191,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.2376861572265625,
+      "delta_lcb": 0.9204378702050863,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 192,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.2475051879882812,
+      "delta_lcb": 0.5595653665358977,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 192,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -1.65899658203125,
+      "delta_lcb": -1.65899658203125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.1903298647232279
+    },
+    {
+      "problem_id": 192,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 23.22332763671875,
+      "delta_lcb": 23.22332763671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 194,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 1.8983078002929688,
+      "delta_lcb": -11.846115367657964,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 7.166340904929749e-06
+    },
+    {
+      "problem_id": 194,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.533939361572266,
+      "delta_lcb": -16.751922607419026,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 5.305574904648577e-08
+    },
+    {
+      "problem_id": 195,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.7403984069824219,
+      "delta_lcb": -15.521766832098312,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.8154417360712063e-07
+    },
+    {
+      "problem_id": 195,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 3.1609039306640625,
+      "delta_lcb": 3.1609039306640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 195,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.3247833251953125,
+      "delta_lcb": 1.3247833251953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 196,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 7.7126312255859375,
+      "delta_lcb": 7.7126312255859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 196,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 4.548709869384766,
+      "delta_lcb": 4.548709869384766,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 196,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -2.4893836975097656,
+      "delta_lcb": -25.81891038335091,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 6.123358573879939e-12
+    },
+    {
+      "problem_id": 197,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 7.852813720703125,
+      "delta_lcb": -3.115442230101907,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.04435888597460676
+    },
+    {
+      "problem_id": 197,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 6.064727783203125,
+      "delta_lcb": 6.064727783203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 198,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.559436798095703,
+      "delta_lcb": 4.121787342928132,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 198,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -4.19500732421875,
+      "delta_lcb": -4.19500732421875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.015070632081078813
+    },
+    {
+      "problem_id": 199,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 6.136116027832031,
+      "delta_lcb": 1.8996310880999143,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 200,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.982391357421875,
+      "delta_lcb": 1.982391357421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 200,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.0635910034179688,
+      "delta_lcb": 2.0635910034179688,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 200,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 2.6419525146484375,
+      "delta_lcb": 2.6419525146484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 201,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.9404449462890625,
+      "delta_lcb": 2.9404449462890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 201,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -1.8167686462402344,
+      "delta_lcb": -17.421978741536464,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.714755794099902e-08
+    },
+    {
+      "problem_id": 201,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.2093505859375,
+      "delta_lcb": 1.2093505859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 203,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 2.14349365234375,
+      "delta_lcb": 2.14349365234375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 203,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 8.425125122070312,
+      "delta_lcb": 8.425125122070312,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 203,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.513275146484375,
+      "delta_lcb": 3.513275146484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 203,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 12.955184936523438,
+      "delta_lcb": 12.955184936523438,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 204,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.4518318176269531,
+      "delta_lcb": -9.991903755555974,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.5768990679314584e-05
+    },
+    {
+      "problem_id": 204,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.180877685546875,
+      "delta_lcb": -0.180877685546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.834537428442532
+    },
+    {
+      "problem_id": 204,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -3.7998046875,
+      "delta_lcb": -3.7998046875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.022375141574260144
+    },
+    {
+      "problem_id": 208,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.1181640625,
+      "delta_lcb": 0.1181640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 210,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.0127410888671875,
+      "delta_lcb": -9.638920726485223,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 6.514332428526212e-05
+    },
+    {
+      "problem_id": 210,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 12.898681640625,
+      "delta_lcb": -59.527763157562475,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.4041740431559558e-26
+    },
+    {
+      "problem_id": 212,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.3033905029296875,
+      "delta_lcb": -0.6132865244038523,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.5415680644036696
+    },
+    {
+      "problem_id": 212,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.100006103515625,
+      "delta_lcb": 2.100006103515625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 212,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.3804855346679688,
+      "delta_lcb": 3.3804855346679688,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 214,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 4.571533203125,
+      "delta_lcb": -1.428784289902004,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.23960002943218758
+    },
+    {
+      "problem_id": 218,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.58673095703125,
+      "delta_lcb": 0.58673095703125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 218,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 8.423965454101562,
+      "delta_lcb": -24.418024236901523,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.4853457533648695e-11
+    },
+    {
+      "problem_id": 219,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.154571533203125,
+      "delta_lcb": -0.154571533203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.8567822015747084
+    },
+    {
+      "problem_id": 219,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 8.949920654296875,
+      "delta_lcb": -17.093948820006784,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.768706819614188e-08
+    },
+    {
+      "problem_id": 222,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.6655349731445312,
+      "delta_lcb": 0.6655349731445312,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 222,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 3.844573974609375,
+      "delta_lcb": 3.844573974609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 222,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.800933837890625,
+      "delta_lcb": 4.800933837890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 222,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.0481147766113281,
+      "delta_lcb": 1.0481147766113281,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 223,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 6.0327911376953125,
+      "delta_lcb": 0.18935704357753913,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 223,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.3618621826171875,
+      "delta_lcb": 2.3618621826171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 224,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.526092529296875,
+      "delta_lcb": 1.526092529296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 224,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.3939208984375,
+      "delta_lcb": 1.3939208984375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 227,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.8478221893310547,
+      "delta_lcb": -20.37736879712008,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.4132570991302277e-09
+    },
+    {
+      "problem_id": 227,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -0.5793075561523438,
+      "delta_lcb": -0.5793075561523438,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.56028619900524
+    },
+    {
+      "problem_id": 227,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.6937332153320312,
+      "delta_lcb": 0.6937332153320312,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 229,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 10.24346923828125,
+      "delta_lcb": -3.355143033099079,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.03490437731643471
+    },
+    {
+      "problem_id": 229,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 18.67035675048828,
+      "delta_lcb": -9.044937231524724,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.00011798686756373916
+    },
+    {
+      "problem_id": 231,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 1.7221832275390625,
+      "delta_lcb": -13.164401211830976,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.917667005940766e-06
+    },
+    {
+      "problem_id": 231,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.3807220458984375,
+      "delta_lcb": 0.7929165624587786,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 233,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 3.0343017578125,
+      "delta_lcb": 3.0343017578125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 233,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 14.689910888671875,
+      "delta_lcb": 14.689910888671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 233,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 12.620208740234375,
+      "delta_lcb": 12.620208740234375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 233,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 5.1967315673828125,
+      "delta_lcb": 5.1967315673828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 234,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 3.1170120239257812,
+      "delta_lcb": -0.9569742917197326,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3840531625947646
+    },
+    {
+      "problem_id": 234,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.3226699829101562,
+      "delta_lcb": -29.608182242406446,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.3846175530376483e-13
+    },
+    {
+      "problem_id": 235,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 0.29233042399088544,
+      "delta_lcb": -0.893774208834806,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.40910877333029294
+    },
+    {
+      "problem_id": 235,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.20623779296875,
+      "delta_lcb": 4.20623779296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 236,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 17.551437377929688,
+      "delta_lcb": 17.551437377929688,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 236,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.1792449951171875,
+      "delta_lcb": 2.1792449951171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 236,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 13.80743408203125,
+      "delta_lcb": 13.80743408203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 237,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.712799072265625,
+      "delta_lcb": -0.712799072265625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.49026997399592154
+    },
+    {
+      "problem_id": 237,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -0.0480194091796875,
+      "delta_lcb": -0.0480194091796875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.9531152877120944
+    },
+    {
+      "problem_id": 239,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -2.3310699462890625,
+      "delta_lcb": -2.3310699462890625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.09719170153749472
+    },
+    {
+      "problem_id": 239,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.1971359252929688,
+      "delta_lcb": -10.709524143764606,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.2331235962805888e-05
+    },
+    {
+      "problem_id": 242,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 7.465904235839844,
+      "delta_lcb": 0.20726462676841528,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 245,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -0.7747802734375,
+      "delta_lcb": -0.7747802734375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.4608050209792446
+    },
+    {
+      "problem_id": 247,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.5437545776367188,
+      "delta_lcb": 1.0898267766583918,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 247,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.356689453125,
+      "delta_lcb": 1.356689453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 248,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 6.1925506591796875,
+      "delta_lcb": 6.1925506591796875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 248,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.6671142578125,
+      "delta_lcb": 1.6671142578125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 248,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -2.5972137451171875,
+      "delta_lcb": -2.5972137451171875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.07448081190316957
+    },
+    {
+      "problem_id": 248,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 10.547515869140625,
+      "delta_lcb": 10.547515869140625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 250,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.200042724609375,
+      "delta_lcb": -7.167307850450504,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0007713966534732195
+    },
+    {
+      "problem_id": 250,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 4.279624938964844,
+      "delta_lcb": -12.926590727480686,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.432500718574142e-06
+    },
+    {
+      "problem_id": 252,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.9274234771728516,
+      "delta_lcb": 1.495397881329568,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 252,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -1.3038177490234375,
+      "delta_lcb": -1.3038177490234375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.2714933186259613
+    },
+    {
+      "problem_id": 252,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -1.1796875,
+      "delta_lcb": -1.1796875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.30737477821235176
+    },
+    {
+      "problem_id": 253,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.530242919921875,
+      "delta_lcb": 4.530242919921875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 253,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 18.447845458984375,
+      "delta_lcb": 18.447845458984375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 256,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.0869178771972656,
+      "delta_lcb": 0.9190096866446991,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 261,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.7290802001953125,
+      "delta_lcb": 1.7290802001953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 261,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.648101806640625,
+      "delta_lcb": -18.464082862190335,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 9.575262738630404e-09
+    },
+    {
+      "problem_id": 261,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.08890533447265625,
+      "delta_lcb": 0.08890533447265625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 262,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": -0.3045247395833333,
+      "delta_lcb": -2.6592817863707423,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.06999847755589872
+    },
+    {
+      "problem_id": 262,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.028106689453125,
+      "delta_lcb": 3.028106689453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 264,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.8971048990885415,
+      "delta_lcb": -2.256253109995695,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.10474220795662237
+    },
+    {
+      "problem_id": 269,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 14.082901000976562,
+      "delta_lcb": -7.4358629849078,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0005897198378711658
+    },
+    {
+      "problem_id": 269,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -1.9985885620117188,
+      "delta_lcb": -1.9985885620117188,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.1355264354645519
+    },
+    {
+      "problem_id": 271,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.3990656534830728,
+      "delta_lcb": -4.121034345744542,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.01622772068433781
+    },
+    {
+      "problem_id": 271,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -3.2306060791015625,
+      "delta_lcb": -3.2306060791015625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.03953353107897056
+    },
+    {
+      "problem_id": 272,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 18.03289794921875,
+      "delta_lcb": -14.733232331836433,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.994279925817347e-07
+    },
+    {
+      "problem_id": 273,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -0.83807373046875,
+      "delta_lcb": -0.83807373046875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.43254291570523734
+    },
+    {
+      "problem_id": 273,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 4.132904052734375,
+      "delta_lcb": 4.132904052734375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 273,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 13.74658203125,
+      "delta_lcb": 13.74658203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 273,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.7149658203125,
+      "delta_lcb": 0.7149658203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 274,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.7226765950520835,
+      "delta_lcb": -6.5157816046170005,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0014798987516153003
+    },
+    {
+      "problem_id": 274,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.7282791137695312,
+      "delta_lcb": 1.7282791137695312,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 279,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.297271728515625,
+      "delta_lcb": 1.297271728515625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 279,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 3.2223052978515625,
+      "delta_lcb": 3.2223052978515625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 280,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 17.343124389648438,
+      "delta_lcb": 10.469393743424057,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 282,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 6.647636413574219,
+      "delta_lcb": 2.3665186624303223,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 282,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 4.86474609375,
+      "delta_lcb": 4.86474609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 282,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.30682373046875,
+      "delta_lcb": 4.30682373046875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 283,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 9.99884033203125,
+      "delta_lcb": 9.99884033203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 284,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": -0.15838623046875,
+      "delta_lcb": -25.29084755201948,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.0383038527104117e-11
+    },
+    {
+      "problem_id": 284,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 19.87847900390625,
+      "delta_lcb": -33.054296528414376,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.412669638456084e-15
+    },
+    {
+      "problem_id": 285,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.6438751220703125,
+      "delta_lcb": -12.941923902369883,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.395487251789825e-06
+    },
+    {
+      "problem_id": 287,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 1.87884521484375,
+      "delta_lcb": -3.2396330332443863,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.03917826958382646
+    },
+    {
+      "problem_id": 287,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 9.93353271484375,
+      "delta_lcb": 9.93353271484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 288,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.9130935668945312,
+      "delta_lcb": -12.262474612592069,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.725795683403676e-06
+    },
+    {
+      "problem_id": 288,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -1.3106689453125,
+      "delta_lcb": -1.3106689453125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.26963962187988644
+    },
+    {
+      "problem_id": 288,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.120758056640625,
+      "delta_lcb": 2.120758056640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 294,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 5.26483154296875,
+      "delta_lcb": -3.8259283894813887,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.02179818892481774
+    },
+    {
+      "problem_id": 295,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 12.504020690917969,
+      "delta_lcb": 6.5600710436335685,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 297,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 14.289348602294922,
+      "delta_lcb": -30.07312590768025,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 8.6977588953118e-14
+    },
+    {
+      "problem_id": 297,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.40765380859375,
+      "delta_lcb": 2.40765380859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 300,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 4.5037841796875,
+      "delta_lcb": 2.0321917684419493,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 300,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.6365509033203125,
+      "delta_lcb": 2.6365509033203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 301,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -0.558074951171875,
+      "delta_lcb": -0.558074951171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.5723097282642583
+    },
+    {
+      "problem_id": 302,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 6.9731292724609375,
+      "delta_lcb": 6.9731292724609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 302,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -5.20635986328125,
+      "delta_lcb": -5.20635986328125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.005481591155737284
+    },
+    {
+      "problem_id": 302,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -3.47052001953125,
+      "delta_lcb": -3.47052001953125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.03110085340397199
+    },
+    {
+      "problem_id": 302,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 18.57733154296875,
+      "delta_lcb": 18.57733154296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 304,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 5.293554306030273,
+      "delta_lcb": 2.770384827902425,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 306,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 11.12298583984375,
+      "delta_lcb": 11.12298583984375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 306,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.58184814453125,
+      "delta_lcb": 2.58184814453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 306,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 19.755111694335938,
+      "delta_lcb": -78.23530219265682,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.0539984390498856e-34
+    },
+    {
+      "problem_id": 309,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 8.68310546875,
+      "delta_lcb": 8.68310546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 312,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -0.39510345458984375,
+      "delta_lcb": -7.333476672671596,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0006532983298053896
+    },
+    {
+      "problem_id": 312,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 4.4407196044921875,
+      "delta_lcb": 4.4407196044921875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 312,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.06841278076171875,
+      "delta_lcb": -0.06841278076171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.933874908409703
+    },
+    {
+      "problem_id": 313,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -3.0050048828125,
+      "delta_lcb": -3.0050048828125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.049538512440585554
+    },
+    {
+      "problem_id": 313,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.24237060546875,
+      "delta_lcb": 2.24237060546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 313,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -5.9287109375,
+      "delta_lcb": -5.9287109375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.002661911147940418
+    },
+    {
+      "problem_id": 315,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 0.41808509826660156,
+      "delta_lcb": -0.983053417262528,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.37416686526365095
+    },
+    {
+      "problem_id": 316,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 17.1541748046875,
+      "delta_lcb": 17.1541748046875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 316,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 14.696746826171875,
+      "delta_lcb": 14.696746826171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 316,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.8192024230957031,
+      "delta_lcb": 1.8192024230957031,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 316,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.7155532836914062,
+      "delta_lcb": 0.7155532836914062,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 317,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 31.03125,
+      "delta_lcb": 31.03125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 318,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.5601806640625,
+      "delta_lcb": 0.5601806640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 318,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.6976699829101562,
+      "delta_lcb": 0.6976699829101562,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 320,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 8.39556884765625,
+      "delta_lcb": 8.39556884765625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 320,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 5.757301330566406,
+      "delta_lcb": 5.757301330566406,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 320,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 6.672271728515625,
+      "delta_lcb": -12.239117353094382,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.83747652131841e-06
+    },
+    {
+      "problem_id": 321,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": -0.170257568359375,
+      "delta_lcb": -4.703405556898187,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.00906435530088269
+    },
+    {
+      "problem_id": 322,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 3.0439586639404297,
+      "delta_lcb": -2.3892447922126907,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.09169890946487899
+    },
+    {
+      "problem_id": 324,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.4654337565104165,
+      "delta_lcb": -2.244945232754738,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.10593334189199415
+    },
+    {
+      "problem_id": 324,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.253875732421875,
+      "delta_lcb": 4.253875732421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 330,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": -1.5045496622721355,
+      "delta_lcb": -11.544130951156447,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 9.692763797043265e-06
+    },
+    {
+      "problem_id": 330,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.0323753356933594,
+      "delta_lcb": 1.0323753356933594,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 333,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.355224609375,
+      "delta_lcb": 1.355224609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 333,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.26006317138671875,
+      "delta_lcb": -1.6556135863656485,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.19097484019009858
+    },
+    {
+      "problem_id": 336,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 17.189376831054688,
+      "delta_lcb": 17.189376831054688,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 336,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -6.19366455078125,
+      "delta_lcb": -6.19366455078125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0020423288057416222
+    },
+    {
+      "problem_id": 337,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.148096720377604,
+      "delta_lcb": 1.325914943156307,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 337,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 5.107208251953125,
+      "delta_lcb": 5.107208251953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 338,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": -0.31468963623046875,
+      "delta_lcb": -4.668791004218173,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.009383607413677912
+    },
+    {
+      "problem_id": 339,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 0.008138656616210938,
+      "delta_lcb": -2.142701101088757,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.1173374742127721
+    },
+    {
+      "problem_id": 341,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 1.0999755859375,
+      "delta_lcb": 1.0999755859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 341,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.40465545654296875,
+      "delta_lcb": -35.53443089617373,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.694815392549213e-16
+    },
+    {
+      "problem_id": 341,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.4168853759765625,
+      "delta_lcb": 1.4168853759765625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 343,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 11.46771240234375,
+      "delta_lcb": 5.89608730233169,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 343,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 8.704025268554688,
+      "delta_lcb": 8.704025268554688,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 344,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 3.90087890625,
+      "delta_lcb": 3.90087890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 344,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.2208328247070312,
+      "delta_lcb": 1.2208328247070312,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 344,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.1914100646972656,
+      "delta_lcb": -12.895141247585588,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.5102172680627593e-06
+    },
+    {
+      "problem_id": 345,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.17535400390625,
+      "delta_lcb": -0.17535400390625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.8391599022983786
+    },
+    {
+      "problem_id": 345,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 5.2452239990234375,
+      "delta_lcb": -20.228570660188115,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.63999825327332e-09
+    },
+    {
+      "problem_id": 345,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.14295578002929688,
+      "delta_lcb": 0.14295578002929688,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 349,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 11.195648193359375,
+      "delta_lcb": -56.15723251754842,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.0852985385855447e-25
+    },
+    {
+      "problem_id": 356,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 7.19219970703125,
+      "delta_lcb": 5.336584958624299,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 356,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.869964599609375,
+      "delta_lcb": 0.869964599609375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 360,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": -0.013951619466145834,
+      "delta_lcb": -2.604564355156381,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0739353397321281
+    },
+    {
+      "problem_id": 360,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 5.6446533203125,
+      "delta_lcb": 5.6446533203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 361,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 2.0923055013020835,
+      "delta_lcb": -9.913665936712244,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.94936620138235e-05
+    },
+    {
+      "problem_id": 361,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 5.7025146484375,
+      "delta_lcb": 5.7025146484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 363,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 8.180872599283854,
+      "delta_lcb": 6.385691390546857,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 363,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 10.096343994140625,
+      "delta_lcb": 10.096343994140625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 365,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 0.8660329182942709,
+      "delta_lcb": -4.257326778452015,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.014160104958054996
+    },
+    {
+      "problem_id": 365,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 8.171844482421875,
+      "delta_lcb": 8.171844482421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 368,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 15.655410766601562,
+      "delta_lcb": 15.655410766601562,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 368,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 10.33868408203125,
+      "delta_lcb": 10.33868408203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 368,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 15.07659912109375,
+      "delta_lcb": 15.07659912109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 368,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -0.38348388671875,
+      "delta_lcb": -0.38348388671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.6814830588884834
+    },
+    {
+      "problem_id": 376,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 2.211090087890625,
+      "delta_lcb": 2.211090087890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 378,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -1.0442733764648438,
+      "delta_lcb": -9.89288013085447,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 5.0533193991378034e-05
+    },
+    {
+      "problem_id": 378,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.8154296875,
+      "delta_lcb": 0.8154296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 378,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -3.7050628662109375,
+      "delta_lcb": -3.7050628662109375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.024598670893795145
+    },
+    {
+      "problem_id": 379,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 2.133056640625,
+      "delta_lcb": 2.133056640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 380,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.009502410888672,
+      "delta_lcb": 2.009502410888672,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 380,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 7.208976745605469,
+      "delta_lcb": 7.208976745605469,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 382,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 3.8519210815429688,
+      "delta_lcb": -6.5740638093187584,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0013961123341106239
+    },
+    {
+      "problem_id": 382,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.7291336059570312,
+      "delta_lcb": -16.370915157270257,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 7.766080420240255e-08
+    },
+    {
+      "problem_id": 384,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 11.72119140625,
+      "delta_lcb": 11.72119140625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 384,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.617401123046875,
+      "delta_lcb": 0.617401123046875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 386,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -3.652191162109375,
+      "delta_lcb": -18.361605968976377,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.060854563148943e-08
+    },
+    {
+      "problem_id": 386,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 7.2440185546875,
+      "delta_lcb": 7.2440185546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 387,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 1.6972414652506511,
+      "delta_lcb": -0.4262633296425158,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.6529443798701564
+    },
+    {
+      "problem_id": 387,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.879302978515625,
+      "delta_lcb": 2.879302978515625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 389,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 5.145515441894531,
+      "delta_lcb": 1.636327901768956,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 389,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 25.29388427734375,
+      "delta_lcb": 25.29388427734375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 390,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -11.999481201171875,
+      "delta_lcb": -11.999481201171875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 6.147400790504088e-06
+    },
+    {
+      "problem_id": 390,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.6324310302734375,
+      "delta_lcb": -27.226951027209818,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.4979089297967035e-12
+    },
+    {
+      "problem_id": 391,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 1.2822418212890625,
+      "delta_lcb": -3.892887872505497,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.02038638765836611
+    },
+    {
+      "problem_id": 391,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.0706787109375,
+      "delta_lcb": 1.0706787109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 393,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 5.92401123046875,
+      "delta_lcb": 5.92401123046875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 393,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.423126220703125,
+      "delta_lcb": -20.16111413811335,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.7544434758189664e-09
+    },
+    {
+      "problem_id": 393,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.948822021484375,
+      "delta_lcb": 1.948822021484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 396,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.2030487060546875,
+      "delta_lcb": -2.416486611663392,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.08923458309601463
+    },
+    {
+      "problem_id": 396,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 8.408935546875,
+      "delta_lcb": 8.408935546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 396,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.118621826171875,
+      "delta_lcb": 1.118621826171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 397,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.860809326171875,
+      "delta_lcb": -29.96518789120669,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 9.689118102916126e-14
+    },
+    {
+      "problem_id": 397,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.797882080078125,
+      "delta_lcb": 0.797882080078125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 397,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 10.510498046875,
+      "delta_lcb": 10.510498046875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 398,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.0869598388671875,
+      "delta_lcb": 3.0869598388671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 398,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 0.4240620930989583,
+      "delta_lcb": -2.828615084887758,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.05909463808147347
+    },
+    {
+      "problem_id": 399,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 3.7089242935180664,
+      "delta_lcb": -0.33362912684792256,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.7163193966020558
+    },
+    {
+      "problem_id": 403,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 9.51483154296875,
+      "delta_lcb": 9.51483154296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 403,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 14.017036437988281,
+      "delta_lcb": -63.86048153120001,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.8439335203862992e-28
+    },
+    {
+      "problem_id": 404,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -0.5246124267578125,
+      "delta_lcb": -10.511334164059134,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.7226108763046587e-05
+    },
+    {
+      "problem_id": 404,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": -1.6914787292480469,
+      "delta_lcb": -5.1401930452454785,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.00585655902332765
+    },
+    {
+      "problem_id": 407,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -1.07928466796875,
+      "delta_lcb": -1.07928466796875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.339838536108324
+    },
+    {
+      "problem_id": 407,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.514434814453125,
+      "delta_lcb": 1.514434814453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 410,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 7.002899169921875,
+      "delta_lcb": 7.002899169921875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 411,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 7.587371826171875,
+      "delta_lcb": -43.326113060545914,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.52653995383352e-19
+    },
+    {
+      "problem_id": 411,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 11.189544677734375,
+      "delta_lcb": 11.189544677734375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 411,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 10.153778076171875,
+      "delta_lcb": 10.153778076171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 412,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": -0.1091766357421875,
+      "delta_lcb": -4.297100040541337,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.013607964392635822
+    },
+    {
+      "problem_id": 412,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.5911293029785156,
+      "delta_lcb": 2.5911293029785156,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 413,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 1.1596107482910156,
+      "delta_lcb": -8.53642851284403,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.00019618969937584238
+    },
+    {
+      "problem_id": 413,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.9951744079589844,
+      "delta_lcb": -9.69797168718078,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 6.140792329888929e-05
+    },
+    {
+      "problem_id": 414,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 8.842569986979166,
+      "delta_lcb": 3.411939572615199,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 414,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 15.759124755859375,
+      "delta_lcb": 15.759124755859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 415,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 1.0124969482421875,
+      "delta_lcb": 1.0124969482421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 415,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.765312194824219,
+      "delta_lcb": 4.765312194824219,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 415,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.9514312744140625,
+      "delta_lcb": 0.9514312744140625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 415,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.3491973876953125,
+      "delta_lcb": 1.3491973876953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 416,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.883819580078125,
+      "delta_lcb": -0.883819580078125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.41320163696054657
+    },
+    {
+      "problem_id": 416,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 8.20941162109375,
+      "delta_lcb": 0.43990080304583135,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 418,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 5.359832763671875,
+      "delta_lcb": 5.359832763671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 419,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 18.80743408203125,
+      "delta_lcb": 18.80743408203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 419,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 1.6749242146809895,
+      "delta_lcb": -3.3080044648635187,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.03658911581653488
+    },
+    {
+      "problem_id": 421,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 7.585422515869141,
+      "delta_lcb": 7.585422515869141,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 422,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.9504547119140625,
+      "delta_lcb": -0.9504547119140625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3865652076792729
+    },
+    {
+      "problem_id": 422,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.964069366455078,
+      "delta_lcb": 2.901135129134465,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 422,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 8.701080322265625,
+      "delta_lcb": 8.701080322265625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 426,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.070281982421875,
+      "delta_lcb": -5.5502280398674575,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.003886570849312026
+    },
+    {
+      "problem_id": 426,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 1.9788665771484375,
+      "delta_lcb": 1.9788665771484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 426,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -5.329498291015625,
+      "delta_lcb": -5.329498291015625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.004846500935452068
+    },
+    {
+      "problem_id": 428,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 5.876607259114583,
+      "delta_lcb": 2.3985227444463124,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 429,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.7987251281738281,
+      "delta_lcb": 1.7987251281738281,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 429,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.973027547200521,
+      "delta_lcb": -5.9816627114317455,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.002524625077516027
+    },
+    {
+      "problem_id": 431,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 4.8435211181640625,
+      "delta_lcb": 4.8435211181640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 431,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.14325332641601562,
+      "delta_lcb": 0.14325332641601562,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 431,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.8955535888671875,
+      "delta_lcb": 1.8955535888671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 431,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 3.59375,
+      "delta_lcb": 3.59375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 432,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -1.68365478515625,
+      "delta_lcb": -1.68365478515625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.18569406242419015
+    },
+    {
+      "problem_id": 432,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 4.6074371337890625,
+      "delta_lcb": -15.100396402362865,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.7668216664838295e-07
+    },
+    {
+      "problem_id": 432,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -1.383087158203125,
+      "delta_lcb": -1.383087158203125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.25080308787368677
+    },
+    {
+      "problem_id": 433,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 1.3854618072509766,
+      "delta_lcb": -5.734211629518458,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.003233430504939384
+    },
+    {
+      "problem_id": 433,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.7460098266601562,
+      "delta_lcb": -3.8018115127996275,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.022330283600179697
+    },
+    {
+      "problem_id": 435,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 5.235687255859375,
+      "delta_lcb": 5.235687255859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 439,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 5.8344268798828125,
+      "delta_lcb": 5.8344268798828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 439,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 2.5728759765625,
+      "delta_lcb": 2.5728759765625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 440,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": -1.024762471516927,
+      "delta_lcb": -2.7728650924968923,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.06248272924560191
+    },
+    {
+      "problem_id": 440,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 12.000076293945312,
+      "delta_lcb": 12.000076293945312,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 441,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.7599334716796875,
+      "delta_lcb": -9.267285058332776,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 9.446463197511065e-05
+    },
+    {
+      "problem_id": 441,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.563568115234375,
+      "delta_lcb": 0.563568115234375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 441,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 8.6558837890625,
+      "delta_lcb": 8.6558837890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 442,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.094207763671875,
+      "delta_lcb": 0.094207763671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 443,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -0.95703125,
+      "delta_lcb": -0.95703125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3840312882100615
+    },
+    {
+      "problem_id": 443,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 5.733673095703125,
+      "delta_lcb": 5.733673095703125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 443,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -7.97705078125,
+      "delta_lcb": -7.97705078125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.000343250251281813
+    },
+    {
+      "problem_id": 443,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 32.499755859375,
+      "delta_lcb": 32.499755859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 444,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.130523681640625,
+      "delta_lcb": -4.104313904720128,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.01650133644448616
+    },
+    {
+      "problem_id": 444,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.466278076171875,
+      "delta_lcb": 0.466278076171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 444,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 4.1416778564453125,
+      "delta_lcb": 4.1416778564453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 448,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.9476165771484375,
+      "delta_lcb": 0.9476165771484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 448,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 18.952545166015625,
+      "delta_lcb": 18.952545166015625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 448,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 2.241729736328125,
+      "delta_lcb": 2.241729736328125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 449,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 9.234344482421875,
+      "delta_lcb": -46.869372476872606,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.414587843432857e-21
+    },
+    {
+      "problem_id": 449,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -3.7373046875,
+      "delta_lcb": -3.7373046875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.023818214223302554
+    },
+    {
+      "problem_id": 449,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.75555419921875,
+      "delta_lcb": 0.75555419921875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 450,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 3.925137519836426,
+      "delta_lcb": -4.119700793370264,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.016249375635582167
+    },
+    {
+      "problem_id": 451,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -2.964599609375,
+      "delta_lcb": -2.964599609375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.05158111770706998
+    },
+    {
+      "problem_id": 451,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.338897705078125,
+      "delta_lcb": -2.7004430052023287,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.06717574694166939
+    },
+    {
+      "problem_id": 451,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.217010498046875,
+      "delta_lcb": 1.217010498046875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 453,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 25.788909912109375,
+      "delta_lcb": -137.19019611503288,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.6245500310569924e-60
+    },
+    {
+      "problem_id": 453,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 3.7881736755371094,
+      "delta_lcb": -15.905714616294638,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.236618990020112e-07
+    },
+    {
+      "problem_id": 454,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.202423095703125,
+      "delta_lcb": 1.202423095703125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 454,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 4.133941650390625,
+      "delta_lcb": 4.133941650390625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 456,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 0.9142723083496094,
+      "delta_lcb": 0.25260080645663197,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 457,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -0.24485015869140625,
+      "delta_lcb": -10.064469814656938,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 4.2565358567849325e-05
+    },
+    {
+      "problem_id": 457,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 3.032867431640625,
+      "delta_lcb": 3.032867431640625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 457,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.17877197265625,
+      "delta_lcb": 2.17877197265625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 460,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 2.6321048736572266,
+      "delta_lcb": 0.16627924505811498,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 463,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.1530609130859375,
+      "delta_lcb": 3.1530609130859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 463,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.086965560913086,
+      "delta_lcb": 1.086965560913086,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 465,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.385955810546875,
+      "delta_lcb": 1.3226602974666715,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 465,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -2.154632568359375,
+      "delta_lcb": -2.154632568359375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.11594578493713134
+    },
+    {
+      "problem_id": 465,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 13.934600830078125,
+      "delta_lcb": 13.934600830078125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 466,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 8.300537109375,
+      "delta_lcb": 8.300537109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 466,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -4.783355712890625,
+      "delta_lcb": -4.783355712890625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.008367871625563244
+    },
+    {
+      "problem_id": 467,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 9.513849894205729,
+      "delta_lcb": 1.924897689718863,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 467,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.189422607421875,
+      "delta_lcb": 2.189422607421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 468,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.3732147216796875,
+      "delta_lcb": -0.3732147216796875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.6885173773628739
+    },
+    {
+      "problem_id": 468,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.271697998046875,
+      "delta_lcb": -5.102603334061375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0060808953394888106
+    },
+    {
+      "problem_id": 468,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.30333709716796875,
+      "delta_lcb": 0.30333709716796875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 469,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 0.166778564453125,
+      "delta_lcb": 0.166778564453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 469,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.515106201171875,
+      "delta_lcb": -0.515106201171875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.5974371427242854
+    },
+    {
+      "problem_id": 469,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -0.17132568359375,
+      "delta_lcb": -0.17132568359375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.8425471250067887
+    },
+    {
+      "problem_id": 469,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.5421142578125,
+      "delta_lcb": 0.5421142578125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 470,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 1.0286916097005208,
+      "delta_lcb": -2.7355144051308846,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.06486063387806658
+    },
+    {
+      "problem_id": 470,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.674560546875,
+      "delta_lcb": 2.674560546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 472,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -2.982208251953125,
+      "delta_lcb": -2.982208251953125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.05068079424169891
+    },
+    {
+      "problem_id": 472,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -2.0603790283203125,
+      "delta_lcb": -2.0603790283203125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.12740567038471368
+    },
+    {
+      "problem_id": 472,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 3.09521484375,
+      "delta_lcb": 3.09521484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 473,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -2.73712158203125,
+      "delta_lcb": -2.73712158203125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.06475647508877508
+    },
+    {
+      "problem_id": 473,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": 5.9884033203125,
+      "delta_lcb": 5.9884033203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 473,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 22.270751953125,
+      "delta_lcb": 22.270751953125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 473,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 3.3490753173828125,
+      "delta_lcb": 3.3490753173828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 474,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 15.330787658691406,
+      "delta_lcb": -17.22078449170244,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.3197724859434134e-08
+    },
+    {
+      "problem_id": 474,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 1.0151519775390625,
+      "delta_lcb": -6.5218310891330145,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.001470973151891082
+    },
+    {
+      "problem_id": 475,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 10.73184331258138,
+      "delta_lcb": -10.155101782780141,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.887723167117264e-05
+    },
+    {
+      "problem_id": 475,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.2638702392578125,
+      "delta_lcb": 2.2638702392578125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 476,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": -0.2644500732421875,
+      "delta_lcb": -9.459207175420508,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 7.796838176677254e-05
+    },
+    {
+      "problem_id": 476,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 5.301963806152344,
+      "delta_lcb": 0.8233486397658032,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 477,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -2.224517822265625,
+      "delta_lcb": -2.224517822265625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.10811953890251286
+    },
+    {
+      "problem_id": 477,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 1.9308929443359375,
+      "delta_lcb": 1.9308929443359375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 477,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 4.037078857421875,
+      "delta_lcb": 4.037078857421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 478,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 1.9526519775390625,
+      "delta_lcb": 1.9526519775390625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 478,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.070068359375,
+      "delta_lcb": 1.070068359375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 478,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.731597900390625,
+      "delta_lcb": 1.731597900390625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 480,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 3.2832043965657554,
+      "delta_lcb": -4.860655952981988,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.007745401605169003
+    },
+    {
+      "problem_id": 480,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.202178955078125,
+      "delta_lcb": 1.202178955078125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 484,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 4.1057891845703125,
+      "delta_lcb": 4.1057891845703125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 484,
+      "mode_id": 3,
+      "n_witness": 1,
+      "delta_mean": -5.6304931640625,
+      "delta_lcb": -5.6304931640625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.003586806007263329
+    },
+    {
+      "problem_id": 484,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -7.7733154296875,
+      "delta_lcb": -7.7733154296875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.00042081576634721355
+    },
+    {
+      "problem_id": 484,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.034912109375,
+      "delta_lcb": 1.034912109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 485,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -2.51629638671875,
+      "delta_lcb": -2.51629638671875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.08075815052177997
+    },
+    {
+      "problem_id": 485,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 5.9805450439453125,
+      "delta_lcb": -2.73294457635758,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0650275289552988
+    },
+    {
+      "problem_id": 485,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 13.5220947265625,
+      "delta_lcb": 13.5220947265625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 486,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -0.4198455810546875,
+      "delta_lcb": -0.4198455810546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.6571482881261067
+    },
+    {
+      "problem_id": 486,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.9551620483398438,
+      "delta_lcb": -0.9769151489386392,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.37647066531838935
+    },
+    {
+      "problem_id": 486,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.4500732421875,
+      "delta_lcb": 3.4500732421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 487,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 2.2370452880859375,
+      "delta_lcb": -1.4588539026231104,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.23250259269905663
+    },
+    {
+      "problem_id": 487,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.75750732421875,
+      "delta_lcb": 2.75750732421875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 489,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 2.18133544921875,
+      "delta_lcb": -1.0508989285964545,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3496233214067013
+    },
+    {
+      "problem_id": 492,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 14.2564697265625,
+      "delta_lcb": 14.2564697265625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 492,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.3691253662109375,
+      "delta_lcb": 2.3691253662109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 492,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -6.429840087890625,
+      "delta_lcb": -18.82092426041666,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 6.701568319415487e-09
+    },
+    {
+      "problem_id": 494,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 1.5638580322265625,
+      "delta_lcb": -11.98513903483671,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 6.236203121876184e-06
+    },
+    {
+      "problem_id": 494,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -0.9218711853027344,
+      "delta_lcb": -2.4322206258455337,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.08784155261869515
+    },
+    {
+      "problem_id": 496,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 1.534438133239746,
+      "delta_lcb": -1.0829076888226168,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.3386095217217973
+    },
+    {
+      "problem_id": 497,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 4.2584381103515625,
+      "delta_lcb": -1.3334374394560422,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.26356969746811487
+    },
+    {
+      "problem_id": 498,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 9.591033935546875,
+      "delta_lcb": -5.235619461750277,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0053235257416300134
+    },
+    {
+      "problem_id": 501,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 1.7566935221354167,
+      "delta_lcb": -1.2722995788342881,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.28018656928372776
+    },
+    {
+      "problem_id": 501,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.76025390625,
+      "delta_lcb": -0.76025390625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.4675476986547498
+    },
+    {
+      "problem_id": 503,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 2.9266586303710938,
+      "delta_lcb": 2.031851959963021,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 503,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.309814453125,
+      "delta_lcb": 1.309814453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 504,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 3.122875213623047,
+      "delta_lcb": -5.553243043668157,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.003874870470636027
+    },
+    {
+      "problem_id": 506,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 17.13671875,
+      "delta_lcb": 17.13671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 506,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 7.2842254638671875,
+      "delta_lcb": -21.1464426922357,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 6.549627892347445e-10
+    },
+    {
+      "problem_id": 506,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 4.73565673828125,
+      "delta_lcb": 4.73565673828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 509,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 12.711925506591797,
+      "delta_lcb": -18.782963217101987,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 6.9608571454424675e-09
+    },
+    {
+      "problem_id": 509,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.6787109375,
+      "delta_lcb": 3.6787109375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 509,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 1.9371795654296875,
+      "delta_lcb": 1.9371795654296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 510,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 2.1061223347981772,
+      "delta_lcb": -2.8733510444289565,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.05650924395276245
+    },
+    {
+      "problem_id": 510,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 18.395156860351562,
+      "delta_lcb": 18.395156860351562,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 511,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -2.990631103515625,
+      "delta_lcb": -2.990631103515625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.05025571015791045
+    },
+    {
+      "problem_id": 512,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 5.988055229187012,
+      "delta_lcb": -10.697783145900058,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 2.259497219011311e-05
+    },
+    {
+      "problem_id": 514,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.7585296630859375,
+      "delta_lcb": -0.8752187944279157,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.4167708225684666
+    },
+    {
+      "problem_id": 515,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 8.00838851928711,
+      "delta_lcb": 6.900834321458893,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 518,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -0.8650360107421875,
+      "delta_lcb": -0.8650360107421875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.42103639052141284
+    },
+    {
+      "problem_id": 520,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -0.13580322265625,
+      "delta_lcb": -11.113961984475644,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.4902791933545448e-05
+    },
+    {
+      "problem_id": 520,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.6624622344970703,
+      "delta_lcb": 0.6624622344970703,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 520,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 0.7399864196777344,
+      "delta_lcb": 0.7399864196777344,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 522,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -1.2675905227661133,
+      "delta_lcb": -8.216242036208207,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.0002702286687221322
+    },
+    {
+      "problem_id": 522,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 4.661582946777344,
+      "delta_lcb": -3.902049488447531,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.020200468365204192
+    },
+    {
+      "problem_id": 524,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -1.7707443237304688,
+      "delta_lcb": -14.742470897069877,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.9575484445107525e-07
+    },
+    {
+      "problem_id": 524,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 6.7134857177734375,
+      "delta_lcb": -44.81378259943747,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.448430708448446e-20
+    },
+    {
+      "problem_id": 525,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 8.720209757486979,
+      "delta_lcb": 0.33991807684716413,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 525,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 12.48895263671875,
+      "delta_lcb": 12.48895263671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 526,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 11.774337768554688,
+      "delta_lcb": 11.774337768554688,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 526,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 9.791168212890625,
+      "delta_lcb": 9.791168212890625,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 527,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.8694610595703125,
+      "delta_lcb": 1.8694610595703125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 527,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 9.480372111002604,
+      "delta_lcb": 2.2625149556329953,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 528,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 1.9805628458658855,
+      "delta_lcb": 1.2203343712954433,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 528,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.65252685546875,
+      "delta_lcb": 1.65252685546875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 533,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 7.260444641113281,
+      "delta_lcb": 7.260444641113281,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 535,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 8.062332153320312,
+      "delta_lcb": -50.02396983440264,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.883067717270717e-22
+    },
+    {
+      "problem_id": 535,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.041473388671875,
+      "delta_lcb": -0.041473388671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.9593748652411124
+    },
+    {
+      "problem_id": 536,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 19.145263671875,
+      "delta_lcb": 19.145263671875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 536,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.49030303955078125,
+      "delta_lcb": -16.330359136260086,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 8.087515753375641e-08
+    },
+    {
+      "problem_id": 536,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -1.6764984130859375,
+      "delta_lcb": -1.6764984130859375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.18702772462580544
+    },
+    {
+      "problem_id": 538,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -0.408050537109375,
+      "delta_lcb": -10.390147944687943,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.073378731048977e-05
+    },
+    {
+      "problem_id": 538,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 1.2714767456054688,
+      "delta_lcb": 0.480571852710598,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 539,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 1.527557373046875,
+      "delta_lcb": 1.527557373046875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 542,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -4.92413330078125,
+      "delta_lcb": -4.92413330078125,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.007269023607557923
+    },
+    {
+      "problem_id": 542,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.8960323333740234,
+      "delta_lcb": -0.7624281260754393,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.46653225148170496
+    },
+    {
+      "problem_id": 542,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 11.842071533203125,
+      "delta_lcb": 11.842071533203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 543,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.1126556396484375,
+      "delta_lcb": 2.1126556396484375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 543,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 2.4117151896158853,
+      "delta_lcb": -1.8895723215182776,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.15113643281636285
+    },
+    {
+      "problem_id": 546,
+      "mode_id": 0,
+      "n_witness": 3,
+      "delta_mean": 2.5992088317871094,
+      "delta_lcb": -1.0279850462578102,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.35772703829836294
+    },
+    {
+      "problem_id": 546,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 1.839569091796875,
+      "delta_lcb": 1.839569091796875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 547,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -1.4554443359375,
+      "delta_lcb": -1.4554443359375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.23329667876886562
+    },
+    {
+      "problem_id": 547,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -0.12306976318359375,
+      "delta_lcb": -4.976737338126044,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.006896526926213761
+    },
+    {
+      "problem_id": 547,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -3.052703857421875,
+      "delta_lcb": -3.052703857421875,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.04723104557288834
+    },
+    {
+      "problem_id": 549,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.1898956298828125,
+      "delta_lcb": 2.1898956298828125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 549,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 9.527755737304688,
+      "delta_lcb": -55.61527340734176,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 7.02414793526204e-25
+    },
+    {
+      "problem_id": 549,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 3.9928436279296875,
+      "delta_lcb": 3.9928436279296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 550,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.6887588500976562,
+      "delta_lcb": 2.6887588500976562,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 550,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 11.042510986328125,
+      "delta_lcb": 11.042510986328125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 550,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 15.545867919921875,
+      "delta_lcb": -109.27153511140348,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.4992524232038003e-48
+    },
+    {
+      "problem_id": 553,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 2.354766845703125,
+      "delta_lcb": 2.354766845703125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 553,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": -0.4444580078125,
+      "delta_lcb": -3.368768516239433,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.03443201371094167
+    },
+    {
+      "problem_id": 555,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.992889404296875,
+      "delta_lcb": 0.992889404296875,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 556,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 0.83343505859375,
+      "delta_lcb": 0.83343505859375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 556,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 3.44622802734375,
+      "delta_lcb": 3.44622802734375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 556,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 1.4766502380371094,
+      "delta_lcb": -1.6268289620959244,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.19655186035815952
+    },
+    {
+      "problem_id": 558,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": 0.3321533203125,
+      "delta_lcb": 0.3321533203125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 562,
+      "mode_id": 0,
+      "n_witness": 4,
+      "delta_mean": 3.839740753173828,
+      "delta_lcb": 1.0464240930439006,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 563,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.9557647705078125,
+      "delta_lcb": -30.876806185736015,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 3.893798331966337e-14
+    },
+    {
+      "problem_id": 563,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": -1.62457275390625,
+      "delta_lcb": -1.62457275390625,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.19699582292285084
+    },
+    {
+      "problem_id": 563,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": -0.41595458984375,
+      "delta_lcb": -0.41595458984375,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 0.6597102273487145
+    },
+    {
+      "problem_id": 564,
+      "mode_id": 0,
+      "n_witness": 1,
+      "delta_mean": -3.58538818359375,
+      "delta_lcb": -3.58538818359375,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.02772590280036147
+    },
+    {
+      "problem_id": 566,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.651885986328125,
+      "delta_lcb": 2.651885986328125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 566,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 3.408792495727539,
+      "delta_lcb": 3.0130871562483907,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 566,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 3.1150894165039062,
+      "delta_lcb": 3.1150894165039062,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 567,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 0.040924072265625,
+      "delta_lcb": -22.406535804010723,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.857655346099896e-10
+    },
+    {
+      "problem_id": 567,
+      "mode_id": 1,
+      "n_witness": 2,
+      "delta_mean": 0.8531885147094727,
+      "delta_lcb": -5.398465718280565,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 0.004523515968968917
+    },
+    {
+      "problem_id": 569,
+      "mode_id": 2,
+      "n_witness": 1,
+      "delta_mean": 2.3482894897460938,
+      "delta_lcb": 2.3482894897460938,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    },
+    {
+      "problem_id": 569,
+      "mode_id": 0,
+      "n_witness": 2,
+      "delta_mean": 13.598609924316406,
+      "delta_lcb": -61.76539216014966,
+      "low_confidence": false,
+      "certified": false,
+      "alpha_eff_lb": 1.4984112058889838e-27
+    },
+    {
+      "problem_id": 569,
+      "mode_id": 1,
+      "n_witness": 1,
+      "delta_mean": 4.28106689453125,
+      "delta_lcb": 4.28106689453125,
+      "low_confidence": false,
+      "certified": true,
+      "alpha_eff_lb": 1.0
+    }
+  ],
+  "certified": 402,
+  "n_modes": 675
+}

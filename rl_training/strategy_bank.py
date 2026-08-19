@@ -92,9 +92,13 @@ def do_cluster(a):
     out = {"bank": a.bank, "dist_thresh": a.dist_thresh, "n_problems": len(byp),
            "per_problem": {}, "summary": {}}
     mode_counts = []
+    emit_rows = []  # for --emit-bank: original trace + mode_id
     for pid, traces in byp.items():
         vecs = [strategy_features(t.get("completion", "")) for t in traces]
         labels = cluster_problem(vecs, a.dist_thresh)
+        if a.emit_bank:
+            for tr, lab in zip(traces, labels):
+                r = dict(tr); r["mode_id"] = int(lab); emit_rows.append(r)
         n_modes = len(set(labels))
         mode_counts.append(n_modes)
         # dominant strategy signal per mode (for interpretability)
@@ -140,6 +144,11 @@ def do_cluster(a):
         os.makedirs(os.path.dirname(a.out), exist_ok=True)
         json.dump(out, open(a.out, "w"), indent=2)
         print(f"saved -> {a.out}")
+    if a.emit_bank:
+        with open(a.emit_bank, "w") as w:
+            for r in emit_rows:
+                w.write(json.dumps(r) + "\n")
+        print(f"clustered bank ({len(emit_rows)} traces w/ mode_id) -> {a.emit_bank}")
 
 
 SAMPLE_TEMPLATE = '''#!/usr/bin/env python3
@@ -151,7 +160,7 @@ os.environ.setdefault("HF_HUB_DISABLE_XET","1"); os.environ.setdefault("HF_HUB_E
 sys.path.insert(0, os.getcwd())
 from vllm import LLM, SamplingParams
 from src.data.dataset import get_inference_dataset, format_prompt
-from rl_training.safe_match import answers_match   # existing verifier
+from rl_training.safe_match import safe_is_correct   # existing verifier (extracts + matches + timeout)
 ap=argparse.ArgumentParser()
 ap.add_argument("--model",required=True); ap.add_argument("--n",type=int,default=512)
 ap.add_argument("--dataset",default="olympiad_bench"); ap.add_argument("--difficulty-json",default="")
@@ -170,7 +179,7 @@ with open(a.out,"w") as w:
         prompt=format_prompt(p, a.model); gold=str(p.get("gold_answer",""))
         outs=llm.generate([prompt], sp)[0].outputs
         for o in outs:
-            if answers_match(o.text, gold):   # keep only base-CORRECT witnesses
+            if safe_is_correct(o.text, gold)[0]:   # keep only base-CORRECT witnesses
                 w.write(json.dumps({"problem_id":int(p["problem_id"]),"prompt":prompt,
                                     "completion":o.text,"gold":gold})+"\\n")
 print("bank written ->", a.out)
@@ -189,7 +198,9 @@ def main():
     c = sub.add_parser("cluster"); c.add_argument("--bank", required=True)
     c.add_argument("--dist-thresh", type=float, default=0.15,
                    help="cosine distance threshold for a new strategy mode (lower = more modes)")
-    c.add_argument("--out", default=""); c.set_defaults(fn=do_cluster)
+    c.add_argument("--out", default="")
+    c.add_argument("--emit-bank", default="", help="write clustered bank jsonl (traces + mode_id)")
+    c.set_defaults(fn=do_cluster)
     e = sub.add_parser("emit-sampler"); e.add_argument("--out", default="rl_training/sample_base_solutions.py")
     e.set_defaults(fn=do_emit_sampler)
     a = ap.parse_args(); a.fn(a)
