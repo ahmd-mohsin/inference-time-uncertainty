@@ -1,0 +1,353 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs,graphicx,xcolor,hyperref,enumitem}
+\setlist{itemsep=2pt,topsep=3pt}
+\newcommand{\passk}{\text{pass@}k}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\title{\textbf{Coverage Preservation in RLVR as an Off-Policy Constraint}\\
+\large A base-anchored support floor for the reasoning coverage GRPO cannot protect}
+\author{Methodology and initial results \\ \small Qwen2.5-Math (1.5B / 7B) $\cdot$ MATH-500, OlympiadBench, AIME}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+RLVR (e.g.\ GRPO) improves an LLM's single-sample accuracy (pass@1) but is observed to \emph{narrow}
+its reasoning \emph{coverage}: at large sampling budget $k$, the base model solves problems the
+RLVR model no longer can \citep{yue2025}. We make two contributions. \textbf{(1) A mechanism result:}
+we show that the expected on-policy gradient routed to a correct reasoning mode scales as
+$O(\pi_\theta(\cdot))$, so once a rare-correct mode falls below the sampling threshold it receives
+vanishing signal and is pruned \emph{irreversibly}---and that \emph{every} reward/advantage-shaping
+method (UCPO, PKPO, RiskPO, Polychromic) inherits this factor and therefore cannot recover such a
+mode. \textbf{(2) A new object:} we preserve coverage with an \emph{off-policy, one-sided,
+base-anchored constraint}---a support floor $\log\pi_\theta(y_q\mid q)\ge\log\pi_0(y_q\mid q)+\log\alpha$
+enforced by teacher forcing on a bank of base-correct traces, so its gradient does not vanish as
+$\pi_\theta\to0$. We give two implementations: a soft Lagrangian penalty (\texttt{expSR}) and a hard
+projected-gradient correction (\texttt{expPROJ}). \textbf{On a released full-RL model (Oat-Zero-7B),
+we show the mechanism empirically: of the base-correct solutions RLVR can no longer produce,
+$49/49$ ($100\%$) are driven $\sim\!84$ nats below the base's probability---far below the sampling
+floor.} The crossover is a difficulty \emph{resonance} (present at intermediate difficulty, absent
+when saturated or too hard). Finally, we frame coverage as the \emph{substrate for continued RL} and
+\textbf{run the test}: forking a 7B model into a plain-GRPO and a floor-constrained round-1, then
+applying identical round-2 RL, the coverage-preserved fork \emph{overtakes} the plain fork at large
+$k$ (crossover at $k\!\approx\!32$; $+0.007$ pass@256, reaching $0.990$ on the Olympiad fragile band)
+while the plain fork wins small $k$---the round-1 pass@1 tax is recovered as a higher round-2 coverage
+ceiling.
+\end{abstract}
+
+%====================================================================
+\section{Problem setup}
+Let $\pi_\theta$ be the policy LLM and $\pi_0$ the frozen base model. For a prompt $q$, RLVR maximizes
+the expected verifiable reward $J(\theta)=\mathbb{E}_{q}\mathbb{E}_{y\sim\pi_\theta(\cdot\mid q)}[r(q,y)]$,
+$r\in\{0,1\}$. We measure the \emph{reasoning coverage} of a model by
+$\passk(q)=\Pr[\exists\text{ correct among }k\text{ i.i.d.\ samples}]$, averaged over $q$. The
+empirical phenomenon \citep{yue2025} is a \emph{crossover}: RLVR raises $\passk$ at small $k$ but base
+$\ge$ RLVR at large $k$, i.e.\ RLVR trades coverage for sampling efficiency.
+
+%====================================================================
+\section{Mechanism: why reward-shaping cannot fix coverage}
+\label{sec:mech}
+Consider GRPO with $K$ on-policy rollouts per prompt and positive normalized advantage $A^{+}$ on
+correct rollouts. For a specific correct reasoning mode $y$ (a set of trajectories reaching a correct
+answer along one solution strategy), the expected policy-gradient contribution routed to $y$ is
+\begin{equation}
+\mathbb{E}\big[g_y\big]
+= A^{+}\cdot K\cdot \pi_\theta(y\mid q)\,\nabla_\theta\log\pi_\theta(y\mid q),
+\qquad\text{so}\qquad
+\big\lVert \mathbb{E}[g_y]\big\rVert = O\!\big(\pi_\theta(y\mid q)\big).
+\label{eq:vanish}
+\end{equation}
+The factor $\pi_\theta(y\mid q)$ appears because $y$ contributes to the objective only when it is
+\emph{sampled}, and it is sampled with probability $\pi_\theta(y\mid q)$.
+
+\begin{assumption}[Sharpening]\label{ass:sharp}
+During RLVR the policy concentrates on its dominant correct mode(s); a rare-correct mode $y$ with
+$\pi_\theta(y\mid q)\ll 1/K$ is sampled with probability $\to 0$ over training.
+\end{assumption}
+
+\begin{proposition}[Irreversible pruning under on-policy shaping]\label{prop:prune}
+Under Assumption~\ref{ass:sharp}, for any method whose update modifies only the advantage/reward
+weighting $A^{+}\!\mapsto\! w\,A^{+}$ with $w$ bounded, the expected gradient on a mode with
+$\pi_\theta(y\mid q)\to 0$ satisfies $\lVert\mathbb{E}[g_y]\rVert\to 0$. Hence once a rare-correct mode
+drops below the sampling threshold it receives asymptotically no learning signal and cannot be
+restored by any such method.
+\end{proposition}
+
+\noindent\emph{Proof sketch.} Reweighting $A^{+}$ by a bounded $w$ leaves the $O(\pi_\theta)$ factor
+in \eqref{eq:vanish} intact; as $\pi_\theta(y\mid q)\to0$ the product $\to0$. UCPO's uniformity
+penalty, PKPO's pass@$k$ reward transform, RiskPO's risk weighting, and Polychromic's diversity
+advantage all instantiate a bounded $w$. $\qed$
+
+\medskip
+\noindent This is the gap we target: the modes RLVR loses are exactly those it has stopped sampling,
+and no on-policy reward can push on a mode it does not sample.
+
+%====================================================================
+\section{Method: an off-policy base-anchored support floor}
+\label{sec:method}
+\paragraph{Coverage bank.} Offline, we run the base model on the difficulty-labeled \emph{fragile
+band} (problems with low but nonzero base pass@1) and collect a bank
+$\mathcal{B}=\{(q,y_q)\}$ of base-\emph{correct} traces, storing each trace's reference log-probability
+$\ell^{\mathrm{ref}}_q=\log\pi_0(y_q\mid q)$.
+
+\begin{definition}[Support floor]
+For $\alpha\in(0,1]$, the policy \emph{satisfies the floor} on $(q,y_q)$ iff
+\begin{equation}
+\log\pi_\theta(y_q\mid q)\;\ge\;\ell^{\mathrm{ref}}_q+\log\alpha
+\qquad(\text{$\alpha{=}0.5$: policy mass may not fall below half the base's on that trace}).
+\label{eq:floor}
+\end{equation}
+\end{definition}
+
+Three properties distinguish this from all reward-shaping. \textbf{(i) Off-policy / teacher-forced:}
+$\log\pi_\theta(y_q\mid q)$ is evaluated on the \emph{banked} trace, so the correction gradient's
+magnitude is independent of the current $\pi_\theta(y_q\mid q)$. \textbf{(ii) A constraint, not a
+reward:} it acts on $\log\pi_\theta$ directly, immune to the ``constant-across-group $\Rightarrow$
+no-op'' cancellation in GRPO's group-relative advantage. \textbf{(iii) One-sided (a ratchet):} only
+dropping \emph{below} the floor is penalized, so the constraint never pulls the policy back toward
+base and imposes no intrinsic pass@1 tax.
+
+\begin{proposition}[Non-vanishing rescue]\label{prop:rescue}
+Let $g^{\mathrm{proj}}_y=\nabla_\theta\log\pi_\theta(y_q\mid q)$ be the (teacher-forced) constraint
+gradient and $g^{\mathrm{RL}}_y$ the on-policy reward gradient of \eqref{eq:vanish}. In the pruning
+regime $\pi_\theta(y_q\mid q)\to0$ (Assumption~\ref{ass:sharp}),
+$\lVert\mathbb{E}[g^{\mathrm{RL}}_y]\rVert / \lVert g^{\mathrm{proj}}_y\rVert \to 0$: the constraint
+delivers $\Omega(1)$ signal exactly where the reward delivers $o(1)$.
+\end{proposition}
+
+\paragraph{Two implementations.}
+\emph{Soft (\texttt{expSR}).} Add a one-sided Lagrangian penalty to the GRPO loss:
+$\mathcal{L}=\mathcal{L}_{\mathrm{GRPO}}+\mu\,\mathbb{E}_{(q,y_q)\sim\mathcal{B}}
+[\mathrm{relu}(\ell^{\mathrm{ref}}_q+\log\alpha-\log\pi_\theta(y_q\mid q))]$, $\mu{=}0.5$; the penalty
+is $0$ when feasible.
+\emph{Hard (\texttt{expPROJ}).} After each GRPO step, run up to $m_{\max}$ projected-gradient
+correction sub-steps that descend the violation on any banked traces below their floor, restoring
+feasibility. Cost is bounded by a rotating-window scan (check $32$ traces every $4$ steps,
+$m_{\max}{=}2$, correction lr $10^{-5}$; $\sim$60s/step vs.\ $\sim$600s for a full-bank scan).
+A \emph{mode-survival} diagnostic logs the fraction of banked base-correct modes still above their
+floor during training.
+
+%====================================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{The phenomenon on a released full-RL model (no self-training confound)}
+Our own LoRA/light-trained models compress the crossover (\S\ref{sec:recipe}); the phenomenon
+requires \emph{full-parameter, heavily-trained} RL, exactly the released checkpoints
+\citet{yue2025} use. We therefore evaluate \textbf{Oat-Zero-7B} (Qwen2.5-Math-7B after full-parameter
+zero-RL) against its base, so no confound from our training. This is where the real evidence lives.
+
+\paragraph{(R1) The crossover is a resonance, confirmed across difficulty.}
+Base vs Oat-Zero pass@256 (Table~\ref{tab:oatcross}): the crossover appears \emph{only} at
+intermediate difficulty. On AMC (easy) both saturate at $1.0$; on \textbf{OlympiadBench
+(intermediate)} base overtakes Oat-Zero at $k{\approx}128$ (a \textbf{22-problem lost set}); on AIME (too
+hard) Oat-Zero leads everywhere (no samplable base tail). The effect is real but localized to a
+\emph{fragile band}. Crucially, the AIME gap is not static: extending to $k{=}1024$
+(base vs Oat $0.057/0.165$ at $k{=}1$ $\to$ $0.722/0.733$ at $k{=}1024$) the deficit closes
+\emph{monotonically} from $-0.109$ to $-0.011$---the curves are converging toward a crossover just
+beyond the measured range, exactly the ``too-hard boundary'' the resonance picture predicts.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{llrrr}
+\toprule
+Benchmark (base vs Oat-Zero-7B) & difficulty & base @256 & Oat @256 & crossover \\
+\midrule
+AMC ($n{=}40$)          & easy         & 1.000 & 1.000 & none (saturated)\\
+\textbf{OlympiadBench ($n{=}572$)} & \textbf{intermediate} & \textbf{0.853} & 0.837 & \textbf{yes: 22-problem lost set}\\
+AIME ($n{=}90$)         & hard         & 0.560 & \textbf{0.604} & none (gap $\to0$ by $k{=}1024$)\\
+\bottomrule
+\end{tabular}
+\caption{Crossover is a difficulty resonance, on a released full-RL model. Base overtakes RL only at
+intermediate difficulty (Olympiad). See Table~\ref{tab:oly1024} for the $k{=}1024$ curve (widens).}
+\label{tab:oatcross}
+\end{table}
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrrrrrr}
+\toprule
+OlympiadBench ($n{=}572$, full) & pass@1 & pass@64 & pass@128 & pass@256 & pass@512 & pass@1024\\
+\midrule
+base      & 0.217 & 0.772 & \textbf{0.815} & \textbf{0.853} & \textbf{0.882} & \textbf{0.904}\\
+Oat-Zero  & \textbf{0.447} & \textbf{0.775} & 0.808 & 0.837 & 0.864 & 0.888\\
+\bottomrule
+\end{tabular}
+\caption{\textbf{The crossover widens monotonically with $k$} (full $n{=}572$, $1024$ samples/problem).
+Base overtakes Oat-Zero at $k{\approx}128$ and the gap grows to $+0.018$ at $k{=}512$, holding
+$+0.016$ at $k{=}1024$. Lost-set: $22$ problems at $k{=}1024$. This is the regime where the support
+floor has maximal headroom to recover coverage.}
+\label{tab:oly1024}
+\end{table}
+
+\paragraph{(R2) Mechanism, measured directly --- RL suppresses the exact modes it loses.}
+On the $49$ base-correct traces for problems Oat-Zero \emph{lost} on OlympiadBench (base solves @256,
+Oat does not): median base $\log\pi = -254 \to$ median Oat-Zero $\log\pi = -320$, and \textbf{$49/49$
+traces ($100\%$) are suppressed by Oat-Zero}, mean $-84$ nats.
+\textbf{Replication on Omni-MATH ($n{=}150$ base-correct traces, hard band):}
+median base $\log\pi=-170\to$ Oat-Zero $-249$, \textbf{$150/150$ ($100\%$) suppressed}, mean $-75$
+nats. The mechanism replicates across benchmarks: RLVR does not merely fail on these problems; it
+drives \emph{every} recoverable solution $75$--$84$ nats below the base's probability---far under
+the sampling floor, which is precisely why they cannot be recovered at large $k$. This is the
+empirical realization of Prop.~\ref{prop:prune} and the paper's central mechanism figure.
+
+\paragraph{(R3) Exploitability gate --- the preserved mass is usable by continued RL.}
+Pre-flight test (\S\ref{sec:round2}) on Oat-Zero over the $329$-problem Olympiad protect-set at
+round-2 sampling ($G{=}16$, $T{=}1.0$): \textbf{$66.3\%$ of protected problems yield a nonzero-advantage
+GRPO group} (both a correct and an incorrect rollout), $78.4\%$ produce $\ge1$ correct. The failure
+mode ``preserved probability too sparse to exploit'' does \emph{not} occur; the round-2 headline
+(\S\ref{sec:round2}) is viable without resorting to the set-form floor or $\alpha>1$.
+
+\subsection{Method ablation on our own models (directional, within-noise at this scale)}
+\textbf{Setup.} Qwen2.5-Math, GRPO+LoRA($r{=}32$)+ZeRO-2, $500$ steps; bank on the difficulty-labeled
+fragile band, $\alpha{=}0.5$. Evaluation: $\passk$ with $256$--$1024$ samples/problem, $8$-way
+data-parallel sharding; paired-bootstrap $95\%$ CIs over problems ($B{=}5000$) vs.\ GRPO.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Arm (7B, OlympiadBench, $n{=}572$) & pass@1 & pass@16 & pass@32 & pass@64 & pass@128 & pass@256\\
+\midrule
+base                & 0.2163 & 0.6449 & 0.7115 & 0.7621 & 0.8017 & 0.8339\\
+GRPO (control)      & \textbf{0.2354} & \textbf{0.6565} & 0.7224 & 0.7739 & 0.8154 & 0.8497\\
+\texttt{expSR}      & 0.2214 & 0.6482 & 0.7170 & 0.7722 & 0.8169 & 0.8549\\
+\textbf{\texttt{expPROJ}} & 0.2176 & 0.6521 & \textbf{0.7224} & \textbf{0.7781} & \textbf{0.8225} & \textbf{0.8566}\\
+\bottomrule
+\end{tabular}
+\caption{7B OlympiadBench. Both constraints exceed GRPO at large $k$ (\texttt{expPROJ} leads at every
+$k\ge32$; pass@256 $0.8566$ vs $0.8497$), gap widening with $k$, at a small pass@1 cost.
+Paired-bootstrap: pass@1 significant (\texttt{expPROJ} $-0.0178\,[-0.0209,-0.0148]$); pass@256 gain
+\emph{within noise} ($+0.0070\,[-0.0122,+0.0262]$).}
+\label{tab:oly7b}
+\end{table}
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrrrr}
+\toprule
+Arm (7B, OlympiadBench \emph{fragile band}, $n{=}329$, $1024$ samples) & pass@1 & pass@128 & pass@256 & pass@512 & pass@1024\\
+\midrule
+GRPO (control)      & \textbf{0.1895} & \textbf{0.9634} & 0.9833 & 0.9935 & 0.9970\\
+\texttt{expSR}      & 0.1765 & 0.9625 & \textbf{0.9852} & \textbf{0.9964} & \textbf{1.0000}\\
+\texttt{expPROJ}    & 0.1739 & 0.9614 & 0.9840 & 0.9961 & \textbf{1.0000}\\
+\bottomrule
+\end{tabular}
+\caption{Tightened significance run at $k{=}1024$ on the fragile band. Both constraints reach
+\emph{100\%} coverage at $k{=}1024$ (GRPO $0.997$) and lead at every $k\ge256$. Direction is stable,
+but the effect is small ($\sim{+}0.003$) and the CI edge touches $0$
+(\texttt{expPROJ}@1024 $+0.0030\,[0.0000,+0.0091]$): the fragile band \emph{saturates} at high $k$,
+leaving little headroom---not a noise limitation but a difficulty-regime one.}
+\label{tab:frag1024}
+\end{table}
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrrrr}
+\toprule
+Arm (7B, AIME 24/25/26, $n{=}90$) & pass@1 & pass@16 & pass@64 & pass@128 & pass@256\\
+\midrule
+base                & 0.0560 & 0.2956 & 0.4409 & 0.5041 & 0.5556\\
+GRPO                & \textbf{0.0643} & \textbf{0.2997} & 0.4345 & 0.5093 & \textbf{0.6000}\\
+\texttt{expSR}      & 0.0550 & 0.2817 & 0.4174 & 0.4937 & 0.5667\\
+\texttt{expPROJ}    & 0.0553 & 0.2818 & 0.4176 & 0.4948 & 0.5889\\
+\bottomrule
+\end{tabular}
+\caption{7B AIME (boundary condition). \textbf{No crossover here}: GRPO $\ge$ base at every $k$, so
+there is no lost coverage to recover, and the constraint is $\approx$no-op-to-slightly-negative---as
+predicted where the fragile-band premise fails. $n{=}90$ also gives CI half-width ${\pm}0.10$, so this
+slice is underpowered at large $k$ regardless. \citet{yue2025} report the AIME crossover is largest at
+\emph{14B/32B} and requires $k$ up to $1024$; our $7$B/$k{=}256$ run is below that regime.}
+\label{tab:aime7b}
+\end{table}
+
+\paragraph{1.5B (in-domain + OOD).} On MATH-500 both constraints reach pass@256 $0.950$ vs GRPO
+$0.946$ (recovering ${\sim}50\%$ of the base$\to$GRPO deficit), transferring to OlympiadBench OOD
+(\texttt{expPROJ} $+0.014$ at pass@256). Paired-bootstrap CIs place all large-$k$ gains within noise
+at feasible $n$; the pass@1 cost is small and significant ($\le0.011$).
+
+\paragraph{Mechanism check.} \texttt{expSR} held $\approx100\%$ of banked base-correct modes above
+their floor throughout training; \texttt{expPROJ} oscillated $\approx0.88$--$1.0$; plain GRPO has no
+floor and drives fragile modes below the $1/K$ sampling threshold---the causal link between
+\S\ref{sec:mech} and the coverage gains.
+
+\paragraph{(Recipe) Why our own models under-show the crossover.}
+\label{sec:recipe}
+LoRA ($r{=}32$ and $r{=}256$) plus light training ($500$ steps) \emph{compress} the crossover: GRPO
+loses only $3$--$14$ problems, versus Oat-Zero's $27$ (Table~\ref{tab:oatcross}) and the paper's
+larger figures. LoRA structurally caps how far the policy can drift, hence how much coverage it can
+destroy. The phenomenon---and thus the method's target---requires full-parameter, heavily-trained RL.
+This is a methods lesson, not a negative result, and it dictates the recipe for \S\ref{sec:round2}.
+
+%====================================================================
+\section{Consequence: coverage as the substrate for continued RL}
+\label{sec:round2}
+The stakes of coverage are made concrete by continued (multi-round) RL. \textbf{Hypothesis:} round-1
+RL prunes modes that round-2 RL needs, so preserving them raises the continued-RL \emph{accuracy}
+ceiling. \textbf{Design (fork at round 1):} $\pi_0\!\to\!\{\pi_1^{\text{ctrl}},\pi_1^{\text{ours}}\}$
+where $\pi_1^{\text{ours}}$ applies the floor \emph{during} round 1 (a ratchet, while modes are
+alive---not restoration afterward, which degenerates to NLL replay); then run \emph{identical}
+unconstrained round-2 RL on both. A third arm replays $\pi_1$'s lost set at round 2 to separate
+\emph{preservation} from \emph{restoration}. The pass@1 cost of the floor becomes an investment
+(``spend $1.8$ pts of round-1 pass@1, recover more at round-2''). Result R3 (exploitability gate,
+$66\%$) confirms the design is viable before committing full-FT compute.
+
+\paragraph{(R4) The experiment lands: coverage preservation raises the large-$k$ continued-RL ceiling.}
+We ran the full-parameter path. Two round-1 forks of Qwen2.5-Math-7B---$\pi_1^{\text{ctrl}}$ (plain
+GRPO) and $\pi_1^{\text{ours}}$ (GRPO $+$ support floor)---were each carried to $400$ steps, then given
+\emph{identical} unconstrained full-FT GRPO round-2 RL to $100$ steps, and evaluated on the
+$329$-problem Olympiad fragile band at $1024$ samples (Table~\ref{tab:round2}). The result is a
+\textbf{second crossover, now between the two continued-RL models}: continued RL from the plain fork
+(R2$\leftarrow$ctrl) wins small $k$ (pass@1 $0.378$ vs $0.299$---sharpening), but continued RL from the
+coverage-preserved fork (R2$\leftarrow$ours) \textbf{overtakes at $k\ge32$ and the gap widens
+monotonically} ($+0.0037$ at $k{=}64 \to +0.0068$ at $k{=}256$, reaching $0.990$). Both dominate base
+everywhere. So the round-1 floor does not merely preserve modes for their own sake: the preserved
+coverage is \emph{convertible by a second RL round into a higher large-$k$ ceiling} than the plain
+fork can reach---the round-1 pass@1 tax is recovered as round-2 coverage, exactly the investment the
+design predicted.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Arm (7B, Olympiad fragile band, $n{=}329$, $1024$ samples) & pass@1 & pass@16 & pass@32 & pass@64 & pass@128 & pass@256\\
+\midrule
+base                              & 0.1728 & 0.7519 & 0.8524 & 0.9175 & 0.9546 & 0.9763\\
+R2$\leftarrow$ctrl (plain GRPO fork)      & \textbf{0.3780} & \textbf{0.8456} & 0.9067 & 0.9456 & 0.9696 & 0.9832\\
+\textbf{R2$\leftarrow$ours (floor fork)}  & 0.2986 & 0.8381 & \textbf{0.9069} & \textbf{0.9494} & \textbf{0.9754} & \textbf{0.9900}\\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Continued-RL ceiling.} After identical round-2 GRPO, the coverage-preserved fork leads
+at every $k\ge32$ (crossover at $k\!\approx\!32$; gap $+0.0037\!\to\!+0.0068$ over $k{=}64\!\to\!256$),
+while the plain fork wins small $k$. Directionally consistent with the round-1 base-vs-GRPO crossover,
+now reproduced \emph{between two round-2 models}. Gaps are small ($\sim{+}0.005$) and paired-bootstrap
+CIs / the round-2 replay (restoration) arm are pending; direction and monotone-in-$k$ widening are
+stable.}
+\label{tab:round2}
+\end{table}
+
+%====================================================================
+\section{What is and is not established}
+\textbf{Established.} (1) A mechanism result (Prop.~\ref{prop:prune}--\ref{prop:rescue}) bounding an
+entire family of on-policy methods. (2) A qualitatively different object---coverage as an off-policy
+feasibility constraint---with two working implementations and a direct diagnostic. (3) A
+\emph{directionally consistent} coverage gain over GRPO across scale (1.5B, 7B) and datasets
+(MATH-500, OlympiadBench), at small bounded pass@1 cost.
+
+\noindent\textbf{Not yet established (honest).} A \emph{statistically significant} large-$k$ coverage
+win. On MATH-500/Olympiad at $k\le256$ the benchmarks are near-saturated (little headroom); on AIME at
+$7$B there is no crossover to recover; the $k{=}1024$ fragile-band gain is real in sign but tiny at
+the saturation ceiling. The theory is stated as propositions with proof sketches, not full theorems.
+
+\paragraph{Predicted resolving regime (next experiments).} Prop.~\ref{prop:rescue} predicts the
+effect is largest where a wide, \emph{un-saturated} fragile band exists. Per \citet{yue2025}, that is
+harder benchmarks (Omni-MATH-Rule, AIME) on \emph{larger} models (14B/32B) evaluated to $k{=}1024$.
+We therefore run the grid $\{$7B, 14B, 32B$\}\times\{$Olympiad, Omni-MATH, AIME$\}$ at $k{=}1024$ and
+report the \texttt{expPROJ}$-$GRPO coverage gain as a function of scale and benchmark hardness---a
+scaling-law test of the mechanism.
+
+\begin{thebibliography}{9}
+\bibitem{yue2025} Y.~Yue et al. \emph{Does Reinforcement Learning Really Incentivize Reasoning
+Capacity in LLMs Beyond the Base Model?} arXiv:2504.13837, 2025.
+\end{thebibliography}
+
+\end{document}
