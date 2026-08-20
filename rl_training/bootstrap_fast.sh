@@ -26,8 +26,10 @@ mkdir -p /tmp/instance_storage/gu/pipcache
 PIP_CONFIG_FILE=/dev/null PIP_NO_CACHE_DIR=0 /usr/bin/python3 -m pip install --user \
   --no-warn-script-location --cache-dir /tmp/instance_storage/gu/pipcache \
   --index-url https://pypi.org/simple --retries 20 --timeout 60 \
-  vllm==0.23.0 trl==1.7.0 peft deepspeed accelerate datasets sympy scikit-learn jsonlines \
+  vllm==0.23.0 trl==1.7.0 peft deepspeed accelerate datasets sympy scikit-learn jsonlines "nvtx>=0.2.11" \
   || { echo PIP_FAIL; exit 1; }
+# nvtx>=0.2.11 REQUIRED: deepspeed 0.19.5 calls nvtx.get_domain (absent in older nvtx) -> full-FT
+# GRPO crashes with AttributeError at first step otherwise.
 
 echo "== [4/5] flash_attn shadow =="
 S=$HOME/.local/lib/python3.12/site-packages/flash_attn
