@@ -87,15 +87,16 @@ try:
 
     class RatchetGRPOTrainer(GRPOTrainer):
         def __init__(self, *args, bank=None, tokenizer=None, alpha=0.5, mu=0.5,
-                     bank_batch=2, dual=False, dual_kappa=0.0, dual_eta=0.1, **kw):
+                     bank_batch=2, dual=False, dual_kappa=0.0, dual_eta=0.1, mode="floor", **kw):
             super().__init__(*args, **kw)
             tk = tokenizer or self.processing_class
             self._items, self._pad = _tokenize_bank(bank, tk)
             self._alpha, self._mu = alpha, mu
             self._bank_batch = bank_batch
             self._dual, self._dk, self._de = dual, dual_kappa, dual_eta
+            self._mode = mode   # "floor" = one-sided (ours) | "anchor" = symmetric PBA/DPH-RL baseline
             self._cursor = 0
-            print(f">> RatchetGRPOTrainer: bank={len(self._items)} alpha={alpha} mu={mu} dual={dual}")
+            print(f">> RatchetGRPOTrainer: bank={len(self._items)} alpha={alpha} mu={mu} dual={dual} mode={mode}")
 
         def _next_bank_idxs(self):
             n = len(self._items)
@@ -109,7 +110,11 @@ try:
             loss = base[0] if isinstance(base, tuple) else base
             dev = next(model.parameters()).device
             plog, reflog = _bank_batch_logp(model, self._items, self._next_bank_idxs(), self._pad, dev)
-            pen = ratchet_penalty(plog, reflog, alpha=self._alpha, reduction="mean")
+            if self._mode == "anchor":
+                from rl_training.support_ratchet import anchor_penalty
+                pen = anchor_penalty(plog, reflog, reduction="mean")
+            else:
+                pen = ratchet_penalty(plog, reflog, alpha=self._alpha, reduction="mean")
             if self._dual:
                 self._mu = dual_update(self._mu, float(pen.detach()), self._dk, self._de)
             loss = loss + self._mu * pen

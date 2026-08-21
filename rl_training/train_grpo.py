@@ -64,6 +64,8 @@ def build_args():
     p.add_argument("--ratchet-alpha", type=float, default=0.5, help="floor: p_theta >= alpha*p_ref")
     p.add_argument("--ratchet-mu", type=float, default=0.5, help="Lagrange weight (soft form)")
     p.add_argument("--ratchet-dual", action="store_true", help="dual-ascent on mu (soft form)")
+    p.add_argument("--pba-anchor", action="store_true",
+                   help="BASELINE: symmetric base-anchoring (PBA/DPH-RL replay) on the bank instead of the one-sided floor")
     p.add_argument("--proj-max-steps", type=int, default=5, help="correction sub-steps/step (hard)")
     p.add_argument("--proj-lr", type=float, default=1e-5, help="correction sub-step lr (hard)")
     p.add_argument("--proj-every", type=int, default=1, help="project every N steps (hard; amortize)")
@@ -171,18 +173,19 @@ def main():
         target_modules=list(cfg.lora_target_modules), task_type="CAUSAL_LM",
     ) if cfg.use_lora else None
     # TECHNIQUE 1: swap in a coverage-constrained trainer if requested (needs a bank).
-    if a.support_ratchet or a.projection:
+    if a.support_ratchet or a.projection or a.pba_anchor:
         if not a.ratchet_bank or not os.path.exists(a.ratchet_bank):
-            raise SystemExit(f"--support-ratchet/--projection require --ratchet-bank (got {a.ratchet_bank!r})")
+            raise SystemExit(f"--support-ratchet/--projection/--pba-anchor require --ratchet-bank (got {a.ratchet_bank!r})")
         from rl_training.coverage_bank import load_bank
         from rl_training.coverage_trainer import (RatchetGRPOTrainer, ProjectionGRPOTrainer)
         from rl_training.projection import ProjectionConfig
         bank = load_bank(a.ratchet_bank)
-        if a.support_ratchet:
+        if a.support_ratchet or a.pba_anchor:
             trainer = RatchetGRPOTrainer(
                 model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
                 train_dataset=train_dataset, peft_config=peft_config,
-                bank=bank, alpha=a.ratchet_alpha, mu=a.ratchet_mu, dual=a.ratchet_dual)
+                bank=bank, alpha=a.ratchet_alpha, mu=a.ratchet_mu, dual=a.ratchet_dual,
+                mode=("anchor" if a.pba_anchor else "floor"))
         else:
             pc = ProjectionConfig(alpha=a.ratchet_alpha, max_steps=a.proj_max_steps,
                                   lr=a.proj_lr, every=a.proj_every,

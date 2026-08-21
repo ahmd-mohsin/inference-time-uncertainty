@@ -82,6 +82,25 @@ def ratchet_penalty(policy_logp: torch.Tensor, ref_logp: torch.Tensor,
     return pen.mean()
 
 
+def anchor_penalty(policy_logp: torch.Tensor, ref_logp: torch.Tensor,
+                   reduction: str = "mean") -> torch.Tensor:
+    """SYMMETRIC base-anchoring penalty (PBA / DPH-RL-style base-replay baseline).
+
+    Unlike the one-sided floor (relu below-floor only), this penalizes deviation from the base in
+    BOTH directions: pen_q = |policy_logp - ref_logp|. This pulls the policy back toward the base
+    distribution on the banked (risky) traces even when it is ABOVE base -> imposes a pass@1 tax,
+    the very thing the one-sided floor is designed to avoid. It is the faithful stronger PBA variant
+    (base-sampled replay) and the DPH-RL rehearsal family, at summed-sequence log-prob scale (use a
+    small mu, ~0.02-0.05, since deviations are tens of nats).
+    """
+    pen = (policy_logp - ref_logp).abs()
+    if reduction == "none":
+        return pen
+    if reduction == "sum":
+        return pen.sum()
+    return pen.mean()
+
+
 def dual_update(mu: float, mean_penalty: float, kappa: float = 0.0,
                 eta_mu: float = 0.1, mu_max: float = 5.0) -> float:
     """Optional Lagrange-dual ascent on the multiplier mu.
