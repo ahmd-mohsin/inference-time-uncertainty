@@ -326,6 +326,68 @@ stable.}
 \end{table}
 
 %====================================================================
+\section{Mechanism at the reasoning-mode level}
+\label{sec:modelevel}
+The results above are answer/pass@k-level. We now measure the mechanism directly on \emph{reasoning
+modes} --- strategy families, not exact traces --- via a held-out bank of base-correct solutions
+(11{,}664 witnesses on the Olympiad fragile band, clustered by strategy; the floor model never
+trained on these traces). For each witness we compute $\Delta = \log\pi_\theta(y\mid q) - \log\pi_0(y\mid q)$
+(teacher-forced), the same quantity the certificate (\S\ref{sec:method}) constrains. Define a mode as
+\emph{collapsed} if $\Delta < -10$ nats (driven far below the base's probability, toward the sampling
+floor).
+
+\paragraph{(R5) Recoverability and extinction.} Recoverability $R_K(M)=1-(1-p_\theta(M))^K$. On the
+329-problem fragile band, identical continued RL from the plain fork drove \textbf{2} base-recoverable
+problems to \emph{zero} recoverable mass (unrecoverable at any $K$); from the coverage-preserved fork,
+\textbf{0}. The extinction is invisible in pass@256 (0.983 vs 0.990) but categorical in recoverable-mode count.
+
+\paragraph{(R6) Mode-mass certificate --- floor preserves what plain RL collapses (held out).}
+Table~\ref{tab:certificate}: on traces the floor never trained on, plain GRPO collapses \textbf{39\%}
+of base reasoning modes ($\Delta<-10$) while the floor collapses \textbf{2.3\%} ($\approx$17$\times$);
+paired, the floor preserves more mass on 77\% of witnesses. Grpo's collapse rate is
+bank-independent ($\approx$39--40\% on both its own and held-out banks) --- plain RL destroys base
+mode-mass regardless of which traces we measure.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrr}
+\toprule
+Arm ($\Delta=\log\pi_\theta-\log\pi_0$ on base mode-witnesses) & mean $\Delta$ & \% $\ge\log\alpha$ & \% collapsed ($\Delta<-10$) \\
+\midrule
+\multicolumn{4}{l}{\emph{Held-out bank (11{,}664 witnesses; floor never trained on these):}}\\
+plain GRPO (continued, 100 steps)     & $-10.11$ & 22.6\% & \textbf{39.0\%}\\
+\textbf{GRPO + floor (continued, 100 steps)} & $\mathbf{-1.68}$ & \textbf{46.2\%} & \textbf{2.3\%}\\
+\midrule
+\multicolumn{4}{l}{\emph{Interventional (from base, identical 150-step GRPO; floor = sole difference):}}\\
+plain GRPO                             & $-1.96$ & 46.2\% & 4.1\%\\
+\textbf{GRPO + floor}                  & $\mathbf{+1.38}$ & \textbf{85.0\%} & \textbf{0.0\%}\\
+\bottomrule
+\end{tabular}
+\caption{\textbf{The floor causally preserves reasoning-mode mass that plain RL erodes.} Top:
+held-out mode-mass certificate (\S\ref{sec:modelevel}), removing any bank-provenance confound. Bottom:
+interventional --- two arms from base with \emph{identical} data/steps, the off-policy floor the only
+difference; plain RL erodes mode mass (mean $-1.96$, 4.1\% collapse), the floor raises it (mean
+$+1.38$, \textbf{0\%} collapse), a $+3.34$-nat paired gap (floor $>$ plain on 69\% of witnesses). This
+is the causal core: identical RL, floor prevents the collapse.}
+\label{tab:certificate}
+\end{table}
+
+\paragraph{(R7) The $K\!\cdot\!p\approx1$ boundary predicts extinction.} The mechanism
+(\S\ref{sec:mech}) says a mode is support-blind once $K\!\cdot\!p_\theta(M)<1$. At deployment $K{=}1024$,
+plain GRPO leaves exactly the \emph{same} 2 problems below $K\!\cdot\!p{=}1$ that R5 found extinct
+(\#168, \#237; the floor leaves 0) --- one of them a mode the base solved $33/1024$ times that plain RL
+drove to $0$ and the floor preserved. The support-blind boundary and the observed extinctions coincide.
+
+\emph{Honesty on the interventional run:} the $\Delta$-vs-$K\!\cdot\!p$ gradient is flat on this
+concentrated-$p$ fragile band (the floor helps uniformly, $\approx+3.3$ nats across all bins), and a
+25-step run showed no effect at all (too short to cross the boundary). The sharp $K\!\cdot\!p{=}1$
+transition is carried by the observational analysis (R7); the interventional run establishes the
+causal \emph{preservation}.
+
+\paragraph{(R8, in progress) Baselines.} A matched 150-step \texttt{globalkl} arm (GRPO $+$ global
+KL-to-base, $\beta{=}0.04$) is training under the identical setup for a plain / global-KL / floor
+mode-mass comparison; per-problem-anchoring (PBA), UCPO, and DPH-RL baselines are being implemented.
+
+%====================================================================
 \section{What is and is not established}
 \textbf{Established.} (1) A mechanism result (Prop.~\ref{prop:prune}--\ref{prop:rescue}) bounding an
 entire family of on-policy methods. (2) A qualitatively different object---coverage as an off-policy
