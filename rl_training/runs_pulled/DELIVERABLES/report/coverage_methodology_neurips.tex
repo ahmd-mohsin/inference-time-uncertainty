@@ -383,9 +383,32 @@ concentrated-$p$ fragile band (the floor helps uniformly, $\approx+3.3$ nats acr
 transition is carried by the observational analysis (R7); the interventional run establishes the
 causal \emph{preservation}.
 
-\paragraph{(R8, in progress) Baselines.} A matched 150-step \texttt{globalkl} arm (GRPO $+$ global
-KL-to-base, $\beta{=}0.04$) is training under the identical setup for a plain / global-KL / floor
-mode-mass comparison; per-problem-anchoring (PBA), UCPO, and DPH-RL baselines are being implemented.
+\paragraph{(R8) Baselines --- the floor beats global KL, not just vanilla GRPO.}
+Table~\ref{tab:baselines}: a matched 150-step GRPO$+$global-KL arm ($\beta{=}0.04$, the canonical
+coverage baseline) under the identical setup. Global KL genuinely helps (collapse $4.1\%\!\to\!0.5\%$,
+mean $\Delta$ $-1.96\!\to\!-0.73$) --- it is a real baseline, not a strawman --- but the floor
+dominates it: only the floor has \emph{positive} mean $\Delta$ (it \emph{raises} base mode mass),
+$85\%$ vs $57\%$ of modes above the $\alpha{=}0.5$ floor, and $0\%$ vs $0.5\%$ collapse; paired,
+floor $-$ global-KL $= +2.11$ nats (floor $>$ KL on $60\%$ of witnesses). Global KL applies symmetric,
+uniform pressure toward base; the floor is one-sided and off-policy on the exact fragile modes, so its
+signal stays strong precisely where those modes live. Per-problem anchoring (PBA), UCPO, and DPH-RL
+baselines are being implemented at the same setup.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrr}
+\toprule
+Arm (150 steps from base; $\Delta$ on base mode-witnesses) & mean $\Delta$ & \% $\ge\log\alpha$ & \% collapsed \\
+\midrule
+plain GRPO                    & $-1.96$ & 46.2\% & 4.1\%\\
+GRPO $+$ global KL ($\beta{=}0.04$) & $-0.73$ & 57.1\% & 0.5\%\\
+\textbf{GRPO $+$ floor (ours)} & $\mathbf{+1.38}$ & \textbf{85.0\%} & \textbf{0.0\%}\\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Baselines (mode-mass, 1055 witnesses).} The off-policy floor beats the standard
+global-KL coverage baseline: positive mean $\Delta$, $85\%$ modes above the floor, zero collapse
+(floor $-$ KL $=+2.11$ nats, floor $>$ KL on $60\%$).}
+\label{tab:baselines}
+\end{table}
 
 %====================================================================
 \section{What is and is not established}
