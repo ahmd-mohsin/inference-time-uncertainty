@@ -167,3 +167,41 @@ pip fixed by `PIP_CONFIG_FILE=/dev/null` bypass of the base image's dead nvidia 
 downloads for sharded models; dual DNS for c10d; nvtx≥0.2.11 for deepspeed). Always push
 checkpoints/banks off-node (HF for 15GB ckpts; incremental laptop pull for banks) — a bank was lost
 once to a mid-run death.
+
+---
+
+## 10. Two-phase plan to a NeurIPS best-paper-level submission
+
+**Principle:** lock the technique on ONE cheap, decisive setting first (Phase A); only then spend
+compute on the dense matrix (Phase B). Do not scale a method that isn't yet frozen.
+
+### Phase A — "the technique is established" GATE (finish before scaling)
+Minimal bar, on Qwen2.5-Math-7B / Olympiad-fragile (our current setting):
+- [x] Mechanism, three independent angles: E3 held-out certificate (39% vs 2.3% collapse), E8
+      observational (K·p≈1 predicts extinctions), E8 interventional-150 (causal, +3.34 nats, 0% vs 4%).
+- [~] Baselines beaten under identical setup: plain, global-KL, PBA/base-anchor done; **UCPO running**.
+- [ ] **Final method frozen**: pick expSR vs expPROJ vs E4 primal-dual vs E5 route-level as THE method
+      (run the small head-to-head on the fragile band; pick the pass@1/coverage-Pareto winner). Until
+      this is fixed, Phase B would re-run against a moving target.
+- [ ] **≥3 seeds** on the frozen method vs best baseline (E7) — turn "directional" into "significant".
+- [ ] **One unsaturated headline**: reproduce the pass@1↑ + coverage↑ on a harder/wider band
+      (Omni-MATH boundary subset) where the gain is multiple points, not 0.7%.
+Exit criterion: frozen method + a significant multi-point win on ≥1 hard benchmark, 3 seeds, all
+baselines. That is the paper's spine.
+
+### Phase B — dense best-paper campaign (only after the Phase-A gate)
+The matrix, each cell = pass@1 / large-k coverage / recoverable-mode-count / certified-mode-% /
+continued-RL ceiling, ≥3 seeds, paired CIs:
+- **Models (scale axis):** Qwen2.5-Math-{1.5B, 7B}, Qwen2.5-Math-**14B**, and a 2nd family
+  (Llama-3.1-8B or DeepSeek-Math) for generality — the theory predicts the effect grows with an
+  unsaturated fragile band, so 14B/32B should widen it (scaling-law figure).
+- **Benchmarks (hardness axis):** MATH-500, OlympiadBench, Omni-MATH-Rule, AIME — span
+  saturated→resonant→too-hard to trace the difficulty resonance.
+- **Method ablations:** α (floor slack) sweep; μ / primal-dual vs fixed; expSR vs expPROJ vs route-level;
+  bank size (witnesses/mode) & witness-selection; on- vs off-policy; one-sided vs symmetric (vs PBA).
+- **Baselines (full):** GRPO, global-KL, PBA, DPH-RL, UCPO, BBG, PKPO, RiskPO — all at matched budget.
+- **Mechanism at scale:** the K·p phase-transition figure with a wide-p bank + checkpoint trajectory
+  (raise save_total_limit) so the transition gradient shows, across model sizes.
+- **Continued-RL headline:** the fork→round-2 ceiling (R4) repeated across models/benchmarks/seeds.
+Est: a few hundred GPU-hours; only justified once Phase A is frozen. Infra is ready (bootstrap_fast,
+nvme, HF-checkpoint death-proofing, sharded eval, recoverability/certificate/phase-transition tooling).
