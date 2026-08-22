@@ -25,9 +25,11 @@ CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 VLLM_ATTENTION_BACKEND=FLASHINFER setsid
 for i in $(seq 1 120); do curl -s localhost:8000/health >/dev/null 2>&1 && { echo VLLMUP; break; }; sleep 3; done
 curl -s localhost:8000/health >/dev/null 2>&1 || { echo "vLLM FAILED"; tail -15 "$LOGS/e6_${NAME}_vllm.log"; exit 1; }
 
+# UCPO baseline = correctness-gated intra-group diversity reward (enable novelty); all others plain (--no-novelty)
+NOV="--no-novelty"; [ "$NAME" = "ucpo" ] && NOV="--novelty-lambda 0.5"
 CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7 HF_HUB_OFFLINE=1 VLLM_ATTENTION_BACKEND=FLASHINFER $PY -m accelerate.commands.launch \
   --config_file rl_training/accelerate_zero3.yaml --num_processes 7 --main_process_ip 127.0.0.1 \
-  --main_process_port 29501 --rdzv_backend c10d -m rl_training.train_grpo --no-lora --no-novelty \
+  --main_process_port 29501 --rdzv_backend c10d -m rl_training.train_grpo --no-lora $NOV \
   --model "$BASE" --dataset olympiad_bench --difficulty-json "$DIFF" \
   --num-train-steps "$STEPS" --num-generations 8 --max-completion-length 2560 --output-dir "$RUN" $EXTRA \
   > "$LOGS/e6_${NAME}_train.log" 2>&1
