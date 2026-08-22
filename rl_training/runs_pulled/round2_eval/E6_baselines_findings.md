@@ -33,7 +33,7 @@ just vanilla GRPO.**
 - ✅ plain GRPO (β=0)
 - ✅ **global KL** (β=0.04) — this doc
 - ✅ floor (ours, expSR)
-- ⏳ PBA (per-problem base anchoring) — implement as train_grpo variant (prompt-risk-gated KL)
+- ✅ **base-anchor (PBA/DPH-RL-style, symmetric, μ=0.05)**: meanΔ −0.28, 66.8% ≥ α-floor, 1.2% collapse — strongest baseline, but floor beats it +1.66 nats (floor>it 62%). NOTE: in fragile-only training, PBA's risky-gating ≈ global-KL; this arm is the symmetric-anchor/replay flavor.
 - ⏳ UCPO (uniformity among correct rollouts) — implement
 - ⏳ DPH-RL (mass-covering base-replay) — implement
 - ⏳ BBG (Bayesian boundary gating) — implement

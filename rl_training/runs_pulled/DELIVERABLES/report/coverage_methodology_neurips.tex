@@ -391,8 +391,10 @@ dominates it: only the floor has \emph{positive} mean $\Delta$ (it \emph{raises}
 $85\%$ vs $57\%$ of modes above the $\alpha{=}0.5$ floor, and $0\%$ vs $0.5\%$ collapse; paired,
 floor $-$ global-KL $= +2.11$ nats (floor $>$ KL on $60\%$ of witnesses). Global KL applies symmetric,
 uniform pressure toward base; the floor is one-sided and off-policy on the exact fragile modes, so its
-signal stays strong precisely where those modes live. Per-problem anchoring (PBA), UCPO, and DPH-RL
-baselines are being implemented at the same setup.
+signal stays strong precisely where those modes live. A symmetric base-anchoring arm (PBA's stronger
+replay variant / DPH-RL family) is the strongest baseline yet ($66.8\%$ of modes above the floor) but
+remains net-negative and still collapses $1.2\%$ of modes; the one-sided floor still leads it by
+$+1.66$ nats (floor $>$ it on $62\%$). UCPO remains to be added.
 
 \begin{table}[h]\centering\small
 \begin{tabular}{lrrr}
@@ -401,12 +403,18 @@ Arm (150 steps from base; $\Delta$ on base mode-witnesses) & mean $\Delta$ & \% 
 \midrule
 plain GRPO                    & $-1.96$ & 46.2\% & 4.1\%\\
 GRPO $+$ global KL ($\beta{=}0.04$) & $-0.73$ & 57.1\% & 0.5\%\\
-\textbf{GRPO $+$ floor (ours)} & $\mathbf{+1.38}$ & \textbf{85.0\%} & \textbf{0.0\%}\\
+GRPO $+$ base-anchor (PBA/DPH-RL-style, symmetric) & $-0.28$ & 66.8\% & 1.2\%\\
+\textbf{GRPO $+$ floor (ours, one-sided)} & $\mathbf{+1.38}$ & \textbf{85.0\%} & \textbf{0.0\%}\\
 \bottomrule
 \end{tabular}
-\caption{\textbf{Baselines (mode-mass, 1055 witnesses).} The off-policy floor beats the standard
-global-KL coverage baseline: positive mean $\Delta$, $85\%$ modes above the floor, zero collapse
-(floor $-$ KL $=+2.11$ nats, floor $>$ KL on $60\%$).}
+\caption{\textbf{Baselines (mode-mass, 1055 witnesses; identical 150-step setup).} Ordering
+plain $<$ global-KL $<$ base-anchor $<$ \textbf{floor}. The symmetric base-anchor (PBA's stronger
+replay variant / DPH-RL family) is the strongest baseline ($66.8\%$ above the floor) but stays
+net-negative and still collapses $1.2\%$ of modes; only the \emph{one-sided} floor achieves
+\emph{positive} mean $\Delta$ (it raises mass), $85\%$ above the floor, and $0\%$ collapse
+(floor $-$ base-anchor $=+1.66$ nats, floor $>$ it on $62\%$; floor $-$ global-KL $=+2.11$, floor $-$
+plain $=+3.34$). The distinction is causal: symmetric anchoring taxes and still leaks; the one-sided
+floor preserves without the tax.}
 \label{tab:baselines}
 \end{table}
 
