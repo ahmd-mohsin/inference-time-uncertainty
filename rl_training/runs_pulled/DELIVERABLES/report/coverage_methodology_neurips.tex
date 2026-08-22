@@ -19,25 +19,29 @@
 \begin{abstract}
 RLVR (e.g.\ GRPO) improves an LLM's single-sample accuracy (pass@1) but is observed to \emph{narrow}
 its reasoning \emph{coverage}: at large sampling budget $k$, the base model solves problems the
-RLVR model no longer can \citep{yue2025}. We make two contributions. \textbf{(1) A mechanism result:}
-we show that the expected on-policy gradient routed to a correct reasoning mode scales as
-$O(\pi_\theta(\cdot))$, so once a rare-correct mode falls below the sampling threshold it receives
-vanishing signal and is pruned \emph{irreversibly}---and that \emph{every} reward/advantage-shaping
-method (UCPO, PKPO, RiskPO, Polychromic) inherits this factor and therefore cannot recover such a
-mode. \textbf{(2) A new object:} we preserve coverage with an \emph{off-policy, one-sided,
-base-anchored constraint}---a support floor $\log\pi_\theta(y_q\mid q)\ge\log\pi_0(y_q\mid q)+\log\alpha$
-enforced by teacher forcing on a bank of base-correct traces, so its gradient does not vanish as
-$\pi_\theta\to0$. We give two implementations: a soft Lagrangian penalty (\texttt{expSR}) and a hard
-projected-gradient correction (\texttt{expPROJ}). \textbf{On a released full-RL model (Oat-Zero-7B),
-we show the mechanism empirically: of the base-correct solutions RLVR can no longer produce,
-$49/49$ ($100\%$) are driven $\sim\!84$ nats below the base's probability---far below the sampling
-floor.} The crossover is a difficulty \emph{resonance} (present at intermediate difficulty, absent
-when saturated or too hard). Finally, we frame coverage as the \emph{substrate for continued RL} and
-\textbf{run the test}: forking a 7B model into a plain-GRPO and a floor-constrained round-1, then
-applying identical round-2 RL, the coverage-preserved fork \emph{overtakes} the plain fork at large
-$k$ (crossover at $k\!\approx\!32$; $+0.007$ pass@256, reaching $0.990$ on the Olympiad fragile band)
-while the plain fork wins small $k$---the round-1 pass@1 tax is recovered as a higher round-2 coverage
-ceiling.
+RLVR model no longer can \citep{yue2025}. We frame the relevant resource not as entropy but as
+\emph{finite-budget recoverability}, and make three contributions. \textbf{(1) A mechanism result:}
+the expected on-policy gradient routed to a correct reasoning mode $M$ scales as $O(p_\theta(M))$, so
+any estimator whose gradient support is a finite set of $K$ on-policy samples becomes
+\emph{support-blind} to modes of mass $p_\theta(M)\!\ll\!1/K$ --- no reward/advantage reshaping
+(UCPO, PKPO, RiskPO) escapes the factor. \textbf{(2) A new object and constraint:} we preserve the
+\emph{recoverability} $R_K(M)=1-(1-p_\theta(M))^K$ of verified reasoning modes with an
+\emph{off-policy, one-sided, base-anchored} support floor $p_\theta(M)\ge\alpha\,p_0(M)$, enforced by
+teacher forcing on a bank of base-correct traces; its gradient does not vanish as $p_\theta\to0$, and
+a Jensen bound turns the banked traces into a \emph{finite-compute recoverability certificate}. Two
+implementations: soft Lagrangian (\texttt{expSR}) and hard projected-gradient (\texttt{expPROJ}).
+\textbf{(3) Evidence.} The crossover is a difficulty \emph{resonance} (Oat-Zero-7B: present on
+intermediate Olympiad, absent when saturated/too-hard). At the reasoning-mode level (held-out
+11{,}664-witness bank), identical continued RL from a plain fork \emph{collapses} $39\%$ of base
+modes ($\Delta<\!-10$ nats) while a floor fork collapses $2.3\%$; an \emph{interventional} run
+(identical GRPO from base, floor the sole difference) is causal --- the floor raises mean mode mass
+($+1.38$ nats, $0\%$ collapse) where plain RL erodes it ($-1.96$, $4.1\%$), and it beats global-KL
+and PBA/base-anchoring baselines under matched training (it is the only arm with positive mean $\Delta$
+and zero collapse). Finally, coverage is the \emph{substrate for continued RL}: a floor-constrained
+round-1 fork, after \emph{identical} round-2 RL, \emph{overtakes} the plain fork at large $k$
+($k\!\gtrsim\!32$; $0.990$ pass@256) while the plain fork wins small $k$ --- the round-1 pass@1 tax is
+recovered as a higher round-2 coverage ceiling. We report honest limits: gains on the saturated
+fragile band are small ($\sim\!0.7$ pt); the multi-point, multi-model, multi-seed campaign is future work.
 \end{abstract}
 
 %====================================================================
