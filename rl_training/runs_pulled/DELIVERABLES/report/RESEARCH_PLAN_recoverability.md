@@ -212,11 +212,20 @@ baselines. That is the paper's spine.
 ### Phase B — dense best-paper campaign (only after the Phase-A gate)
 The matrix, each cell = pass@1 / large-k coverage / recoverable-mode-count / certified-mode-% /
 continued-RL ceiling, ≥3 seeds, paired CIs:
-- **Models (scale axis):** Qwen2.5-Math-{1.5B, 7B}, Qwen2.5-Math-**14B**, and a 2nd family
-  (Llama-3.1-8B or DeepSeek-Math) for generality — the theory predicts the effect grows with an
-  unsaturated fragile band, so 14B/32B should widen it (scaling-law figure).
-- **Benchmarks (hardness axis):** MATH-500, OlympiadBench, Omni-MATH-Rule, AIME — span
-  saturated→resonant→too-hard to trace the difficulty resonance.
+- **Models — pick families with a RICH unsaturated fragile band (where our technique helps most):**
+  math-specialized bases show the resonance most cleanly, so lead with them.
+  - Qwen2.5-Math-{1.5B, 7B} (have), Qwen2.5-Math-**14B** (scale axis).
+  - **DeepSeek-Math-7B** — 2nd math-specialized family (should have a strong fragile band).
+  - **Qwen3-8B** — strong-but-general (generality without sacrificing the band).
+  - Llama-3.1-8B — general/weaker-math, LOW priority: its fragile band sits at easier problems, so the
+    effect is smaller; include only for generality breadth, not as a headline.
+  Per each family, run the **difficulty prepass FIRST** to locate its fragile band, then train there.
+- **Benchmarks — lead on MODERATELY-HARD / unsaturated (technique-friendly), per
+  [[rl-focus-moderate-difficulty-benchmarks]]:** OlympiadBench-fragile (have), **Omni-MATH-moderate**
+  (headline), Minerva-Math, MATH level-5 (hard subset). Keep MATH-500(easy)/AMC (saturated) and AIME
+  (too-hard) ONLY as the two resonance-curve endpoints, never as headlines.
+  Each (family×dataset) cell needs a difficulty prepass + a base-correct bank (for the floor) built
+  before training — that is the prerequisite wave before each generality run.
 - **Method ablations:** α (floor slack) sweep; μ / primal-dual vs fixed; expSR vs expPROJ vs route-level;
   bank size (witnesses/mode) & witness-selection; on- vs off-policy; one-sided vs symmetric (vs PBA).
 - **Baselines (full):** GRPO, global-KL, PBA, DPH-RL, UCPO, BBG, PKPO, RiskPO — all at matched budget.
