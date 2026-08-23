@@ -179,10 +179,22 @@ compute on the dense matrix (Phase B). Do not scale a method that isn't yet froz
 Minimal bar, on Qwen2.5-Math-7B / Olympiad-fragile (our current setting):
 - [x] Mechanism, three independent angles: E3 held-out certificate (39% vs 2.3% collapse), E8
       observational (K·p≈1 predicts extinctions), E8 interventional-150 (causal, +3.34 nats, 0% vs 4%).
-- [~] Baselines beaten under identical setup: plain, global-KL, PBA/base-anchor done; **UCPO running**.
-- [ ] **Final method frozen**: pick expSR vs expPROJ vs E4 primal-dual vs E5 route-level as THE method
-      (run the small head-to-head on the fragile band; pick the pass@1/coverage-Pareto winner). Until
-      this is fixed, Phase B would re-run against a moving target.
+- [x] Baselines beaten under identical setup: plain, global-KL, PBA/base-anchor, **UCPO** all done.
+      Final 5-way ordering (mode-mass Δ): UCPO −3.44 < plain −1.96 < global-KL −0.73 < PBA −0.28 <
+      **floor +1.38**. UCPO (reward-shaping) is the WORST — sharpest confirmation of O(p_θ) blindness.
+- [~] **Final method frozen** (method-freeze head-to-head on Olympiad-fragile, 150 steps, mode-mass Δ):
+      - expSR (soft one-sided floor) = the floor arm, **DONE (+1.38)** — the incumbent to beat.
+      - **expPROJ (hard projected-gradient): DROPPED at 7B.** Architecturally incompatible with the
+        required full-FT DeepSpeed **ZeRO-3** setup: `ProjectionGRPOTrainer` builds a second (side) SGD
+        optimizer over the model params, which corrupts ZeRO-3's parameter-partition hooks → crash on
+        the first normal step (deepspeed `_partition_param`). Would only run at ZeRO-2 / small scale.
+      - **E4 primal-dual (global dual ascent on μ): RUNNING** on node mi-0cc49a5556549b330 (2026-08-22).
+      - **E5 route-level: RUNNING (queued after E4)** — implemented cleanly as expSR on a *route bank*
+        (each witness truncated to its 64-token strategy prefix; ref = base logp over the prefix), so
+        the floor protects entry into the reasoning basin p_θ(z|q), not the trajectory. No trainer
+        change (route-ness lives in the bank). Scored over both the full bank (comparable) and the
+        route bank (native). Tooling: `rl_training/build_route_bank.py`.
+      Winner (best pass@1/coverage Pareto among expSR / E4 / E5) becomes THE method.
 - [ ] **≥3 seeds** on the frozen method vs best baseline (E7) — turn "directional" into "significant".
 - [ ] **One unsaturated headline**: reproduce the pass@1↑ + coverage↑ on a harder/wider band
       (Omni-MATH boundary subset) where the gain is multiple points, not 0.7%.
