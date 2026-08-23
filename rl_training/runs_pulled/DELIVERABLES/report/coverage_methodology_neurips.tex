@@ -398,13 +398,23 @@ uniform pressure toward base; the floor is one-sided and off-policy on the exact
 signal stays strong precisely where those modes live. A symmetric base-anchoring arm (PBA's stronger
 replay variant / DPH-RL family) is the strongest baseline yet ($66.8\%$ of modes above the floor) but
 remains net-negative and still collapses $1.2\%$ of modes; the one-sided floor still leads it by
-$+1.66$ nats (floor $>$ it on $62\%$). UCPO remains to be added.
+$+1.66$ nats (floor $>$ it on $62\%$). Most tellingly, \textbf{UCPO---a correctness-gated intra-group
+diversity reward, i.e.\ the purest reward-shaping coverage method---is the \emph{worst} arm of all,
+below even plain GRPO} (mean $\Delta=-3.44$, only $36.9\%$ above the floor, and $10.0\%$ of base modes
+collapsed, $2.4\times$ plain's rate). This is exactly the failure Prop.~\ref{prop:prune} predicts: a
+diversity bonus can only act on rollouts it \emph{samples}, so it never reaches modes rarer than
+$\sim 1/K$, while its pressure toward intra-group variety among the dominant sampled modes
+\emph{accelerates} the drift of the rare ones. A method explicitly built for coverage thus does worse
+than doing nothing special---the sharpest confirmation that no on-policy reward reshaping escapes the
+$O(p_\theta)$ support-blindness factor. The one-sided floor beats UCPO by $+4.82$ nats (floor $>$ it on
+$75\%$ of witnesses).
 
 \begin{table}[h]\centering\small
 \begin{tabular}{lrrr}
 \toprule
 Arm (150 steps from base; $\Delta$ on base mode-witnesses) & mean $\Delta$ & \% $\ge\log\alpha$ & \% collapsed \\
 \midrule
+GRPO $+$ UCPO (intra-group diversity reward) & $-3.44$ & 36.9\% & 10.0\%\\
 plain GRPO                    & $-1.96$ & 46.2\% & 4.1\%\\
 GRPO $+$ global KL ($\beta{=}0.04$) & $-0.73$ & 57.1\% & 0.5\%\\
 GRPO $+$ base-anchor (PBA/DPH-RL-style, symmetric) & $-0.28$ & 66.8\% & 1.2\%\\
@@ -412,13 +422,17 @@ GRPO $+$ base-anchor (PBA/DPH-RL-style, symmetric) & $-0.28$ & 66.8\% & 1.2\%\\
 \bottomrule
 \end{tabular}
 \caption{\textbf{Baselines (mode-mass, 1055 witnesses; identical 150-step setup).} Ordering
-plain $<$ global-KL $<$ base-anchor $<$ \textbf{floor}. The symmetric base-anchor (PBA's stronger
+UCPO $<$ plain $<$ global-KL $<$ base-anchor $<$ \textbf{floor}. The reward-shaping coverage method
+(UCPO, a correctness-gated intra-group diversity bonus) is the \emph{worst}---below plain GRPO, with
+$10.0\%$ mode collapse---because a diversity reward acts only on \emph{sampled} rollouts and cannot
+reach modes rarer than $\sim1/K$ (Prop.~\ref{prop:prune}). The symmetric base-anchor (PBA's stronger
 replay variant / DPH-RL family) is the strongest baseline ($66.8\%$ above the floor) but stays
 net-negative and still collapses $1.2\%$ of modes; only the \emph{one-sided} floor achieves
 \emph{positive} mean $\Delta$ (it raises mass), $85\%$ above the floor, and $0\%$ collapse
-(floor $-$ base-anchor $=+1.66$ nats, floor $>$ it on $62\%$; floor $-$ global-KL $=+2.11$, floor $-$
-plain $=+3.34$). The distinction is causal: symmetric anchoring taxes and still leaks; the one-sided
-floor preserves without the tax.}
+(floor $-$ base-anchor $=+1.66$ nats, floor $>$ it on $62\%$; floor $-$ global-KL $=+2.11$; floor $-$
+plain $=+3.34$; floor $-$ UCPO $=+4.82$, floor $>$ UCPO on $75\%$). The distinction is causal:
+reward reshaping and symmetric anchoring both tax and still leak; the one-sided off-policy floor
+preserves without the tax.}
 \label{tab:baselines}
 \end{table}
 

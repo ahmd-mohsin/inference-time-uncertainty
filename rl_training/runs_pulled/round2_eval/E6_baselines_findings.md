@@ -34,7 +34,7 @@ just vanilla GRPO.**
 - ✅ **global KL** (β=0.04) — this doc
 - ✅ floor (ours, expSR)
 - ✅ **base-anchor (PBA/DPH-RL-style, symmetric, μ=0.05)**: meanΔ −0.28, 66.8% ≥ α-floor, 1.2% collapse — strongest baseline, but floor beats it +1.66 nats (floor>it 62%). NOTE: in fragile-only training, PBA's risky-gating ≈ global-KL; this arm is the symmetric-anchor/replay flavor.
-- ⏳ UCPO (uniformity among correct rollouts) — implement
+- ✅ **UCPO (correctness-gated intra-group diversity reward, novelty λ=0.5)**: meanΔ **−3.44**, 36.9% ≥ α-floor, **10.0% collapse** — the **WORST arm, below plain GRPO**. This is the sharpest mechanism confirmation: a reward-shaping "coverage" method does worse than doing nothing, because a diversity bonus only acts on *sampled* rollouts (support-blind below ~1/K) and its intra-group variety pressure *accelerates* rare-mode drift. floor beats UCPO by **+4.82 nats (floor>it 75%)**. Run: 150 steps from base on node mi-0cc49a5556549b330 (2026-08-22), scored over the 1055-witness bank on GPU2 (reaper OOM'd on GPU0 due to leftover vLLM; killed by PID + rescored). Artifact `e8_long/scored_e6ucpo.jsonl`.
 - ⏳ DPH-RL (mass-covering base-replay) — implement
 - ⏳ BBG (Bayesian boundary gating) — implement
 (All to be run at the same 150-step / fragile-band setup and added to this table.)
