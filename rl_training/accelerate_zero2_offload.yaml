@@ -1,0 +1,27 @@
+# DeepSpeed ZeRO-2 (+ optimizer CPU offload) accelerate config.
+# Used for expPROJ (hard projected-gradient): ZeRO-3 partitions PARAMS and its param-gather/free
+# hooks are corrupted by the projection trainer's side SGD optimizer -> crash. ZeRO-2 does NOT
+# partition params (only optimizer state + grads), so a side optimizer over full params is legal.
+# CPU optimizer offload keeps ~12 bytes/param of Adam state off the 40GB GPU so 7B full-FT fits with
+# headroom for the teacher-forced correction forward/backward.
+compute_environment: LOCAL_MACHINE
+debug: false
+deepspeed_config:
+  deepspeed_multinode_launcher: standard
+  offload_optimizer_device: cpu
+  offload_param_device: none
+  zero3_init_flag: false
+  zero_stage: 2
+distributed_type: DEEPSPEED
+downcast_bf16: 'no'
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 7
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false

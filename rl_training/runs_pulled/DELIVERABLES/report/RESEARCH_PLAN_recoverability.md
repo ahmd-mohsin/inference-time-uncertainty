@@ -184,12 +184,16 @@ Minimal bar, on Qwen2.5-Math-7B / Olympiad-fragile (our current setting):
       **floor +1.38**. UCPO (reward-shaping) is the WORST — sharpest confirmation of O(p_θ) blindness.
 - [~] **Final method frozen** (method-freeze head-to-head on Olympiad-fragile, 150 steps, mode-mass Δ):
       - expSR (soft one-sided floor) = the floor arm, **DONE (+1.38)** — the incumbent to beat.
-      - **expPROJ (hard projected-gradient): DROPPED at 7B.** Architecturally incompatible with the
-        required full-FT DeepSpeed **ZeRO-3** setup: `ProjectionGRPOTrainer` builds a second (side) SGD
-        optimizer over the model params, which corrupts ZeRO-3's parameter-partition hooks → crash on
-        the first normal step (deepspeed `_partition_param`). Would only run at ZeRO-2 / small scale.
-      - **E4 primal-dual (global dual ascent on μ): RUNNING** on node mi-0cc49a5556549b330 (2026-08-22).
-      - **E5 route-level: RUNNING (queued after E4)** — implemented cleanly as expSR on a *route bank*
+      - **expPROJ (hard projected-gradient): RESCUED, RUNNING under ZeRO-2 on worker node 1.**
+        The ZeRO-3 crash was because `ProjectionGRPOTrainer` builds a second (side) SGD optimizer over
+        the params, which corrupts ZeRO-3's *param-partition* hooks. ZeRO-2 does NOT partition params
+        → the side optimizer is legal. Full-FT 7B under ZeRO-2 is memory-heavy, so we add **optimizer
+        CPU-offload** (`accelerate_zero2_offload.yaml`); the image's CUDA skew (nvcc 12.6 vs torch 13.0)
+        blocked the `cpu_adam` JIT build, fixed with `DS_SKIP_CUDA_CHECK=1`. Projection loop confirmed
+        live (proj_max_violation logged, modes_alive tracked). Uses the 3-node budget: E4 on main,
+        expPROJ on worker1, E5 on worker2 — all three arms concurrent (~2.5h vs ~9h sequential).
+      - **E4 primal-dual (global dual ascent on μ): RUNNING** on main node (2026-08-22).
+      - **E5 route-level: RUNNING on worker node 2** — implemented cleanly as expSR on a *route bank*
         (each witness truncated to its 64-token strategy prefix; ref = base logp over the prefix), so
         the floor protects entry into the reasoning basin p_θ(z|q), not the trajectory. No trainer
         change (route-ness lives in the bank). Scored over both the full bank (comparable) and the
