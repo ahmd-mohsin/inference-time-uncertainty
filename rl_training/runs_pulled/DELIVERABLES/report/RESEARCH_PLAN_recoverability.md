@@ -198,7 +198,11 @@ Minimal bar, on Qwen2.5-Math-7B / Olympiad-fragile (our current setting):
         the floor protects entry into the reasoning basin p_θ(z|q), not the trajectory. No trainer
         change (route-ness lives in the bank). Scored over both the full bank (comparable) and the
         route bank (native). Tooling: `rl_training/build_route_bank.py`.
-      Winner (best pass@1/coverage Pareto among expSR / E4 / E5) becomes THE method.
+      **RESULT (2026-08-23, 4-way full-trace mode-mass Δ): expSR +1.38 ≈ E4 +1.29 > expPROJ +0.40
+      > E5 +0.27; ALL 0% collapse.** FROZEN METHOD = **expSR (soft one-sided floor)**; E4 (adaptive
+      dual) = tuning-free equal; expPROJ dominated (weaker + ZeRO-2-only + ~10× cost); E5 = trajectory-
+      free variant (native prefix Δ: 97.3% above floor — preserves basin entry). See
+      METHODFREEZE_findings.md + tab:methodfreeze. Remaining: pass@1 tax eval to close the Pareto axis.
 - [ ] **≥3 seeds** on the frozen method vs best baseline (E7) — turn "directional" into "significant".
 - [ ] **One unsaturated headline**: reproduce the pass@1↑ + coverage↑ on a harder/wider band
       (Omni-MATH boundary subset) where the gain is multiple points, not 0.7%.

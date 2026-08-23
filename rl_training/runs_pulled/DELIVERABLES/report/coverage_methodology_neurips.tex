@@ -436,6 +436,43 @@ preserves without the tax.}
 \label{tab:baselines}
 \end{table}
 
+\subsection{Which implementation? A method-freeze}
+Having beaten the baselines, we fix a single method via a 4-way head-to-head among floor
+implementations under the identical setup (mode-mass $\Delta$ on the same 1055 witnesses,
+Table~\ref{tab:methodfreeze}). All four---soft penalty (expSR), adaptive primal-dual (E4), hard
+projected-gradient (expPROJ), and route-level (E5)---achieve \textbf{$0\%$ collapse and positive mean
+$\Delta$}, a robustness result for the constraint itself: it preserves modes regardless of
+soft/hard/adaptive/route form, whereas every baseline in Table~\ref{tab:baselines} is net-negative.
+The soft floor (expSR, $+1.38$) and the tuning-free adaptive dual (E4, $+1.29$) are statistically tied
+and strongest, and are the cheapest (single optimizer, ZeRO-3, ${\sim}50$s/step). \textbf{Hard
+projection (expPROJ) is dominated}---weaker preservation ($+0.40$) \emph{and} far costlier: its side
+optimizer is incompatible with ZeRO-3 param-sharding (forcing ZeRO-2) and its projection loop is
+${\sim}10\times$ the per-step cost. \textbf{Route-level (E5) is a distinct design point}: on full-trace
+$\Delta$ it preserves less ($+0.27$) because it only constrains the $64$-token strategy prefix, but on
+its native prefix objective it is the strongest ($+0.28$ mean, $97.3\%$ above the floor)---it protects
+\emph{entry into the reasoning basin} while leaving RL maximally free on the continuation. \textbf{We
+freeze expSR as the method}, reporting E4 as the tuning-free equal and E5 as the trajectory-free variant.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrrr}
+\toprule
+Method (150 steps; full-trace $\Delta$ on 1055 witnesses) & mean $\Delta$ & \% $\ge\log\alpha$ & \% presv. & \% coll. \\
+\midrule
+\textbf{expSR} (soft one-sided floor, fixed $\mu$) & $\mathbf{+1.38}$ & 85.0\% & 67.6\% & \textbf{0.0\%}\\
+\textbf{E4} primal-dual (adaptive $\mu$) & $+1.29$ & 86.0\% & 66.4\% & \textbf{0.0\%}\\
+expPROJ (hard projected-gradient) & $+0.40$ & 78.2\% & 57.8\% & \textbf{0.0\%}\\
+E5 route-level (floor on strategy prefix) & $+0.27$ & 82.2\% & 58.3\% & \textbf{0.0\%}\\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Method-freeze (4 floor implementations, identical setup).} All four preserve
+($0\%$ collapse, positive mean $\Delta$)---robustness of the constraint across forms. Soft (expSR) and
+adaptive-dual (E4) are tied-best and cheapest; hard projection (expPROJ) is dominated (weaker + ZeRO-2
+only + ${\sim}10\times$ cost); route-level (E5) preserves basin \emph{entry} ($97.3\%$ above floor on
+its native prefix metric) rather than full-trace mass. \textbf{Frozen method: expSR}, E4 the tuning-free
+equal.}
+\label{tab:methodfreeze}
+\end{table}
+
 %====================================================================
 \section{What is and is not established}
 \textbf{Established.} (1) A mechanism result (Prop.~\ref{prop:prune}--\ref{prop:rescue}) bounding an
