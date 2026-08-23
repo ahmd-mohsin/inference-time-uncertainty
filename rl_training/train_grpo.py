@@ -22,6 +22,8 @@ def build_args():
     p.add_argument("--model", default=RLConfig.model_name)
     p.add_argument("--dataset", default=RLConfig.dataset)
     p.add_argument("--n-problems", type=int, default=RLConfig.n_problems)
+    p.add_argument("--seed", type=int, default=RLConfig.seed,
+                   help="training seed (data order + GRPO rollout sampling); vary for seed-robustness")
     p.add_argument("--difficulty-json", default=RLConfig.difficulty_json)
     p.add_argument("--output-dir", default=RLConfig.output_dir)
     p.add_argument("--num-generations", type=int, default=RLConfig.num_generations)
@@ -108,7 +110,7 @@ def main():
     from rl_training.model_utils import merge_adapter_if_needed
     a.model = merge_adapter_if_needed(a.model)
     a.model = _resolve_local_model(a.model)
-    cfg = RLConfig(model_name=a.model, dataset=a.dataset, n_problems=a.n_problems,
+    cfg = RLConfig(model_name=a.model, dataset=a.dataset, n_problems=a.n_problems, seed=a.seed,
                    difficulty_json=a.difficulty_json, output_dir=a.output_dir,
                    num_generations=a.num_generations, num_train_steps=a.num_train_steps,
                    learning_rate=a.lr, beta=a.beta,
@@ -153,7 +155,7 @@ def main():
         max_completion_length=cfg.max_completion_length,
         temperature=cfg.gen_temperature, top_p=cfg.gen_top_p,
         max_steps=cfg.num_train_steps, scale_rewards=cfg.scale_rewards,
-        reward_weights=reward_weights,
+        reward_weights=reward_weights, seed=cfg.seed,
         use_vllm=cfg.use_vllm, vllm_mode=cfg.vllm_mode,
         vllm_server_host=cfg.vllm_server_host, vllm_server_port=cfg.vllm_server_port,
         logging_steps=10, save_steps=cfg.save_steps, save_total_limit=cfg.save_total_limit,
