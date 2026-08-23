@@ -42,13 +42,17 @@ fi
 if [ ! -f "$CELL/PREPASS_DONE" ]; then
   say "S1 prepass k=$K"
   freegpu
+  if [ "$(ls $DIFF.shard*-of-8.json 2>/dev/null | wc -l)" -ge 8 ]; then
+    say "S1 shards already present -> skip regeneration, merge only"
+  else
   for i in 0 1 2 3 4 5 6 7; do
     CUDA_VISIBLE_DEVICES=$i HF_HUB_OFFLINE=1 setsid nohup $PY rl_training/difficulty_prepass.py \
       --model-path "$BASE" --dataset "$DATASET" --n-problems "$NPROB" --k "$K" \
       --num-shards 8 --shard-index $i --output "$DIFF" > "$LOGS/prep_${NAME}_${DATASET}_$i.log" 2>&1 &
   done
   wait
-  $PY rl_training/difficulty_prepass.py --merge --num-shards 8 --output "$DIFF" --dataset "$DATASET" --k "$K" >> "$L" 2>&1
+  fi
+  $PY rl_training/difficulty_prepass.py --merge --model-path "$BASE" --num-shards 8 --output "$DIFF" --dataset "$DATASET" --k "$K" >> "$L" 2>&1
   [ -f "$DIFF" ] && touch "$CELL/PREPASS_DONE" && say "S1 done: $(grep -o '\"counts\":[^}]*}' $DIFF | head -1)"
 fi
 [ -f "$CELL/PREPASS_DONE" ] || { say "FATAL prepass failed"; exit 1; }
