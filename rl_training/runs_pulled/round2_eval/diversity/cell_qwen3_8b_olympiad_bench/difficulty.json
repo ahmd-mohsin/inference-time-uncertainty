@@ -1,0 +1,4016 @@
+{
+  "model": "merged",
+  "dataset": "olympiad_bench",
+  "k": 64,
+  "counts": {
+    "solved": 227,
+    "hard": 199,
+    "stuck": 146
+  },
+  "per_problem": [
+    {
+      "problem_id": 0,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 8,
+      "label": "hard",
+      "pass1": 0.15625,
+      "pass64": 1.0,
+      "n_correct": 10
+    },
+    {
+      "problem_id": 16,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 24,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 32,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 40,
+      "label": "hard",
+      "pass1": 0.40625,
+      "pass64": 1.0,
+      "n_correct": 26
+    },
+    {
+      "problem_id": 48,
+      "label": "hard",
+      "pass1": 0.25,
+      "pass64": 1.0,
+      "n_correct": 16
+    },
+    {
+      "problem_id": 56,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 64,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 72,
+      "label": "hard",
+      "pass1": 0.125,
+      "pass64": 1.0,
+      "n_correct": 8
+    },
+    {
+      "problem_id": 80,
+      "label": "solved",
+      "pass1": 0.765625,
+      "pass64": 1.0,
+      "n_correct": 49
+    },
+    {
+      "problem_id": 88,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 96,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 104,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 112,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 120,
+      "label": "solved",
+      "pass1": 0.84375,
+      "pass64": 1.0,
+      "n_correct": 54
+    },
+    {
+      "problem_id": 128,
+      "label": "solved",
+      "pass1": 0.6875,
+      "pass64": 1.0,
+      "n_correct": 44
+    },
+    {
+      "problem_id": 136,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 144,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 152,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 160,
+      "label": "hard",
+      "pass1": 0.328125,
+      "pass64": 1.0,
+      "n_correct": 21
+    },
+    {
+      "problem_id": 168,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 176,
+      "label": "solved",
+      "pass1": 0.9375,
+      "pass64": 1.0,
+      "n_correct": 60
+    },
+    {
+      "problem_id": 184,
+      "label": "hard",
+      "pass1": 0.296875,
+      "pass64": 1.0,
+      "n_correct": 19
+    },
+    {
+      "problem_id": 192,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 200,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 208,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 216,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 224,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 232,
+      "label": "solved",
+      "pass1": 0.875,
+      "pass64": 1.0,
+      "n_correct": 56
+    },
+    {
+      "problem_id": 240,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 248,
+      "label": "hard",
+      "pass1": 0.140625,
+      "pass64": 1.0,
+      "n_correct": 9
+    },
+    {
+      "problem_id": 256,
+      "label": "hard",
+      "pass1": 0.25,
+      "pass64": 1.0,
+      "n_correct": 16
+    },
+    {
+      "problem_id": 264,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 272,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 280,
+      "label": "hard",
+      "pass1": 0.25,
+      "pass64": 1.0,
+      "n_correct": 16
+    },
+    {
+      "problem_id": 288,
+      "label": "hard",
+      "pass1": 0.328125,
+      "pass64": 1.0,
+      "n_correct": 21
+    },
+    {
+      "problem_id": 296,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 304,
+      "label": "solved",
+      "pass1": 0.59375,
+      "pass64": 1.0,
+      "n_correct": 38
+    },
+    {
+      "problem_id": 312,
+      "label": "hard",
+      "pass1": 0.296875,
+      "pass64": 1.0,
+      "n_correct": 19
+    },
+    {
+      "problem_id": 320,
+      "label": "hard",
+      "pass1": 0.359375,
+      "pass64": 1.0,
+      "n_correct": 23
+    },
+    {
+      "problem_id": 328,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 336,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 344,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 352,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 360,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 368,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 376,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 384,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 392,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 400,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 408,
+      "label": "hard",
+      "pass1": 0.203125,
+      "pass64": 1.0,
+      "n_correct": 13
+    },
+    {
+      "problem_id": 416,
+      "label": "hard",
+      "pass1": 0.15625,
+      "pass64": 1.0,
+      "n_correct": 10
+    },
+    {
+      "problem_id": 424,
+      "label": "solved",
+      "pass1": 0.6875,
+      "pass64": 1.0,
+      "n_correct": 44
+    },
+    {
+      "problem_id": 432,
+      "label": "hard",
+      "pass1": 0.21875,
+      "pass64": 1.0,
+      "n_correct": 14
+    },
+    {
+      "problem_id": 440,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 448,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 456,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 464,
+      "label": "solved",
+      "pass1": 0.890625,
+      "pass64": 1.0,
+      "n_correct": 57
+    },
+    {
+      "problem_id": 472,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 480,
+      "label": "hard",
+      "pass1": 0.3125,
+      "pass64": 1.0,
+      "n_correct": 20
+    },
+    {
+      "problem_id": 488,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 496,
+      "label": "solved",
+      "pass1": 0.59375,
+      "pass64": 1.0,
+      "n_correct": 38
+    },
+    {
+      "problem_id": 504,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 512,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 520,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 528,
+      "label": "hard",
+      "pass1": 0.171875,
+      "pass64": 1.0,
+      "n_correct": 11
+    },
+    {
+      "problem_id": 536,
+      "label": "solved",
+      "pass1": 0.578125,
+      "pass64": 1.0,
+      "n_correct": 37
+    },
+    {
+      "problem_id": 544,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 552,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 560,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 568,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 1,
+      "label": "solved",
+      "pass1": 0.859375,
+      "pass64": 1.0,
+      "n_correct": 55
+    },
+    {
+      "problem_id": 9,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 17,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 25,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 33,
+      "label": "hard",
+      "pass1": 0.375,
+      "pass64": 1.0,
+      "n_correct": 24
+    },
+    {
+      "problem_id": 41,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 49,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 57,
+      "label": "solved",
+      "pass1": 0.90625,
+      "pass64": 1.0,
+      "n_correct": 58
+    },
+    {
+      "problem_id": 65,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 73,
+      "label": "hard",
+      "pass1": 0.359375,
+      "pass64": 1.0,
+      "n_correct": 23
+    },
+    {
+      "problem_id": 81,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 89,
+      "label": "solved",
+      "pass1": 0.765625,
+      "pass64": 1.0,
+      "n_correct": 49
+    },
+    {
+      "problem_id": 97,
+      "label": "solved",
+      "pass1": 0.515625,
+      "pass64": 1.0,
+      "n_correct": 33
+    },
+    {
+      "problem_id": 105,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 113,
+      "label": "solved",
+      "pass1": 0.890625,
+      "pass64": 1.0,
+      "n_correct": 57
+    },
+    {
+      "problem_id": 121,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 129,
+      "label": "solved",
+      "pass1": 0.9375,
+      "pass64": 1.0,
+      "n_correct": 60
+    },
+    {
+      "problem_id": 137,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 145,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 153,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 161,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 169,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 177,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 185,
+      "label": "hard",
+      "pass1": 0.234375,
+      "pass64": 1.0,
+      "n_correct": 15
+    },
+    {
+      "problem_id": 193,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 201,
+      "label": "solved",
+      "pass1": 0.84375,
+      "pass64": 1.0,
+      "n_correct": 54
+    },
+    {
+      "problem_id": 209,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 217,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 225,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 233,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 241,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 249,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 257,
+      "label": "solved",
+      "pass1": 0.765625,
+      "pass64": 1.0,
+      "n_correct": 49
+    },
+    {
+      "problem_id": 265,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 273,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 281,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 289,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 297,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 305,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 313,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 321,
+      "label": "hard",
+      "pass1": 0.15625,
+      "pass64": 1.0,
+      "n_correct": 10
+    },
+    {
+      "problem_id": 329,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 337,
+      "label": "hard",
+      "pass1": 0.171875,
+      "pass64": 1.0,
+      "n_correct": 11
+    },
+    {
+      "problem_id": 345,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 353,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 361,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 369,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 377,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 385,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 393,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 401,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 409,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 417,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 425,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 433,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 441,
+      "label": "hard",
+      "pass1": 0.171875,
+      "pass64": 1.0,
+      "n_correct": 11
+    },
+    {
+      "problem_id": 449,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 457,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 465,
+      "label": "hard",
+      "pass1": 0.140625,
+      "pass64": 1.0,
+      "n_correct": 9
+    },
+    {
+      "problem_id": 473,
+      "label": "hard",
+      "pass1": 0.328125,
+      "pass64": 1.0,
+      "n_correct": 21
+    },
+    {
+      "problem_id": 481,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 489,
+      "label": "solved",
+      "pass1": 0.765625,
+      "pass64": 1.0,
+      "n_correct": 49
+    },
+    {
+      "problem_id": 497,
+      "label": "hard",
+      "pass1": 0.265625,
+      "pass64": 1.0,
+      "n_correct": 17
+    },
+    {
+      "problem_id": 505,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 513,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 521,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 529,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 537,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 545,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 553,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 561,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 569,
+      "label": "solved",
+      "pass1": 0.71875,
+      "pass64": 1.0,
+      "n_correct": 46
+    },
+    {
+      "problem_id": 2,
+      "label": "solved",
+      "pass1": 0.859375,
+      "pass64": 1.0,
+      "n_correct": 55
+    },
+    {
+      "problem_id": 10,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 18,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 26,
+      "label": "solved",
+      "pass1": 0.90625,
+      "pass64": 1.0,
+      "n_correct": 58
+    },
+    {
+      "problem_id": 34,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 42,
+      "label": "hard",
+      "pass1": 0.34375,
+      "pass64": 1.0,
+      "n_correct": 22
+    },
+    {
+      "problem_id": 50,
+      "label": "solved",
+      "pass1": 0.734375,
+      "pass64": 1.0,
+      "n_correct": 47
+    },
+    {
+      "problem_id": 58,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 66,
+      "label": "solved",
+      "pass1": 0.59375,
+      "pass64": 1.0,
+      "n_correct": 38
+    },
+    {
+      "problem_id": 74,
+      "label": "hard",
+      "pass1": 0.15625,
+      "pass64": 1.0,
+      "n_correct": 10
+    },
+    {
+      "problem_id": 82,
+      "label": "solved",
+      "pass1": 0.875,
+      "pass64": 1.0,
+      "n_correct": 56
+    },
+    {
+      "problem_id": 90,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 98,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 106,
+      "label": "solved",
+      "pass1": 0.609375,
+      "pass64": 1.0,
+      "n_correct": 39
+    },
+    {
+      "problem_id": 114,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 122,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 130,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 138,
+      "label": "solved",
+      "pass1": 0.515625,
+      "pass64": 1.0,
+      "n_correct": 33
+    },
+    {
+      "problem_id": 146,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 154,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 162,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 170,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 178,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 186,
+      "label": "solved",
+      "pass1": 0.609375,
+      "pass64": 1.0,
+      "n_correct": 39
+    },
+    {
+      "problem_id": 194,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 202,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 210,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 218,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 226,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 234,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 242,
+      "label": "hard",
+      "pass1": 0.171875,
+      "pass64": 1.0,
+      "n_correct": 11
+    },
+    {
+      "problem_id": 250,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 258,
+      "label": "solved",
+      "pass1": 0.796875,
+      "pass64": 1.0,
+      "n_correct": 51
+    },
+    {
+      "problem_id": 266,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 274,
+      "label": "solved",
+      "pass1": 0.5625,
+      "pass64": 1.0,
+      "n_correct": 36
+    },
+    {
+      "problem_id": 282,
+      "label": "hard",
+      "pass1": 0.359375,
+      "pass64": 1.0,
+      "n_correct": 23
+    },
+    {
+      "problem_id": 290,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 298,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 306,
+      "label": "hard",
+      "pass1": 0.1875,
+      "pass64": 1.0,
+      "n_correct": 12
+    },
+    {
+      "problem_id": 314,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 322,
+      "label": "solved",
+      "pass1": 0.90625,
+      "pass64": 1.0,
+      "n_correct": 58
+    },
+    {
+      "problem_id": 330,
+      "label": "solved",
+      "pass1": 0.5,
+      "pass64": 1.0,
+      "n_correct": 32
+    },
+    {
+      "problem_id": 338,
+      "label": "solved",
+      "pass1": 0.90625,
+      "pass64": 1.0,
+      "n_correct": 58
+    },
+    {
+      "problem_id": 346,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 354,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 362,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 370,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 378,
+      "label": "hard",
+      "pass1": 0.484375,
+      "pass64": 1.0,
+      "n_correct": 31
+    },
+    {
+      "problem_id": 386,
+      "label": "hard",
+      "pass1": 0.390625,
+      "pass64": 1.0,
+      "n_correct": 25
+    },
+    {
+      "problem_id": 394,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 402,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 410,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 418,
+      "label": "hard",
+      "pass1": 0.203125,
+      "pass64": 1.0,
+      "n_correct": 13
+    },
+    {
+      "problem_id": 426,
+      "label": "hard",
+      "pass1": 0.46875,
+      "pass64": 1.0,
+      "n_correct": 30
+    },
+    {
+      "problem_id": 434,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 442,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 450,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 458,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 466,
+      "label": "hard",
+      "pass1": 0.203125,
+      "pass64": 1.0,
+      "n_correct": 13
+    },
+    {
+      "problem_id": 474,
+      "label": "solved",
+      "pass1": 0.6875,
+      "pass64": 1.0,
+      "n_correct": 44
+    },
+    {
+      "problem_id": 482,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 490,
+      "label": "solved",
+      "pass1": 0.53125,
+      "pass64": 1.0,
+      "n_correct": 34
+    },
+    {
+      "problem_id": 498,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 506,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 514,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 522,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 530,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 538,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 546,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 554,
+      "label": "solved",
+      "pass1": 0.796875,
+      "pass64": 1.0,
+      "n_correct": 51
+    },
+    {
+      "problem_id": 562,
+      "label": "solved",
+      "pass1": 0.734375,
+      "pass64": 1.0,
+      "n_correct": 47
+    },
+    {
+      "problem_id": 570,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 3,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 11,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 19,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 27,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 35,
+      "label": "hard",
+      "pass1": 0.15625,
+      "pass64": 1.0,
+      "n_correct": 10
+    },
+    {
+      "problem_id": 43,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 51,
+      "label": "hard",
+      "pass1": 0.375,
+      "pass64": 1.0,
+      "n_correct": 24
+    },
+    {
+      "problem_id": 59,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 67,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 75,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 83,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 91,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 99,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 107,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 115,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 123,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 131,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 139,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 147,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 155,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 163,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 171,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 179,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 187,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 195,
+      "label": "hard",
+      "pass1": 0.3125,
+      "pass64": 1.0,
+      "n_correct": 20
+    },
+    {
+      "problem_id": 203,
+      "label": "hard",
+      "pass1": 0.171875,
+      "pass64": 1.0,
+      "n_correct": 11
+    },
+    {
+      "problem_id": 211,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 219,
+      "label": "solved",
+      "pass1": 0.890625,
+      "pass64": 1.0,
+      "n_correct": 57
+    },
+    {
+      "problem_id": 227,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 235,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 243,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 251,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 259,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 267,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 275,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 283,
+      "label": "hard",
+      "pass1": 0.125,
+      "pass64": 1.0,
+      "n_correct": 8
+    },
+    {
+      "problem_id": 291,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 299,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 307,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 315,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 323,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 331,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 339,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 347,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 355,
+      "label": "solved",
+      "pass1": 0.9375,
+      "pass64": 1.0,
+      "n_correct": 60
+    },
+    {
+      "problem_id": 363,
+      "label": "hard",
+      "pass1": 0.484375,
+      "pass64": 1.0,
+      "n_correct": 31
+    },
+    {
+      "problem_id": 371,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 379,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 387,
+      "label": "solved",
+      "pass1": 0.515625,
+      "pass64": 1.0,
+      "n_correct": 33
+    },
+    {
+      "problem_id": 395,
+      "label": "solved",
+      "pass1": 0.859375,
+      "pass64": 1.0,
+      "n_correct": 55
+    },
+    {
+      "problem_id": 403,
+      "label": "solved",
+      "pass1": 0.875,
+      "pass64": 1.0,
+      "n_correct": 56
+    },
+    {
+      "problem_id": 411,
+      "label": "hard",
+      "pass1": 0.296875,
+      "pass64": 1.0,
+      "n_correct": 19
+    },
+    {
+      "problem_id": 419,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 427,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 435,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 443,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 451,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 459,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 467,
+      "label": "solved",
+      "pass1": 0.6875,
+      "pass64": 1.0,
+      "n_correct": 44
+    },
+    {
+      "problem_id": 475,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 483,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 491,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 499,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 507,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 515,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 523,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 531,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 539,
+      "label": "solved",
+      "pass1": 0.734375,
+      "pass64": 1.0,
+      "n_correct": 47
+    },
+    {
+      "problem_id": 547,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 555,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 563,
+      "label": "hard",
+      "pass1": 0.3125,
+      "pass64": 1.0,
+      "n_correct": 20
+    },
+    {
+      "problem_id": 571,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 4,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 12,
+      "label": "hard",
+      "pass1": 0.140625,
+      "pass64": 1.0,
+      "n_correct": 9
+    },
+    {
+      "problem_id": 20,
+      "label": "solved",
+      "pass1": 0.9375,
+      "pass64": 1.0,
+      "n_correct": 60
+    },
+    {
+      "problem_id": 28,
+      "label": "solved",
+      "pass1": 0.546875,
+      "pass64": 1.0,
+      "n_correct": 35
+    },
+    {
+      "problem_id": 36,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 44,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 52,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 60,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 68,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 76,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 84,
+      "label": "hard",
+      "pass1": 0.375,
+      "pass64": 1.0,
+      "n_correct": 24
+    },
+    {
+      "problem_id": 92,
+      "label": "hard",
+      "pass1": 0.34375,
+      "pass64": 1.0,
+      "n_correct": 22
+    },
+    {
+      "problem_id": 100,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 108,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 116,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 124,
+      "label": "solved",
+      "pass1": 0.53125,
+      "pass64": 1.0,
+      "n_correct": 34
+    },
+    {
+      "problem_id": 132,
+      "label": "hard",
+      "pass1": 0.125,
+      "pass64": 1.0,
+      "n_correct": 8
+    },
+    {
+      "problem_id": 140,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 148,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 156,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 164,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 172,
+      "label": "solved",
+      "pass1": 0.828125,
+      "pass64": 1.0,
+      "n_correct": 53
+    },
+    {
+      "problem_id": 180,
+      "label": "hard",
+      "pass1": 0.4375,
+      "pass64": 1.0,
+      "n_correct": 28
+    },
+    {
+      "problem_id": 188,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 196,
+      "label": "solved",
+      "pass1": 0.71875,
+      "pass64": 1.0,
+      "n_correct": 46
+    },
+    {
+      "problem_id": 204,
+      "label": "hard",
+      "pass1": 0.328125,
+      "pass64": 1.0,
+      "n_correct": 21
+    },
+    {
+      "problem_id": 212,
+      "label": "hard",
+      "pass1": 0.4375,
+      "pass64": 1.0,
+      "n_correct": 28
+    },
+    {
+      "problem_id": 220,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 228,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 236,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 244,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 252,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 260,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 268,
+      "label": "solved",
+      "pass1": 0.890625,
+      "pass64": 1.0,
+      "n_correct": 57
+    },
+    {
+      "problem_id": 276,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 284,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 292,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 300,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 308,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 316,
+      "label": "hard",
+      "pass1": 0.125,
+      "pass64": 1.0,
+      "n_correct": 8
+    },
+    {
+      "problem_id": 324,
+      "label": "solved",
+      "pass1": 0.828125,
+      "pass64": 1.0,
+      "n_correct": 53
+    },
+    {
+      "problem_id": 332,
+      "label": "hard",
+      "pass1": 0.15625,
+      "pass64": 1.0,
+      "n_correct": 10
+    },
+    {
+      "problem_id": 340,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 348,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 356,
+      "label": "solved",
+      "pass1": 0.5,
+      "pass64": 1.0,
+      "n_correct": 32
+    },
+    {
+      "problem_id": 364,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 372,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 380,
+      "label": "hard",
+      "pass1": 0.40625,
+      "pass64": 1.0,
+      "n_correct": 26
+    },
+    {
+      "problem_id": 388,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 396,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 404,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 412,
+      "label": "hard",
+      "pass1": 0.34375,
+      "pass64": 1.0,
+      "n_correct": 22
+    },
+    {
+      "problem_id": 420,
+      "label": "hard",
+      "pass1": 0.171875,
+      "pass64": 1.0,
+      "n_correct": 11
+    },
+    {
+      "problem_id": 428,
+      "label": "solved",
+      "pass1": 0.609375,
+      "pass64": 1.0,
+      "n_correct": 39
+    },
+    {
+      "problem_id": 436,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 444,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 452,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 460,
+      "label": "hard",
+      "pass1": 0.234375,
+      "pass64": 1.0,
+      "n_correct": 15
+    },
+    {
+      "problem_id": 468,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 476,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 484,
+      "label": "solved",
+      "pass1": 0.734375,
+      "pass64": 1.0,
+      "n_correct": 47
+    },
+    {
+      "problem_id": 492,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 500,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 508,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 516,
+      "label": "hard",
+      "pass1": 0.15625,
+      "pass64": 1.0,
+      "n_correct": 10
+    },
+    {
+      "problem_id": 524,
+      "label": "solved",
+      "pass1": 0.75,
+      "pass64": 1.0,
+      "n_correct": 48
+    },
+    {
+      "problem_id": 532,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 540,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 548,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 556,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 564,
+      "label": "solved",
+      "pass1": 0.65625,
+      "pass64": 1.0,
+      "n_correct": 42
+    },
+    {
+      "problem_id": 5,
+      "label": "solved",
+      "pass1": 0.640625,
+      "pass64": 1.0,
+      "n_correct": 41
+    },
+    {
+      "problem_id": 13,
+      "label": "solved",
+      "pass1": 0.734375,
+      "pass64": 1.0,
+      "n_correct": 47
+    },
+    {
+      "problem_id": 21,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 29,
+      "label": "solved",
+      "pass1": 0.625,
+      "pass64": 1.0,
+      "n_correct": 40
+    },
+    {
+      "problem_id": 37,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 45,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 53,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 61,
+      "label": "hard",
+      "pass1": 0.4375,
+      "pass64": 1.0,
+      "n_correct": 28
+    },
+    {
+      "problem_id": 69,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 77,
+      "label": "hard",
+      "pass1": 0.1875,
+      "pass64": 1.0,
+      "n_correct": 12
+    },
+    {
+      "problem_id": 85,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 93,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 101,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 109,
+      "label": "hard",
+      "pass1": 0.453125,
+      "pass64": 1.0,
+      "n_correct": 29
+    },
+    {
+      "problem_id": 117,
+      "label": "solved",
+      "pass1": 0.828125,
+      "pass64": 1.0,
+      "n_correct": 53
+    },
+    {
+      "problem_id": 125,
+      "label": "hard",
+      "pass1": 0.234375,
+      "pass64": 1.0,
+      "n_correct": 15
+    },
+    {
+      "problem_id": 133,
+      "label": "solved",
+      "pass1": 0.65625,
+      "pass64": 1.0,
+      "n_correct": 42
+    },
+    {
+      "problem_id": 141,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 149,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 157,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 165,
+      "label": "hard",
+      "pass1": 0.46875,
+      "pass64": 1.0,
+      "n_correct": 30
+    },
+    {
+      "problem_id": 173,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 181,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 189,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 197,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 205,
+      "label": "solved",
+      "pass1": 0.796875,
+      "pass64": 1.0,
+      "n_correct": 51
+    },
+    {
+      "problem_id": 213,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 221,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 229,
+      "label": "hard",
+      "pass1": 0.234375,
+      "pass64": 1.0,
+      "n_correct": 15
+    },
+    {
+      "problem_id": 237,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 245,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 253,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 261,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 269,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 277,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 285,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 293,
+      "label": "solved",
+      "pass1": 0.53125,
+      "pass64": 1.0,
+      "n_correct": 34
+    },
+    {
+      "problem_id": 301,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 309,
+      "label": "hard",
+      "pass1": 0.234375,
+      "pass64": 1.0,
+      "n_correct": 15
+    },
+    {
+      "problem_id": 317,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 325,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 333,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 341,
+      "label": "solved",
+      "pass1": 0.9375,
+      "pass64": 1.0,
+      "n_correct": 60
+    },
+    {
+      "problem_id": 349,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 357,
+      "label": "hard",
+      "pass1": 0.359375,
+      "pass64": 1.0,
+      "n_correct": 23
+    },
+    {
+      "problem_id": 365,
+      "label": "solved",
+      "pass1": 0.578125,
+      "pass64": 1.0,
+      "n_correct": 37
+    },
+    {
+      "problem_id": 373,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 381,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 389,
+      "label": "hard",
+      "pass1": 0.390625,
+      "pass64": 1.0,
+      "n_correct": 25
+    },
+    {
+      "problem_id": 397,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 405,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 413,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 421,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 429,
+      "label": "solved",
+      "pass1": 0.6875,
+      "pass64": 1.0,
+      "n_correct": 44
+    },
+    {
+      "problem_id": 437,
+      "label": "hard",
+      "pass1": 0.140625,
+      "pass64": 1.0,
+      "n_correct": 9
+    },
+    {
+      "problem_id": 445,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 453,
+      "label": "solved",
+      "pass1": 0.765625,
+      "pass64": 1.0,
+      "n_correct": 49
+    },
+    {
+      "problem_id": 461,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 469,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 477,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 485,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 493,
+      "label": "hard",
+      "pass1": 0.125,
+      "pass64": 1.0,
+      "n_correct": 8
+    },
+    {
+      "problem_id": 501,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 509,
+      "label": "solved",
+      "pass1": 0.765625,
+      "pass64": 1.0,
+      "n_correct": 49
+    },
+    {
+      "problem_id": 517,
+      "label": "solved",
+      "pass1": 0.8125,
+      "pass64": 1.0,
+      "n_correct": 52
+    },
+    {
+      "problem_id": 525,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 533,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 541,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 549,
+      "label": "hard",
+      "pass1": 0.125,
+      "pass64": 1.0,
+      "n_correct": 8
+    },
+    {
+      "problem_id": 557,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 565,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 6,
+      "label": "hard",
+      "pass1": 0.15625,
+      "pass64": 1.0,
+      "n_correct": 10
+    },
+    {
+      "problem_id": 14,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 22,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 30,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 38,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 46,
+      "label": "solved",
+      "pass1": 0.703125,
+      "pass64": 1.0,
+      "n_correct": 45
+    },
+    {
+      "problem_id": 54,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 62,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 70,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 78,
+      "label": "hard",
+      "pass1": 0.328125,
+      "pass64": 1.0,
+      "n_correct": 21
+    },
+    {
+      "problem_id": 86,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 94,
+      "label": "solved",
+      "pass1": 0.9375,
+      "pass64": 1.0,
+      "n_correct": 60
+    },
+    {
+      "problem_id": 102,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 110,
+      "label": "solved",
+      "pass1": 0.78125,
+      "pass64": 1.0,
+      "n_correct": 50
+    },
+    {
+      "problem_id": 118,
+      "label": "hard",
+      "pass1": 0.359375,
+      "pass64": 1.0,
+      "n_correct": 23
+    },
+    {
+      "problem_id": 126,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 134,
+      "label": "solved",
+      "pass1": 0.921875,
+      "pass64": 1.0,
+      "n_correct": 59
+    },
+    {
+      "problem_id": 142,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 150,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 158,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 166,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 174,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 182,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 190,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 198,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 206,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 214,
+      "label": "hard",
+      "pass1": 0.140625,
+      "pass64": 1.0,
+      "n_correct": 9
+    },
+    {
+      "problem_id": 222,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 230,
+      "label": "hard",
+      "pass1": 0.421875,
+      "pass64": 1.0,
+      "n_correct": 27
+    },
+    {
+      "problem_id": 238,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 246,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 254,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 262,
+      "label": "solved",
+      "pass1": 0.59375,
+      "pass64": 1.0,
+      "n_correct": 38
+    },
+    {
+      "problem_id": 270,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 278,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 286,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 294,
+      "label": "hard",
+      "pass1": 0.171875,
+      "pass64": 1.0,
+      "n_correct": 11
+    },
+    {
+      "problem_id": 302,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 310,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 318,
+      "label": "hard",
+      "pass1": 0.3125,
+      "pass64": 1.0,
+      "n_correct": 20
+    },
+    {
+      "problem_id": 326,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 334,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 342,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 350,
+      "label": "solved",
+      "pass1": 0.90625,
+      "pass64": 1.0,
+      "n_correct": 58
+    },
+    {
+      "problem_id": 358,
+      "label": "solved",
+      "pass1": 0.75,
+      "pass64": 1.0,
+      "n_correct": 48
+    },
+    {
+      "problem_id": 366,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 374,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 382,
+      "label": "solved",
+      "pass1": 0.71875,
+      "pass64": 1.0,
+      "n_correct": 46
+    },
+    {
+      "problem_id": 390,
+      "label": "hard",
+      "pass1": 0.125,
+      "pass64": 1.0,
+      "n_correct": 8
+    },
+    {
+      "problem_id": 398,
+      "label": "hard",
+      "pass1": 0.265625,
+      "pass64": 1.0,
+      "n_correct": 17
+    },
+    {
+      "problem_id": 406,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 414,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 422,
+      "label": "solved",
+      "pass1": 0.890625,
+      "pass64": 1.0,
+      "n_correct": 57
+    },
+    {
+      "problem_id": 430,
+      "label": "solved",
+      "pass1": 0.875,
+      "pass64": 1.0,
+      "n_correct": 56
+    },
+    {
+      "problem_id": 438,
+      "label": "solved",
+      "pass1": 0.90625,
+      "pass64": 1.0,
+      "n_correct": 58
+    },
+    {
+      "problem_id": 446,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 454,
+      "label": "solved",
+      "pass1": 0.859375,
+      "pass64": 1.0,
+      "n_correct": 55
+    },
+    {
+      "problem_id": 462,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 470,
+      "label": "hard",
+      "pass1": 0.109375,
+      "pass64": 1.0,
+      "n_correct": 7
+    },
+    {
+      "problem_id": 478,
+      "label": "solved",
+      "pass1": 0.5625,
+      "pass64": 1.0,
+      "n_correct": 36
+    },
+    {
+      "problem_id": 486,
+      "label": "hard",
+      "pass1": 0.28125,
+      "pass64": 1.0,
+      "n_correct": 18
+    },
+    {
+      "problem_id": 494,
+      "label": "hard",
+      "pass1": 0.40625,
+      "pass64": 1.0,
+      "n_correct": 26
+    },
+    {
+      "problem_id": 502,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 510,
+      "label": "solved",
+      "pass1": 0.703125,
+      "pass64": 1.0,
+      "n_correct": 45
+    },
+    {
+      "problem_id": 518,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 526,
+      "label": "hard",
+      "pass1": 0.125,
+      "pass64": 1.0,
+      "n_correct": 8
+    },
+    {
+      "problem_id": 534,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 542,
+      "label": "hard",
+      "pass1": 0.1875,
+      "pass64": 1.0,
+      "n_correct": 12
+    },
+    {
+      "problem_id": 550,
+      "label": "solved",
+      "pass1": 0.53125,
+      "pass64": 1.0,
+      "n_correct": 34
+    },
+    {
+      "problem_id": 558,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 566,
+      "label": "solved",
+      "pass1": 0.75,
+      "pass64": 1.0,
+      "n_correct": 48
+    },
+    {
+      "problem_id": 7,
+      "label": "solved",
+      "pass1": 0.8125,
+      "pass64": 1.0,
+      "n_correct": 52
+    },
+    {
+      "problem_id": 15,
+      "label": "hard",
+      "pass1": 0.125,
+      "pass64": 1.0,
+      "n_correct": 8
+    },
+    {
+      "problem_id": 23,
+      "label": "solved",
+      "pass1": 0.71875,
+      "pass64": 1.0,
+      "n_correct": 46
+    },
+    {
+      "problem_id": 31,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 39,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 47,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 55,
+      "label": "solved",
+      "pass1": 0.953125,
+      "pass64": 1.0,
+      "n_correct": 61
+    },
+    {
+      "problem_id": 63,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 71,
+      "label": "solved",
+      "pass1": 0.9375,
+      "pass64": 1.0,
+      "n_correct": 60
+    },
+    {
+      "problem_id": 79,
+      "label": "solved",
+      "pass1": 0.90625,
+      "pass64": 1.0,
+      "n_correct": 58
+    },
+    {
+      "problem_id": 87,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 95,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 103,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 111,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 119,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 127,
+      "label": "solved",
+      "pass1": 0.78125,
+      "pass64": 1.0,
+      "n_correct": 50
+    },
+    {
+      "problem_id": 135,
+      "label": "hard",
+      "pass1": 0.171875,
+      "pass64": 1.0,
+      "n_correct": 11
+    },
+    {
+      "problem_id": 143,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 151,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 159,
+      "label": "hard",
+      "pass1": 0.09375,
+      "pass64": 1.0,
+      "n_correct": 6
+    },
+    {
+      "problem_id": 167,
+      "label": "solved",
+      "pass1": 0.84375,
+      "pass64": 1.0,
+      "n_correct": 54
+    },
+    {
+      "problem_id": 175,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 183,
+      "label": "hard",
+      "pass1": 0.390625,
+      "pass64": 1.0,
+      "n_correct": 25
+    },
+    {
+      "problem_id": 191,
+      "label": "hard",
+      "pass1": 0.3125,
+      "pass64": 1.0,
+      "n_correct": 20
+    },
+    {
+      "problem_id": 199,
+      "label": "hard",
+      "pass1": 0.28125,
+      "pass64": 1.0,
+      "n_correct": 18
+    },
+    {
+      "problem_id": 207,
+      "label": "hard",
+      "pass1": 0.140625,
+      "pass64": 1.0,
+      "n_correct": 9
+    },
+    {
+      "problem_id": 215,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 223,
+      "label": "solved",
+      "pass1": 0.640625,
+      "pass64": 1.0,
+      "n_correct": 41
+    },
+    {
+      "problem_id": 231,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 239,
+      "label": "hard",
+      "pass1": 0.21875,
+      "pass64": 1.0,
+      "n_correct": 14
+    },
+    {
+      "problem_id": 247,
+      "label": "hard",
+      "pass1": 0.34375,
+      "pass64": 1.0,
+      "n_correct": 22
+    },
+    {
+      "problem_id": 255,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 263,
+      "label": "solved",
+      "pass1": 0.765625,
+      "pass64": 1.0,
+      "n_correct": 49
+    },
+    {
+      "problem_id": 271,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 279,
+      "label": "hard",
+      "pass1": 0.375,
+      "pass64": 1.0,
+      "n_correct": 24
+    },
+    {
+      "problem_id": 287,
+      "label": "solved",
+      "pass1": 0.90625,
+      "pass64": 1.0,
+      "n_correct": 58
+    },
+    {
+      "problem_id": 295,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 303,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 311,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 319,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 327,
+      "label": "solved",
+      "pass1": 0.53125,
+      "pass64": 1.0,
+      "n_correct": 34
+    },
+    {
+      "problem_id": 335,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 343,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 351,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 359,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 367,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 375,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 383,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 391,
+      "label": "solved",
+      "pass1": 0.90625,
+      "pass64": 1.0,
+      "n_correct": 58
+    },
+    {
+      "problem_id": 399,
+      "label": "hard",
+      "pass1": 0.0625,
+      "pass64": 1.0,
+      "n_correct": 4
+    },
+    {
+      "problem_id": 407,
+      "label": "hard",
+      "pass1": 0.03125,
+      "pass64": 1.0,
+      "n_correct": 2
+    },
+    {
+      "problem_id": 415,
+      "label": "solved",
+      "pass1": 0.671875,
+      "pass64": 1.0,
+      "n_correct": 43
+    },
+    {
+      "problem_id": 423,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 431,
+      "label": "solved",
+      "pass1": 0.75,
+      "pass64": 1.0,
+      "n_correct": 48
+    },
+    {
+      "problem_id": 439,
+      "label": "solved",
+      "pass1": 0.5,
+      "pass64": 1.0,
+      "n_correct": 32
+    },
+    {
+      "problem_id": 447,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 455,
+      "label": "solved",
+      "pass1": 1.0,
+      "pass64": 1.0,
+      "n_correct": 64
+    },
+    {
+      "problem_id": 463,
+      "label": "solved",
+      "pass1": 0.671875,
+      "pass64": 1.0,
+      "n_correct": 43
+    },
+    {
+      "problem_id": 471,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 479,
+      "label": "solved",
+      "pass1": 0.671875,
+      "pass64": 1.0,
+      "n_correct": 43
+    },
+    {
+      "problem_id": 487,
+      "label": "stuck",
+      "pass1": 0.0,
+      "pass64": 0.0,
+      "n_correct": 0
+    },
+    {
+      "problem_id": 495,
+      "label": "hard",
+      "pass1": 0.015625,
+      "pass64": 1.0,
+      "n_correct": 1
+    },
+    {
+      "problem_id": 503,
+      "label": "solved",
+      "pass1": 0.546875,
+      "pass64": 1.0,
+      "n_correct": 35
+    },
+    {
+      "problem_id": 511,
+      "label": "hard",
+      "pass1": 0.078125,
+      "pass64": 1.0,
+      "n_correct": 5
+    },
+    {
+      "problem_id": 519,
+      "label": "solved",
+      "pass1": 0.984375,
+      "pass64": 1.0,
+      "n_correct": 63
+    },
+    {
+      "problem_id": 527,
+      "label": "solved",
+      "pass1": 0.625,
+      "pass64": 1.0,
+      "n_correct": 40
+    },
+    {
+      "problem_id": 535,
+      "label": "hard",
+      "pass1": 0.046875,
+      "pass64": 1.0,
+      "n_correct": 3
+    },
+    {
+      "problem_id": 543,
+      "label": "solved",
+      "pass1": 0.875,
+      "pass64": 1.0,
+      "n_correct": 56
+    },
+    {
+      "problem_id": 551,
+      "label": "solved",
+      "pass1": 0.625,
+      "pass64": 1.0,
+      "n_correct": 40
+    },
+    {
+      "problem_id": 559,
+      "label": "solved",
+      "pass1": 0.96875,
+      "pass64": 1.0,
+      "n_correct": 62
+    },
+    {
+      "problem_id": 567,
+      "label": "hard",
+      "pass1": 0.171875,
+      "pass64": 1.0,
+      "n_correct": 11
+    }
+  ]
+}
