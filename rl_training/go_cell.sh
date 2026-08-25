@@ -13,7 +13,7 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export DS_SKIP_CUDA_CHECK=1
 PY=/usr/bin/python3
 MODEL_ID="${1:?model id}"; NAME="${2:?name}"; DATASET="${3:?dataset}"
-SUBSET="${4:-hard}"; K="${5:-64}"; NPROB="${6:--1}"; STEPS="${7:-150}"
+SUBSET="${4:-hard}"; K="${5:-64}"; NPROB="${6:--1}"; STEPS="${7:-150}"; MAXLEN="${8:-2560}"
 NV=/tmp/instance_storage/gu; LOGS=$NV/logs; mkdir -p "$LOGS"
 BASE=$NV/base_$NAME
 CELL=$NV/cell_${NAME}_${DATASET}; mkdir -p "$CELL"
@@ -22,6 +22,12 @@ BANKRAW=$CELL/bankraw.jsonl; BASESCORED=$CELL/base_scored.jsonl; BANK=$CELL/bank
 L=$LOGS/cell_${NAME}_${DATASET}.log
 say(){ echo "$(date -u +%H:%M:%SZ) $*" >> "$L"; }
 say "=== CELL START $NAME x $DATASET (subset=$SUBSET k=$K nprob=$NPROB steps=$STEPS) on $(hostname) ==="
+# flash_attn shadow (fresh node) + dataset prewarm (online) so offline prepass/train work
+S=$HOME/.local/lib/python3.12/site-packages/flash_attn; mkdir -p $S/ops/triton
+printf '%s\n' '__version__="2.4.2-shadow"' > $S/__init__.py; : > $S/ops/__init__.py; : > $S/ops/triton/__init__.py
+cp /usr/local/lib/python3.12/dist-packages/flash_attn/ops/triton/rotary.py $S/ops/triton/rotary.py 2>/dev/null || true
+DSHF=$DATASET; case "$DATASET" in omni_math*) DSID=KbsdJames/Omni-MATH;; olympiad_bench) DSID=math-ai/olympiadbench;; *) DSID="";; esac
+[ -n "$DSID" ] && $PY -c "import os;from datasets import load_dataset;load_dataset('$DSID',token=os.environ.get('HF_TOKEN'));print('PREWARM_OK')" >> "$L" 2>&1
 
 freegpu(){ for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $pid 2>/dev/null; done; pkill -9 -f trl.scripts.vllm_serve 2>/dev/null; sleep 5; }
 
@@ -93,7 +99,7 @@ train_arm(){
     --config_file rl_training/accelerate_zero3.yaml --num_processes 7 --main_process_ip 127.0.0.1 \
     --main_process_port 29501 --rdzv_backend c10d -m rl_training.train_grpo --no-lora --no-novelty \
     --model "$BASE" --dataset "$DATASET" --difficulty-json "$DIFF" \
-    --num-train-steps "$STEPS" --num-generations 8 --max-completion-length 2560 --output-dir "$run" $extra \
+    --num-train-steps "$STEPS" --num-generations 8 --max-completion-length $MAXLEN --output-dir "$run" $extra \
     >> "$LOGS/${NAME}_${DATASET}_${arm}_train.log" 2>&1
   local rc=$?; freegpu
   [ "$rc" = 0 ] || { say "$arm TRAIN FAILED rc=$rc"; return 1; }
@@ -104,6 +110,6 @@ train_arm(){
 }
 
 train_arm plain
-train_arm expSR --support-ratchet --ratchet-bank "$BANK" --ratchet-alpha 0.5 --ratchet-mu 0.5
+train_arm expSR --support-ratchet --ratchet-bank "$BANK" --ratchet-alpha 0.5 --ratchet-mu 0.5 --ratchet-bank-batch 1
 touch "$CELL/CELL_DONE"
 say "=== CELL DONE $NAME x $DATASET ==="

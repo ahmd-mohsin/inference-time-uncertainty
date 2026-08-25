@@ -65,6 +65,9 @@ def build_args():
     p.add_argument("--ratchet-bank", default="", help="bank jsonl (prompt,completion,ref_logprob)")
     p.add_argument("--ratchet-alpha", type=float, default=0.5, help="floor: p_theta >= alpha*p_ref")
     p.add_argument("--ratchet-mu", type=float, default=0.5, help="Lagrange weight (soft form)")
+    p.add_argument("--ratchet-bank-batch", type=int, default=2,
+                   help="banked traces per teacher-forced forward (soft form); set 1 for large models "
+                        "(8B+) to avoid the ratchet forward OOMing on 40GB at bank_batch>1")
     p.add_argument("--ratchet-dual", action="store_true", help="dual-ascent on mu (soft form)")
     p.add_argument("--pba-anchor", action="store_true",
                    help="BASELINE: symmetric base-anchoring (PBA/DPH-RL replay) on the bank instead of the one-sided floor")
@@ -187,6 +190,7 @@ def main():
                 model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
                 train_dataset=train_dataset, peft_config=peft_config,
                 bank=bank, alpha=a.ratchet_alpha, mu=a.ratchet_mu, dual=a.ratchet_dual,
+                bank_batch=a.ratchet_bank_batch,
                 mode=("anchor" if a.pba_anchor else "floor"))
         else:
             pc = ProjectionConfig(alpha=a.ratchet_alpha, max_steps=a.proj_max_steps,
