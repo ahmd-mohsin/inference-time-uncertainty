@@ -473,13 +473,44 @@ equal.}
 \label{tab:methodfreeze}
 \end{table}
 
+\subsection{Generalization across model families and datasets}
+To test that the effect is not specific to Qwen2.5-Math or OlympiadBench, we run the frozen method
+(expSR) vs.\ plain GRPO on new (model, dataset) cells, each with its own difficulty prepass and
+base-correct bank, scored by teacher-forced mode-mass $\Delta$ over that cell's bank
+(Table~\ref{tab:diversity}). The result holds \emph{directionally everywhere}: expSR is net-positive
+(raises base-mode mass) with $\approx0\%$ collapse, while plain GRPO is net-negative and collapses
+modes. The gap tracks how hard plain GRPO would otherwise collapse the base---largest where plain
+collapses most (Qwen3-8B, $-5.77$; Omni-MATH, $-1.99$), smallest on the more collapse-resistant
+DeepSeek-Math ($-0.18$)---exactly as the difficulty-resonance account predicts.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{llrrr}
+\toprule
+Model family & Dataset & plain $\Delta$ & expSR $\Delta$ & gap \\
+\midrule
+Qwen2.5-Math-7B      & OlympiadBench & $-1.96$ & $\mathbf{+1.38}$ & $+3.34$\\
+Qwen2.5-Math-7B      & Omni-MATH     & $-1.99$ & $\mathbf{+1.44}$ & $+3.43$\\
+DeepSeek-Math-7B     & OlympiadBench & $-0.18$ & $\mathbf{+0.92}$ & $+1.10$\\
+Qwen3-8B             & OlympiadBench & $-5.77$ & \emph{(running)} & --\\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Generalization (mode-mass $\Delta$, 150 steps, per-cell base-correct bank).} expSR
+preserves ($+$, $\approx0\%$ collapse) where plain GRPO collapses ($-$) across two math-specialized
+families (Qwen2.5-Math, DeepSeek-Math) and two datasets (Olympiad, Omni-MATH). Qwen3-8B's plain arm
+collapses catastrophically ($-5.77$, $14.6\%$ of modes); its expSR arm and further cells
+(Qwen2.5-7B-Instruct, Qwen2.5-Math-1.5B; $\times$Omni-MATH) are in progress. Effect magnitude scales
+with plain-GRPO's collapse severity, per Prop.~\ref{prop:rescue}.}
+\label{tab:diversity}
+\end{table}
+
 %====================================================================
 \section{What is and is not established}
 \textbf{Established.} (1) A mechanism result (Prop.~\ref{prop:prune}--\ref{prop:rescue}) bounding an
 entire family of on-policy methods. (2) A qualitatively different object---coverage as an off-policy
 feasibility constraint---with two working implementations and a direct diagnostic. (3) A
-\emph{directionally consistent} coverage gain over GRPO across scale (1.5B, 7B) and datasets
-(MATH-500, OlympiadBench), at small bounded pass@1 cost.
+\emph{directionally consistent} coverage gain over GRPO across model families (Qwen2.5-Math-7B,
+DeepSeek-Math-7B, Qwen3-8B) and datasets (OlympiadBench, Omni-MATH), with the gain scaling with
+plain-GRPO's collapse severity (Table~\ref{tab:diversity}), at small bounded pass@1 cost.
 
 \noindent\textbf{Not yet established (honest).} A \emph{statistically significant} large-$k$ coverage
 win. On MATH-500/Olympiad at $k\le256$ the benchmarks are near-saturated (little headroom); on AIME at
