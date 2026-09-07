@@ -29,6 +29,28 @@ def build_dataset(dataset: str, model_name: str, n_problems: int = -1, seed: int
     coverage. Requires difficulty_json with per-problem 'pass1'.
     """
     from datasets import Dataset
+    # CODE SELF-REPAIR: dataset="repair:<path.jsonl>" — rows already have prompt + test/entry/mbpp(/pfail).
+    # These extra columns flow to code_repair_reward as kwargs (TRL contract). No math loader needed.
+    if isinstance(dataset, str) and dataset.startswith("repair:"):
+        path = dataset.split("repair:", 1)[1]
+        rows = [json.loads(l) for l in open(path) if l.strip()]
+        cols = {"prompt": [r["prompt"] for r in rows], "test": [r["test"] for r in rows],
+                "entry": [r.get("entry") for r in rows], "mbpp": [bool(r.get("mbpp")) for r in rows],
+                "pfail": [r.get("pfail") for r in rows]}
+        return Dataset.from_dict(cols)
+    # INTERVENTION arm B: GSM8K + 10% MATH-train MIXED (held-out MATH-500 is the disjoint 'test' split).
+    if isinstance(dataset, str) and dataset == "mathmix":
+        from src.data.dataset import load_gsm8k, load_math_full, format_prompt
+        ng = n_problems if n_problems > 0 else 900
+        g = load_gsm8k(split="train", n_problems=ng, seed=seed)
+        m = load_math_full(n_problems=max(1, ng // 10), seed=seed, split="train")
+        rows = {"prompt": [], "gold_answer": [], "problem_id": []}
+        for i, p in enumerate(list(g) + list(m)):
+            rows["prompt"].append(format_prompt(p, model_name))
+            rows["gold_answer"].append(str(p.get("gold_answer", "")))
+            rows["problem_id"].append(i)
+        print(f"[mathmix] {len(g)} gsm8k + {len(m)} math = {len(rows['prompt'])} rows")
+        return Dataset.from_dict(rows)
     from src.data.dataset import get_inference_dataset, format_prompt
 
     problems = get_inference_dataset({"dataset": {"name": dataset, "split": "test",

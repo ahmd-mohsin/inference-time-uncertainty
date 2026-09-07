@@ -1,0 +1,1 @@
+{"tag": "q7b_C", "model": "merged_full", "n_nll": 200, "M1_math_trace_nll": 0.7437840754166245, "M2_mean_token_entropy": 0.11989292411374398, "M3_mean_gen_len": 374.31666666666666, "M3_mean_step_count": 38.13333333333333, "math_acc_greedy": 0.48333333333333334}
