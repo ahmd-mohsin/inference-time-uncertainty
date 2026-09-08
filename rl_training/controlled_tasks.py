@@ -86,6 +86,28 @@ def verify(text, gold):
     nums = re.findall(r"-?\d+", text.replace(",", ""))
     return bool(nums) and nums[-1] == str(gold).strip()
 
+def worked_solution(start, prog):
+    """Canonical step-by-step trace (verified-correct by construction) for SFT consolidation banks."""
+    acc = start; lines = [f"Start: {acc}."]
+    for op, b in prog:
+        nv = OPS[op](acc, b)
+        lines.append(f"{_PHRASE[op].format(b=b).capitalize()}: {acc} -> {nv}.")
+        acc = nv
+    lines.append(f"Final answer: \\boxed{{{acc}}}")
+    return " ".join(lines)
+
+def build_solutions(out, n_families, n_ops, allowed_ops=None, seed0=0):
+    """SFT bank {prompt, completion} with canonical worked solutions (for H-A consolidation / H-C coverage)."""
+    ops = allowed_ops.split(",") if allowed_ops else None
+    n = 0
+    with open(out, "w") as f:
+        for i in range(n_families):
+            fam = gen_family(seed0 + i, n_ops=n_ops, allowed_ops=ops); r = fam["original"]
+            comp = worked_solution(r["start"], r["prog"])
+            f.write(json.dumps({"prompt": r["prompt"], "completion": comp, "gold": r["gold"],
+                                "ops": r["ops"]}) + "\n"); n += 1
+    print(f"[controlled_tasks] wrote {n} SFT solutions (n_ops={n_ops}) -> {out}")
+
 def build(out, n_families, n_ops, split, allowed_ops=None, seed0=0):
     rng_ops = allowed_ops.split(",") if allowed_ops else None
     rows = []
@@ -103,5 +125,9 @@ if __name__ == "__main__":
     ap.add_argument("--n-ops", type=int, default=3)
     ap.add_argument("--split", default="original", choices=["original", "surface", "same_op", "new_compose"])
     ap.add_argument("--allowed-ops", default=""); ap.add_argument("--seed0", type=int, default=0)
+    ap.add_argument("--solutions", action="store_true", help="emit SFT {prompt,completion} worked solutions")
     a = ap.parse_args()
-    build(a.out, a.n, a.n_ops, a.split, a.allowed_ops or None, a.seed0)
+    if a.solutions:
+        build_solutions(a.out, a.n, a.n_ops, a.allowed_ops or None, a.seed0)
+    else:
+        build(a.out, a.n, a.n_ops, a.split, a.allowed_ops or None, a.seed0)
