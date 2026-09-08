@@ -1869,8 +1869,8 @@ SFT's transfer. Robust, cross-benchmark partial-null.
 | 3.0  | 0.3088 |
 | 5.0  | 0.3312 |
 | 10.0 | 0.3212 |
-| 20.0 | (running) |
-Even at **10× the mass-placing weight**, transfer stays **~0.31–0.33** — the SAME plateau as β_sd∈[0.05,2.0],
+| 20.0 | 0.3387 |
+Even at **20× the mass-placing weight** (β_sd=20 → 0.339), transfer stays **~0.31–0.33** — the SAME plateau as β_sd∈[0.05,2.0],
 and if anything slightly DECLINES (too much NLL destabilises the GRPO objective without reaching SFT). It does
 NOT climb toward SFT (0.410) at any dose tested.
 
@@ -1885,3 +1885,9 @@ dose-insensitive lift over plain GRPO and **never approaches pure SFT's OOD tran
 not recover it, at any weight or step budget we tested. The update rule is an irreducible cause of OOD
 transfer — you cannot cheaply convert GRPO into SFT-level generalization. (Mechanism-consistent with M1–M4:
 the GRPO gradient keeps ρ≈0 on OOD-correct mass even when an explicit NLL term pushes the other way.)
+
+### §44 asymptote note: β_sd=20 → 0.3387 (still on plateau, 20× dose). 800-step arms (mu1.0/5.0_s800)
+crashed (empty output dirs) — not re-run; the β_sd∈{3,5,10,20}@400 series already establishes the flat
+asymptote decisively. Multi-seed confirmation (seed-1 on C2+6 workers, seed-2 on C3) training for independent
+error bars. OlympiadBench hard-tier axis (base 0.074, mu0.5/1.0/SFT) collecting → tests if the tiny MATH-500
+lift reaches the hardest tier (predict: no).
