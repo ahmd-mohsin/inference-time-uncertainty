@@ -48,6 +48,6 @@ echo "[go_h2 $TAG] bank=$(wc -l <$BANK 2>/dev/null) traces"
 CUDA_VISIBLE_DEVICES=$GPU MASTER_PORT=$MP $PY -m rl_training.train_grpo --model "$MODEL" \
   --dataset ${DS:-gsm8k} --reward-mode math --no-novelty --vllm-mode colocate \
   --num-generations 8 --num-train-steps ${STEPS:-400} --max-completion-length 1024 \
-  --dph-forward-kl --ratchet-bank "$BANK" --ratchet-mu "$MU" --ratchet-bank-batch 2 \
+  --dph-forward-kl --ratchet-bank "$BANK" --ratchet-mu "$MU" --ratchet-bank-batch ${BB:-2} \
   --output-dir "$OUT" > "$LOGS/$TAG.log" 2>&1
 echo "[go_h2 $TAG] DONE rc=$? -> $OUT $(date)"
