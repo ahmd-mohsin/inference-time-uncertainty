@@ -1849,3 +1849,16 @@ H2 (GRPO-rescue) = small partial lift only, not a rescue.** Larger-β_sd {3,5,10
 **NARRATIVE IMPACT (positive):** this STRENGTHENS the core thesis — the SFT operator's OOD-transfer advantage
 is NOT reconstructable by bolting an NLL rehearsal term onto GRPO; the on-policy advantage-weighted gradient
 appears to cap mass-placement. The operator is not decomposable into "GRPO + trace rehearsal."
+
+### §44 dense-OOD (full-MATH n=500, 6 replicate workers/point) — plateau CONFIRMED on 2nd benchmark
+| β_sd | n | full-MATH mean | std |
+|------|---|----------------|-----|
+| 0.05 | 6 | 0.2960 | 0.0058 |
+| 0.25 | 6 | 0.3013 | 0.0048 |
+| 0.50 | 6 | 0.2992 | 0.0067 |
+| 1.00 | 6 | 0.2944 | 0.0089 |
+| 2.00 | 6 | 0.2943 | 0.0092 |
+Anchors: base-3B 0.294, SFT-C 0.361. On DENSE full-MATH the axis is even flatter — it sits essentially AT
+BASE (0.294–0.301), i.e. the self-distillation term gives ~ZERO OOD lift here and stays ~0.06 below SFT.
+Two independent OOD benchmarks (MATH-500 + full-MATH) agree: GRPO+forward-KL-rehearsal does NOT reconstruct
+SFT's transfer. Robust, cross-benchmark partial-null.
