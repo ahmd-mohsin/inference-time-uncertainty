@@ -2002,3 +2002,20 @@ DEFINITIVE (3 seeds): continuing SFT-C with plain GRPO does NOT erode OOD transf
 RISES from 0.410 → 0.433. Erosion hypothesis fully refuted with error bars. Confirms: once SFT has PLACED the
 OOD-correct mass, GRPO safely SHARPENS it. §44 (can't place from base, capped 0.335) + §45 (sharpens once
 placed) = the complete order/precondition asymmetry, error-barred.
+
+## §48 H6 SFT-ignition — is a TINY SFT seed enough to unlock RL? (MATH-500 n=200 k=4)
+| SFT-seed steps → GRPO 150 | MATH-500 |
+|---------------------------|----------|
+| 0 (pure GRPO) | 0.3075 |
+| 1 | 0.3325 |
+| 5 | 0.2838 |
+| 20 | 0.3375 |
+| 100 | 0.3312 |
+| full SFT-C (~1200 steps) → GRPO150 | 0.428 (§45) |
+**VERDICT: NO cheap-ignition knee — H6 prediction REFUTED (honestly).** A small SFT seed (1–100 steps) does
+NOT unlock RL transfer; all seeded-then-GRPO runs stay at the GRPO floor (~0.30–0.34, noisy), while the FULL
+1200-step SFT seed → GRPO reaches 0.428. So ignition is NOT cheap: GRPO can only sharpen mass that is already
+SUBSTANTIALLY placed — a thin seed places too little mass to sharpen. Consistent with the mass-placing
+mechanism (and it's the 4th refuted optimistic sub-hypothesis: H1/H2, erosion, H5-localization, H6-cheap-
+ignition — the cheap/optimistic versions fail, the core thesis holds). Bounds the recipe: you need real SFT,
+not a token seed, before RL helps.
