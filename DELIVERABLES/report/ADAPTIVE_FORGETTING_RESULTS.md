@@ -2019,3 +2019,21 @@ SUBSTANTIALLY placed — a thin seed places too little mass to sharpen. Consiste
 mechanism (and it's the 4th refuted optimistic sub-hypothesis: H1/H2, erosion, H5-localization, H6-cheap-
 ignition — the cheap/optimistic versions fail, the core thesis holds). Bounds the recipe: you need real SFT,
 not a token seed, before RL helps.
+
+## §49 H9 in-distribution crossover — is SFT>GRPO OOD-specific? (q3b, n=200 k=4)
+| arm | in-dist GSM8K-test | OOD MATH-500 | gain vs base (in-dist) |
+|-----|--------------------|--------------|------------------------|
+| base | 0.4813 | 0.2963 | — |
+| GRPO (β=0) | 0.5062 | 0.3262 | +0.025 |
+| SFT-verified | **0.7050** | **0.4113** | **+0.224** |
+**VERDICT: NO crossover — H9 prediction (GRPO≥SFT in-dist) REFUTED.** SFT-on-verified-traces beats GRPO BOTH
+in-distribution (0.705 vs 0.506, +0.199) AND OOD (0.411 vs 0.326, +0.085). The mass-placing advantage is
+GENERAL, not OOD-specific, and is actually LARGER on-distribution (SFT gains +0.224 vs GRPO's +0.025 over base).
+**FRAMING IMPLICATION (honest, important):** the phenomenon is broader than "OOD transfer" — with matched
+verified experience, SFT (mass-placing / rejection-FT) is a far stronger operator than GRPO for converting
+verified-correct traces into capability, everywhere. The OOD gap (§40/§44) is where it's most *surprising* and
+where GRPO's ρ≈0 blindness bites hardest, but the operator gap itself is distribution-general. CAVEAT: the GRPO
+arm here is β=0/400-step LoRA — a stronger/longer GRPO might narrow the in-dist gap (the §42 tuned sweep stayed
+~0.30-0.33 OOD, but in-dist headroom differs); worth a matched-compute in-dist GRPO before over-claiming the
+in-dist magnitude. Reported straight — this is the 5th refuted pre-registration; the core (SFT places mass,
+GRPO reweights) keeps holding and even generalizes.
