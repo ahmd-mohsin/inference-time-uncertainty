@@ -49,21 +49,24 @@ def _render(start, prog, phrasebook):
 def _rand_prog(rng, ops, n):
     return [(op, rng.randint(2, 12)) for op in rng.sample(ops, k=1) * 0 + [rng.choice(ops) for _ in range(n)]]
 
-def gen_family(seed, n_ops=3, allowed_ops=None):
-    """One base family with its 4 in-support splits. allowed_ops restricts the op vocabulary (for coverage)."""
+def gen_family(seed, n_ops=3, allowed_ops=None, hard=False):
+    """One base family with its 4 in-support splits. allowed_ops restricts the op vocabulary (for coverage).
+    hard=True uses large operands (10-99) + larger start → base success drops sharply, giving a big moveable
+    composition gap (the easy 2-12 operands saturated at ~0.48 regardless of method; §54 diagnosis)."""
     rng = random.Random(seed)
     ops = allowed_ops or OP_NAMES
-    start = rng.randint(2, 20)
-    prog = [(rng.choice(ops), rng.randint(2, 12)) for _ in range(n_ops)]
+    lo, hi = (10, 99) if hard else (2, 12)
+    start = rng.randint(10, 99) if hard else rng.randint(2, 20)
+    prog = [(rng.choice(ops), rng.randint(lo, hi)) for _ in range(n_ops)]
     def mk(s, p, phr): return {"prompt": _render(s, p, phr), "gold": str(_execute(s, p)),
                                "ops": sorted(set(o for o, _ in p)), "prog": p, "start": s}
     original = mk(start, prog, _PHRASE)
     surface = mk(start, prog, _PHRASE2)                                   # same compute, reworded
-    s2 = rng.randint(2, 20); p2 = [(o, rng.randint(2, 12)) for o, _ in prog]
+    s2 = rng.randint(lo, hi); p2 = [(o, rng.randint(lo, hi)) for o, _ in prog]
     same_op = mk(s2, p2, _PHRASE)                                         # same ops, new operands
     p3 = prog[::-1] if len(prog) > 1 else prog                            # same op multiset, new order
     if p3 == prog and len(prog) > 1: p3 = [prog[1], prog[0]] + prog[2:]
-    new_compose = mk(rng.randint(2, 20), p3, _PHRASE)
+    new_compose = mk(rng.randint(lo, hi), p3, _PHRASE)
     return {"family": seed, "n_ops": n_ops, "allowed_ops": ops,
             "original": original, "surface": surface, "same_op": same_op, "new_compose": new_compose}
 
@@ -96,23 +99,23 @@ def worked_solution(start, prog):
     lines.append(f"Final answer: \\boxed{{{acc}}}")
     return " ".join(lines)
 
-def build_solutions(out, n_families, n_ops, allowed_ops=None, seed0=0):
+def build_solutions(out, n_families, n_ops, allowed_ops=None, seed0=0, hard=False):
     """SFT bank {prompt, completion} with canonical worked solutions (for H-A consolidation / H-C coverage)."""
     ops = allowed_ops.split(",") if allowed_ops else None
     n = 0
     with open(out, "w") as f:
         for i in range(n_families):
-            fam = gen_family(seed0 + i, n_ops=n_ops, allowed_ops=ops); r = fam["original"]
+            fam = gen_family(seed0 + i, n_ops=n_ops, allowed_ops=ops, hard=hard); r = fam["original"]
             comp = worked_solution(r["start"], r["prog"])
             f.write(json.dumps({"prompt": r["prompt"], "completion": comp, "gold": r["gold"],
                                 "ops": r["ops"]}) + "\n"); n += 1
     print(f"[controlled_tasks] wrote {n} SFT solutions (n_ops={n_ops}) -> {out}")
 
-def build(out, n_families, n_ops, split, allowed_ops=None, seed0=0):
+def build(out, n_families, n_ops, split, allowed_ops=None, seed0=0, hard=False):
     rng_ops = allowed_ops.split(",") if allowed_ops else None
     rows = []
     for i in range(n_families):
-        fam = gen_family(seed0 + i, n_ops=n_ops, allowed_ops=rng_ops)
+        fam = gen_family(seed0 + i, n_ops=n_ops, allowed_ops=rng_ops, hard=hard)
         r = fam[split]
         rows.append({"prompt": r["prompt"], "gold": r["gold"], "ops": r["ops"], "family": fam["family"], "split": split})
     with open(out, "w") as f:
@@ -126,8 +129,9 @@ if __name__ == "__main__":
     ap.add_argument("--split", default="original", choices=["original", "surface", "same_op", "new_compose"])
     ap.add_argument("--allowed-ops", default=""); ap.add_argument("--seed0", type=int, default=0)
     ap.add_argument("--solutions", action="store_true", help="emit SFT {prompt,completion} worked solutions")
+    ap.add_argument("--hard", action="store_true", help="large operands (10-99) for a big moveable composition gap")
     a = ap.parse_args()
     if a.solutions:
-        build_solutions(a.out, a.n, a.n_ops, a.allowed_ops or None, a.seed0)
+        build_solutions(a.out, a.n, a.n_ops, a.allowed_ops or None, a.seed0, a.hard)
     else:
-        build(a.out, a.n, a.n_ops, a.split, a.allowed_ops or None, a.seed0)
+        build(a.out, a.n, a.n_ops, a.split, a.allowed_ops or None, a.seed0, a.hard)
