@@ -2036,5 +2036,6 @@ verified-correct traces into capability, everywhere. The OOD gap (§40/§44) is 
 where GRPO's ρ≈0 blindness bites hardest, but the operator gap itself is distribution-general. CAVEAT: the GRPO
 arm here is β=0/400-step LoRA — a stronger/longer GRPO might narrow the in-dist gap (the §42 tuned sweep stayed
 ~0.30-0.33 OOD, but in-dist headroom differs); worth a matched-compute in-dist GRPO before over-claiming the
-in-dist magnitude. Reported straight — this is the 5th refuted pre-registration; the core (SFT places mass,
-GRPO reweights) keeps holding and even generalizes.
+in-dist magnitude. CAVEAT RESOLVED: tuned/longer GRPO in-dist (800-step 0.525, group16 0.515) stays ~0.52 vs SFT 0.705 — the
++0.18 in-dist gap is ROBUST to GRPO tuning, NOT a weak-baseline artifact. §49 in-dist claim stands. This is
+the 5th refuted pre-registration; the core (SFT places mass, GRPO reweights) keeps holding and even generalizes.
