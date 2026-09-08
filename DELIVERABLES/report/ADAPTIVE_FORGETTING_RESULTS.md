@@ -1804,3 +1804,25 @@ level (0.410). So H2 (GRPO-rescue) is a **PARTIAL** rescue as-run, not full; H1 
 steps) is far smaller than pure SFT (1200 steps of pure NLL) — full rescue likely needs larger β_sd (5–10)
 or more steps. NOT overclaiming. Replicates (C2/C3 + 6 workers, ~8-9/mu) + larger-β_sd extension pending for
 error bars + the true asymptote. This is reported as the honest current state.
+
+## §44 mass-placing axis — AVERAGED over 2–3 replicates (C1/C2/C3), MATH-500 n=200 k=4
+| β_sd | reps | mean MATH-500 |
+|------|------|---------------|
+| 0 (plain GRPO) | §42 | 0.304 |
+| 0.05 | 3 | 0.332 |
+| 0.10 | 2 | 0.327 |
+| 0.25 | 3 | 0.337 |
+| 0.50 | 3 | 0.332 |
+| 0.75 | 3 | 0.336 |
+| 1.00 | 2 | 0.324 |
+| 1.50 | 3 | 0.332 |
+| 2.00 | 3 | 0.338 |
+| ∞ (pure SFT) | — | 0.410 |
+Base-3B = 0.296. **VERDICT (honest, averaged):** the C1-only "peak at β_sd=0.25" was NOISE — across
+replicates every interior point sits at **~0.33 ± 0.01**, essentially FLAT in β_sd. So GRPO + forward-KL
+self-distillation gives a small, UNIFORM lift (~+0.03 over base, ~+0.025 over plain GRPO) from adding *any*
+mass-placing term, but it is **NOT a monotonic dose-response** and does **NOT approach pure SFT (0.410)**
+within β_sd∈[0.05,2.0] at 400 steps. So H1 (monotonic mass-placing axis) is NOT supported in this range, and
+H2 (GRPO-rescue) is at best a small PARTIAL lift — the on-policy GRPO gradient appears to CAP how much the
+NLL term can place mass. This is a genuine (partial-null) finding, reported straight. Larger-β_sd {3,5,10,20}
++ 800-step arms are training to test whether a bigger dose breaks the plateau (decisive asymptote test).
