@@ -1941,3 +1941,9 @@ then GRPO refines it.** This is exactly the standard SFT→RL recipe, and it exp
 RL-from-base transfers ~0. Matches Thm11 (hybrid optimality) + the §43-H3 order-of-operations intuition.
 Honest correction to the §45 pre-registration (predicted erosion; observed complementarity). full-MATH decay +
 rev150 confirming.
+
+### §45 dense confirmation (full-MATH): SFT→GRPO complementarity holds on 2nd benchmark
+full-MATH: SFT-C 0.361 → +50 GRPO 0.355 (transient dip) → +400 GRPO **0.3825** (+0.021 OVER SFT).
+Mirrors MATH-500 (0.410→0.4325). BOTH OOD benchmarks confirm: continuing SFT with GRPO does NOT erode
+transfer — it sharpens it. Erosion hypothesis refuted on both; the RL-reweights-can't-place-mass mechanism
+(§44 + §45) holds cross-benchmark. rev150 interior point finishing (minor).
