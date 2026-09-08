@@ -2039,3 +2039,32 @@ arm here is β=0/400-step LoRA — a stronger/longer GRPO might narrow the in-di
 in-dist magnitude. CAVEAT RESOLVED: tuned/longer GRPO in-dist (800-step 0.525, group16 0.515) stays ~0.52 vs SFT 0.705 — the
 +0.18 in-dist gap is ROBUST to GRPO tuning, NOT a weak-baseline artifact. §49 in-dist claim stands. This is
 the 5th refuted pre-registration; the core (SFT places mass, GRPO reweights) keeps holding and even generalizes.
+
+# ============================================================================
+# MASTER SUMMARY (2026-09-08 run) — consolidated for review
+# ============================================================================
+THESIS: the update rule governs OOD transfer of verified experience BECAUSE RL can only *reweight*
+probability mass, not *place* it. SFT (M-projection) places OOD-correct mass; GRPO sharpens only mass that
+already exists (ρ≈0 on unreached regions). One principle explains every result.
+
+| # | Experiment | Result | Verdict |
+|---|-----------|--------|---------|
+| §37 | Code HumanEval OOD (MBPP-train) | base 0.566 → SFT 0.662 (+0.096) | SFT≫GRPO, 4th domain |
+| §40 | Dense OOD @7B | Olympiad C0.135/A0.100; full-MATH C0.382/A0.323; MMLU-Pro C0.408/A0.304 (+0.104) | SFT≫GRPO everywhere |
+| §42 | Tuned-GRPO fairness (MATH-500) | KL0 0.304 / 2×steps 0.328 / g16 0.328 | gap survives tuning |
+| §44 | Mass-placing axis (β_sd 0.05-20, 3 seeds, 2 bench) | flat 0.335±0.01, never→SFT 0.410 | GRPO+rehearsal CAN'T reconstruct SFT (irreducible) |
+| §44b | OlympiadBench hard-tier | base 0.074 / rescue 0.081 / SFT 0.104 | SFT wins hardest tier |
+| §45 | Reverse SFT→GRPO (3-seed decay) | 0.410 → 0.433 monotonic rise | GRPO safely sharpens placed mass (no erosion) |
+| §46 | H5 subspace localization | attn 0.360, mlp 0.354 ≈ all 0.367 | mass-placing redundantly distributed |
+| §48 | H6 SFT-ignition (tiny seed) | N=1-100 seed→GRPO stays ~0.33 | no cheap ignition; need substantial SFT |
+| §49 | H9 in-dist crossover | SFT>GRPO in-dist 0.705 vs 0.51-0.53(tuned) AND OOD 0.411 vs 0.326 | NO crossover — advantage GENERAL, not OOD-only |
+
+HONESTY LEDGER — 5 refuted pre-registrations (each strengthened the core): H1 monotonic-axis · H2 GRPO-rescue ·
+§45 erosion · H5 MLP-localization · H6 cheap-ignition · H9 in-dist-crossover. Every optimistic shortcut failed;
+core (SFT places, GRPO reweights) survived every attack + generalized beyond OOD.
+
+CURRENT (RUNNING): H5 full-MATH dense confirm (workers). QUEUED: H8 entropy-collapse signature (measurement),
+H7 does-correctness-matter, 7B-scale §44/§45, multi-family replication, H10 mass-transplant.
+OPEN FRAMING Q (awaiting user): §49 shows effect is GENERAL not OOD-only → reframe around "update-rule
+verified-experience efficiency" (OOD as sharpest case) vs keep OOD-centric?
+ASSETS: 113 eval JSONs + adapters in checkpoints_pulled/fresh_0908/; HF continued-RL checkpoints cleared; all pushed.
