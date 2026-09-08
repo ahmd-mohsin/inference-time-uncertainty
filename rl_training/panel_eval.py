@@ -14,6 +14,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from rl_training.seq_recover import chat
 
 PROMPT = "Solve the problem. Show brief reasoning and put the final answer in \\boxed{}.\n\nProblem: {q}"
+# multiple-choice panels answer with a LETTER, not a boxed value — elicit the letter explicitly.
+MC_PROMPT = ("Answer the multiple-choice question. Think briefly, then end with exactly this line:\n"
+             "The answer is (X)\nwhere X is the letter of the correct option.\n\nQuestion: {q}")
+MC_PANELS = {"mmlu_pro", "gpqa"}
 
 def load_panel(panel, n):
     from datasets import load_dataset
@@ -25,6 +29,42 @@ def load_panel(panel, n):
         try: d = load_dataset("HuggingFaceH4/MATH-500")["test"]
         except Exception: d = load_dataset("qq8933/MATH500")["test"]
         for r in d: items.append({"q": r.get("problem") or r.get("question"), "gold": str(r.get("answer") or "")})
+    elif panel == "math_full":                       # DENSE: full Hendrycks MATH test (~5000, boxed answers)
+        import re as _re
+        d = None
+        for did in ("HuggingFaceH4/MATH", "hendrycks/competition_math", "EleutherAI/hendrycks_math", "nlile/hendrycks-MATH-benchmark"):
+            try: dd = load_dataset(did); d = dd["test" if "test" in dd else list(dd.keys())[-1]]; break
+            except Exception: continue
+        if d is None: raise SystemExit("MATH-full unavailable")
+        for r in d:
+            sol = r.get("solution") or ""; m = _re.findall(r"\\boxed\{([^}]*)\}", sol)
+            g = r.get("answer") or (m[-1] if m else "")
+            items.append({"q": r.get("problem") or r.get("question") or "", "gold": str(g)})
+    elif panel == "olympiadbench":                    # DENSE hard: OlympiadBench (open-answer math)
+        d = None
+        for did in ("Hothan/OlympiadBench", "lmms-lab/OlympiadBench", "knoveleng/OlympiadBench"):
+            try: dd = load_dataset(did, "OE_TO_maths_en_COMP") if did=="Hothan/OlympiadBench" else load_dataset(did); d = dd[list(dd.keys())[0]]; break
+            except Exception: continue
+        if d is None: raise SystemExit("OlympiadBench unavailable")
+        for r in d:
+            g = r.get("final_answer") or r.get("answer") or ""
+            if isinstance(g, list): g = g[0] if g else ""
+            items.append({"q": r.get("question") or r.get("problem") or "", "gold": str(g).strip("$[] ")})
+    elif panel in ("mmlu_pro", "gpqa"):               # DENSE reasoning MC (answer letter)
+        if panel == "mmlu_pro":
+            d = load_dataset("TIGER-Lab/MMLU-Pro")["test"]
+            for r in d:
+                opts = r["options"]; letters = [chr(65+i) for i in range(len(opts))]
+                q = r["question"] + "\n" + "\n".join(f"({l}) {o}" for l,o in zip(letters,opts))
+                items.append({"q": q, "gold": r.get("answer") or letters[r.get("answer_index",0)]})
+        else:
+            dd = load_dataset("Idavidrein/gpqa", "gpqa_main"); d = dd[list(dd.keys())[0]]
+            import random as _r
+            for r in d:
+                correct = r["Correct Answer"]; ws = [r["Incorrect Answer 1"], r["Incorrect Answer 2"], r["Incorrect Answer 3"]]
+                opts = [correct]+ws; _r.Random(0).shuffle(opts); letters=["A","B","C","D"]
+                q = r["Question"] + "\n" + "\n".join(f"({l}) {o}" for l,o in zip(letters,opts))
+                items.append({"q": q, "gold": letters[opts.index(correct)]})
     elif panel == "svamp":
         # closer-OOD: grade-school arithmetic word problems, different source than GSM8K
         d = load_dataset("ChilleD/SVAMP")["test"]
@@ -90,11 +130,26 @@ def extract(t):
     m = re.findall(r"-?\d[\d,]*\.?\d*", t.replace(",", ""))
     return norm(m[-1]) if m else None
 
-def match(pred, gold):
+def mc_extract(t):
+    """multiple-choice: pull the chosen option LETTER from model output."""
+    if not t: return None
+    for pat in (r"\\boxed\{\s*\(?([A-J])\)?\s*\}", r"answer\s*(?:is|:|=)\s*\(?([A-J])\)?\b",
+                r"\(([A-J])\)\s*$", r"\b([A-J])\b\s*$"):
+        m = re.findall(pat, t, re.I)
+        if m: return m[-1].upper()
+    return None
+
+def match(pred_or_text, gold):
+    g = str(gold).strip()
+    # MULTIPLE-CHOICE: gold is a single letter A-J → letter-match on the raw text
+    if re.fullmatch(r"[A-Ja-j]", g):
+        pl = mc_extract(pred_or_text) if isinstance(pred_or_text, str) else (pred_or_text or "")
+        return bool(pl) and pl.upper() == g.upper()
+    pred = extract(pred_or_text) if isinstance(pred_or_text, str) else pred_or_text
     if pred is None: return False
-    p, g = norm(pred), norm(gold)
-    if p == g: return True
-    try: return abs(float(p) - float(g)) < 1e-6
+    p, gg = norm(pred), norm(gold)
+    if p == gg: return True
+    try: return abs(float(p) - float(gg)) < 1e-6
     except Exception: return False
 
 def run(a):
@@ -106,10 +161,11 @@ def run(a):
     llm = LLM(model=mp, dtype="bfloat16", trust_remote_code=True, tensor_parallel_size=1, max_model_len=2048,
               gpu_memory_utilization=float(os.environ.get("EVAL_GPU_MEM", 0.85)), enable_prefix_caching=True, enforce_eager=True)
     sp = SamplingParams(n=a.k, temperature=1.0, top_p=0.95, max_tokens=1024, stop=["<|im_end|>", "<|eot_id|>", "<|endoftext|>"])
-    outs = llm.generate([chat(mp, PROMPT.replace("{q}", it["q"])) for it in items], sp)
+    _prompt = MC_PROMPT if a.panel in MC_PANELS else PROMPT
+    outs = llm.generate([chat(mp, _prompt.replace("{q}", it["q"])) for it in items], sp)
     per = []
     for it, o in zip(items, outs):
-        c = sum(int(match(extract(s.text), it["gold"])) for s in o.outputs)
+        c = sum(int(match(s.text, it["gold"])) for s in o.outputs)
         per.append({"gold": it["gold"], "k": len(o.outputs), "correct": c, "p": c/max(len(o.outputs), 1)})
     out = {"tag": a.tag, "panel": a.panel, "model": mp.split("/")[-1], "n": len(items),
            "mean_p": sum(x["p"] for x in per)/max(len(per), 1),
@@ -132,7 +188,7 @@ def merge(a):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model-path", required=True); ap.add_argument("--panel", default="test", choices=["train", "test", "math", "svamp", "asdiv", "amc", "aime24", "aime25", "aime26"])
+    ap.add_argument("--model-path", required=True); ap.add_argument("--panel", default="test", choices=["train", "test", "math", "svamp", "asdiv", "amc", "aime24", "aime25", "aime26", "math_full", "olympiadbench", "mmlu_pro", "gpqa"])
     ap.add_argument("--n", type=int, default=200); ap.add_argument("--k", type=int, default=8)
     ap.add_argument("--output-dir", default="/tmp/instance_storage/gu/eval_out"); ap.add_argument("--tag", default="pe")
     ap.add_argument("--shard-index", type=int, default=0); ap.add_argument("--num-shards", type=int, default=1); ap.add_argument("--merge", action="store_true")
