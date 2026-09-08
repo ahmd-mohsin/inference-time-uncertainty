@@ -2752,3 +2752,17 @@ reads: (1) consolidation > difficulty > continue-GRPO — the consolidation-inte
 starting point than base for MATH transfer (consistent with §45/§49: SFT is the strong operator; GRPO partially
 "uses up" transfer capacity). STATUS: promising 2-seed WIN; multi-seed CI now training (C1 rdB_gsm8k s2-s9 →
 branch each) to confirm Δ>0 with CI excluding 0 before claiming. If it holds → substantial real-domain method.
+
+## PAPER STRUCTURE (explicit) — how the layers fit
+LAYER 1 — FOUNDATION (empirical, ESTABLISHED): §37 (code +0.096), §40 (dense OOD: MMLU-Pro +0.104, full-MATH,
+  OlympiadBench), §42 (tuned-GRPO fairness — gap survives KL/steps/group), §49 (advantage is GENERAL: SFT>GRPO
+  in-dist 0.705 vs 0.52 AND OOD). Claim (precise): under the evaluated procedures, verified-trace SFT converts
+  available successful experience into capability more effectively than GRPO, across 4 domains + ~16 families,
+  multi-seed. THIS IS THE FOUNDATION — it establishes the phenomenon and motivates layers 2-3.
+LAYER 2 — MECHANISM (why): §52b/§53-S1a — the solve→compose gap exists and WIDENS with training (reward
+  saturates / group-advantage u_G→0 before the skill generalizes); RL reweights, doesn't place mass.
+LAYER 3 — METHOD (actionable): §55 consolidation-scheduled RL exploiting the interval (GSM8K→MATH positive
+  2-seed, multi-seed CI pending; code Domain-2 building).
+STANDING: Layer 1 carries the paper regardless of Layer 3's strength. If §55 CI holds → foundation→mechanism→
+method (award-target). If §55 stays modest/null → foundation + mechanism is still a solid honest contribution,
+method reported as tested. The §37-§49 OOD/SFT results are NOT superseded — they are the backbone.
