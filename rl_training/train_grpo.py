@@ -12,6 +12,30 @@ import argparse, os, sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+
+def _patch_lr_scheduler_strict_zip():
+    """torch>=2.4 made LRScheduler._update_lr use zip(param_groups, values, strict=True). Under LoRA,
+    HF builds 2 param groups (decay / no-decay) but the no-decay group is EMPTY (all biases/norms are
+    frozen), so DeepSpeed prunes it -> 1 param group but 2 base_lrs -> "zip() argument 2 is longer than
+    argument 1" at the first scheduler.step(). The extra lr is for the dropped empty group and is
+    harmless; relax to positional (non-strict) assignment so training proceeds."""
+    try:
+        import torch.optim.lr_scheduler as _L
+        _orig = _L.LRScheduler._update_lr
+    except Exception:
+        return
+    def _patched(self, epoch=None):
+        try:
+            return _orig(self, epoch)
+        except ValueError:
+            values = self.get_lr()
+            for pg, lr in zip(self.optimizer.param_groups, values):  # non-strict on purpose
+                pg["lr"] = lr
+            self._last_lr = [pg["lr"] for pg in self.optimizer.param_groups]
+    _L.LRScheduler._update_lr = _patched
+
+_patch_lr_scheduler_strict_zip()
+
 from rl_training.config import RLConfig
 from rl_training.data import build_dataset
 from rl_training.rewards import correctness_reward, make_novelty_bonus
@@ -28,6 +52,10 @@ def build_args():
     p.add_argument("--output-dir", default=RLConfig.output_dir)
     p.add_argument("--num-generations", type=int, default=RLConfig.num_generations)
     p.add_argument("--num-train-steps", type=int, default=RLConfig.num_train_steps)
+    p.add_argument("--vllm-mode", default=RLConfig.vllm_mode, choices=["server","colocate"],
+                   help="colocate = vLLM in-process on the same GPU (single-GPU, no server/ZeRO-3/rendezvous)")
+    p.add_argument("--save-steps", type=int, default=0, help="override checkpoint frequency (0=cfg default)")
+    p.add_argument("--save-total-limit", type=int, default=0, help="override kept-checkpoint cap (0=cfg; set high to keep the whole kill trajectory for the Gp sweep)")
     p.add_argument("--lr", type=float, default=RLConfig.learning_rate)
     p.add_argument("--beta", type=float, default=RLConfig.beta)
     p.add_argument("--max-completion-length", type=int, default=RLConfig.max_completion_length)
@@ -71,6 +99,8 @@ def build_args():
     p.add_argument("--ratchet-dual", action="store_true", help="dual-ascent on mu (soft form)")
     p.add_argument("--pba-anchor", action="store_true",
                    help="BASELINE: symmetric base-anchoring (PBA/DPH-RL replay) on the bank instead of the one-sided floor")
+    p.add_argument("--dph-forward-kl", action="store_true",
+                   help="BASELINE: DPH-F forward-KL rehearsal = NLL on the (ref-sampled) bank (mass-covering, no cap)")
     p.add_argument("--proj-max-steps", type=int, default=5, help="correction sub-steps/step (hard)")
     p.add_argument("--proj-lr", type=float, default=1e-5, help="correction sub-step lr (hard)")
     p.add_argument("--proj-every", type=int, default=1, help="project every N steps (hard; amortize)")
@@ -82,6 +112,8 @@ def build_args():
     p.add_argument("--no-lora", action="store_true",
                    help="FULL fine-tuning instead of LoRA (crossover-magnitude sweep: LoRA caps "
                         "drift, likely compressing the coverage phenomenon). Needs ZeRO-3.")
+    p.add_argument("--reward-mode", default="math", choices=["math","code"],
+                   help="code = self-repair execute-verify dense reward (code_repair_reward); disables novelty")
     p.add_argument("--no-vllm", action="store_true")
     p.add_argument("--resume-from", default="", help="checkpoint dir to resume (Component B loop)")
     p.add_argument("--init-adapter", default="", help="warm-start: load this saved LoRA adapter "
@@ -120,7 +152,7 @@ def main():
                    max_completion_length=a.max_completion_length,
                    gradient_accumulation_steps=a.gradient_accumulation_steps,
                    novelty_lambda=a.novelty_lambda,
-                   novelty_enabled=not a.no_novelty, use_vllm=not a.no_vllm,
+                   novelty_enabled=not a.no_novelty, use_vllm=not a.no_vllm, vllm_mode=a.vllm_mode,
                    use_lora=not a.no_lora, lora_r=a.lora_r, lora_alpha=2 * a.lora_r)
 
     from trl import GRPOTrainer, GRPOConfig
@@ -133,9 +165,14 @@ def main():
     print(f"train dataset: {len(train_dataset)} rows (curriculum={a.curriculum}, "
           f"hard-targeted={bool(cfg.difficulty_json) and not a.curriculum})")
 
-    # reward functions: correctness always; novelty optional (ablation)
-    reward_funcs = [correctness_reward]
-    reward_weights = [1.0]
+    # reward functions: code self-repair (execute-verify dense) OR math correctness (+novelty)
+    if a.reward_mode == "code":
+        from rl_training.rewards import code_repair_reward
+        reward_funcs = [code_repair_reward]; reward_weights = [1.0]
+        cfg.novelty_enabled = False
+    else:
+        reward_funcs = [correctness_reward]
+        reward_weights = [1.0]
     if cfg.novelty_enabled:
         reward_funcs.append(make_novelty_bonus(cfg.embedding_model, cfg.novelty_lambda,
                                                cfg.novelty_metric, cfg.novelty_correct_only))
@@ -160,8 +197,10 @@ def main():
         max_steps=cfg.num_train_steps, scale_rewards=cfg.scale_rewards,
         reward_weights=reward_weights, seed=cfg.seed,
         use_vllm=cfg.use_vllm, vllm_mode=cfg.vllm_mode,
+        vllm_gpu_memory_utilization=float(os.environ.get("VLLM_GPU_MEM_UTIL", "0.35")),
         vllm_server_host=cfg.vllm_server_host, vllm_server_port=cfg.vllm_server_port,
-        logging_steps=10, save_steps=cfg.save_steps, save_total_limit=cfg.save_total_limit,
+        logging_steps=10, save_steps=(a.save_steps or cfg.save_steps),
+        save_total_limit=(a.save_total_limit or cfg.save_total_limit),
         log_completions=cfg.log_completions,
         bf16=True, gradient_checkpointing=True,
         # non-reentrant checkpointing required with LoRA — reentrant recompute mismatches
@@ -178,20 +217,20 @@ def main():
         target_modules=list(cfg.lora_target_modules), task_type="CAUSAL_LM",
     ) if cfg.use_lora else None
     # TECHNIQUE 1: swap in a coverage-constrained trainer if requested (needs a bank).
-    if a.support_ratchet or a.projection or a.pba_anchor:
+    if a.support_ratchet or a.projection or a.pba_anchor or a.dph_forward_kl:
         if not a.ratchet_bank or not os.path.exists(a.ratchet_bank):
-            raise SystemExit(f"--support-ratchet/--projection/--pba-anchor require --ratchet-bank (got {a.ratchet_bank!r})")
+            raise SystemExit(f"--support-ratchet/--projection/--pba-anchor/--dph-forward-kl require --ratchet-bank (got {a.ratchet_bank!r})")
         from rl_training.coverage_bank import load_bank
         from rl_training.coverage_trainer import (RatchetGRPOTrainer, ProjectionGRPOTrainer)
         from rl_training.projection import ProjectionConfig
         bank = load_bank(a.ratchet_bank)
-        if a.support_ratchet or a.pba_anchor:
+        if a.support_ratchet or a.pba_anchor or a.dph_forward_kl:
             trainer = RatchetGRPOTrainer(
                 model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
                 train_dataset=train_dataset, peft_config=peft_config,
                 bank=bank, alpha=a.ratchet_alpha, mu=a.ratchet_mu, dual=a.ratchet_dual,
                 bank_batch=a.ratchet_bank_batch,
-                mode=("anchor" if a.pba_anchor else "floor"))
+                mode=("forward_kl" if a.dph_forward_kl else "anchor" if a.pba_anchor else "floor"))
         else:
             pc = ProjectionConfig(alpha=a.ratchet_alpha, max_steps=a.proj_max_steps,
                                   lr=a.proj_lr, every=a.proj_every,

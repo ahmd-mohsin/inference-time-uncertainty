@@ -35,3 +35,6 @@ rl_training/recovered/
 global_step*/
 bf16_zero_pp_rank_*
 zero_pp_rank_*
+.claude/settings.local.json
+checkpoints_pulled/
+runs_pulled/

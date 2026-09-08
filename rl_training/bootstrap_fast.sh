@@ -15,6 +15,9 @@ echo "==== BOOTSTRAP_FAST START $(date -u +%H:%M:%SZ) on $(hostname) ===="
 echo "== [1/5] public DNS =="
 sudo bash -c 'printf "nameserver 8.8.8.8\nnameserver 1.1.1.1\n" > /etc/resolv.conf' || true
 python3 -c "import socket; print('resolve:', socket.gethostbyname('pypi.org'))" || true
+# map own hostname -> loopback: fresh nodes can't resolve their own hostname, which HANGS c10d
+# rendezvous for multi-process ZeRO-3 training (accelerate). Harmless for eval-only nodes.
+getent hosts "$(hostname)" >/dev/null 2>&1 || sudo bash -c "echo \"127.0.0.1 $(hostname)\" >> /etc/hosts" || true
 
 echo "== [2/5] clone repo =="
 [ -d $HOME/inference-time-uncertainty/.git ] || \

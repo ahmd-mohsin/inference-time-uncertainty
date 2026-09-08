@@ -33,7 +33,10 @@ def main():
     if not tok:
         print("ERR: HF_TOKEN not set", file=sys.stderr); sys.exit(1)
     api = HfApi(token=tok)
-    api.create_repo(a.repo, private=True, exist_ok=True, repo_type="model")
+    # PUBLIC repos: the account's private-storage plan cap rejects multi-GB LFS objects (403
+    # "storage limit reached") even at 0GB usage; public model storage is free/generous. The
+    # checkpoints are research weights, safe to host publicly (this is the method we used before).
+    api.create_repo(a.repo, private=False, exist_ok=True, repo_type="model")
 
     if a.mode == "resume":
         # find the highest RESUMABLE checkpoint-N (has both model.safetensors AND trainer_state.json;

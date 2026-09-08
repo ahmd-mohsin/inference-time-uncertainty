@@ -33,12 +33,12 @@ def _tokenize_bank(bank, tokenizer, max_len=1280):
     """Pre-tokenize the bank ONCE: returns list of (input_ids, comp_mask, ref_logprob) python lists.
     comp_mask marks ONLY completion tokens (prompt tokens are context, not scored).
 
-    max_len caps total length to bound the per-trace (T,V) logits memory in the constraint forward
-    pass (V~151k for Qwen). We keep the prompt (needed as context) and TRUNCATE the completion from
-    the FRONT, preserving the tail that contains the boxed answer — the constraint then floors the
-    policy's prob on that answer-bearing tail. NOTE: ref_logprob was computed on the FULL trace, so
-    for truncated traces the floor is slightly conservative (policy logp of the tail < full); this is
-    safe (one-sided) but we log how many traces were truncated so the effect is auditable."""
+    RATCHET_BANK_MAXLEN env overrides max_len (memory-tight runs, e.g. 8B on 40GB where the ratchet
+    forward's [B,T,V] logits + backward OOM at 1280; set 640 to fit — keeps the answer-bearing tail)."""
+    max_len = int(os.environ.get("RATCHET_BANK_MAXLEN", max_len))
+    # keep prompt as context, truncate completion from the FRONT (preserve answer-bearing tail);
+    # ref_logprob was computed on the FULL trace, so truncation makes the floor slightly conservative
+    # (one-sided, safe); n_trunc logged for auditability.
     pad = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
     items = []
     n_trunc = 0
@@ -113,6 +113,9 @@ try:
             if self._mode == "anchor":
                 from rl_training.support_ratchet import anchor_penalty
                 pen = anchor_penalty(plog, reflog, reduction="mean")
+            elif self._mode == "forward_kl":
+                from rl_training.support_ratchet import forward_kl_penalty
+                pen = forward_kl_penalty(plog, reflog, reduction="mean")
             else:
                 pen = ratchet_penalty(plog, reflog, alpha=self._alpha, reduction="mean")
             if self._dual:

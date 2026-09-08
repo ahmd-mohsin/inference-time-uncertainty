@@ -1,0 +1,1 @@
+{"tag": "q7b_base", "model": "Qwen2.5-7B", "n_nll": 200, "M1_math_trace_nll": 0.6390541343763471, "M2_mean_token_entropy": 0.21637577507211392, "M3_mean_gen_len": 373.6333333333333, "M3_mean_step_count": 37.93333333333333, "math_acc_greedy": 0.4666666666666667}

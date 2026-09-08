@@ -24,8 +24,18 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # extract_numeric_answer is the robust 7-strategy extractor (boxed in full text, strip
 # <think>, answer markers, bold, "= X", bare number, trailing LaTeX) — far better for
 # reasoning-model output than boxed-only. Use it everywhere we read a model's answer.
-from src.data.dataset import extract_numeric_answer, answers_match
-from rl_training.semantic import embed_texts, pairwise_novelty
+# These are only needed for the MATH rewards; guard so code-repair users (_passvec, code_repair_reward)
+# can import rewards.py on nodes that don't ship src/ or the semantic deps.
+try:
+    from src.data.dataset import extract_numeric_answer, answers_match
+except Exception:
+    def extract_numeric_answer(*a, **k): raise RuntimeError("src.data.dataset unavailable (math rewards only)")
+    def answers_match(*a, **k): raise RuntimeError("src.data.dataset unavailable (math rewards only)")
+try:
+    from rl_training.semantic import embed_texts, pairwise_novelty
+except Exception:
+    def embed_texts(*a, **k): raise RuntimeError("semantic unavailable")
+    def pairwise_novelty(*a, **k): raise RuntimeError("semantic unavailable")
 # safe_is_correct runs the dangerous sympy answer-match in a killable fork-child with a hard
 # wall-clock SIGKILL timeout. WITHOUT this, a single sympy hang in one rank freezes that rank's
 # reward computation, the other ranks block on the next NCCL allgather, and the whole run dies
@@ -183,3 +193,81 @@ def make_coverage_reward(lam: float = 1.0):
         return r
     coverage_reward.__name__ = "coverage_reward"
     return coverage_reward
+
+
+# ---------------------------------------------------------------------------
+# CODE SELF-REPAIR reward (Forget-to-Repair). TRL contract signature: dataset columns
+# (test, entry, mbpp, pfail) arrive as kwargs aligned with completions. DENSE = per-assert
+# pass-fraction (+ all-pass bonus); if pfail present, RESIDUAL = fraction of parent-FAILING
+# tests now passing − regressions among parent-passing. Subprocess per-assert with timeout
+# (safe vs infinite loops), mirroring safe_is_correct's isolation discipline.
+import re as _re, tempfile as _tmp, subprocess as _sp, ast as _ast, json as _json
+
+def _extract_code(t):
+    m = _re.findall(r"```(?:python)?\n(.*?)```", t or "", _re.DOTALL)
+    return m[0] if m else (t or "")
+
+def _passvec(code, test, entry, mbpp, timeout=8):
+    try: tree = _ast.parse(test)
+    except Exception: return []
+    checks = [ _ast.get_source_segment(test, n.test) for n in _ast.walk(tree) if isinstance(n, _ast.Assert) ]
+    checks = [c for c in checks if c]
+    if not checks: return []
+    cand = "" if mbpp else f"candidate={entry}\n"
+    body = "\n".join(f"try:\n    __ok.append(bool({c}))\nexcept Exception:\n    __ok.append(False)" for c in checks)
+    prog = f"import json,sys\n{cand}{code}\n__ok=[]\n{body}\nprint('PV:'+json.dumps(__ok))"
+    try:
+        with _tmp.NamedTemporaryFile('w', suffix='.py', delete=False) as f: f.write(prog); path=f.name
+        r = _sp.run(['python3', path], capture_output=True, text=True, timeout=timeout)
+        for line in (r.stdout or '').splitlines():
+            if line.startswith('PV:'): return _json.loads(line[3:])
+    except Exception: pass
+    finally:
+        try: os.unlink(path)
+        except Exception: pass
+    return [False]*len(checks)
+
+def code_repair_reward(prompts=None, completions=None, completion_ids=None, trainer_state=None,
+                       test=None, entry=None, mbpp=None, pfail=None, alpha=0.5, lam=1.0,
+                       log_metric=None, **kwargs):
+    """Dense execute-verify reward for self-repair (correct TRL signature)."""
+    texts = [_content(c) for c in (completions or [])]
+    n = len(texts)
+    test = test or [""]*n; entry = entry or [None]*n; mbpp = mbpp or [False]*n
+    pfail = pfail if pfail is not None else [None]*n
+    # 4 reward arms (ablation ladder), selected by env so the launcher can vary it per run:
+    #   binary       = 1[all tests pass]                       (sparse baseline)
+    #   fraction     = pass-fraction                           (dense, no residual/bonus)
+    #   residual     = parent-FAILING fixed-frac - lam*regressions among parent-passing (marginal repair)
+    #   cert_residual= residual + alpha*1[all pass]             (full dense reward; default)
+    variant = os.environ.get("REPAIR_REWARD_VARIANT", "cert_residual")
+    out = []; allpass_n = 0
+    for t, ts, en, mb, pf in zip(texts, test, entry, mbpp, pfail):
+        vec = _passvec(_extract_code(t), ts, en, bool(mb))
+        if not vec: out.append(0.0); continue
+        allp = all(vec); allpass_n += int(allp)
+        frac = sum(vec)/len(vec)
+        have_pf = bool(pf) and len(pf) == len(vec)
+        if have_pf:
+            Fm = [i for i in range(len(vec)) if not pf[i]]; Sm = [i for i in range(len(vec)) if pf[i]]
+            fixed = (sum(1 for i in Fm if vec[i])/len(Fm)) if Fm else 0.0
+            regr = (sum(1 for i in Sm if not vec[i])/len(Sm)) if Sm else 0.0
+            residual = fixed - lam*regr
+        else:
+            residual = frac
+        if variant == "binary":
+            out.append(1.0 if allp else 0.0)
+        elif variant == "fraction":
+            out.append(frac)
+        elif variant == "residual":
+            out.append(residual)
+        elif variant == "fraction_bonus":
+            # ISOLATION CONTROL: pass-fraction + the SAME all-pass bonus, WITHOUT the residual/failure-mask
+            # construction. cert_residual − fraction_bonus = the value added by the residual mask alone;
+            # fraction_bonus − fraction = the value of the bonus alone.
+            out.append(frac + (alpha if allp else 0.0))
+        else:  # cert_residual (full)
+            out.append(residual + (alpha if allp else 0.0))
+    if log_metric and out:
+        log_metric("repair_meanR", float(np.mean(out))); log_metric("repair_allpass", float(allpass_n)/max(n,1))
+    return out

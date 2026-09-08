@@ -101,6 +101,26 @@ def anchor_penalty(policy_logp: torch.Tensor, ref_logp: torch.Tensor,
     return pen.mean()
 
 
+def forward_kl_penalty(policy_logp: torch.Tensor, ref_logp: torch.Tensor = None,
+                       reduction: str = "mean") -> torch.Tensor:
+    """DPH-F / forward-KL rehearsal penalty (the closest competitor family, Zhu et al. DPH-RL).
+
+    Minimizing D_KL(pi_ref || pi_theta) = E_{y~pi_ref}[-log pi_theta(y)] + const. Our bank traces ARE
+    samples from pi_ref (the base), so this reduces to pure NLL rehearsal on the bank:
+        pen_q = -policy_logp_q
+    Crucially MASS-COVERING and NOT one-sided: it keeps pushing up log pi_theta even when the trace is
+    already above the base (no cap), and unlike our floor it never becomes 0 when feasible -> it pays a
+    continual pass@1 tax. Using the SAME base-correct bank as expSR isolates the penalty SHAPE (mass-
+    covering NLL vs one-sided hinge floor), the controlled 'is selectivity doing anything beyond
+    rehearsal?' comparison the reframe requires. ref_logp is accepted for signature parity, unused."""
+    pen = -policy_logp
+    if reduction == "none":
+        return pen
+    if reduction == "sum":
+        return pen.sum()
+    return pen.mean()
+
+
 def dual_update(mu: float, mean_penalty: float, kappa: float = 0.0,
                 eta_mu: float = 0.1, mu_max: float = 5.0) -> float:
     """Optional Lagrange-dual ascent on the multiplier mu.

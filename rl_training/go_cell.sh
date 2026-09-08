@@ -26,7 +26,7 @@ say "=== CELL START $NAME x $DATASET (subset=$SUBSET k=$K nprob=$NPROB steps=$ST
 S=$HOME/.local/lib/python3.12/site-packages/flash_attn; mkdir -p $S/ops/triton
 printf '%s\n' '__version__="2.4.2-shadow"' > $S/__init__.py; : > $S/ops/__init__.py; : > $S/ops/triton/__init__.py
 cp /usr/local/lib/python3.12/dist-packages/flash_attn/ops/triton/rotary.py $S/ops/triton/rotary.py 2>/dev/null || true
-DSHF=$DATASET; case "$DATASET" in omni_math*) DSID=KbsdJames/Omni-MATH;; olympiad_bench) DSID=math-ai/olympiadbench;; *) DSID="";; esac
+DSHF=$DATASET; case "$DATASET" in omni_math*) DSID=KbsdJames/Omni-MATH;; math500) DSID=HuggingFaceH4/MATH-500;; olympiad_bench) DSID=math-ai/olympiadbench;; *) DSID="";; esac
 [ -n "$DSID" ] && $PY -c "import os;from datasets import load_dataset;load_dataset('$DSID',token=os.environ.get('HF_TOKEN'));print('PREWARM_OK')" >> "$L" 2>&1
 
 freegpu(){ for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $pid 2>/dev/null; done; pkill -9 -f trl.scripts.vllm_serve 2>/dev/null; sleep 5; }

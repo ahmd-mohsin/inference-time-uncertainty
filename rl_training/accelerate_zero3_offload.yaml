@@ -1,13 +1,13 @@
-# ZeRO-3 with CPU offload of optimizer + params — for 16k-completion GRPO on 40GB A100.
-# Offloading frees ~half the GPU (optimizer states + sharded params live on host RAM,
-# which is ~1TB here) so activations for 16384-token sequences + colocate vLLM fit.
+# DeepSpeed ZeRO-3 accelerate config for GRPO post-training (adapted from TRL).
+# num_machines / num_processes are OVERRIDDEN on the command line per node by the launch
+# script (scripts/rl_*.sh); the values here are single-node defaults.
 compute_environment: LOCAL_MACHINE
 debug: false
 deepspeed_config:
   deepspeed_multinode_launcher: standard
   offload_optimizer_device: cpu
-  offload_param_device: cpu
-  zero3_init_flag: true
+  offload_param_device: none
+  zero3_init_flag: false
   zero3_save_16bit_model: true
   zero_stage: 3
 distributed_type: DEEPSPEED

@@ -12,7 +12,11 @@
 # bounded to `timeout` seconds no matter what. A stuck/oversized/erroring result counts as WRONG.
 import multiprocessing as _mp
 
-from src.data.dataset import extract_numeric_answer, answers_match
+try:  # math-reward only; guard so code-repair imports work on nodes without src/
+    from src.data.dataset import extract_numeric_answer, answers_match
+except Exception:
+    def extract_numeric_answer(*a, **k): raise RuntimeError("src.data.dataset unavailable (math only)")
+    def answers_match(*a, **k): raise RuntimeError("src.data.dataset unavailable (math only)")
 
 MAX_ANSWER_LEN = 64      # a real MATH answer is short; longer extraction = runaway, not an answer
 MAX_MATCH_CHARS = 2000   # answer lives at the tail; cap text fed to extraction (regex backtrack guard)

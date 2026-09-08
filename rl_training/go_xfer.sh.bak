@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Experiment B cross-agent transfer: donor phase (gen bank) then receiver phase (4 conditions) + merge.
+# Usage: bash go_xfer.sh <DONOR_MODEL> <RECV_MODEL> <DONOR_TAG> <RECV_TAG> [BENCH] [MAXP]
+set -uo pipefail
+export HOME=/home/greenland-user; cd ${REPO:-/tmp/instance_storage/gu/repo}
+export PATH=$HOME/.local/bin:$PATH HF_HUB_DISABLE_XET=1 EVAL_GPU_MEM=0.85
+: "${HF_HUB_OFFLINE:=0}"; export HF_HUB_OFFLINE
+[ -f $HOME/.hf_token ] && export HF_TOKEN=$(cat $HOME/.hf_token) HUGGING_FACE_HUB_TOKEN=$(cat $HOME/.hf_token)
+PY=/usr/bin/python3; DONOR="$1"; RECV="$2"; DTAG="$3"; RTAG="$4"; BENCH="${5:-mbpp}"; MAXP="${6:-}"
+NV=/tmp/instance_storage/gu; OUT=$NV/eval_out; LOGS=$NV/logs; mkdir -p "$OUT" "$LOGS"
+echo ">> DONOR phase $DONOR"
+for g in $(seq 0 7); do
+  CUDA_VISIBLE_DEVICES=$g $PY -m rl_training.cross_transfer --role donor --model-path "$DONOR" --bench "$BENCH" \
+    --donor-tag "$DTAG" --shard-index $g --num-shards 8 ${MAXP:+--max-problems $MAXP} --output-dir "$OUT" > "$LOGS/xfer_donor_${DTAG}_s${g}.log" 2>&1 &
+done
+wait
+echo ">> RECEIVER phase $RECV"
+for g in $(seq 0 7); do
+  CUDA_VISIBLE_DEVICES=$g $PY -m rl_training.cross_transfer --role receiver --model-path "$RECV" --bench "$BENCH" \
+    --donor-tag "$DTAG" --recv-tag "$RTAG" --shard-index $g --num-shards 8 ${MAXP:+--max-problems $MAXP} --output-dir "$OUT" > "$LOGS/xfer_recv_${DTAG}_${RTAG}_s${g}.log" 2>&1 &
+done
+wait
+$PY -m rl_training.cross_transfer --merge --donor-tag "$DTAG" --recv-tag "$RTAG" --num-shards 8 --output-dir "$OUT" 2>&1 | tee "$LOGS/xfer_${DTAG}_${RTAG}_merge.log"
+touch "$OUT/XFER_${DTAG}_${RTAG}_DONE"; echo ">> XFER $DTAG->$RTAG COMPLETE"

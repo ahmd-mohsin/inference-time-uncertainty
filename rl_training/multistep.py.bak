@@ -1,0 +1,255 @@
+# P3 (decisive #2) — multi-step ACCUMULATED-CERTIFICATE search. Does proposal-free memory change the TRAJECTORY of
+# search, not just one retry? Reviewer's design: sequential repair up to a budget, comparing what memory is passed
+# forward. Flagship claim: persistent certificates REDUCE revisiting already-refuted strategies while restart restores
+# exploration; full-history repair keeps re-committing to the same wrong idea.
+# Conditions (memory carried across rounds):
+#   blind        = task only every round (independent resampling)
+#   ordinary     = previous proposal + its feedback
+#   full_history = ALL prior proposals + all feedback
+#   latest_cert  = most recent certificate only (code hidden)
+#   accum_cert   = ALL certificates accumulated (code hidden)
+# Metrics per budget b in {1,2,4,8,16}: end-to-end solve@b; recurrence = fraction of post-first attempts that RE-FAIL a
+# previously-revealed counterexample input (revisiting a refuted strategy); n_distinct program signatures.
+# Usage: python -m rl_training.multistep --model-path <dir> --bench mbpp --tag ms_qc --shard-index S --num-shards 8 [--merge]
+import argparse, ast, json, os, re, sys
+from pathlib import Path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from rl_training.code_passk import load_bench, extract_code, run_tests
+from rl_training.seq_recover import base_task, chat
+from rl_training.certify import _assert_pairs, _time_limit
+from rl_training.rewards import _passvec
+
+BUDGETS = [1, 2, 4, 8, 16]
+CONDS = ["blind", "ordinary", "full_history", "latest_cert", "accum_cert"]
+
+def prog_sig(code):
+    """Coarse structural signature (identifier multiset) to count distinct programs."""
+    return frozenset(re.findall(r"[A-Za-z_]\w+", code or ""))
+
+def eval_on_inputs(code, item, inputs):
+    """Return set of revealed inputs (lhs strings) on which `code` produces the WRONG result (re-violated constraints)."""
+    ns = {}; bad = set()
+    try:
+        with _time_limit(5): exec(code, ns)
+    except Exception:
+        return set(inputs)  # doesn't even run -> violates all revealed constraints
+    entry = item.get("entry")
+    if entry and entry in ns: ns.setdefault("candidate", ns[entry])
+    for lhs, rhs in inputs.items():
+        try:
+            with _time_limit(5):
+                got = eval(lhs, ns); exp = eval(rhs, ns) if isinstance(rhs, str) else rhs
+            if got != exp: bad.add(lhs)
+        except Exception:
+            bad.add(lhs)
+    return bad
+
+def failing_cexs(code, item, maxn=3):
+    ns = {}; out = []
+    try:
+        with _time_limit(5): exec(code, ns)
+    except Exception:
+        return out
+    entry = item.get("entry")
+    if entry and entry in ns: ns.setdefault("candidate", ns[entry])
+    for lhs, rhs in _assert_pairs(item.get("test", "")):
+        try:
+            with _time_limit(5):
+                got = eval(lhs, ns); exp = eval(rhs, ns)
+            if got != exp: out.append((lhs.strip(), repr(got)[:100], rhs.strip()[:80]))
+        except Exception as e:
+            out.append((lhs.strip(), f"<raised {type(e).__name__}>", rhs.strip()[:80]))
+        if len(out) >= maxn: break
+    return out
+
+CERT_LEVEL = 4  # C7 evidence-sufficiency: 0=flag only, 2=input only, 3=input+got, 4=input+got+expected
+def cert_line(c):
+    i, g, e = c
+    if CERT_LEVEL <= 0: return "a previous attempt failed the tests"
+    if CERT_LEVEL == 2: return f"a previous attempt failed on the call `{i[:150]}`"
+    if CERT_LEVEL == 3: return f"on `{i[:150]}` a previous attempt produced `{g}`"
+    return f"on `{i[:150]}` a previous attempt produced `{g}` but expected `{e}`"
+
+def build_prompt(mp, it, cond, history):
+    """history = list of dicts {code, cexs}. Build the round prompt per condition."""
+    q = base_task(it)
+    if cond == "blind" or not history:
+        return chat(mp, q)
+    if cond == "ordinary":
+        h = history[-1]
+        cl = "; ".join(cert_line(c) for c in h["cexs"][:2]) or "it failed the tests"
+        return chat(mp, q + f"\n\nYour previous attempt (below) failed: {cl}.\n```python\n{h['code'][:1500]}\n```\n"
+                          "Fix it and write a correct, complete solution in a ```python block.")
+    if cond == "full_history":
+        blocks = []
+        for k, h in enumerate(history):
+            cl = "; ".join(cert_line(c) for c in h["cexs"][:2]) or "failed"
+            blocks.append(f"Attempt {k+1} ({cl}):\n```python\n{h['code'][:900]}\n```")
+        return chat(mp, q + "\n\nAll previous attempts failed:\n" + "\n".join(blocks) +
+                    "\nWrite a correct, complete solution in a ```python block.")
+    if cond == "latest_cert":
+        cl = "; ".join(cert_line(c) for c in history[-1]["cexs"][:3]) or "a previous attempt failed"
+        return chat(mp, q + f"\n\nConstraint from a previous failure: {cl} (previous code hidden).\n"
+                          "Write a correct, complete solution in a ```python block.")
+    # accum_cert
+    seen = []
+    for h in history:
+        for c in h["cexs"]:
+            if c[0] not in [s[0] for s in seen]: seen.append(c)
+    cl = "\n".join("- " + cert_line(c) for c in seen[:8]) or "- a previous attempt failed"
+    return chat(mp, q + f"\n\nConstraints from previous failures (previous code hidden):\n{cl}\n"
+                      "Write a correct, complete solution in a ```python block.")
+
+def run(a):
+    from vllm import LLM, SamplingParams
+    from rl_training.model_utils import merge_adapter_if_needed
+    global CERT_LEVEL
+    if getattr(a, "cert_level", None) is not None: CERT_LEVEL = a.cert_level
+    mp = merge_adapter_if_needed(a.model_path)
+    items = load_bench(a.bench)
+    if a.max_problems > 0: items = items[:a.max_problems]
+    if a.num_shards > 1: items = items[a.shard_index::a.num_shards]
+    llm = LLM(model=mp, dtype="bfloat16", trust_remote_code=True, tensor_parallel_size=1, max_model_len=6144,
+              gpu_memory_utilization=float(os.environ.get("EVAL_GPU_MEM", 0.85)), enable_prefix_caching=True, enforce_eager=True)
+    def gen1(prompts, temp=1.0):
+        return llm.generate(prompts, SamplingParams(n=1, temperature=temp, top_p=0.95, max_tokens=1024, stop=["<|im_end|>", "<|eot_id|>", "<|endoftext|>"]))
+    # only keep problems the base model fails at least once (repair-relevant); also collect passing DONORS for --poison
+    d0 = gen1([chat(mp, base_task(it)) for it in items])
+    probs = []; donors = []
+    for it, o in zip(items, d0):
+        code = extract_code(o.outputs[0].text)
+        if run_tests(code, it):
+            if code.strip(): donors.append(code)
+        else:
+            probs.append(it)
+    if len(probs) < 3:
+        Path(a.output_dir).mkdir(parents=True, exist_ok=True)
+        json.dump({"tag": a.tag, "n": 0}, open(Path(a.output_dir)/f"ms_{a.tag}.shard{a.shard_index}-of-{a.num_shards}.json", "w"))
+        print(f"[{a.tag} s{a.shard_index}] too few failing ({len(probs)})"); return
+    B = max(BUDGETS)
+    # per condition, run a synchronized sequential loop over all problems (batched per round).
+    # DEEP metrics: tokens (matched-compute), useful_sigs (distinct programs that IMPROVE base pass-frac = useful
+    # exploration, not just diversity), vt_hist (per-round fraction of samples re-violating revealed constraints).
+    results = {c: {"solve_at": [None]*len(probs), "recur_post": [0, 0], "sigs": [set() for _ in probs],
+                   "tokens": 0, "vcalls": 0, "useful_sigs": [set() for _ in probs],
+                   "base0": [None]*len(probs), "vt_num": [0]*B, "vt_den": [0]*B} for c in CONDS}
+    # C9 POISON: pre-seed each problem's history with a plausible WRONG donor program (a passing solution to a
+    # DIFFERENT problem, injected as "a previous attempt") + its real counterexample on THIS task. full_history keeps
+    # showing the donor (should follow the wrong strategy); accum_cert drops the proposal, keeping only certificates
+    # (should resist). Isolates whether cert-only memory is robust to a poisoned prior proposal.
+    poison_seed = None
+    if getattr(a, "poison", False) and donors:
+        poison_seed = []
+        for i, it in enumerate(probs):
+            dc = donors[i % len(donors)]
+            cx = failing_cexs(dc, it)[:1]
+            poison_seed.append({"code": dc, "cexs": cx})
+    if getattr(a, "cert_level", None) is not None:
+        conds_run = ["accum_cert"]            # C7 evidence ladder: isolate accum_cert at the chosen info-density
+    elif poison_seed:
+        conds_run = ["blind", "full_history", "accum_cert"]
+    else:
+        conds_run = CONDS
+    for cond in conds_run:
+        hist = [[dict(poison_seed[i])] if (poison_seed and cond != "blind") else [] for i in range(len(probs))]
+        revealed = [dict() for _ in probs]
+        if poison_seed and cond != "blind":
+            for i in range(len(probs)):
+                for (lhs, g, rhs) in poison_seed[i]["cexs"]: revealed[i][lhs] = rhs
+        done = [False]*len(probs)
+        for t in range(B):
+            idx = [i for i in range(len(probs)) if not done[i]]
+            if not idx: break
+            prompts = [build_prompt(mp, probs[i], cond, hist[i]) for i in idx]
+            outs = gen1(prompts)
+            for i, o in zip(idx, outs):
+                it = probs[i]; code = extract_code(o.outputs[0].text)
+                results[cond]["tokens"] += len(o.outputs[0].token_ids or [])   # matched-compute (E1)
+                results[cond]["sigs"][i] |= {prog_sig(code)} if code.strip() else set()
+                # base pass-fraction of this attempt (E3 useful-exploration + regime context)
+                frac = (lambda v: sum(v)/len(v) if v else 0.0)(_passvec(code, it.get("test",""), it.get("entry"), bool(it.get("mbpp"))))
+                if results[cond]["base0"][i] is None: results[cond]["base0"][i] = frac
+                if code.strip() and frac > (results[cond]["base0"][i] or 0.0):
+                    results[cond]["useful_sigs"][i] |= {prog_sig(code)}          # distinct AND improving
+                # recurrence + v_t: does this attempt re-violate an already-revealed constraint?
+                if t > 0 and revealed[i]:
+                    bad = eval_on_inputs(code, it, revealed[i])
+                    results[cond]["recur_post"][1] += 1
+                    results[cond]["vt_den"][t] += 1
+                    if bad:
+                        results[cond]["recur_post"][0] += 1
+                        results[cond]["vt_num"][t] += 1
+                ok = run_tests(code, it); results[cond]["vcalls"] += 1
+                if ok:
+                    results[cond]["solve_at"][i] = t + 1; done[i] = True; continue
+                cexs = failing_cexs(code, it)
+                hist[i].append({"code": code, "cexs": cexs})
+                for (lhs, g, rhs) in cexs: revealed[i][lhs] = rhs  # accumulate revealed constraints
+    # aggregate
+    out = {"tag": a.tag, "model": mp, "bench": a.bench, "n_failed": len(probs), "budgets": BUDGETS,
+           "poison": bool(poison_seed), "conds": {}}
+    for cond in conds_run:
+        sa = results[cond]["solve_at"]; N = len(sa)
+        solve_at_b = {b: sum(1 for x in sa if x is not None and x <= b)/N for b in BUDGETS}
+        rp = results[cond]["recur_post"]
+        distinct = sum(len(s) for s in results[cond]["sigs"])/N
+        useful = sum(len(s) for s in results[cond]["useful_sigs"])/N
+        tok = results[cond]["tokens"]; vc = results[cond]["vcalls"]
+        vt = [(results[cond]["vt_num"][t]/results[cond]["vt_den"][t] if results[cond]["vt_den"][t] else None) for t in range(B)]
+        out["conds"][cond] = {"solve_at": solve_at_b, "recurrence_rate": (rp[0]/rp[1] if rp[1] else 0.0),
+                              "recur_post_n": rp[1], "mean_distinct_programs": distinct,
+                              "mean_useful_distinct": useful, "tokens": tok, "vcalls": vc,
+                              "solve16_per_1k_tok": (solve_at_b[16]/(tok/1000.0) if tok else 0.0),
+                              "vt_by_round": vt}
+    Path(a.output_dir).mkdir(parents=True, exist_ok=True)
+    fp = Path(a.output_dir)/(f"ms_{a.tag}.shard{a.shard_index}-of-{a.num_shards}.json" if a.num_shards > 1 else f"ms_{a.tag}.json")
+    json.dump(out, open(fp, "w"))
+    print(f"[{a.tag} s{a.shard_index}] n_fail={len(probs)} " +
+          " ".join(f"{c}:s@16={out['conds'][c]['solve_at'][16]:.2f},rec={out['conds'][c]['recurrence_rate']:.2f}" for c in out["conds"]))
+
+def merge(a):
+    agg = {c: {"solve_num": {b: 0.0 for b in BUDGETS}, "recur": [0, 0], "distinct": 0.0,
+               "useful": 0.0, "tokens": 0, "vcalls": 0} for c in CONDS}
+    n = 0
+    for s in range(a.num_shards):
+        fp = Path(a.output_dir)/f"ms_{a.tag}.shard{s}-of-{a.num_shards}.json"
+        if not fp.exists(): continue
+        d = json.load(open(fp))
+        if not d.get("n_failed"): continue
+        nf = d["n_failed"]; n += nf
+        for c in d["conds"]:
+            cc = d["conds"][c]
+            for b in BUDGETS: agg[c]["solve_num"][b] += cc["solve_at"][str(b)] * nf if str(b) in cc["solve_at"] else cc["solve_at"][b] * nf
+            agg[c]["recur"][0] += cc["recurrence_rate"] * cc["recur_post_n"]; agg[c]["recur"][1] += cc["recur_post_n"]
+            agg[c]["distinct"] += cc["mean_distinct_programs"] * nf
+            agg[c]["useful"] += cc.get("mean_useful_distinct", 0.0) * nf
+            agg[c]["tokens"] += cc.get("tokens", 0); agg[c]["vcalls"] += cc.get("vcalls", 0)
+    out = {"tag": a.tag, "n_failed": n, "budgets": BUDGETS, "conds": {}}
+    present = [c for c in CONDS if agg[c]["tokens"] or agg[c]["recur"][1] or agg[c]["distinct"]]
+    for c in present:
+        tok = agg[c]["tokens"]
+        out["conds"][c] = {"solve_at": {b: agg[c]["solve_num"][b]/max(n,1) for b in BUDGETS},
+                           "recurrence_rate": (agg[c]["recur"][0]/agg[c]["recur"][1] if agg[c]["recur"][1] else 0.0),
+                           "mean_distinct_programs": agg[c]["distinct"]/max(n,1),
+                           "mean_useful_distinct": agg[c]["useful"]/max(n,1),
+                           "tokens": tok, "vcalls": agg[c]["vcalls"],
+                           "solve16_per_1k_tok": (agg[c]["solve_num"][16]/max(n,1))/(tok/1000.0) if tok else 0.0}
+    json.dump(out, open(Path(a.output_dir)/f"ms_{a.tag}.json", "w"))
+    print(f"[{a.tag}] n_fail={n}")
+    for c in out["conds"]:
+        cc = out["conds"][c]
+        print(f"  {c:14s} solve@[1,2,4,8,16]=" + ",".join(f"{cc['solve_at'][b]:.2f}" for b in BUDGETS) +
+              f" rec={cc['recurrence_rate']:.3f} distinct={cc['mean_distinct_programs']:.1f}"
+              f" useful={cc['mean_useful_distinct']:.1f} tok={cc['tokens']} s16/1k={cc['solve16_per_1k_tok']:.4f}")
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model-path"); ap.add_argument("--bench", default="mbpp")
+    ap.add_argument("--max-problems", type=int, default=-1)
+    ap.add_argument("--output-dir", default="/tmp/instance_storage/gu/eval_out"); ap.add_argument("--tag", default="ms")
+    ap.add_argument("--shard-index", type=int, default=0); ap.add_argument("--num-shards", type=int, default=1); ap.add_argument("--merge", action="store_true")
+    ap.add_argument("--poison", action="store_true", help="C9: pre-seed history with a plausible WRONG donor proposal")
+    a = ap.parse_args(); merge(a) if a.merge else run(a)
+
+if __name__ == "__main__":
+    main()
