@@ -38,6 +38,15 @@ def build_dataset(dataset: str, model_name: str, n_problems: int = -1, seed: int
                 "entry": [r.get("entry") for r in rows], "mbpp": [bool(r.get("mbpp")) for r in rows],
                 "pfail": [r.get("pfail") for r in rows]}
         return Dataset.from_dict(cols)
+    # §50 CONTROLLED TASKS: dataset="ctrl:<path.jsonl>" — rows {prompt, gold} from controlled_tasks.py.
+    # Executable integer answers → correctness_reward (boxed/numeric match) works directly. Used by H-A/H-C.
+    if isinstance(dataset, str) and dataset.startswith("ctrl:"):
+        path = dataset.split("ctrl:", 1)[1]
+        rows = [json.loads(l) for l in open(path) if l.strip()]
+        if n_problems > 0: rows = rows[:n_problems]
+        return Dataset.from_dict({"prompt": [r["prompt"] for r in rows],
+                                  "gold_answer": [str(r["gold"]) for r in rows],
+                                  "problem_id": list(range(len(rows)))})
     # INTERVENTION arm B: GSM8K + 10% MATH-train MIXED (held-out MATH-500 is the disjoint 'test' split).
     if isinstance(dataset, str) and dataset == "mathmix":
         from src.data.dataset import load_gsm8k, load_math_full, format_prompt
