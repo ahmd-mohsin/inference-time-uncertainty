@@ -1964,3 +1964,18 @@ rescue 0.081 > base 0.074) · §45 order/precondition (erosion REFUTED; SFT→GR
 RUNNING: §45 fine 3-seed decay curve (error bars, mains) · §46 H5 subspace localization (workers).
 THESIS (settled): the update rule governs OOD transfer because RL can only REWEIGHT probability mass, not
 PLACE it — SFT places OOD-correct mass, GRPO sharpens it. Explains RL-from-base≈0, SFT transfers, SFT→RL works.
+
+## §47 EXCITING HYPOTHESIS QUEUE (out-of-the-box, mechanism-breaking) — 2026-09-08
+Each tries to break/exploit the settled mechanism (RL reweights, SFT places mass), not just extend it.
+- **H6 SFT-ignition threshold**: sweep SFT-steps-before-GRPO {0,1,5,20,100}. Predict a SHARP KNEE — a tiny SFT
+  seed unlocks RL's OOD transfer. → cheap "minimal-SFT-then-RL" recipe. [launch first; reuses go_h2/sft]
+- **H7 does 'verified' matter?**: SFT on own high-diversity UNVERIFIED (or format-valid random) traces. Predict
+  even wrong-but-diverse SFT beats GRPO OOD (operator, not correctness, drives transfer). Paper-defining if true;
+  bounds the thesis if false. [decisive either way]
+- **H8 entropy-collapse signature**: token-level entropy on OOD across the β_sd axis. Predict OOD transfer ∝
+  retained entropy; GRPO fails via premature entropy collapse on unreached regions. [smoking-gun measurement]
+- **H9 in-distribution crossover**: predict GRPO ≥ SFT in-distribution → crossover vs distribution-distance;
+  map an operator × distance phase diagram. [reframes SFT-wins as regime-specific]
+- **H10 mass transplant (moonshot)**: graft SFT LoRA delta A→B (same family) then RL — does placed mass port
+  across models? [wild if it works]
+PRIORITY: H6 (recipe) + H8 (mechanism proof) launch first; H7/H9 queued; H10 moonshot.
