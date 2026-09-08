@@ -1969,7 +1969,8 @@ rescue 0.081 > base 0.074) · §45 order/precondition (erosion REFUTED; SFT→GR
 0.383>0.361; RL reweights, can't place mass).
 §46 H5 subspace DONE (localization refuted; attn+mlp both recover ~95-98% — redundantly distributed).
 §45 fine 3-seed decay DONE (monotonic rise 0.410→0.433, erosion refuted, error-barred).
-RUNNING: §47-H6 SFT-ignition sweep N={0,1,5,20,100} (workers) — the headline recipe test.
+§48 H6 ignition DONE (no cheap knee — tiny seed stays at GRPO floor; need full SFT). §49 H9 DONE (NO crossover — SFT>GRPO in-dist 0.705 vs 0.506 AND OOD; mass-placing advantage is GENERAL).
+QUEUED: matched-compute in-dist GRPO (§49 caveat) · H8 entropy signature · H7 does-correctness-matter. Fleet mostly free.
 THESIS (settled): the update rule governs OOD transfer because RL can only REWEIGHT probability mass, not
 PLACE it — SFT places OOD-correct mass, GRPO sharpens it. Explains RL-from-base≈0, SFT transfers, SFT→RL works.
 
