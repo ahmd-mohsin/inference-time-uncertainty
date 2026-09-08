@@ -1730,3 +1730,39 @@ All reuse the existing harvest + seed-0 adapters; no new data pipeline.
 C beats base by **+0.0288** mean-p (+27% relative) on hard OlympiadBench — SFT-verified transfers to the
 hardest math tier. A-arm + full-MATH matched A-vs-C (n≈1500) collecting next. full-MATH base ≈0.294.
 (Re-run after the prior 3 clusters died mid-eval; matched seed-0 adapters grpo_q7b_s0 / sft_q7b_s0.)
+
+## §40dense COMPLETE (fresh clusters, 2026-09-08, matched seed-0 grpo_q7b_s0=A / sft_q7b_s0=C)
+
+### OlympiadBench @7B (n=200, k=4) — hardest math tier
+| arm | mean_p | vs base | vs A |
+|-----|--------|---------|------|
+| base | 0.1062 | — | — |
+| **A (GRPO)** | **0.1000** | **−0.006** | — |
+| **C (SFT-verified)** | **0.1350** | **+0.029** | **+0.035** |
+GRPO slightly *hurts* on hard OOD (0.100 < 0.106); SFT helps (+0.029). C−A gap = **+0.035**.
+
+### full-MATH @7B (matched n=546, k=4) — dense held-out
+| arm | mean_p | C−A |
+|-----|--------|-----|
+| A (GRPO) | 0.323 | — |
+| C (SFT-verified) | 0.382 | **+0.059** |
+Base full-MATH ≈0.294. SFT beats GRPO by **+0.059** on dense OOD math (same problems, same traces).
+
+### §40 MMLU-Pro (MC-prompt FIXED) @7B (n=400, k=4) — cross-domain reasoning transfer
+| arm | mean_p | vs base |
+|-----|--------|---------|
+| base | 0.286 | — |
+| A (GRPO) | 0.3038 | +0.018 |
+| **C (SFT-verified)** | **0.4081** | **+0.122** |
+MC_PROMPT fix nearly DOUBLED base elicitation (0.161→0.286). **C beats A by +0.104** — SFT on verified
+*math* traces transfers to multi-domain MMLU-Pro reasoning; GRPO barely moves. Strongest cross-domain gap yet.
+
+### §40c full-MATH @3B (matched n=546, k=4)
+| arm | mean_p | vs base |
+|-----|--------|---------|
+| base | 0.250 | — |
+| **C (SFT-verified)** | **0.361** | **+0.111** |
+3B OlympiadBench C = 0.1037. SFT +0.111 on dense full-MATH at 3B (gap larger at smaller scale).
+
+### §42 tuned-GRPO fairness sweep (q3b) — IN PROGRESS
+tg_beta0 (KL=0) 188/400, tg_800 (2× steps) 181/800, tg_g16 (group=16) 111/400 training; OOD MATH-500 eval pending.
