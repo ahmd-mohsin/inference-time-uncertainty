@@ -2532,3 +2532,23 @@ ctrl_eval.py (executable verifier). NEXT: (1) H-A diagnosis — find high-origin
 checkpoints, branch {consolidation/random/difficulty/continued-SFT/GRPO}, eval related splits; (2) Cluster C
 coverage (trace-count×exposure×op-coverage) — needs verified controlled traces; (3) Cluster A pure-SFT-in-hybrid
 gradient check (prerequisite instrumentation); (4) H-D structured 4-way verification dataset.
+
+## §51 Cluster A — matched-compute SFT curve (q3b, GSM8K bank ~824 traces)
+| SFT steps | GSM8K-test (in-dist) | MATH-500 (OOD) |
+|-----------|----------------------|----------------|
+| 400  | 0.5837 | 0.3875 |
+| 800  | 0.6587 | 0.3750 |
+| 1200 | 0.6975 | 0.3987 |
+IN-DIST rises monotonically with SFT compute (0.58→0.70); OOD transfer PLATEAUS (~0.38–0.40, flat). More SFT
+fully extracts the in-distribution capability but OOD transfer saturates early → "more SFT compute" is not the
+lever for OOD; consistent with the §50 reframe (the question is WHICH experience/coverage, not how much SFT).
+(1600-step + seed-1 finishing; will add.)
+
+## §52a H-A diagnosis (controlled tasks) — is there an original-vs-composition gap? (interim)
+GRPO on ctrl:original, n_ops=3, checkpoint-150: original 0.507 / same_op 0.489 / new_compose 0.508 — NO gap
+(model composes about as well as it solves originals). So at n_ops=3 the consolidation-interval signal is
+ABSENT so far. Caveats before concluding (per reviewer "if the interval is absent, drop it" — but test properly
+first): (1) original not yet saturated (0.51) — the interval hypothesis is about HIGH-original/LOW-related, need
+later checkpoints; (2) new_compose = reversed op-order may be too easy a composition — need genuinely harder
+compositions (ops seen individually, never in this arrangement); (3) testing harder n_ops{4,5}. Honest interim:
+no interval visible yet on easy arithmetic; hardening the composition test.
