@@ -2704,3 +2704,22 @@ coverage both NULL on arithmetic. FORK: (a) HARDER controlled tasks (large opera
 compositions → base ~0.1 not ~0.5, big moveable gap), or (b) test the method on the REAL domains where SFT≫GRPO
 is LARGE (§40: GSM8K→MATH +0.10, code +0.096) — those have the actual compositional headroom. Pursuing (a) now
 (fast, controlled) and (b) next; if a real gap with separation appears, re-run H-A/H-C there.
+
+## §54b HARD controlled tasks (operands 10-99): still a weak instrument
+base hard-n3=0.398, hard-n5=0.312 (gap 0.086 — slightly bigger than easy's 0.076, but base only dropped
+0.51→0.40). Large operands do NOT make arithmetic genuinely hard for a 3B model — it does the ops mechanically.
+So the composition gap stays modest (~0.09) and base stays high (~0.40); there is not enough "skill-acquisition"
+headroom for consolidation/coverage methods to separate (both nulled on the easy version, §52c/§54).
+### HONEST STRATEGIC READ (important)
+Arithmetic op-chains are a POOR instrument for a SUBSTANTIAL method result: the model already does the ops, so
+there is no large learnable composition gap to exploit — every intervention ties ~0.48 (easy) / will likely tie
+~0.35 (hard). Rigorously testing H-A/H-C here yields honest NULLS, not a strong method. TWO defensible paths:
+  (1) MECHANISM-as-contribution: the paper's strength is the OPERATOR results (§37-§49: SFT-verified ≫ GRPO on
+      OOD across 4 domains + in-dist §49; multi-seed, cross-benchmark) + the mechanism (RL reweights, can't place
+      mass; gap widens with training §52b/S1a). The consolidation/coverage METHODS are honestly reported nulls on
+      arithmetic. This is a solid, honest paper — just not the "new method beats SFT→GRPO" award framing.
+  (2) METHOD on a REAL compositional domain with a LARGE gap: program-synthesis (compose functions) or code
+      (MBPP→HumanEval, §37 gap +0.096) or GSM8K→MATH (§40 +0.10) — domains where base FAILS compositions badly,
+      giving the method room. Higher-cost (needs a clean composition split + verified traces) but the only route
+      to a substantial METHOD claim. One clean hard-task consolidation-vs-difficulty test is finishing (GRPO
+      hard-n3 training) as the last controlled attempt; if it nulls too, path (2) or path (1) is the call.
