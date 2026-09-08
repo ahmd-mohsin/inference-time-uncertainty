@@ -1953,7 +1953,13 @@ NEW mechanistic hypothesis. SFT on the verified bank with LoRA restricted to: at
 MLP-only (gate/up/down), or all (=arm-C). 6 replicate workers/arm. Eval OOD MATH-500 + full-MATH.
 PREDICTION (from M4: GRPO leaves MLP rows unmoved; §44/§45 mass-placing): OOD transfer is MLP-LOCALIZED —
 MLP-only SFT ≈ all (~0.41 MATH-500), attn-only ≈ base (~0.30). Status: training (~30-40min), results pending.
-Anchors: base 0.296, SFT-all 0.410 (MATH-500) / 0.361 (full-MATH).
+RESULT (MATH-500, 6 replicates/arm): all=0.3669±0.007, attn-only=0.3604±0.011, mlp-only=0.3538±0.013
+(base 0.296). **VERDICT: localization prediction REFUTED.** Within this matched 400-step/824-trace SFT
+(its own 'all' anchor = 0.367, not the 1200-step 0.410), BOTH attn-only and mlp-only independently recover
+~95-98% of the transfer — each ~+0.06 over base. The OOD-transfer mass-placing is REDUNDANTLY DISTRIBUTED
+across attention and MLP subspaces, NOT localized to one. (Honest: 3rd refuted mechanistic sub-prediction this
+session after H1/H2 and erosion — the WHERE/HOW guesses miss, but the core thesis holds. Distributed
+redundancy is itself informative: SFT can place the mass through either weight family.) full-MATH confirm pending.
 
 ## LIVE STATUS (2026-09-08, 72-GPU fleet, 3 fresh clusters)
 COMPLETE + pushed: §37 code(+0.096) · §40 dense cross-domain (OlympiadBench/full-MATH/MMLU-Pro) · §41 prior-art
