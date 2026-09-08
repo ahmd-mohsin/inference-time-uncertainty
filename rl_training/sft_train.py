@@ -14,6 +14,9 @@ def main():
     # H5 subspace localization: restrict LoRA to attention-only or MLP-only to find WHERE the
     # mass-placing (OOD transfer) lives. all = the standard arm-C set.
     ap.add_argument("--target-modules", default="all", choices=["all", "attn", "mlp"])
+    # H-A branch / RL→SFT: start SFT from an existing (GRPO) adapter checkpoint — merge it into the base,
+    # then attach a fresh LoRA on top (same pattern as train_grpo's merge_adapter_if_needed warm-start).
+    ap.add_argument("--init-adapter", default="")
     a = ap.parse_args()
     import torch
     from datasets import load_dataset
@@ -24,7 +27,12 @@ def main():
     print(f"[sft] {len(ds)} verified trajectories from {a.data}")
     tok = AutoTokenizer.from_pretrained(a.model, trust_remote_code=True)
     if tok.pad_token is None: tok.pad_token = tok.eos_token
-    model = AutoModelForCausalLM.from_pretrained(a.model, torch_dtype=torch.bfloat16, trust_remote_code=True)
+    base = a.model
+    if a.init_adapter:
+        from rl_training.model_utils import merge_adapter_if_needed
+        base = merge_adapter_if_needed(a.init_adapter)   # merge GRPO ckpt into base → SFT fresh LoRA on top
+        print(f"[sft] init-adapter merged: {a.init_adapter} -> {base}")
+    model = AutoModelForCausalLM.from_pretrained(base, torch_dtype=torch.bfloat16, trust_remote_code=True)
     _tm = {"all": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
            "attn": ["q_proj", "k_proj", "v_proj", "o_proj"],
            "mlp": ["gate_proj", "up_proj", "down_proj"]}[a.target_modules]
