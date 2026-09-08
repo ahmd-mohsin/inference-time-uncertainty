@@ -1,13 +1,16 @@
-# The Update Rule Governs OOD Transfer of Verified Experience
-### (RL *reweights*, SFT *places* probability mass) — HEADLINE / current methodology
+# Verified-Experience Consolidation in RL Post-Training
+### When does a verified success become a TRANSFERABLE skill — and can we keep learning until it does?
+### (HEADLINE / current methodology — see §50 for the award-target plan governing next steps)
 _Canonical results doc. Headline finding + all current-methodology results up top; prior failed techniques
 below are retained as MOTIVATION. Base: Qwen2.5-3B unless noted. All runs pushed to GitHub main._
 
-## HEADLINE THESIS
-Given the SAME verifier-correct experience, the **update rule** decides whether it transfers out-of-distribution.
-**GRPO can only *reweight* probability mass that already exists (ρ≈0 on unreached OOD-correct regions); SFT
-(M-projection) *places* new mass there.** Hence SFT-on-verified transfers, RL-from-base does not, RL sharpens
-what SFT placed, and you cannot shortcut SFT by bolting rehearsal onto RL. One principle explains all results.
+## HEADLINE (accurate, per reviewer — mechanism NOT yet settled)
+**Under the evaluated procedures, verified-trace SFT converts available successful experience into capability
+more effectively than GRPO, and subsequent RL adds further gains** (holds in-distribution AND OOD, §49). The
+OPEN, award-target question (§50): *which training dynamics create this difference, and can we build an RL
+post-training method that recognizes when reward saturates before a skill generalizes and consolidates the
+right verified experience until it does?* The "reweight vs place" story is a motivating intuition, not a
+settled claim — the prerequisite gradient/dynamics checks (§50.1, §50.8-ClusterA) come first.
 
 ## HEADLINE RESULTS (this methodology)
 | # | Experiment | Result | Verdict |
