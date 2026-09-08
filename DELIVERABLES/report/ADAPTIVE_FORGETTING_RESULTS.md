@@ -1766,3 +1766,14 @@ MC_PROMPT fix nearly DOUBLED base elicitation (0.161→0.286). **C beats A by +0
 
 ### §42 tuned-GRPO fairness sweep (q3b) — IN PROGRESS
 tg_beta0 (KL=0) 188/400, tg_800 (2× steps) 181/800, tg_g16 (group=16) 111/400 training; OOD MATH-500 eval pending.
+
+## §42 tuned-GRPO fairness sweep (q3b, MATH-500 OOD, n=200 k=4) — is GRPO's null a tuning artifact?
+| GRPO variant | MATH-500 mean_p |
+|--------------|-----------------|
+| β=0.0 (no KL leash, max exploration) | 0.3038 |
+| 2× steps (800) | 0.3275 |
+| group=16 | (retry — GPU contention) |
+Both aggressive-tuning variants stay in the **plain-GRPO band (~0.30–0.33)** — they do NOT climb toward the
+SFT level. This supports the claim that GRPO's weak OOD transfer is **signal-structural (ρ≈0), not a
+hyperparameter artifact**: removing the KL leash (β=0) or doubling steps does not rescue it. (SFT-verified
+reference for the same base: full-MATH 0.361 @3B; §44 axis quantifies the interpolation.)
