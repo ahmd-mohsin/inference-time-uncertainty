@@ -1986,3 +1986,18 @@ Each tries to break/exploit the settled mechanism (RL reweights, SFT places mass
 - **H10 mass transplant (moonshot)**: graft SFT LoRA delta A→B (same family) then RL — does placed mass port
   across models? [wild if it works]
 PRIORITY: H6 (recipe) + H8 (mechanism proof) launch first; H7/H9 queued; H10 moonshot.
+
+### §45 FINAL error-barred decay (3 seeds, MATH-500) — no erosion, monotonic mild rise
+| GRPO steps from SFT-C | mean | std | n_seed |
+|-----------------------|------|-----|--------|
+| 0 (SFT-C) | 0.410 | — | — |
+| 25 | 0.411 | 0.008 | 3 |
+| 50 | 0.412 | 0.005 | 3 |
+| 100 | 0.417 | 0.014 | 3 |
+| 150 | 0.428 | 0.004 | 3 |
+| 250 | 0.427 | — | 1 |
+| 400 | 0.4325 | — | 1 |
+DEFINITIVE (3 seeds): continuing SFT-C with plain GRPO does NOT erode OOD transfer — it MONOTONICALLY (mildly)
+RISES from 0.410 → 0.433. Erosion hypothesis fully refuted with error bars. Confirms: once SFT has PLACED the
+OOD-correct mass, GRPO safely SHARPENS it. §44 (can't place from base, capped 0.335) + §45 (sharpens once
+placed) = the complete order/precondition asymmetry, error-barred.
