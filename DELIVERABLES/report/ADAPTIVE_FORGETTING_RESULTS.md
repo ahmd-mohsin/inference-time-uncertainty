@@ -2766,3 +2766,12 @@ LAYER 3 — METHOD (actionable): §55 consolidation-scheduled RL exploiting the 
 STANDING: Layer 1 carries the paper regardless of Layer 3's strength. If §55 CI holds → foundation→mechanism→
 method (award-target). If §55 stays modest/null → foundation + mechanism is still a solid honest contribution,
 method reported as tested. The §37-§49 OOD/SFT results are NOT superseded — they are the backbone.
+
+## §55-D2 CODE — BLOCKED (harvest execution bug); Domain-1 is the clean path
+code_gen_verified on MBPP-train yielded only ~24-30 verified traces for BOTH 3B and 7B (implausibly low; should
+be ~200+ for 7B). Root cause = the known §37 pod-execution bug: the pooled unit-test executor returns 0 in the
+shared-PID container (subprocess-in-worker fails), so almost nothing registers as "verified". Fix = sequential
+scoring (like §37's code_score). DEFERRED (rabbit hole, not blocking). Domain-2 code generality will use the
+sequential-verify fix later; for now Domain-1 (GSM8K→MATH, working + positive 2-seed) is the primary method
+evidence, with a 6-seed CI in progress. Domain-3 (MATH-train→Olympiad, pure non-GSM8K) is the cleaner
+generality follow-up (no code executor needed).
