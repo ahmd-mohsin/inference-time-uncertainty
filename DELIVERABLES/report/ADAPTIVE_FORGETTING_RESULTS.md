@@ -18,7 +18,7 @@ what SFT placed, and you cannot shortcut SFT by bolting rehearsal onto RL. One p
 | §44 | Mass-placing axis (β_sd 0.05–20, 3 seeds, 2 bench) | flat 0.335±0.01, never→SFT 0.410 | **GRPO+rehearsal CAN'T reconstruct SFT (irreducible)** |
 | §44b | OlympiadBench hard-tier | base 0.074 / rescue 0.081 / SFT 0.104 | SFT wins hardest tier |
 | §45 | Reverse SFT→GRPO (3-seed) | 0.410 → 0.433 monotonic rise | GRPO safely sharpens placed mass (no erosion) |
-| §46 | H5 subspace | attn 0.360, mlp 0.354 ≈ all 0.367 | mass-placing redundantly distributed |
+| §46 | H5 subspace | attn 0.360, mlp 0.354 ≈ all 0.367 | either subset suffices (not redundant copies) |
 | §48 | H6 ignition | tiny seed→GRPO stays ~0.33 | no cheap ignition; need substantial SFT |
 | §49 | H9 in-dist crossover | SFT>GRPO in-dist 0.705 vs 0.52 AND OOD | advantage GENERAL, not OOD-only |
 
@@ -1999,8 +1999,9 @@ MLP-only SFT ≈ all (~0.41 MATH-500), attn-only ≈ base (~0.30). Status: train
 RESULT (MATH-500, 6 replicates/arm): all=0.3669±0.007, attn-only=0.3604±0.011, mlp-only=0.3538±0.013
 (base 0.296). **VERDICT: localization prediction REFUTED.** Within this matched 400-step/824-trace SFT
 (its own 'all' anchor = 0.367, not the 1200-step 0.410), BOTH attn-only and mlp-only independently recover
-~95-98% of the transfer — each ~+0.06 over base. The OOD-transfer mass-placing is REDUNDANTLY DISTRIBUTED
-across attention and MLP subspaces, NOT localized to one. (Honest: 3rd refuted mechanistic sub-prediction this
+~95-98% of the transfer — each ~+0.06 over base. The OOD-transfer attention-only and MLP-only LoRA EACH CAN SUPPORT the improvement (both parameter subsets suffice
+independently) — this does NOT show one trained solution contains redundant copies of a mechanism; it shows
+the improvement is achievable through either weight family. (claim tightened per reviewer) (Honest: 3rd refuted mechanistic sub-prediction this
 session after H1/H2 and erosion — the WHERE/HOW guesses miss, but the core thesis holds. Distributed
 redundancy is itself informative: SFT can place the mass through either weight family.) full-MATH confirm pending.
 
@@ -2041,7 +2042,7 @@ PRIORITY: H6 (recipe) + H8 (mechanism proof) launch first; H7/H9 queued; H10 moo
 | 100 | 0.417 | 0.014 | 3 |
 | 150 | 0.428 | 0.004 | 3 |
 | 250 | 0.427 | — | 1 |
-| 400 | 0.4325 | — | 1 |
+| 400 | 0.4325 | — | 1 seed (25-150 rows have 3; 250/400 have 1 — flagged) |
 DEFINITIVE (3 seeds): continuing SFT-C with plain GRPO does NOT erode OOD transfer — it MONOTONICALLY (mildly)
 RISES from 0.410 → 0.433. Erosion hypothesis fully refuted with error bars. Confirms: once SFT has PLACED the
 OOD-correct mass, GRPO safely SHARPENS it. §44 (can't place from base, capped 0.335) + §45 (sharpens once
@@ -2386,3 +2387,135 @@ update can only *reweight*, not *place*, probability mass. SFT (an M-projection 
 establishes OOD-correct mass; GRPO then refines it. This explains (a) why RL-from-base transfers ~0, (b) why
 SFT transfers, (c) why the standard SFT→RL recipe works, and (d) why you cannot shortcut SFT by adding
 rehearsal to GRPO (§44). Reported honestly including the refuted pre-registration.
+
+# ============================================================================
+# §50 REVIEWER FEEDBACK + AWARD-TARGET NEXT-PHASE PLAN (2026-09-08)
+# ============================================================================
+Governing plan going forward. Reframes the contribution from "SFT>GRPO / operator asymmetry" to a MECHANISM +
+METHOD: **identify WHEN a verified success becomes a transferable skill, and build an RL post-training method
+that keeps consolidating successes until it does.** Primary endpoint = improved FROZEN-model performance, at
+matched resources, vs the strongest SFT→GRPO baseline (or comparable with materially less data/compute).
+
+## 0. REFRAME THE THESIS (do not over-claim "RL reweights, SFT places")
+Accurate statement the data supports: *Under the evaluated procedures, verified-trace SFT converts available
+successful experience into capability more effectively than GRPO; subsequent RL adds gains.* The mechanism
+("reweight vs place") is NOT settled — the next contribution must identify WHICH TRAINING DYNAMICS create the
+difference and how to control them. Framing = "verified-experience CONSOLIDATION in RL post-training" (both
+in-dist and OOD; §49 showed the effect is not OOD-specific).
+
+## 1. THEORY REPAIR (prerequisite — determines which experiments are worthwhile)
+- Identity: for fixed x, binary R, p_θ(x)=Pr[R=1], when p_θ>0:
+  ∇_θ p_θ(x) = p_θ(x)·E_{π_θ(y|x,R=1)}[∇_θ log π_θ(y|x)].
+  => at fixed policy+prompt, idealized positive-trace learning ≈ binary-reward policy gradient. Differences come
+  from task weighting, finite sampling, replay, group normalization, clipping, token reductions, optimizer
+  trajectory, and off-sample parameter sharing. CITE: "SFT on Curated Data is RL" (put in foundation).
+- "Matched experience" needs a PRECISE definition: sharing a source task pool ≠ sharing identical trajectories,
+  exposure counts, and update opportunities. Our §44 SFT-on-~800-bank vs GRPO-new-rollouts is NOT matched.
+- The failed mixture does NOT prove irreducibility: L_λ=(1−λ)L_GRPO+λL_SFT has λ=1 = exactly SFT if all else
+  matches; our 800-step mixture CRASHED and the strong SFT anchor used ~1200 steps → not a clean endpoint.
+- Zero/256 ≠ zero support: 0/256 gives ~1.16% one-sided 95% upper bound; §34 shows SFT also failed on the
+  observed-zero subset → "unreachable region" is not established.
+- **PREREQUISITE EXPERIMENT (most important before interpreting §44):** run PURE SFT INSIDE the hybrid trainer
+  with identical batches, masks, optimizer, LR, trainable params, token exposure; compare its gradients + first
+  updates against the standalone SFT trainer. Confirms whether §44 reflects genuine dynamics vs implementation.
+
+## 2. HYPOTHESIS H-A (PRIORITY): GRPO stops learning a task before the skill generalizes
+Group-both-outcomes prob u_G(p)=1−p^G−(1−p)^G → advantages vanish as p→1. NEW question: does retirement happen
+BEFORE the transferable structure is learned? (§35: biggest SFT gain in REACHABLE p∈(0.4,0.9] — argues against a
+pure "unreachable-region" story.) DECISIVE EXPERIMENT: controlled arithmetic / symbolic-exec / program-synthesis
+families with independently-checked related problems. Per task build SEPARATE categories: (i) original instance,
+(ii) surface variants (same problem), (iii) new instances same operation, (iv) new compositions (operation in a
+different position). At checkpoints, find tasks with HIGH original-success but POOR related-instance perf; branch
+from the SAME checkpoint:
+  | branch | additional training |
+  | Ordinary GRPO | continue existing procedure |
+  | Success consolidation | likelihood training on existing verified traces from those tasks |
+  | Matched random consolidation | same exposure, randomly chosen verified traces |
+  | Difficulty-based | same budget on hard tasks |
+  | Continued SFT | strong fixed-schedule baseline |
+Eval on SEPARATE related instances + untouched external benchmarks. WIN = extra learning from apparently-solved
+tasks improves unseen COMPOSITIONS more than same compute on harder tasks → challenges "zero reward variance =
+zero transfer value." METHOD: training-only diagnostic = gap(original-success − related-success); allocate short
+consolidation blocks to high-gap tasks, return to RL; leave consolidation when related-instance perf STABILIZES
+(not when original reward saturates). Must beat fixed SFT→RL, random replay, difficulty-based. Neighbors: PRISM,
+DeReason. Distinctive claim = the MEASURED INTERVAL between solving an instance and acquiring the transferable
+skill + an intervention that exploits it. If the interval is absent, DROP this method.
+
+## 3. HYPOTHESIS H-B: SFT changes the DIRECTION of subsequent RL updates (not just accuracy)
+Two checkpoints, same accuracy, can respond differently to identical subsequent training (precedent: PEAR —
+stronger SFT can be WORSE after RL). Exp A (order vs optimizer memory): SFT→RL, RL→SFT, alternating blocks
+{1,10,100}, simultaneous mixture, continued-SFT full budget; CROSS with shared vs separate optimizer state; at
+transitions carry vs reset optimizer moments. Short fixed-data diagnostic branches first, then online. Exp B
+(measure interaction): θ_{S→R}−θ_{R→S} ≈ η²(Dg_R·g_S − Dg_S·g_R); does this interaction PREDICT held-out
+correctness differences across checkpoints/domains? INTERPRETATIONS: optimizer-separation removes gap → interference;
+long blocks > fine alternation after optimizer controls → temporal separation; gap vanishes at matched update
+size+exposure → earlier "operator asymmetry" was implementation/allocation; SFT changes RL transfer even at matched
+initial accuracy + functional distance → deeper initialization effect. Baselines: UFT, SRFT, DYPO. Method must
+PREDICT when to switch phases (beat fixed schedule); arbitrary gate is weak.
+
+## 4. HYPOTHESIS H-C: the "substantial SFT requirement" is a COVERAGE requirement
+§48 varied SFT STEPS only; it can't tell #distinct-traces vs #presentations vs operation-coverage vs param-change
+apart. EXPERIMENT: cross 3 independently-controlled axes — distinct traces {32,128,512,full} × exposure {fixed
+gradient-token budgets} × selection {random, surface-diverse, operation-diverse, composition-diverse}, with
+operation labels from an EXECUTABLE generator (not LLM classification), matching correctness/length/difficulty.
+After each SFT condition run IDENTICAL RL budget; eval immediate + post-RL. WIN = a small bank covering the right
+intermediate transitions unlocks the SAME later-RL gain as a much larger random bank → turns "cheap ignition"
+(§48 failed) into a data-efficiency result (doesn't contradict §48 — we never varied coverage×exposure). METHOD:
+select verified traces to cover underrepresented executable transitions; train until coverage-diagnostic
+stabilizes; then RL. Prior overlap: "From Reasoning Traces to Reusable Modules" — need a MEASURABLE coverage
+criterion that predicts required consolidation + cuts cost beyond generic diverse-selection.
+
+## 5. HYPOTHESIS H-D (higher-risk): final-answer verification hides the supervision that matters (strengthen H7)
+Four-way CONTROLLED dataset (mechanically-generated derivations, per-step validity known):
+  | traces | final answer | intermediate derivation |
+  | fully valid | correct | valid |
+  | answer-correct shortcut | correct | contains a verified INVALID step |
+  | reasoning-preserving corruption | incorrect | valid until a controlled final corruption |
+  | format control | matched format | no task-relevant derivation |
+Matched token budgets; eval on new COMBINATIONS. Distinguishes valid-reasoning-necessary / correct-answers-suffice
+/ format-explains-gain / invalid-partial-but-fails-composition. HIGHER-RISK extension: random vs SYSTEMATIC false
+positives at the SAME contamination rate (verifier consistently accepts one wrong rule) — does likelihood training
+consolidate the systematic error MORE than RL? Practical contribution = a training rule distinguishing reliable
+success from a repeated verifier blind-spot, validated vs an independent AUDIT verifier. Bound claims to tested
+error models.
+
+## 6. DOWNSTREAM DEMO (the instrument): frozen-model compositional reliability
+Train on SHORT verified computations; eval whether the FROZEN model assembles them into LONGER unfamiliar
+computations in ONE attempt. Settings: executable symbolic algebra / small program synthesis w/ formal I/O specs /
+constraint-solving w/ independently-checkable solutions. Splits: new instances of seen ops · new compositions of
+seen ops · longer compositions · MISSING operations never supplied (boundary — don't expect coverage to solve).
+More interpretable than another aggregate benchmark; avoids equating lower reference-trace NLL with capability
+(§24c did NOT support that). Keep natural math/code for external validity; controlled composition = the instrument.
+
+## 7. REPRIORITIZED QUEUE (supersedes §47)
+- **H8 entropy-collapse → DEMOTE to diagnostic.** §24b already shows the BETTER SFT model has LOWER entropy
+  (0.149 vs GRPO 0.264) → contradicts a simple "retained entropy explains transfer." Not the headline.
+- **H7 → run the structured 4-way correctness experiment (H-D)**, not "verified vs random".
+- **7B/14B scale → AFTER** the hybrid endpoint + causal mechanism checks (needs server-mode).
+- **Multi-family → run ONE complete MATCHED SFT-vs-GRPO comparison on a 2nd family EARLY** (SFT-only gains don't
+  establish SFT-vs-GRPO generality). Have Llama/Mistral/DeepSeek adapters from §27.
+- **H10 mass-transplant → LOW** (raw LoRA transfer confounds compatibility/alignment; cross-size shapes mismatch).
+- **Framing → "verified-experience consolidation in RL post-training"**, report in-dist + OOD.
+- Claim tightening (DONE): §46 = "either subset suffices" (not redundant copies); §45 400-step = 1 seed (25-150 = 3).
+
+## 8. LAUNCH PLAN — three clusters
+- **Cluster A** — Theory/dynamics: standalone SFT vs pure-SFT-in-hybrid-trainer (identical batches/masks/opt/lr/
+  params/token-exposure); compare gradients + first updates; then controlled L_λ mixture + schedule branches.
+  DECIDES: does §44 reflect genuine training dynamics or implementation/allocation?
+- **Cluster B** — H-A consolidation interval: high-original-success / poor-related tasks; targeted consolidation
+  vs matched-random vs difficulty-based vs continued-SFT vs ordinary-GRPO, from a shared checkpoint.
+  DECIDES: is there a useful consolidation interval (solve-instance → acquire-skill)?
+- **Cluster C** — H-C coverage: distinct-traces × exposure × executable-operation-coverage.
+  DECIDES: can better-SELECTED experience replace "substantial SFT"?
+- Prepare the structured-verification (H-D) + compositional-reliability datasets alongside. EXPAND ONLY hypotheses
+  that survive their first discriminating test.
+
+## 9. STATISTICS DISCIPLINE (for every main result henceforth)
+Separate TRAINING SEEDS from DECODING replicates; task-CLUSTERED uncertainty; select schedules on DEV data; keep
+an UNTOUCHED confirmation set (many experiments already run → a held-out set is now especially valuable).
+
+## AWARD-TARGET RESULT (the north star)
+A training method that (1) RECOGNIZES when reward saturates before skill generalizes (train-only diagnostic),
+(2) CONSOLIDATES the right verified experience (coverage-selected), (3) makes subsequent RL more effective —
+beating the strongest SFT→GRPO baseline at MATCHED resources, or matching it with materially LESS verified
+data/compute. Endpoint: frozen-model compositional reliability + external benchmarks.
