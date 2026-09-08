@@ -2662,3 +2662,24 @@ and targeting beats random (+0.021). This is the WIN condition — the consolida
 CAVEAT: single seed, n=250, margins ~2·SE → SUGGESTIVE not conclusive. Multi-seed (s1/s2/s3) launching now for
 task-clustered CIs; only then is the claim solid. a_grpoN3 being WORST on n5 corroborates the mechanism (more
 GRPO on the saturated task does not help composition).
+
+## §52c MULTI-SEED VERDICT — the branch WIN does NOT survive (honest null, kill-criterion S2 triggered)
+Repeated the b_consol vs d_diffN5 branch over 6 base seeds (150-step matched compute, eval n5 composition):
+| seed | b_consol(n5) | d_diffN5(n5) | Δ=b−d |
+|------|--------------|--------------|-------|
+| s0 | 0.466 | 0.439 | +0.027 |
+| s1 | 0.445 | 0.453 | −0.008 |
+| s2 | 0.469 | 0.468 | +0.001 |
+| s3 | 0.482 | 0.462 | +0.020 |
+| s11w | 0.451 | 0.457 | −0.006 |
+| s4w | 0.423 | 0.453 | −0.030 |
+**Δ mean = +0.0007, 95% CI [−0.014, +0.016] — INCLUDES 0.** The seed-0 win (+0.027) was NOISE. So at matched
+150-step compute, consolidating already-solved n3 tasks does NOT beat spending the compute on hard n5 tasks —
+they TIE (both ~0.45, marginally above the ckpt-150 baseline ~0.44; random consolidation also ~0.45). No
+consolidation-SPECIFIC advantage. Per pre-committed kill criterion S2 → the SIMPLE fixed-branch consolidation
+method is a NULL. HONEST STANDING: the MECHANISM (the composition gap exists and WIDENS with training, §52b/§53-
+S1a) is real and worth reporting, but "consolidation > difficulty allocation" is NOT established by the simple
+branch. IMPLICATIONS: (a) the interval may still be exploitable only by a DYNAMIC/targeted method (Stage 3) —
+but we must not over-claim; (b) more likely the lever is COVERAGE (H-C), not which already-solved tasks you
+replay. PIVOT: run H-C (coverage: distinct-traces × op-diversity → RL) as the primary method test; keep H-A as a
+mechanism finding + honest method-null. Multi-seed rigor caught a false positive — integrity preserved.
