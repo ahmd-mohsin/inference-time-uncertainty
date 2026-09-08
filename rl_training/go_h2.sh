@@ -7,7 +7,7 @@
 set -o pipefail
 export HOME=/home/greenland-user; cd /tmp/instance_storage/gu/repo
 export PATH=$HOME/.local/bin:$PATH PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True HF_HUB_DISABLE_XET=1 \
-  WANDB_MODE=disabled PYTHONPATH=/tmp/instance_storage/gu/shim VLLM_GPU_MEM_UTIL=0.35
+  WANDB_MODE=disabled PYTHONPATH=/tmp/instance_storage/gu/shim VLLM_GPU_MEM_UTIL=${VLLM_GPU_MEM_UTIL:-0.35}
 PY=/usr/bin/python3
 MODEL="${1:-Qwen/Qwen2.5-3B}"; MTAG="${2:-q3b}"; MU="${3:-0.5}"; GPU="${4:-0}"
 GU=/tmp/instance_storage/gu; LOGS=$GU/logs
