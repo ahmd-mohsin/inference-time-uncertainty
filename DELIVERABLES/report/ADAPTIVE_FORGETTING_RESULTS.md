@@ -2560,3 +2560,17 @@ If original(n3) saturates high while n5-composition stays low → the consolidat
 runs train-n3 → eval-n5 (and n2→n4) at multiple checkpoints; only if a real gap appears do we launch the
 branch experiment (consolidation vs difficulty vs continued-SFT). Reviewer's rule respected: don't force H-A —
 give it the PROPER hard-composition test, then keep or drop on evidence.
+
+## §52b H-A LENGTH-GENERALIZATION diagnosis — the interval APPEARS (n3-trained GRPO, ckpt-250)
+| eval | mean_p | vs in-dist |
+|------|--------|-----------|
+| n3 (in-dist, trained length) | 0.5183 | — |
+| n5 (longer, SAME ops) | 0.4417 | **−0.077** |
+| n6 (longer still) | (pending) | — |
+Unlike the reversed-order new_compose (§52a: no gap), the PROPER length-generalization test shows a real gap:
+the model composes the SAME operations LESS well in longer chains (0.518→0.442). This is the consolidation-
+interval SIGNAL — the ops are learned (n3 solved) but not fully composed into longer sequences. → the H-A BRANCH
+experiment is now warranted: from an n3 checkpoint, branch {continue-GRPO-n3 / success-consolidation (SFT on the
+model's own verified n3 traces via --init-adapter) / matched-random / difficulty (GRPO on n5) / continued-SFT},
+eval on held-out n5/n6. WIN = consolidation improves n5/n6 MORE than difficulty at matched compute → a training
+interval exists between "solves the instance" and "composes the skill". This is the award-target mechanism test.
