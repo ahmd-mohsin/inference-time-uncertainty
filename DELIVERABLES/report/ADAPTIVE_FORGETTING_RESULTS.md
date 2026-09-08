@@ -1967,7 +1967,8 @@ positioning · §42 tuned-GRPO fairness (gap survives KL0/2x/g16) · §44 mass-p
 (flat 0.335 across β_sd 0.05-20, 3 seeds, 2 benchmarks; H1/H2 refuted honestly) · §44b hard-tier (SFT 0.104 >
 rescue 0.081 > base 0.074) · §45 order/precondition (erosion REFUTED; SFT→GRPO complementary 0.433>0.410 &
 0.383>0.361; RL reweights, can't place mass).
-RUNNING: §45 fine 3-seed decay curve (error bars, mains) · §46 H5 subspace localization (workers).
+§46 H5 subspace DONE (localization refuted; attn+mlp both recover ~95-98% — redundantly distributed).
+RUNNING: §45 fine 3-seed decay curve (mains) · §47-H6 SFT-ignition sweep N={0,1,5,20,100} (workers).
 THESIS (settled): the update rule governs OOD transfer because RL can only REWEIGHT probability mass, not
 PLACE it — SFT places OOD-correct mass, GRPO sharpens it. Explains RL-from-base≈0, SFT transfers, SFT→RL works.
 
