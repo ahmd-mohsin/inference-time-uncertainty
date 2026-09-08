@@ -2522,3 +2522,13 @@ A training method that (1) RECOGNIZES when reward saturates before skill general
 (2) CONSOLIDATES the right verified experience (coverage-selected), (3) makes subsequent RL more effective —
 beating the strongest SFT→GRPO baseline at MATCHED resources, or matching it with materially LESS verified
 data/compute. Endpoint: frozen-model compositional reliability + external benchmarks.
+
+## §50 EXECUTION STATUS (live, 2026-09-08)
+RUNNING on 72 GPUs (real, no smoke checks): Cluster A = matched-compute SFT curve {400,800,1200,1600}×2seeds
+(C1, GSM8K bank) → H-B. Cluster B = GRPO on controlled executable tasks ctrl:original, n_ops{2,3,4,5}×many seeds,
+checkpoints@50 (C2+C3+6 workers, ~50 trajectories) → H-A branch library. Infra built: controlled_tasks.py
+(executable task families + original/surface/same_op/new_compose/missing_op splits), ctrl: dataset loader,
+ctrl_eval.py (executable verifier). NEXT: (1) H-A diagnosis — find high-original/low-related tasks at
+checkpoints, branch {consolidation/random/difficulty/continued-SFT/GRPO}, eval related splits; (2) Cluster C
+coverage (trace-count×exposure×op-coverage) — needs verified controlled traces; (3) Cluster A pure-SFT-in-hybrid
+gradient check (prerequisite instrumentation); (4) H-D structured 4-way verification dataset.
