@@ -2623,3 +2623,26 @@ keep an UNTOUCHED confirmation set; report effect sizes + CIs, not point estimat
 - S2: if consolidation does NOT beat difficulty at matched compute → interval not exploitable → method fails, report null.
 - S3: if dynamic ≈ fixed SFT→RL → no scheduling value → report as "SFT→RL suffices" (still useful, weaker claim).
 Each stage gates the next; expand only what survives its discriminating test.
+
+## §53-S1a MECHANISM (gap widens with training) — n3-trained GRPO, seed s2
+| checkpoint | n3 (in-dist) | n5 (composition) | gap |
+|-----------|--------------|------------------|-----|
+| 100 | 0.485 | 0.448 | 0.037 |
+| 200 | 0.522 | 0.445 | 0.077 |
+As GRPO trains, in-dist(n3) RISES (0.485→0.522) while composition(n5) stays flat (~0.45) → the gap WIDENS
+(0.037→0.077). Consistent with "reward saturates on the trained length before the skill composes to longer
+chains" — the consolidation-interval signal. (c300 + seeds s0/s1/s3 + u_G advantage-vanishing log pending for CIs.)
+
+## §52c BRANCH (from n3 ckpt-150; 150-step matched compute) — PARTIAL
+| arm | n3 | n5 | n6 |
+|-----|----|----|----|
+| (baseline ckpt-150) | ~0.52 | ~0.44 | — |
+| b_consol (SFT own verified n3 traces) | 0.550 | 0.466 | 0.454 |
+| c_rand (SFT random n3 traces) | 0.525 | (run) | (run) |
+| a_grpoN3 (continue GRPO n3) | (run) | (run) | (run) |
+| d_diffN5 (difficulty: GRPO on n5) | (retraining) | — | — |
+| e_sftbase (SFT n3 from base) | (run) | — | — |
+INTERIM: consolidation (b) lifts BOTH n3 (0.52→0.55) and the composition splits n5 (0.44→0.466) / n6 (0.454)
+at matched 150-step compute. DECISIVE comparison pending: b_consol vs d_diffN5 (difficulty) on n5/n6 — does
+consolidating ALREADY-SOLVED tasks beat spending the same compute on hard tasks? (d retraining ~25min.) Then
+multi-seed for CIs. Honest verdict to follow.
