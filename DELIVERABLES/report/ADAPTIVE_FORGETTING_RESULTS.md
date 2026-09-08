@@ -1921,10 +1921,23 @@ finishing — will only tighten this.)
 | 0 (SFT-C baseline) | 0.410 | — |
 | 50 | 0.3925 | −0.018 (full-MATH 0.355, −0.006) |
 | 150 | (training) | — |
-| 400 | (training) | — |
+| 400 | **0.4325** | +0.023 OVER SFT — no erosion! |
 | (plain-GRPO floor) | ~0.304 | §42 |
 PRELIMINARY: continuing SFT-C with plain GRPO for 50 steps already drops OOD transfer 0.410→0.393. If it keeps
 decaying toward the GRPO floor (~0.30) at 150/400 steps → GRPO ACTIVELY ERODES the SFT-acquired transfer,
 completing the operator asymmetry: §44 shows you can't lift GRPO UP to SFT-transfer (rescue fails at 20× dose);
 §45 shows GRPO drags SFT-transfer DOWN. Both isolate the UPDATE RULE as the causal factor. rev150/rev400 + a
 full-MATH decay curve pending.
+
+### §45 VERDICT (honest — erosion hypothesis REFUTED, and it's a RICHER result)
+Continuing SFT-C with plain GRPO does NOT erode OOD transfer. MATH-500: SFT-C 0.410 → 50 steps 0.393 (transient
+dip) → 400 steps **0.4325** (ABOVE SFT). So SFT-then-GRPO is COMPLEMENTARY: 0.433 > SFT 0.410 > GRPO-from-base
+0.304. This is MORE informative than the predicted erosion and it SHARPENS the thesis mechanism:
+- GRPO **from base** cannot CREATE OOD-correct probability mass (ρ≈0 — nothing to sharpen; §44 shows even a
+  bolted-on NLL term can't fix this, capped at 0.335).
+- GRPO **from an SFT'd model** CAN sharpen the mass SFT already placed (0.410→0.433).
+=> The operator asymmetry is about ORDER/PRECONDITION, not mutual destruction: **SFT must place the mass first;
+then GRPO refines it.** This is exactly the standard SFT→RL recipe, and it explains WHY it works while
+RL-from-base transfers ~0. Matches Thm11 (hybrid optimality) + the §43-H3 order-of-operations intuition.
+Honest correction to the §45 pre-registration (predicted erosion; observed complementarity). full-MATH decay +
+rev150 confirming.
