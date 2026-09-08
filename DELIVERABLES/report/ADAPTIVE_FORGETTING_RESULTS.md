@@ -2723,3 +2723,16 @@ there is no large learnable composition gap to exploit — every intervention ti
       giving the method room. Higher-cost (needs a clean composition split + verified traces) but the only route
       to a substantial METHOD claim. One clean hard-task consolidation-vs-difficulty test is finishing (GRPO
       hard-n3 training) as the last controlled attempt; if it nulls too, path (2) or path (1) is the call.
+
+## §55 REAL-DOMAIN method test — plan (NOT GSM8K-dependent)
+Method (consolidation-vs-difficulty branch + dynamic scheduler) to be tested on MULTIPLE substantial domains,
+gated: prove it beats difficulty on ONE real large-gap domain, then show generality on the others.
+- Domain 1 (running): GSM8K(train)→MATH-500(eval). TRAIN=GSM8K but EVAL=MATH (non-GSM8K); large gap (base-GRPO
+  MATH ~0.30 vs SFT 0.41). GRPO-on-GSM8K checkpointed (rdB_gsm8k_s0/s1, ~step30/300 → ckpt-150 branch pt soon).
+- Domain 2 (queued): CODE MBPP→HumanEval (executable, reviewer-favored program-synthesis; §37 gap +0.096). Build
+  via dump_repair_data + train_grpo --reward-mode code, checkpointed; branch consolidation(SFT verified MBPP) vs
+  difficulty; eval HumanEval.
+- Domain 3 (queued): MATH-train→OlympiadBench (pure-math, harder; no GSM8K at all). 
+NOTE on non-GSM8K-dependence: the paper's OPERATOR results (§37 code, §40 MMLU-Pro/full-MATH/Olympiad, §49
+in-dist) already span 4 domains + ~16 model families — NOT GSM8K-specific. GSM8K appears only as ONE method-test
+TRAIN set; the mechanism+method claims will be shown across ≥2 substantial domains before any headline.
