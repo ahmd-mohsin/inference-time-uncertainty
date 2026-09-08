@@ -1891,3 +1891,8 @@ crashed (empty output dirs) — not re-run; the β_sd∈{3,5,10,20}@400 series a
 asymptote decisively. Multi-seed confirmation (seed-1 on C2+6 workers, seed-2 on C3) training for independent
 error bars. OlympiadBench hard-tier axis (base 0.074, mu0.5/1.0/SFT) collecting → tests if the tiny MATH-500
 lift reaches the hardest tier (predict: no).
+
+### §44b OlympiadBench hard-tier (n=200 k=4) — does the rescue reach the hardest tier? (partial)
+base-3B 0.0737, β_sd=1.0 (rescue) 0.0813 (+0.007, negligible). SFT-C + β_sd=0.5 collecting. Consistent with
+the plateau: on the hardest tier the self-distillation lift is essentially zero — GRPO+rehearsal does not
+recover transfer even where it matters most. (SFT-C hard-tier point pending.)
