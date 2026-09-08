@@ -1720,3 +1720,13 @@ another axis where the operators differ qualitatively.
 PRIORITY for GPU-fill after current dense evals land: H1 (unifying) > H2 (fix) > H3 (order) > H5 (subspace)
 > H4 (diversity) > H6 (interference). H1+H2 are the two that move the paper from spotlight to award-contention.
 All reuse the existing harvest + seed-0 adapters; no new data pipeline.
+
+## §40dense (fresh-cluster re-run, 2026-09-08) — OlympiadBench @7B
+| arm | n | mean_p | solved_any |
+|-----|---|--------|-----------|
+| base | 200 | 0.1062 | 0.2300 |
+| C (SFT-verified) | 200 | 0.1350 | 0.2550 |
+| A (GRPO) | 200 | (running) | — |
+C beats base by **+0.0288** mean-p (+27% relative) on hard OlympiadBench — SFT-verified transfers to the
+hardest math tier. A-arm + full-MATH matched A-vs-C (n≈1500) collecting next. full-MATH base ≈0.294.
+(Re-run after the prior 3 clusters died mid-eval; matched seed-0 adapters grpo_q7b_s0 / sft_q7b_s0.)
