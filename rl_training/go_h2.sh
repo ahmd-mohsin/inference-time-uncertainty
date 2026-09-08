@@ -21,8 +21,8 @@ if [ ! -s "$BANK" ]; then
   if [ ! -s "$RAW" ]; then
     CUDA_VISIBLE_DEVICES=$GPU $PY -m rl_training.gen_verified --model-path "$MODEL" --n 900 --k 4 \
       --dataset ${DS:-gsm8k} --tag h2_${MTAG} --shard-index 0 --num-shards 1 > "$LOGS/h2_genv_${MTAG}.log" 2>&1
-    # gen_verified writes sft_data/sftdata_h2_<mtag>.jsonl ; symlink to RAW
-    cp $GU/sft_data/sftdata_h2_${MTAG}.jsonl "$RAW" 2>/dev/null || cp $GU/sft_data/sftdata_h2_${MTAG}_s0.jsonl "$RAW" 2>/dev/null
+    # gen_verified writes sft_data/sftdata_h2_<mtag>.shard0-of-1.jsonl (or _s0) ; glob to RAW
+    cp "$(ls $GU/sft_data/sftdata_h2_${MTAG}*.jsonl 2>/dev/null | head -1)" "$RAW" 2>/dev/null
   fi
   # convert verified {prompt/messages,completion} -> bank {prompt,completion,ref_logprob:0.0}
   $PY - "$RAW" "$BANK" <<'PYEOF'
