@@ -1895,7 +1895,7 @@ lift reaches the hardest tier (predict: no).
 ### §44b OlympiadBench hard-tier (n=200 k=4) — does the rescue reach the hardest tier? (partial)
 base-3B 0.0737, β_sd=1.0 (rescue) 0.0813 (+0.007, negligible). SFT-C + β_sd=0.5 collecting. Consistent with
 the plateau: on the hardest tier the self-distillation lift is essentially zero — GRPO+rehearsal does not
-recover transfer even where it matters most. (SFT-C hard-tier point pending.)
+recover transfer even where it matters most. SFT-C = **0.1037** (+0.030 over base, +0.023 over the rescue). So on the HARDEST tier the SFT operator clearly transfers while GRPO+self-distillation does not — the §44 plateau + §44b hard-tier agree: the mass-placing term cannot substitute for the SFT operator.
 
 ### §44 MULTI-SEED confirmation (independent training seeds) — plateau reproduces, MATH-500
 Full β_sd axis (mu 0.05→2.0) re-trained from scratch with 3 independent seeds; per-mu MATH-500 mean_p:
