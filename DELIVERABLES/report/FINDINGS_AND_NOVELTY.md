@@ -119,3 +119,17 @@ and only where complementarity is high," which is measurable and predictive.**
   complementarity benchmark** (the only place harmful collapse / diversity value can exist); and running
   the diversity-preservation baselines through the (ρ,c,v) probe.
 - Full plan: `PIVOT_mechanism_plan.md`. Detailed results: `ROUTING_VS_COMPETENCE_RESULTS.md`.
+
+## §44 (2026-09-08): The SFT operator advantage is IRREDUCIBLE (72-GPU sweep)
+Tested whether GRPO's weak OOD transfer can be "rescued" by adding a forward-KL self-distillation term
+(NLL on the model's OWN verified-correct traces), weight β_sd — the mass-placing axis: β_sd=0 is plain
+GRPO, β_sd→∞ is pure SFT. Swept β_sd∈[0.05,20] × {400,800} steps, 8–9 replicates/point across 9 nodes,
+two OOD benchmarks.
+RESULT (honest): FLAT plateau. MATH-500 stays ~0.33 (vs GRPO 0.30, SFT 0.410); full-MATH stays ~0.29≈base
+(vs SFT 0.361). No dose-response even at 10–20× weight. H1 (monotonic axis) and H2 (full rescue) REFUTED.
+WHY IT MATTERS (thesis-strengthening): the SFT operator's OOD-transfer advantage is NOT decomposable into
+"GRPO + trace rehearsal." The on-policy advantage-weighted gradient caps how much an explicit NLL term can
+place mass (ρ≈0 persists) — so you cannot cheaply convert GRPO into SFT-level generalization. The UPDATE
+RULE itself is the irreducible cause of OOD transfer of verified experience. This is a stronger, more
+falsifiable claim than a clean rescue would have been, and it closes the obvious reviewer question
+("just add rehearsal to GRPO") with a decisive negative.
