@@ -1772,8 +1772,14 @@ tg_beta0 (KL=0) 188/400, tg_800 (2× steps) 181/800, tg_g16 (group=16) 111/400 t
 |--------------|-----------------|
 | β=0.0 (no KL leash, max exploration) | 0.3038 |
 | 2× steps (800) | 0.3275 |
-| group=16 | (retry — GPU contention) |
-Both aggressive-tuning variants stay in the **plain-GRPO band (~0.30–0.33)** — they do NOT climb toward the
+| group=16 | 0.3275 |
+All three aggressive-tuning variants stay in the **plain-GRPO band (~0.30–0.33)** — they do NOT climb toward the
 SFT level. This supports the claim that GRPO's weak OOD transfer is **signal-structural (ρ≈0), not a
 hyperparameter artifact**: removing the KL leash (β=0) or doubling steps does not rescue it. (SFT-verified
 reference for the same base: full-MATH 0.361 @3B; §44 axis quantifies the interpolation.)
+
+### §44 anchors (MATH-500, n=200, k=4) for the mass-placing axis
+- **β_sd=0 endpoint** (plain/tuned GRPO): 0.304–0.328 (§42, all variants)
+- **β_sd→∞ endpoint** (SFT-verified, sft_q3b_s0): **0.410**
+Clean ~+0.09 gap for the GRPO+forward_kl interior (mu∈{0.05..2.0}) to interpolate. Interior adapters
+training (~400 steps, 14.5 s/it); §44 curve = transfer vs β_sd across 72 GPUs of replicates. Base-3B anchor pending.
