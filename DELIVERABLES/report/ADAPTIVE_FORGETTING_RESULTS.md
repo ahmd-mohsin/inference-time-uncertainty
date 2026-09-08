@@ -2683,3 +2683,24 @@ branch. IMPLICATIONS: (a) the interval may still be exploitable only by a DYNAMI
 but we must not over-claim; (b) more likely the lever is COVERAGE (H-C), not which already-solved tasks you
 replay. PIVOT: run H-C (coverage: distinct-traces × op-diversity → RL) as the primary method test; keep H-A as a
 mechanism finding + honest method-null. Multi-seed rigor caught a false positive — integrity preserved.
+
+## §54 H-C COVERAGE — null on this domain + DOMAIN DIAGNOSIS (honest)
+SFT banks op-full(all 7 ops) vs op-narrow(add/sub/mul) × size{32,128,512}, eval n5 composition:
+| size | op-full n5 | op-narrow n5 |
+|------|-----------|--------------|
+| 32   | 0.476 | 0.481 |
+| 128  | 0.478 | 0.461 |
+| 512  | 0.485 | 0.499 |
+op-FULL ≈ op-NARROW at every size (all ~0.46–0.50, no systematic gap; narrow_512 even ≥ full_512). COVERAGE does
+NOT drive n5 here. Combined with §52c (consolidation≈difficulty≈random, all ~0.45) → **every training
+intervention ties at n5 ~0.48 on the controlled arithmetic domain.**
+### DOMAIN DIAGNOSIS (the real blocker): the controlled arithmetic tasks are TOO SATURATED / EASY.
+n5 sits ~0.44–0.50 regardless of consolidation, difficulty, coverage, or trace count → the domain lacks the
+headroom/compositional structure for any method to separate. The composition gap (n3 0.52 → n5 0.44) is real but
+SMALL and IMMOVABLE — individual ops are trivial, so "coverage" is free and "consolidation" adds nothing. This
+is an INSTRUMENT problem, not (necessarily) a hypothesis refutation: the methods can't be tested where there is
+no headroom. HONEST STANDING after rigorous testing: mechanism (gap exists+widens) real; H-A method + H-C
+coverage both NULL on arithmetic. FORK: (a) HARDER controlled tasks (large operands, more ops, deeper
+compositions → base ~0.1 not ~0.5, big moveable gap), or (b) test the method on the REAL domains where SFT≫GRPO
+is LARGE (§40: GSM8K→MATH +0.10, code +0.096) — those have the actual compositional headroom. Pursuing (a) now
+(fast, controlled) and (b) next; if a real gap with separation appears, re-run H-A/H-C there.
