@@ -11,6 +11,9 @@ def main():
     ap.add_argument("--out", required=True); ap.add_argument("--max-steps", type=int, default=400)
     ap.add_argument("--save-steps", type=int, default=100); ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--lr", type=float, default=1e-5); ap.add_argument("--bsz", type=int, default=8)
+    # H5 subspace localization: restrict LoRA to attention-only or MLP-only to find WHERE the
+    # mass-placing (OOD transfer) lives. all = the standard arm-C set.
+    ap.add_argument("--target-modules", default="all", choices=["all", "attn", "mlp"])
     a = ap.parse_args()
     import torch
     from datasets import load_dataset
@@ -22,8 +25,11 @@ def main():
     tok = AutoTokenizer.from_pretrained(a.model, trust_remote_code=True)
     if tok.pad_token is None: tok.pad_token = tok.eos_token
     model = AutoModelForCausalLM.from_pretrained(a.model, torch_dtype=torch.bfloat16, trust_remote_code=True)
-    peft = LoraConfig(r=32, lora_alpha=64, lora_dropout=0.0, task_type="CAUSAL_LM",
-                      target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"])
+    _tm = {"all": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+           "attn": ["q_proj", "k_proj", "v_proj", "o_proj"],
+           "mlp": ["gate_proj", "up_proj", "down_proj"]}[a.target_modules]
+    print(f"[sft] target_modules={a.target_modules}: {_tm}")
+    peft = LoraConfig(r=32, lora_alpha=64, lora_dropout=0.0, task_type="CAUSAL_LM", target_modules=_tm)
     cfg = SFTConfig(output_dir=a.out, per_device_train_batch_size=a.bsz, gradient_accumulation_steps=1,
                     learning_rate=a.lr, max_steps=a.max_steps, save_steps=a.save_steps, save_total_limit=20,
                     logging_steps=10, bf16=True, seed=a.seed, report_to="none", max_length=1536,
