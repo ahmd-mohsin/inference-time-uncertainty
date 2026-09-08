@@ -133,3 +133,17 @@ place mass (ρ≈0 persists) — so you cannot cheaply convert GRPO into SFT-lev
 RULE itself is the irreducible cause of OOD transfer of verified experience. This is a stronger, more
 falsifiable claim than a clean rescue would have been, and it closes the obvious reviewer question
 ("just add rehearsal to GRPO") with a decisive negative.
+
+## §45 (2026-09-08): the asymmetry is ORDER/PRECONDITION, not mutual destruction (honest correction)
+Pre-registered prediction: continuing SFT with GRPO would ERODE its OOD transfer. OBSERVED: it does NOT —
+SFT-C (MATH-500 0.410) + 400 GRPO steps → 0.4325 (ABOVE SFT). SFT→GRPO is complementary. This is a richer,
+more accurate story than erosion and it completes the mechanism:
+- GRPO **from base** cannot CREATE OOD-correct probability mass (ρ≈0). §44 proves even a bolted-on NLL
+  self-distillation term can't fix this (flat 0.335 across β_sd∈[0.05,20], 3 seeds) — the on-policy
+  advantage-weighted gradient can only reweight mass that already exists, not place new mass.
+- GRPO **from an SFT'd model** CAN sharpen the mass SFT placed (0.410→0.433).
+COMPLETED THESIS: "the update rule governs OOD transfer of verified experience" — precisely because the RL
+update can only *reweight*, not *place*, probability mass. SFT (an M-projection / mass-placing operator)
+establishes OOD-correct mass; GRPO then refines it. This explains (a) why RL-from-base transfers ~0, (b) why
+SFT transfers, (c) why the standard SFT→RL recipe works, and (d) why you cannot shortcut SFT by adding
+rehearsal to GRPO (§44). Reported honestly including the refuted pre-registration.
