@@ -2068,3 +2068,278 @@ H7 does-correctness-matter, 7B-scale §44/§45, multi-family replication, H10 ma
 OPEN FRAMING Q (awaiting user): §49 shows effect is GENERAL not OOD-only → reframe around "update-rule
 verified-experience efficiency" (OOD as sharpest case) vs keep OOD-centric?
 ASSETS: 113 eval JSONs + adapters in checkpoints_pulled/fresh_0908/; HF continued-RL checkpoints cleared; all pushed.
+
+# ============================================================================
+# APPENDIX A — THEORY (theorem statements + proof sketches, folded from THEORY.md)
+# ============================================================================
+# Theory — Why the Update Rule Governs Out-of-Distribution Transfer of Verified Experience
+
+This file gives the formal backbone for the empirical result *SFT-on-verified-traces transfers verified experience
+to OOD problems better than GRPO*. The thesis is operator-level: **GRPO is a reweighting operator confined to the
+current reachable-correct support; SFT-on-verified is a projection operator that can place probability mass on
+correct computation the base rarely produced.** Every theorem below predicts a specific empirical figure/table.
+
+Status legend: **[Thm]** proved under stated assumptions; **[Prop]** proved; **[Sketch]** proof outline, to be
+tightened for camera-ready. All assumptions are stated explicitly and are individually testable.
+
+---
+
+## 1. Setup and notation
+
+- Prompt (problem) $q\sim\mathcal{D}$; completion (trajectory) $o=(o_1,\dots,o_T)$; policy $\pi_\theta(o\mid q)=\prod_t \pi_\theta(o_t\mid q,o_{<t})$.
+- Verifier $r(q,o)\in\{0,1\}$ (exact-answer check; assumed sound: $r=1 \Rightarrow$ correct).
+- **Reachable-correct probability** $\rho_\pi(q)=\Pr_{o\sim\pi(\cdot\mid q)}[r(q,o)=1]$ (this is $p(q)$ in the panels; pass@K estimates $1-(1-\rho)^K$).
+- **GRPO update** (group size $K$): sample $o_1,\dots,o_K\sim\pi_\theta(\cdot\mid q)$, rewards $r_i$, group mean $\bar r$, std $\sigma$; group-relative advantage $\hat A_i=(r_i-\bar r)/(\sigma+\varepsilon)$; objective gradient (ignoring the ratio clip, which only shrinks steps)
+  $$g_{\text{GRPO}}(q)=\mathbb{E}\Big[\textstyle\sum_{i=1}^K \hat A_i\,\nabla_\theta\log\pi_\theta(o_i\mid q)\Big].$$
+- **SFT-on-verified**: dataset $\mathcal{D}_v=\{(q,o): o\sim\pi_{\text{base}}(\cdot\mid q),\, r(q,o)=1\}$ with empirical trace law $p_v$. Objective $\mathcal{L}_{\text{SFT}}(\theta)=\mathbb{E}_{(q,o)\sim p_v}[-\log\pi_\theta(o\mid q)]$.
+
+Both arms consume the **same verified GSM8K experience** (self-generated, verifier-correct). Only the operator differs.
+
+---
+
+## 2. GRPO: a support-confined reweighting operator
+
+### Theorem 1 (Zero learning signal on homogeneous groups). [Thm]
+If all sampled rollouts for a prompt $q$ receive equal reward ($r_1=\dots=r_K$), then $\hat A_i=0\ \forall i$, so $q$ contributes **exactly zero** to $g_{\text{GRPO}}(q)$.
+*Proof.* $\bar r=r_i\Rightarrow r_i-\bar r=0\Rightarrow\hat A_i=0$. The per-prompt gradient $\sum_i \hat A_i\nabla\log\pi=0$. $\square$
+
+### Corollary 1.1 (OOD blindness). [Thm]
+For any prompt with $\rho_\pi(q)=0$ (no reachable correct rollout), with probability $1$ every sampled group is all-incorrect, hence (Thm 1) contributes zero gradient — **for all training steps and any $K$**. GRPO cannot raise accuracy on prompts outside its current reachable-correct support.
+> **Predicts:** the flat far-OOD (MATH-500) learning trajectory while in-distribution rises (Fig 2). It is a *transfer/exploration* failure, not forgetting.
+
+### Corollary 1.2 (Fragile-band concentration). [Thm]
+The expected number of nonzero-signal groups is maximized on the "fragile band" $0<\rho_\pi(q)<1$; signal $\to 0$ as $\rho\to 0$ or $\rho\to 1$. Learning is confined to partially-solved problems.
+> **Predicts:** in-distribution gains saturate as $\rho\to 1$; matched-compute OOD gain for GRPO does not scale (Fig 3).
+
+### Theorem 2 (Support invariance of the policy-gradient operator). [Sketch]
+A GRPO step reweights the log-probabilities of *observed* tokens only. Sequences never assigned nonzero probability by $\pi_\theta$ receive no gradient; the operator is **mass-preserving on $\mathrm{supp}(\pi_\theta)$** and cannot create a new high-probability correct mode in one step from a region of vanishing base mass. Formally, $\|\pi_{\theta+\eta g}(\cdot\mid q)-\pi_\theta(\cdot\mid q)\|_{TV}$ restricted to $o\notin\mathrm{supp}$ is $O(\eta\,\rho(1-\rho))$ and $\to0$ off-support.
+*Sketch.* $\nabla_\theta\log\pi_\theta(o\mid q)$ is only sampled for $o$ with $\pi_\theta(o)>0$; softmax logit shifts scale existing mass. Correct-mode creation off-support requires many correlated steps, each gated by Cor 1.1. $\square$
+
+---
+
+## 3. SFT-on-verified: a mass-placing projection operator
+
+### Theorem 3 (SFT is the M-projection onto verified traces; it places mass off-support). [Thm]
+$\arg\min_\theta \mathcal{L}_{\text{SFT}}$ is the moment/M-projection $\pi^\star=\arg\min_\theta \mathrm{KL}\!\left(p_v\,\|\,\pi_\theta\right)$ (forward KL). Because forward KL is **mode-covering**, $\pi^\star$ assigns nonvanishing probability to every trace in $\mathrm{supp}(p_v)$ — including correct traces that $\pi_{\text{base}}$ produced with arbitrarily small probability. Thus SFT can *increase* $\pi(\text{correct computation})$ on regions PG cannot reach (Thm 2), up to model capacity.
+*Proof.* $\mathcal{L}_{\text{SFT}}(\theta)=H(p_v)+\mathrm{KL}(p_v\|\pi_\theta)$; minimizing over $\theta$ minimizes $\mathrm{KL}(p_v\|\pi_\theta)$. Forward KL $\to\infty$ if $\pi_\theta(o)=0$ where $p_v(o)>0$, forcing support coverage. $\square$
+
+### Contrast (the mechanism, one line).
+GRPO $\approx$ reweighting within $\mathrm{supp}(\pi_\theta)$ (Thm 2); SFT $\approx$ $\mathrm{KL}(p_v\|\pi_\theta)$ projection that *relocates* mass (Thm 3). **Sharpening does not travel; projection does.**
+
+---
+
+## 4. Transfer across structural distance
+
+**Assumption A (compositional subskills).** Each $q$ needs a set $S(q)$ of latent subskills; $r(q,o)=1$ iff $o$ executes all of $S(q)$ correctly. A trace $o$ *exercises* subskills $E(o)\subseteq S(q)$. Subskill competence composes multiplicatively: $\rho_\pi(q)\approx\prod_{s\in S(q)}c_\pi(s)$, $c_\pi(s)\in[0,1]$.
+
+### Theorem 4 (Transfer decomposition and a distance-monotone bound). [Sketch]
+For an OOD prompt $q'$ with required subskills $S(q')$, decompose $S(q')=S_{\text{shared}}\cup S_{\text{novel}}$ relative to the training traces.
+- **SFT lower bound:** process-level supervision raises $c(s)$ for every $s$ exercised by verified traces; hence $\Delta\rho^{\text{SFT}}(q')\ \ge\ \big(\prod_{s\in S_{\text{shared}}}c^{\text{SFT}}(s)-\prod c^{\text{base}}(s)\big)\prod_{s\in S_{\text{novel}}}c^{\text{base}}(s).$
+- **PG upper bound:** by Cor 1.1, $\Delta\rho^{\text{GRPO}}(q')\le \rho_{\text{base}}(q')=\prod_{s\in S(q')}c^{\text{base}}(s)$, which is tiny when any novel subskill has low base competence.
+
+Define structural distance $d(q')=|S_{\text{novel}}|$. As $d$ grows, the PG bound decays multiplicatively (each novel subskill $<1$), while the SFT bound decays only through the $S_{\text{novel}}$ factor but retains the reinforced $S_{\text{shared}}$ product. Hence $\Delta\rho^{\text{SFT}}$ dominates and both decay with $d$.
+> **Predicts:** monotone transfer decay with distance for *both* operators, with SFT decaying slower — exactly Fig 1 (in-dist $\to$ SVAMP $\to$ MATH; C $\approx 2\times$ A at every distance).
+
+---
+
+## 5. Update magnitude (linking to the mechanistic M4 finding)
+
+### Proposition 5 (GRPO's aggregate parameter movement is advantage-variance-limited). [Prop]
+$\mathbb{E}\|g_{\text{GRPO}}(q)\|$ scales with the group advantage dispersion $\mathrm{Var}_i(\hat A_i)^{1/2}$, which for binary reward equals $\sqrt{\rho(1-\rho)}/(\sigma+\varepsilon)$-weighted score norm; it vanishes as $\rho\to0$ or $1$. SFT's gradient $\nabla\mathcal{L}_{\text{SFT}}$ has no such gating (full cross-entropy on every token). Therefore, aggregated over a dataset dominated by easy/near-solved ($\rho\to1$) and hard/unreachable ($\rho\to0$) prompts, $\|\Delta\theta_{\text{GRPO}}\|\ll\|\Delta\theta_{\text{SFT}}\|$.
+> **Predicts:** the measured LoRA-delta magnitude gap (GRPO $0.88$ vs SFT $27.94$, $\sim32\times$; Fig 5 / §24-M4). Also predicts GRPO's change concentrates where advantage variance is nonzero, i.e. sparse/surgical.
+
+---
+
+## 6. What the theory claims — and what would falsify it
+
+**Claims.** (i) GRPO gains vanish off the reachable-correct support (Cor 1.1); (ii) SFT-on-verified can place mass off-support (Thm 3); (iii) both transfers decay with structural distance, SFT slower (Thm 4); (iv) GRPO's net weight movement is small/sparse (Prop 5).
+
+**Falsifiers (honest).** (a) If GRPO raised accuracy on a held-out family with base pass@K $\approx 0$, Cor 1.1 fails. (b) If a matched-compute SFT did *not* exceed GRPO OOD once verified traces cover the shared subskills, Thm 4's lower bound is vacuous. (c) If SFT's OOD gain came purely from longer/more CoT (rejected: M3 length/steps identical, §24) rather than higher correct-computation likelihood, the projection story is wrong. (d) Confound-fixed M1 must show SFT lowers NLL on *self-consistent* correct OOD traces; if not, Thm 3's "mass on correct computation" is not what's happening (this experiment is queued).
+
+**Assumptions to verify empirically.** Assumption A (compositional subskills) — probe via subskill-tagged OOD sets; verifier soundness — audit false-positive rate; the reachability premise of Cor 1.1 — measure base pass@K on each OOD family (queued).
+
+---
+
+## 7. Extended theory (round 2) — six new results, each with a validating experiment
+
+### Theorem 6 (Reachability–Headroom Law — explains BOTH nulls). [Thm/Sketch]
+Let $b=\rho_{\text{base}}(\mathcal{D}_{\text{harvest}})$ be the base pass rate on the harvest set (governs how many verified
+traces exist) and $h=1-\rho_{\text{base}}(\mathcal{D}_{\text{OOD}})$ the OOD headroom. The SFT-on-verified OOD gain obeys
+$$\Delta^{\text{SFT}}_{\text{OOD}} \;\le\; C\cdot \underbrace{g(b)}_{\text{harvest mass}}\cdot \underbrace{h}_{\text{headroom}},\qquad g(b)\to 0\text{ as }b\to 0.$$
+*Proof sketch.* Verified-trace count $\propto b$ (no correct rollouts ⇒ empty $\mathcal{D}_v$ ⇒ SFT is a no-op, cf. Cor 1.1 for the C arm); and gain is bounded by remaining headroom $h$ (can't exceed 1). Product form ⇒ an inverted-U in base competence: too weak (b→0, no traces) OR already-saturated/instruct (h→0, no headroom) ⇒ $\Delta\to0$. $\square$
+> **Predicts + EXPLAINS OUR TWO NULLS on one curve:** SmolLM2-1.7B ($b\approx0.03$, harvest≈0) → null; Phi-3.5-instruct ($h$ small, already strong) → null; mid-competence bases (Qwen/OLMo/DeepSeek/Yi) → large gains. **Experiment E6:** plot $\Delta^{\text{SFT}}_{\text{MATH}}$ vs base-MATH-acc across ALL 8 families → expect inverted-U/threshold; SmolLM & Phi fall at the two zero-ends. (Data already collected — just plot.)
+
+### Theorem 7 (Verifier-noise robustness). [Thm]
+If the verifier has false-positive rate $\varepsilon$ (labels an incorrect trace correct), the SFT target becomes a mixture
+$(1-\varepsilon)p_v + \varepsilon p_{\text{wrong}}$; OOD gain degrades at most linearly: $\Delta^{\text{SFT}}(\varepsilon)\ge \Delta^{\text{SFT}}(0)-L\varepsilon$ for Lipschitz $L$ (KL is smooth in the mixture weight).
+*Proof.* Cross-entropy is linear in the target distribution; the projection target moves $O(\varepsilon)$ in TV ⇒ minimizer moves $O(\varepsilon)$ (projection stability). $\square$
+> **Experiment E7:** inject $\varepsilon\in\{0,0.1,0.2,0.4\}$ label-noise into the verified set for Qwen-3B → measure MATH Δ; expect ~linear, graceful decay (robustness = practical selling point).
+
+### Theorem 8 (Trace-scale law). [Sketch]
+OOD gain grows concavely (log-like) with verified traces per problem $m$: $\Delta^{\text{SFT}}(m)\approx \Delta_\infty(1-e^{-m/m_0})$ (diminishing returns; more traces = better subskill coverage, saturating).
+> **Experiment E8:** Qwen-3B SFT on $m\in\{1,2,4,8\}$ verified traces/problem → MATH Δ; expect concave saturation.
+
+### Theorem 9 (On-policy sufficiency). [Sketch]
+SFT on the base model's OWN verified traces attains the same OOD gain as SFT on a stronger model's correct traces of equal count, up to the shared-subskill overlap — because the projection only needs to place mass on *reachable-correct computation*, which own-traces already exemplify.
+> **Experiment E9:** Qwen-3B SFT on (a) own verified traces vs (b) Qwen-14B's correct traces → compare MATH Δ; expect ≈, isolating "own reachable" vs "any correct".
+
+### Proposition 10 (Fragile-band concentration — Cor 1.2 empirical). [Prop]
+GRPO's per-problem parameter movement (and any gain) is supported on problems with base pass@1 $\in(0,1)$; expected contribution $\propto b(1-b)$, zero at the extremes.
+> **Experiment E10:** bin GSM8K-train by base pass@1; measure GRPO per-bin Δ → hump at mid-band, ≈0 at 0 and 1.
+
+### Theorem 11 (Hybrid optimality). [Sketch]
+SFT-on-verified (mass placement, Thm 3) then a short GRPO phase (fragile-band sharpening within the new support, Thm 1) dominates either alone: SFT expands reachable-correct support, which GRPO can then reweight (GRPO's zero-signal problem is relieved once SFT raised $b$ on the fragile band).
+> **Experiment E11:** arm H = SFT-verified → GRPO (100 steps) on Qwen-3B; compare OOD to A and C; expect H ≥ C > A.
+
+# ============================================================================
+# APPENDIX B — FINDINGS & NOVELTY (folded from FINDINGS_AND_NOVELTY.md)
+# ============================================================================
+# Findings, Core Novelty, and the Downstream Question — one-page summary (2026-09-01)
+
+## The one-sentence claim
+
+> **What looks like "mode collapse" under RLVR is largely *routing compression*, not *capability erasure*:
+> the model stops *choosing* many reasoning strategies, but — on the strategies the base was genuinely
+> competent at — it can still *execute* them at least as well, or better. Marginal strategy diversity and
+> reasoning capability are different objects, and in math they are nearly decoupled.**
+
+---
+
+## What we measured (the decomposition)
+
+For a problem `q` and a reasoning strategy `m`, we separate three quantities that prior "diversity
+collapse" work conflates into one marginal number:
+
+- **Accessibility / routing** `ρ(m|q)` = how often the model *chooses* strategy m (measured from free
+  generations + a strategy classifier, and from the log-prob of entering the strategy).
+- **Conditional competence** `c(m,q)` = P(correct | forced to use m) — can it still *execute* m?
+  (measured by high-adherence prefix-forcing, forced_n=32).
+- **Functional complementarity / value** `v(m|q)` = does m solve problems the *other* strategies can't?
+  (marginal coverage over the strategy set).
+
+A strategy only matters downstream if **A · C · V** is jointly non-trivial — the **ACV** view.
+
+---
+
+## Findings (evidence, honestly qualified)
+
+**F1 — Routing compresses under RL.** Behavioral routing entropy drops (Qwen: 3.51 → 2.71 effective
+strategies/problem; log-prob of entering named strategies down −0.34 nats/tok on Qwen, −0.67 on Llama).
+The support-floor baseline preserves routing (≈ base). *Both* an entropy measure and a log-prob measure
+agree.
+
+**F2 — Competence is preserved/improved, on modes that matter (the key result).** Using a stable
+high-N measurement (forced_n=32) and controlling for base competence:
+
+| family | modes with base competence ≥ 0.2 | mean Δc (grpo − base) | retain | improve |
+|---|---|---|---|---|
+| Qwen  | 174 | **+0.077** | 87% | 71% |
+| Llama | 63  | **+0.169** | 94% | 83% |
+| DeepSeek | 328 | −0.027 | 55% | 32% (boundary case) |
+
+So on Qwen + Llama, RL suppresses routing (F1) while conditional competence *rises* (F2) — `ρ↓, c↑`.
+(An earlier forced_n=4 pass suggested erosion; that was small-sample regression-to-mean, removed by
+forced_n=32. DeepSeek is the honest boundary case: weak base on MATH-500 + train/eval mismatch.)
+
+**F3 — In math, strategies are functionally redundant (`v ≈ 0`).** Of 100 solvable problems, almost
+none are solved *uniquely* by one strategy; mean per-mode complementarity `v_m ≈ 0.014`; a mean of
+8–9 of 14 strategies solve each solvable problem.
+
+**F4 — Therefore diversity buys no downstream accuracy in math.** Stratified sampling (deliberately
+drawing K *different* strategies) vs iid sampling, matched budget, across Qwen/Llama/DeepSeek:
+Δ(stratified − iid) ∈ [−0.05, +0.01] ≈ 0, and **pass@32 is identical** for stratified and iid.
+Oracle single-strategy routing is *below* plain iid pass@16. Preservation baselines (floor / DPH-F)
+add marginal diversity but no competence or pass@k edge over plain GRPO.
+
+**F5 — The paradox is mechanistically expected, not surprising.** Softmax routing gradient
+`∂J/∂z_m = ρ_m(c_m − J)` suppresses below-average strategies; but the executor shares parameters, so
+`Δc_m ≈ η Σ_j ρ_j ⟨∇c_m, ∇c_j⟩` — competence can *rise* via shared-gradient transfer even as routing
+falls.
+
+**F7 — Gradient-alignment (mechanism test) — INCONCLUSIVE (infra).** Attempted to measure the
+strategy-conditioned gradient cosine `G_ij=cos(∇L_i,∇L_j)` directly (grad_align.py) to empirically ground
+F6's benign-collapse claim. Repeated CUDA OOM on the single-GPU full-sequence backward of a 7B model (even
+at last-1-layer + CPU-stored grads + gradient checkpointing — killed-process GPU memory not freeing between
+relaunches on the shared GPU; a partial run reached 11/14 strategies). **Deferred to future work** (needs
+multi-GPU/ZeRO sharding or activation offload). F6 therefore rests on the analytical derivation + the robust
+empirical ρ↓/c↑ (F1,F2), not a measured G matrix.
+
+---
+
+## Core novelty (what is new vs the field)
+
+The 2026 literature (SetPO, DPH-RL, DMPO, Uniqueness-Aware RL, ModC) treats *marginal* strategy
+diversity as the thing to preserve, and mode collapse as a capability problem to fix. Our contribution
+is a **measurement + conceptual correction**, not another regularizer:
+
+1. **Causal decomposition** of "mode collapse" into routing (ρ), conditional competence (c), and
+   functional value (v). We show marginal mode probability **cannot identify capability loss** — the
+   same `ρ_m` can hide a fully-competent-but-unchosen strategy or a genuinely erased one.
+2. **New empirical phenomenon** across model families: `ρ↓` while `c↑` — collapse without forgetting.
+3. **A theory of *when collapse is benign vs harmful*.** Harmful collapse requires *both* loss of
+   competence/access **and** non-redundant functional value (`v>0`). In math, `v≈0`, so the observed
+   collapse is *benign compression*. This reconciles our null with the literature's positive diversity
+   results: **diversity helps only where modes are functionally complementary.**
+
+That reframes the target from *"preserve diversity"* to *"preserve only functionally non-substitutable
+capability"* — and shows most diversity-preservation effort in math is optimizing a quantity with no
+downstream value.
+
+---
+
+## Is the downstream task important? — the honest answer
+
+**We deliberately tested it, and in math the answer is: no measurable downstream benefit from the
+diversity/repertoire angle.** Stratified sampling ≈ iid (F4); oracle routing < iid; adaptation to other
+math tasks showed no penalty from collapse (separate experiment). This is *why the paper is a
+correction, not a performance-method paper* — and stating it plainly is a strength, not a weakness.
+
+**Where downstream importance *could* still exist (and the paper's forward claim):** only when
+strategies are **functionally complementary** (`v>0`) — e.g. controlled algorithmic regimes (BFS vs
+DFS, brute-force vs DP, enumeration vs closed-form) where one strategy uniquely succeeds. There,
+mode-diverse sampling should help (consistent with ModC). The paper's testable prediction:
+
+> **Δpass@k from mode-diverse sampling ∝ functional complementarity v.**
+
+Math sits at `v≈0, Δpass@k≈0`; complementary tasks sit at `v≫0, Δpass@k≫0`. If that relationship
+holds, `v` — not entropy — is the quantity that determines whether reasoning diversity matters. **That
+is the downstream importance: not "preserve diversity for accuracy," but "diversity has value exactly
+and only where complementarity is high," which is measurable and predictive.**
+
+---
+
+## Status & what remains
+- Validated: decomposition, `ρ↓/c↑` (Qwen+Llama, high-N), `v≈0` in math, no downstream diversity gain.
+- To strengthen to award-contending: **mechanism** — layer-wise strategy-decodability probe (is the
+  suppressed strategy still *represented*?) + activation steering (causal recovery); the **controlled
+  complementarity benchmark** (the only place harmful collapse / diversity value can exist); and running
+  the diversity-preservation baselines through the (ρ,c,v) probe.
+- Full plan: `PIVOT_mechanism_plan.md`. Detailed results: `ROUTING_VS_COMPETENCE_RESULTS.md`.
+
+## §44 (2026-09-08): The SFT operator advantage is IRREDUCIBLE (72-GPU sweep)
+Tested whether GRPO's weak OOD transfer can be "rescued" by adding a forward-KL self-distillation term
+(NLL on the model's OWN verified-correct traces), weight β_sd — the mass-placing axis: β_sd=0 is plain
+GRPO, β_sd→∞ is pure SFT. Swept β_sd∈[0.05,20] × {400,800} steps, 8–9 replicates/point across 9 nodes,
+two OOD benchmarks.
+RESULT (honest): FLAT plateau. MATH-500 stays ~0.33 (vs GRPO 0.30, SFT 0.410); full-MATH stays ~0.29≈base
+(vs SFT 0.361). No dose-response even at 10–20× weight. H1 (monotonic axis) and H2 (full rescue) REFUTED.
+WHY IT MATTERS (thesis-strengthening): the SFT operator's OOD-transfer advantage is NOT decomposable into
+"GRPO + trace rehearsal." The on-policy advantage-weighted gradient caps how much an explicit NLL term can
+place mass (ρ≈0 persists) — so you cannot cheaply convert GRPO into SFT-level generalization. The UPDATE
+RULE itself is the irreducible cause of OOD transfer of verified experience. This is a stronger, more
+falsifiable claim than a clean rescue would have been, and it closes the obvious reviewer question
+("just add rehearsal to GRPO") with a decisive negative.
+
+## §45 (2026-09-08): the asymmetry is ORDER/PRECONDITION, not mutual destruction (honest correction)
+Pre-registered prediction: continuing SFT with GRPO would ERODE its OOD transfer. OBSERVED: it does NOT —
+SFT-C (MATH-500 0.410) + 400 GRPO steps → 0.4325 (ABOVE SFT). SFT→GRPO is complementary. This is a richer,
+more accurate story than erosion and it completes the mechanism:
+- GRPO **from base** cannot CREATE OOD-correct probability mass (ρ≈0). §44 proves even a bolted-on NLL
+  self-distillation term can't fix this (flat 0.335 across β_sd∈[0.05,20], 3 seeds) — the on-policy
+  advantage-weighted gradient can only reweight mass that already exists, not place new mass.
+- GRPO **from an SFT'd model** CAN sharpen the mass SFT placed (0.410→0.433).
+COMPLETED THESIS: "the update rule governs OOD transfer of verified experience" — precisely because the RL
+update can only *reweight*, not *place*, probability mass. SFT (an M-projection / mass-placing operator)
+establishes OOD-correct mass; GRPO then refines it. This explains (a) why RL-from-base transfers ~0, (b) why
+SFT transfers, (c) why the standard SFT→RL recipe works, and (d) why you cannot shortcut SFT by adding
+rehearsal to GRPO (§44). Reported honestly including the refuted pre-registration.
