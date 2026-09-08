@@ -2574,3 +2574,52 @@ experiment is now warranted: from an n3 checkpoint, branch {continue-GRPO-n3 / s
 model's own verified n3 traces via --init-adapter) / matched-random / difficulty (GRPO on n5) / continued-SFT},
 eval on held-out n5/n6. WIN = consolidation improves n5/n6 MORE than difficulty at matched compute → a training
 interval exists between "solves the instance" and "composes the skill". This is the award-target mechanism test.
+
+# ============================================================================
+# §53 RIGOROUS MECHANISM+METHOD PLAN (H-A consolidation interval) — award-target
+# ============================================================================
+GOAL: establish, to substantial-importance standard, that (M) a measurable INTERVAL exists between "GRPO solves
+an instance" and "the model composes the underlying skill", caused by group-advantage vanishing before skill
+generalization; and (Method) a CONSOLIDATION method that detects the interval and exploits it BEATS the strongest
+SFT→GRPO / difficulty-allocation baselines at matched compute (or matches them with materially less data/compute).
+Endpoint = FROZEN-model compositional reliability + external benchmarks. Report negatives honestly; kill criteria below.
+
+## STAGE 1 — MECHANISM EXISTENCE (rigor: does the interval exist and is it caused by advantage-vanishing?)
+S1a Gap-vs-training × multi-seed: for GRPO-on-n3 seeds s0..s7, eval checkpoints {50,100,200,300,400} on n3(in-dist),
+    n5,n6 (length-gen). PREDICT: original(n3) rises + SATURATES while n5/n6 LAG and are still-rising → the interval.
+    Report gap(n3−n5) vs step, mean±CI over seeds (TASK-CLUSTERED bootstrap). Interim: n3 0.518 vs n5 0.442 (ckpt-250).
+S1b Advantage-vanishing link: measure per-task group success p_t(n3) and u_G(p)=1−p^G−(1−p)^G (frac groups with
+    both outcomes) over training. PREDICT: as p(n3)→1, u_G→0 (GRPO signal on n3 dies) WHILE n5 still has headroom
+    (p(n5)<1, u_G(n5)>0). This is the causal core: reward saturates before skill generalizes.
+S1c Controls: is the gap just "harder tasks"? Compare to a model TRAINED on n5 directly (n5 in-dist should be high)
+    → confirms n5 is learnable, so n3-trained's n5-lag is a transfer/consolidation gap, not intrinsic difficulty.
+
+## STAGE 2 — BRANCH (does consolidation beat controls at MATCHED compute?) [RUNNING: §52c]
+From matched mid checkpoint, 150-step branches, MULTI-SEED (repeat over ≥4 base seeds): 
+  b consolidation (SFT own/canonical verified n3 traces) · c matched-random · a continue-GRPO-n3 · d difficulty
+  (GRPO-n5) · e continued-SFT-from-base. Eval held-out n5,n6 + external. WIN = b > d on n5/n6 at matched compute,
+  AND b > c (targeting matters) AND b(from-ckpt) informative vs e(from-base). Task-clustered CIs, dev-selected.
+
+## STAGE 3 — THE METHOD (dynamic > fixed): the actual contribution
+Implement CONSOLIDATION-SCHEDULED RL: online train-only diagnostic = gap(original-success − related-success) on a
+held-out diagnostic split; when gap>τ, insert a short consolidation block (SFT on verified traces of high-gap
+tasks); RETURN to RL; LEAVE consolidation when related-instance success STABILIZES (not when original saturates).
+Compare vs: fixed SFT→RL, random replay, difficulty-based allocation (PRISM/DeReason neighbors), pure GRPO, pure
+SFT. Must WIN at matched compute OR match with less data/compute. Ablate τ, block length, diagnostic-set size.
+
+## STAGE 4 — GENERALITY + DOWNSTREAM (external validity)
+- 2nd controlled family (different op vocabulary; deeper compositions) + n2→n4 replication of the interval.
+- 2nd MODEL family (Qwen2.5-3B-Instruct or Llama-3B) — one COMPLETE matched comparison.
+- Real domain: GSM8K→MATH and/or code (MBPP→HumanEval) consolidation-scheduled RL.
+- DOWNSTREAM INSTRUMENT: frozen-model composition — train short verified computations, eval one-shot assembly into
+  longer unfamiliar ones; splits {seen-op new-instance / new-composition / longer / MISSING-op boundary}.
+
+## STATS DISCIPLINE (every main result)
+Separate TRAINING SEEDS (≥4) from DECODING replicates (k); TASK-CLUSTERED bootstrap CIs; select τ/schedule on DEV;
+keep an UNTOUCHED confirmation set; report effect sizes + CIs, not point estimates.
+
+## KILL CRITERIA (honest)
+- S1a: if no gap widens under length-gen across seeds → interval absent → DROP H-A, pivot to H-C coverage.
+- S2: if consolidation does NOT beat difficulty at matched compute → interval not exploitable → method fails, report null.
+- S3: if dynamic ≈ fixed SFT→RL → no scheduling value → report as "SFT→RL suffices" (still useful, weaker claim).
+Each stage gates the next; expand only what survives its discriminating test.
