@@ -2646,3 +2646,19 @@ INTERIM: consolidation (b) lifts BOTH n3 (0.52→0.55) and the composition split
 at matched 150-step compute. DECISIVE comparison pending: b_consol vs d_diffN5 (difficulty) on n5/n6 — does
 consolidating ALREADY-SOLVED tasks beat spending the same compute on hard tasks? (d retraining ~25min.) Then
 multi-seed for CIs. Honest verdict to follow.
+
+## §52c BRANCH VERDICT (single seed s0, from n3 ckpt-150, 150-step matched compute) — PROMISING WIN
+| arm | n3 (in-dist) | n5 (composition) | n6 |
+|-----|--------------|------------------|----|
+| a_grpoN3 (continue GRPO on solved n3) | 0.493 | 0.418 | (run) |
+| d_diffN5 (difficulty: GRPO on hard n5) | 0.502 | 0.439 | (run) |
+| c_rand (SFT random n3 traces) | 0.525 | 0.445 | 0.459 |
+| **b_consol (SFT own verified n3 traces)** | **0.550** | **0.466** | 0.454 |
+| e_sftbase (SFT n3 from base) | (run) | (run) | — |
+**On the composition split n5, the predicted ORDER holds: consolidation (0.466) > random (0.445) > difficulty
+(0.439) > continue-GRPO (0.418).** i.e. spending 150 steps CONSOLIDATING already-solved n3 tasks improves
+composition MORE than spending the same 150 steps on hard n5 tasks (+0.027) or continuing GRPO on n3 (+0.048),
+and targeting beats random (+0.021). This is the WIN condition — the consolidation interval is EXPLOITABLE.
+CAVEAT: single seed, n=250, margins ~2·SE → SUGGESTIVE not conclusive. Multi-seed (s1/s2/s3) launching now for
+task-clustered CIs; only then is the claim solid. a_grpoN3 being WORST on n5 corroborates the mechanism (more
+GRPO on the saturated task does not help composition).
