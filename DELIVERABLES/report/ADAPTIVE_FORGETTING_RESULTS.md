@@ -1947,3 +1947,20 @@ full-MATH: SFT-C 0.361 → +50 GRPO 0.355 (transient dip) → +400 GRPO **0.3825
 Mirrors MATH-500 (0.410→0.4325). BOTH OOD benchmarks confirm: continuing SFT with GRPO does NOT erode
 transfer — it sharpens it. Erosion hypothesis refuted on both; the RL-reweights-can't-place-mass mechanism
 (§44 + §45) holds cross-benchmark. rev150 interior point finishing (minor).
+
+## §46 H5 subspace localization (LAUNCHED, 2026-09-08) — where does OOD-transfer live?
+NEW mechanistic hypothesis. SFT on the verified bank with LoRA restricted to: attn-only (q/k/v/o),
+MLP-only (gate/up/down), or all (=arm-C). 6 replicate workers/arm. Eval OOD MATH-500 + full-MATH.
+PREDICTION (from M4: GRPO leaves MLP rows unmoved; §44/§45 mass-placing): OOD transfer is MLP-LOCALIZED —
+MLP-only SFT ≈ all (~0.41 MATH-500), attn-only ≈ base (~0.30). Status: training (~30-40min), results pending.
+Anchors: base 0.296, SFT-all 0.410 (MATH-500) / 0.361 (full-MATH).
+
+## LIVE STATUS (2026-09-08, 72-GPU fleet, 3 fresh clusters)
+COMPLETE + pushed: §37 code(+0.096) · §40 dense cross-domain (OlympiadBench/full-MATH/MMLU-Pro) · §41 prior-art
+positioning · §42 tuned-GRPO fairness (gap survives KL0/2x/g16) · §44 mass-placing axis IRREDUCIBLE
+(flat 0.335 across β_sd 0.05-20, 3 seeds, 2 benchmarks; H1/H2 refuted honestly) · §44b hard-tier (SFT 0.104 >
+rescue 0.081 > base 0.074) · §45 order/precondition (erosion REFUTED; SFT→GRPO complementary 0.433>0.410 &
+0.383>0.361; RL reweights, can't place mass).
+RUNNING: §45 fine 3-seed decay curve (error bars, mains) · §46 H5 subspace localization (workers).
+THESIS (settled): the update rule governs OOD transfer because RL can only REWEIGHT probability mass, not
+PLACE it — SFT places OOD-correct mass, GRPO sharpens it. Explains RL-from-base≈0, SFT transfers, SFT→RL works.
