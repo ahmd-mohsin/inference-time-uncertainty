@@ -1,3 +1,46 @@
+# The Update Rule Governs OOD Transfer of Verified Experience
+### (RL *reweights*, SFT *places* probability mass) — HEADLINE / current methodology
+_Canonical results doc. Headline finding + all current-methodology results up top; prior failed techniques
+below are retained as MOTIVATION. Base: Qwen2.5-3B unless noted. All runs pushed to GitHub main._
+
+## HEADLINE THESIS
+Given the SAME verifier-correct experience, the **update rule** decides whether it transfers out-of-distribution.
+**GRPO can only *reweight* probability mass that already exists (ρ≈0 on unreached OOD-correct regions); SFT
+(M-projection) *places* new mass there.** Hence SFT-on-verified transfers, RL-from-base does not, RL sharpens
+what SFT placed, and you cannot shortcut SFT by bolting rehearsal onto RL. One principle explains all results.
+
+## HEADLINE RESULTS (this methodology)
+| # | Experiment | Result | Verdict |
+|---|-----------|--------|---------|
+| §37 | Code HumanEval OOD | base 0.566 → SFT 0.662 (+0.096) | SFT≫GRPO, 4th domain |
+| §40 | Dense OOD @7B | MMLU-Pro C 0.408 / A 0.304 (+0.104); full-MATH C 0.382/A 0.323; Olympiad C 0.135/A 0.100 | SFT≫GRPO everywhere |
+| §42 | Tuned-GRPO fairness | KL0/2×/g16 all 0.30–0.33 (MATH-500) | gap survives tuning (signal-structural) |
+| §44 | Mass-placing axis (β_sd 0.05–20, 3 seeds, 2 bench) | flat 0.335±0.01, never→SFT 0.410 | **GRPO+rehearsal CAN'T reconstruct SFT (irreducible)** |
+| §44b | OlympiadBench hard-tier | base 0.074 / rescue 0.081 / SFT 0.104 | SFT wins hardest tier |
+| §45 | Reverse SFT→GRPO (3-seed) | 0.410 → 0.433 monotonic rise | GRPO safely sharpens placed mass (no erosion) |
+| §46 | H5 subspace | attn 0.360, mlp 0.354 ≈ all 0.367 | mass-placing redundantly distributed |
+| §48 | H6 ignition | tiny seed→GRPO stays ~0.33 | no cheap ignition; need substantial SFT |
+| §49 | H9 in-dist crossover | SFT>GRPO in-dist 0.705 vs 0.52 AND OOD | advantage GENERAL, not OOD-only |
+
+HONESTY LEDGER: 5 refuted pre-registrations (H1/H2, erosion, H5-localization, H6-ignition, H9-crossover) — every
+optimistic shortcut failed, the core survived every attack. Full per-run detail, ablations, mechanism (§24),
+theorem validations (§29–§35), and Appendix A (proofs) / Appendix B (novelty) follow.
+
+---
+# MOTIVATION — prior techniques that FAILED or hit parity (why we pivoted to the update-rule study)
+The material below (originally the MFS/Quotient-GRPO + coverage-constraint + credit-assignment program) is
+retained as MOTIVATION, not the contribution. These honest nulls are what drove us to isolate the update rule:
+- MFS/Quotient-GRPO (proposal-erased RL state) → capability PARITY (init/inference property, not learned).
+- Gradient-utility credit gate (D1) → FAILED; objective-preserving densification (D2) → closed; dense
+  reward shaping (cert_residual) → thin, no variant separation.
+- Coverage-as-constraint on a base-correct bank — support-ratchet (soft), projection (hard), PBA/DPH-forward-KL
+  rehearsal baselines → did not yield a capability method (these become the §44 rehearsal comparators).
+- Adding OOD data to GRPO (arm B, +10% MATH-train) → does NOT help OOD (+0.024).
+Read as: many reward/state/credit/coverage interventions failed to move OOD transfer → the lever is the
+UPDATE RULE itself (SFT vs GRPO on identical verified experience), which is this paper's headline (top).
+The detailed prior-technique tables + chronological log start here ↓
+---
+
 # RL Consolidation — Minimal-Failure-State / Quotient-GRPO (where we are)
 
 **Decision (2026-09-05):** this is an **RL paper**. All inference-time / cross-agent-handoff /
