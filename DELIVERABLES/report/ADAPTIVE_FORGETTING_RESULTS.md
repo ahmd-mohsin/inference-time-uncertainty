@@ -1783,3 +1783,24 @@ reference for the same base: full-MATH 0.361 @3B; §44 axis quantifies the inter
 - **β_sd→∞ endpoint** (SFT-verified, sft_q3b_s0): **0.410**
 Clean ~+0.09 gap for the GRPO+forward_kl interior (mu∈{0.05..2.0}) to interpolate. Interior adapters
 training (~400 steps, 14.5 s/it); §44 curve = transfer vs β_sd across 72 GPUs of replicates. Base-3B anchor pending.
+
+## §44 mass-placing axis — PRELIMINARY (C1, 1 replicate, MATH-500 n=200 k=4)
+GRPO + forward-KL self-distillation on own verified bank; β_sd (mu) = weight of the NLL term.
+| β_sd | MATH-500 mean_p |
+|------|-----------------|
+| 0 (plain GRPO, §42) | 0.304 |
+| 0.05 | 0.3337 |
+| 0.10 | 0.3387 |
+| 0.25 | 0.3463 |
+| 0.50 | 0.3250 |
+| 1.00 | 0.3250 |
+| 2.00 | 0.3275 |
+| ∞ (pure SFT) | 0.410 |
+Base-3B anchor = 0.296. **HONEST READ:** the self-distillation term gives a small, real lift over plain
+GRPO (peak **+0.042** at β_sd=0.25: 0.346 vs 0.304) — the mass-placing mechanism helps DIRECTIONALLY —
+but at these weights (≤2.0) over 400 GRPO steps it PLATEAUS at ~0.32–0.35 and does NOT reach the pure-SFT
+level (0.410). So H2 (GRPO-rescue) is a **PARTIAL** rescue as-run, not full; H1 monotonicity is not clean in
+[0.05,2.0] (bump-then-plateau). Interpretation: the NLL "dose" here (diluted by the GRPO gradient, only 400
+steps) is far smaller than pure SFT (1200 steps of pure NLL) — full rescue likely needs larger β_sd (5–10)
+or more steps. NOT overclaiming. Replicates (C2/C3 + 6 workers, ~8-9/mu) + larger-β_sd extension pending for
+error bars + the true asymptote. This is reported as the honest current state.
