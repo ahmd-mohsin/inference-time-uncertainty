@@ -1919,7 +1919,7 @@ finishing — will only tighten this.)
 | GRPO steps from SFT-C | MATH-500 | note |
 |-----------------------|----------|------|
 | 0 (SFT-C baseline) | 0.410 | — |
-| 50 | 0.3925 | −0.018 (erosion begins) |
+| 50 | 0.3925 | −0.018 (full-MATH 0.355, −0.006) |
 | 150 | (training) | — |
 | 400 | (training) | — |
 | (plain-GRPO floor) | ~0.304 | §42 |
