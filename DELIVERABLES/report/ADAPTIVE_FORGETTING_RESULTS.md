@@ -2552,3 +2552,11 @@ first): (1) original not yet saturated (0.51) — the interval hypothesis is abo
 later checkpoints; (2) new_compose = reversed op-order may be too easy a composition — need genuinely harder
 compositions (ops seen individually, never in this arrangement); (3) testing harder n_ops{4,5}. Honest interim:
 no interval visible yet on easy arithmetic; hardening the composition test.
+
+### §52a (cont.) n_ops=4 diagnosis: original 0.473 ≈ same_op 0.445 (new_compose pending). Same "no gap" pattern.
+KEY METHOD FIX: the current new_compose (reversed op-order) is too weak — a genuine compositional test is
+LENGTH-GENERALIZATION: train GRPO on n_ops=3 originals, evaluate on n_ops=5 (longer chains of the SAME ops).
+If original(n3) saturates high while n5-composition stays low → the consolidation interval exists. Next cycle
+runs train-n3 → eval-n5 (and n2→n4) at multiple checkpoints; only if a real gap appears do we launch the
+branch experiment (consolidation vs difficulty vs continued-SFT). Reviewer's rule respected: don't force H-A —
+give it the PROPER hard-composition test, then keep or drop on evidence.
