@@ -2736,3 +2736,19 @@ gated: prove it beats difficulty on ONE real large-gap domain, then show general
 NOTE on non-GSM8K-dependence: the paper's OPERATOR results (§37 code, §40 MMLU-Pro/full-MATH/Olympiad, §49
 in-dist) already span 4 domains + ~16 model families — NOT GSM8K-specific. GSM8K appears only as ONE method-test
 TRAIN set; the mechanism+method claims will be shown across ≥2 substantial domains before any headline.
+
+## §55-D1 REAL-DOMAIN branch (GSM8K→MATH-500, from GRPO-GSM8K ckpt-150, 150-step matched) — POSITIVE (2 seeds)
+| arm | MATH-500 s0 | MATH-500 s1 |
+|-----|-------------|-------------|
+| a_cont (continue GRPO on GSM8K) | 0.2913 | — |
+| d_diff (difficulty: GRPO on GSM8K+MATH-train) | 0.3013 | 0.3150 |
+| **b_consol (SFT GSM8K-verified from ckpt)** | **0.3300** | **0.3625** |
+| e_sftbase (SFT from base) | 0.3575 | — |
+**Δ(b_consol − d_diff) = +0.029 (s0), +0.048 (s1) — POSITIVE on BOTH seeds.** On a REAL large-gap domain,
+consolidating verified traces beats spending the same compute on harder tasks (difficulty) — UNLIKE the
+arithmetic null (§52c). Ordering: e_sftbase(0.358) > b_consol(0.330) > d_diff(0.301) > a_cont(0.291). Two
+reads: (1) consolidation > difficulty > continue-GRPO — the consolidation-interval method WORKS on GSM8K→MATH;
+(2) but SFT-from-BASE (0.358) even beats consolidation-from-GRPO-ckpt (0.330) — the GRPO checkpoint is a WORSE
+starting point than base for MATH transfer (consistent with §45/§49: SFT is the strong operator; GRPO partially
+"uses up" transfer capacity). STATUS: promising 2-seed WIN; multi-seed CI now training (C1 rdB_gsm8k s2-s9 →
+branch each) to confirm Δ>0 with CI excluding 0 before claiming. If it holds → substantial real-domain method.
