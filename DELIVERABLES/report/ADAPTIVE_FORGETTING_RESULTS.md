@@ -1914,3 +1914,17 @@ All 3 seeds give a FLAT axis at **0.335±0.01** (SFT anchor 0.410, base 0.296). 
 seed-robust — NOT a single-seed artifact. §44 null is bulletproof: GRPO+self-distillation reaches ~0.335
 regardless of β_sd OR seed, and never approaches SFT. (seed-3 on C1 + 6-worker seed-1 replicates still
 finishing — will only tighten this.)
+
+## §45 REVERSE asymmetry — does GRPO ERODE SFT's transfer? (SFT-C continue-trained with plain GRPO)
+| GRPO steps from SFT-C | MATH-500 | note |
+|-----------------------|----------|------|
+| 0 (SFT-C baseline) | 0.410 | — |
+| 50 | 0.3925 | −0.018 (erosion begins) |
+| 150 | (training) | — |
+| 400 | (training) | — |
+| (plain-GRPO floor) | ~0.304 | §42 |
+PRELIMINARY: continuing SFT-C with plain GRPO for 50 steps already drops OOD transfer 0.410→0.393. If it keeps
+decaying toward the GRPO floor (~0.30) at 150/400 steps → GRPO ACTIVELY ERODES the SFT-acquired transfer,
+completing the operator asymmetry: §44 shows you can't lift GRPO UP to SFT-transfer (rescue fails at 20× dose);
+§45 shows GRPO drags SFT-transfer DOWN. Both isolate the UPDATE RULE as the causal factor. rev150/rev400 + a
+full-MATH decay curve pending.
