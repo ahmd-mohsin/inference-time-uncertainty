@@ -1678,3 +1678,45 @@ the load-bearing one); scorer occasionally stalls on a hanging completion (exec-
 - Hybrid GRPO+trace-SFT (Thm11) recovers the SFT transfer at GRPO's in-domain sharpness.
 
 **Honest scope statement (goes in limitations):** verifier-correct, LoRA-rank-32, ≤14B, math/code/symbolic. Not claimed: full-FT at 70B, non-verifiable rewards, agentic multi-turn. The Granite collapse + Phi/SmolLM nulls are reported as boundary cases, not hidden.
+
+## §43 NEXT-WAVE HYPOTHESES (making the methodology exciting — queued to fill 72 GPUs)
+
+Current thesis = "update rule governs OOD transfer of verified experience" (SFT≫GRPO). The 4-domain
+operator contrast is solid but the SFT-vs-GRPO dichotomy is partly known. These extensions turn a
+*comparison* into a *unifying law + an actionable fix* — the difference between "nice" and "award".
+
+**H1 — The mass-placing axis (THE unifying reframe, highest value).**
+Place ALL post-training operators on ONE spectrum by how much they *place probability mass on verified
+traces* vs *sharpen existing mass*: GRPO (pure sharpen) → PPO-clip → expert-iteration/ReST → RAFT/RFT
+(reject-sample-then-SFT) → SFT (pure mass-place). All trained on the SAME verified trace set.
+PREDICTION: OOD transfer is **monotonic in mass-placing-ness** (ρ, the log-prob-mass metric). If it
+holds, the paper's claim becomes "OOD transfer of verified experience is governed by a single scalar
+(mass-placement), and we can read it off any operator" — reframes the RL/SFT landscape, not just a duel.
+Cheap: RAFT/RFT reuse our existing harvest; only the interpolation knob is new.
+
+**H2 — Rescuing GRPO (null → method).** Add a small self-distillation term to GRPO: NLL on its OWN
+verified rollouts (weight β_sd swept 0→1). PREDICTION: recovers most SFT OOD transfer at GRPO's
+on-policy stability; ρ rises with β_sd. Turns "GRPO transfers ~0" into "here is the one line that fixes
+it, and here's why (Thm3 mass-placing)." This is the actionable contribution reviewers reward.
+
+**H3 — Order of operations.** SFT→GRPO vs GRPO→SFT vs interleaved, matched total steps + trace set.
+PREDICTION: OOD transfer tracks the LAST mass-placing update — SFT-last preserves, GRPO-last erases.
+Tests whether the effect is cumulative or recency-dominated. Clean, cheap, surprising either way.
+
+**H4 — Trace-diversity scaling (mechanism depth).** Harvest verified traces at temp {0.4,0.8,1.2} → vary
+trace-set entropy at fixed COUNT. PREDICTION: SFT OOD transfer ∝ trace diversity; GRPO flat regardless.
+Gives a scaling curve, ties to coverage. Distinguishes "more traces" from "more diverse traces".
+
+**H5 — Where the transfer lives (parameter-subspace ablation).** SFT with MLP frozen vs attention frozen
+vs full. PREDICTION: freezing MLP kills OOD transfer (transfer is MLP-localized, matching M4 that GRPO
+leaves MLP rows unmoved); freezing attention leaves it. Localizes the mechanism to a subspace — strong
+mechanistic figure.
+
+**H6 — Cross-domain interference matrix.** Does SFT-on-math degrade code (and vice-versa) more than GRPO?
+3×3 train-domain × eval-domain grid, both operators. PREDICTION: SFT broadens+transfers but risks
+interference; GRPO is inert (no transfer, no interference). Maps the cost of the benefit — honest, and
+another axis where the operators differ qualitatively.
+
+PRIORITY for GPU-fill after current dense evals land: H1 (unifying) > H2 (fix) > H3 (order) > H5 (subspace)
+> H4 (diversity) > H6 (interference). H1+H2 are the two that move the paper from spotlight to award-contention.
+All reuse the existing harvest + seed-0 adapters; no new data pipeline.
