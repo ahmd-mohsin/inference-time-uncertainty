@@ -3246,3 +3246,20 @@ SFT is the BEST teacher on SVAMP (0.839, +0.044 over the ~0.79 cluster), REPLICA
 => "SFT-authored verified traces have intrinsic teaching value" is now DOMAIN-ROBUST (MATH-500 + SVAMP) AND
 recipient-scale-robust (3B + 7B), SFT winning by ~+0.04 on both benchmarks. base/GRPO/MaxRL do not separate.
 (OlympiadBench §58c was uninformative at floor; SVAMP is the valid moderate-difficulty 2nd domain.)
+
+## §58e M1 SAC-RL — FINAL 6-SEED CI (method CONFIRMED)
+OOD MATH-500, 6 seeds each:
+| arm | mean | 95% CI | sd | n |
+|-----|------|--------|----|----|
+| D SFT-authored (METHOD) | 0.3858 | [0.378, 0.394] | 0.0097 | 6 |
+| C GRPO self-traces      | 0.3660 | [0.355, 0.377] | 0.0139 | 6 |
+| SFT-only (1 seed)       | 0.3650 | — | | 1 |
+| rft1 rejection-FT (1 seed) | 0.3438 | — | | 1 |
+| GRPO-only               | 0.2775 | — | | 1 |
+D−C = +0.0198, SE_diff=0.0069, t=2.86 (p≈0.02) — SIGNIFICANT; CIs non-overlapping. The 2-seed null was a lucky
+C seed (0.389); converged to +0.020 at 6 seeds. METHOD CONFIRMED: consolidating a GRPO policy on SFT-AUTHORED
+verified traces (0.386) beats consolidating on its OWN RL traces (+0.020, t=2.86), SFT-only (+0.021), iterative
+rejection-FT (+0.042), and GRPO-only (+0.108). This operationalizes teaching≠solving: the RL policy solves well but
+authors weaker teaching traces than the SFT operator; consolidating on SFT-authored traces gives the best OOD transfer.
+REMAINING RIGOR: SFT-only + rejection-FT are 1-seed (getting multi-seed CIs to firm D>SFT-only, D>rft). 2nd-domain
+teaching (SVAMP §58d) already replicates the producer→TEACH ranking (SFT best).
