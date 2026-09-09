@@ -3495,3 +3495,31 @@ Also: RL continuation from a consolidated recipient does NOT reliably improve OO
 NEXT OPTIONS (honest): (a) accept a modest, rigorous paper on "authorship/source quality of verified traces for transfer,
 with careful nulls"; (b) find a regime where an authorship×RL effect is LARGE and robust (different continuation objective,
 harder transfer gap, bigger scale) before claiming; (c) Gate C selection pilot only if a real signal reappears — currently unmotivated.
+
+# ============================================================================
+# §64 PIVOT (2026-09-09) — Identifying Curricula for Compositional Reasoning
+# ============================================================================
+RETIRE SAC-RL + RL-aware trace-author as PRIMARY method candidates (keep SAC-RL/SFT-producer as baselines).
+NEW BET (high-risk): do a small set of DIAGNOSTIC COMPOSITIONS unlock broad transfer between skills the model already has?
+Change the EXPERIMENTAL VARIABLE from author/init/loss/phase (all tried, all null) to the RELATIONSHIPS AMONG TRAINING TASKS.
+
+H1: conditional on adequate component competence, training on a small set of DIAGNOSTIC compositions gives substantially
+    more transfer to UNSEEN compositions than equally-numerous, matched-difficulty, matched-component-frequency problems.
+H2: the benefit is CONCENTRATED in a small "bridge" set with NONLOCAL transfer (few problems → many held-out families).
+
+DECISIVE FIRST EXPERIMENT (§5 of directive): compiler-backed code/structured-transform domain, ~12-24 typed primitives,
+routing patterns {sequential, reuse-intermediate, branch, combine-two}. Common SFT init covers PRIMITIVES, reserves
+COMPOSITIONS. Three matched pools from a common candidate universe:
+  A repeated-relationships | B random-new-compositions (matched counts/difficulty) | C diagnostic-compositions (separate competing computational hypotheses).
+Cross A/B/C × {validated on-policy RL, genuine iterative rejection-FT} = 6 conditions × 4 seeds = 24 runs.
+Endpoint: FROZEN-model accuracy on HELD-OUT compositions (1 attempt, executed). DECISION: continue iff C reproducibly
+beats B (beating A alone is insufficient — B is the ordinary-augmentation control).
+INSTRUMENT FIRST (§4): positive control (reproduce a known learning effect), validated RL/RFT paths, component acc 80-95%,
+composed acc 20-60% (calibrate, not thresholds), prespecified early+long horizons in rollout-tokens+update-exposure.
+LIT (novelty bar): Kong et al. reusable-modules (closest), RLT/PEAR/SOAR/PAC/ADR/RLAD/GraphPO/CURE/TCS. "More compositional
+data" / "SFT+RL" / "progress controller" alone = insufficient. Contribution = causal account of WHICH problems enable
+recombination + a validated selector beating random-recomposition/difficulty/progress baselines at matched cost.
+CORRECTIONS carried: describe eval as n=200,k=4 mean sampled correctness (NOT full MATH-500 pass@k); fix NLL-endpoint
+equivalence before any operator-barrier claim; implement real MaxRL (not R−p̂) if used; §54 null ≠ saturation.
+STATUS: building the instrument (comp_tasks.py generator + executable verifier + A/B/C pools) — pure code, GPU-free. 3 new
+p4d clusters connected (ports 1091/1092/1093) for calibration+training. Retired candidates remain as baselines/appendix.
