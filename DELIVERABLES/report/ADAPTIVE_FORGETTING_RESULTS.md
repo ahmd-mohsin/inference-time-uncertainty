@@ -3315,9 +3315,9 @@ Firming Phi with multi-seed CI; SmolLM2 salvage on SVAMP pending.
 ## THE PAPER IN ONE PARAGRAPH
 An RL-trained (GRPO) policy transfers POORLY out-of-distribution and — despite solving in-domain well — authors
 verified traces that are WEAKER teachers than traces authored by an SFT model. We (1) establish this dissociation
-(teaching value ≠ solving value), (2) show the SFT operator's traces have INTRINSIC, recipient- and family-invariant
-teaching value, and (3) turn it into a downstream method — SAC-RL: consolidate a GRPO policy on SFT-AUTHORED verified
-traces — which gives the best OOD transfer of any recipe tested.
+(teaching value ≠ solving value), (2) show the SFT operator's traces have INTRINSIC, teaching value that is CONSISTENT across the recipients/domains tested (not proven intrinsic; see §61), and (3) turn it into a downstream BASELINE — SAC-RL: consolidate a GRPO policy on SFT-AUTHORED verified traces.
+(REVISED §61: SAC-RL is a BASELINE, not the method — a fresh recipient on the same SFT-authored material already matches it;
+no RL synergy demonstrated. The intended method is an RL-aware trace AUTHOR; see §61.)
 
 ## HEADLINE NUMBERS (OOD MATH-500, Qwen2.5-3B, honest effect sizes)
 | recipe | OOD | vs SAC-RL |
@@ -3361,3 +3361,62 @@ explicitness (secondary). NO clean single causal knob yet — this is an open ga
 Solid conference paper (consistent, CI-backed, honest). NOT award-tier yet: novel effect sizes are small (+0.02),
 the large effect is vs a weak baseline, scope is math+LoRA+≤7B, and there's no clean mechanism. Award path = make the
 margin BIG somewhere (scale/regime) + a mechanism.
+
+# ============================================================================
+# §61 REVIEWER REFRAMING & CORRECTIONS (2026-09-09) — SAC-RL is a BASELINE, not the method
+# ============================================================================
+## CORRECTIONS TO PRIOR CLAIMS (honest, applied)
+1. SAC-RL is NOT the methodology to scale. The 4-cell numbers show SFT-authorship helps a FRESH recipient and a
+   GRPO recipient almost identically, and the fresh recipient already ≥ SAC-RL:
+   | recipient init | consolidate on GRPO-authored | consolidate on SFT-authored | SFT-auth benefit |
+   |----------------|------------------------------|-----------------------------|------------------|
+   | Fresh base (§56-E9) | 0.3742 | 0.3930 | +0.0188 |
+   | GRPO recipient (§58) | 0.3660 | 0.3858 (=SAC-RL) | +0.0198 |
+   Δ(benefits)=0.001 (one-tenth of a point). => NO demonstrated SAC×RL synergy; SFT-authored material simply helps
+   both recipients similarly, and fresh (0.393) ≥ SAC-RL (0.386). CAVEAT: these came from different runs; being
+   reproduced under identical banks/exposure/config with INDEPENDENT upstream GRPO (Gate A, running).
+2. "keeps RL in-domain gains" is NOT established by the OOD table — must measure in-domain + RL-improved-capability jointly.
+3. "intrinsic, recipient-invariant teaching value" is TOO STRONG. Correct claim: the SFT-authored source wins
+   CONSISTENTLY across the recipients/domains TESTED — consistency within these experiments, not an intrinsic property.
+4. Teaching≠solving is NOT yet separated from competence: the SFT producer is ALSO the strongest SOLVER (GSM8K 0.700
+   vs GRPO 0.514). The surviving finding is only "SFT producer generates more useful verified traces than tested
+   alternatives" — teaching competence and solving competence are CONFOUNDED. The original "weaker solver teaches
+   better" (MaxRL) did NOT survive (coverage-fragile, didn't reproduce at 7B).
+5. RELABEL "MaxRL-approx": our arm used advantage = R−p̂ (centered reward, NO std normalization). That is NOT the
+   published MaxRL estimator (centered reward / empirical success rate, with explicit zero-success handling). Renamed
+   to "centered-noStdNorm (scale_rewards=none)"; the real MaxRL comparator must be implemented before any MaxRL claim.
+
+## LITERATURE (this is a crowded neighborhood — "choose a better teacher" is insufficient novelty)
+- RLT (Reinforcement Learning Teachers of Test-Time Scaling, NeurIPS 2025): trains explanation-producing teachers with
+  STUDENT-BASED rewards, evaluates downstream distillation, studies init for subsequent RL. CLOSEST prior work.
+- SOAR: teacher rewarded for measured student improvement (curriculum). SEAL (Self-Adapting LMs): RL optimizes generated
+  training material via downstream improvement after weight updates. PEAR: better immediate SFT ≠ better subsequent RL;
+  offline training can be designed for the RL stage. Distilled RL: teacher info in the RL objective vs on-policy distillation.
+=> A teacher-selector / SFT-RL gate / imitation term is NOT enough. Contribution must be a SHARPER objective + demonstrated advantage + mechanism.
+
+## REVISED DIRECTION (higher upside): optimize verified experience for the recipient's SUBSEQUENT RL improvement
+HYPOTHESIS (motivated, NOT established): verified traces differ in how well they prepare a learner to acquire MORE
+capability via RL; the best traces for immediate IMITATION need not be the best for subsequent RL.
+Author reward (paired): r(B;θ) = J_V(R_K(S_m(θ,B))) − J_V(R_K(S_m(θ,B_ref))), B_ref = strong SFT-authored baseline,
+matched prompts+budget. Fixed schedule; intervention = CONTENT of verified experience. Requirements: fixed problems
+across banks; ACTUAL post-update performance (not confidence/equation-count/LLM-score); separate transfer tasks;
+held-out recipients; full cost accounting.
+
+## GATED PLAN (each expensive step must earn its existence)
+- GATE A (RUNNING): does SAC need an RL recipient? Controlled 4-cell factorial (fresh|GRPO recipient × GRPO|SFT-authored
+  bank), identical banks/exposure/config, INDEPENDENT upstream GRPO (e1_C_grpo_s0/1/2). Measure source-domain, OOD,
+  RL-improved-tasks, compute. DECISION: if fresh ≥ SAC at lower cost → DROP the initial RL stage.
+- GATE B: does authorship change SUBSEQUENT RL learning? Train matched recipients per producer bank, clone into
+  (i) continued SFT vs (ii) fixed RL continuation; shared prompts, matched budgets, 2 horizons. Δ_RL(B)=J_V(R_K(S_m(θ,B)))
+  −J_V(S_m(θ,B)); compare vs continued SFT. Look for RANKING REVERSAL (weaker-after-SFT → better-after-RL; PEAR motivates,
+  so reversal alone insufficient — content intervention must explain/exploit). DECISION: if RL adds no distinctive advantage → don't build RL-aware author.
+- GATE C: can measured learning-value improve selection/generation? Alt verified banks (same prompts) → estimate learning
+  value via small paired recipient probes → select → test on HELD-OUT recipients + unseen tasks. Baselines: best SFT bank,
+  random, genuine iterative rejection-FT, RLT-style, PEAR. DECISION: train an author (RL) only if measured selection already
+  reproducibly wins on held-out recipients.
+
+## TARGET CLAIM (aspirational, not yet demonstrated)
+"We optimize verified training experience for the capability a recipient acquires through SUBSEQUENT RL. Controlled
+authorship experiments separate immediate imitation gains from later RL improvement, and a learned author produces
+material that improves transfer under matched training resources." Keep SAC-RL as an empirical BASELINE. Scale only the
+intervention that survives Gates A/B/C — model size alone will NOT resolve the novelty/attribution gaps.
