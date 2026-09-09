@@ -3470,3 +3470,28 @@ EFFECT SIZE (+0.05 RL-specific) is LARGER than the entire imitation-only story (
 is the mechanism to build the RL-aware author around (Gate C).
 CAVEAT (honest): n=1/cell, RL continuations are high-variance. Multi-seed replication (GRPO-continuation seeds 1-3 ×4 banks)
 launched before any claim. Also confounds to rule out: recipient-seed variance, GRPO-continuation instability, GSM8K-only continuation.
+
+## §63b GATE B — REVERSAL DID NOT REPLICATE (n=1 was noise; RETRACTED honestly)
+Multi-seed replication (GRPO-continuation seeds 0-3, 4 per bank), post-RL OOD MATH-500:
+| bank | post-RL mean | 95% CI | seeds | post-SFT baseline |
+|------|--------------|--------|-------|-------------------|
+| SFT-authored  | 0.3978 | [0.382, 0.414] | .388/.406/.381/.416 | 0.4025 |
+| GRPO-authored | 0.3812 | [0.361, 0.402] | .406/.386/.356/.376 | 0.3738 |
+GRPO-auth − SFT-auth (post-RL) = −0.0166, t=−1.25 (n.s.). The n=1 "reversal" (GRPO-auth 0.406 > SFT-auth 0.388) was
+a LUCKY GRPO-authored seed; across 4 seeds the GRPO continuation is HIGH-VARIANCE (0.356–0.406) averaging 0.381, and
+post-RL SFT-authored is if anything HIGHER. NO ranking reversal; NO RL-specific, content-dependent advantage for any bank.
+GATE B DECISION (per pre-registered rule): DO NOT build the RL-aware author. Banks differ only in immediate SFT quality;
+subsequent RL adds no distinctive advantage. The exciting "best-for-imitation ≠ best-for-RL" mechanism was NOISE at n=1.
+Also: RL continuation from a consolidated recipient does NOT reliably improve OOD (SFT-auth 0.403→0.398, flat/negative) —
+100-step GRPO on GSM8K neither helps OOD nor reorders banks. LESSON: never headline an n=1 RL result; RL Δ needs ≥4 seeds.
+
+## §63c HONEST STANDING AFTER GATES A+B
+- Gate A: the RL INITIALIZATION stage is redundant (fresh-SFT on SFT-authored ≥ SAC-RL, cheaper). SAC-RL = baseline.
+- Gate B: trace AUTHORSHIP does NOT change subsequent-RL learning (no reversal, replicated). RL-aware author NOT justified.
+- Surviving contribution: SFT-authored verified traces are consistently (SMALL margin, +0.02–0.04) the best for IMITATION
+  across 3 families × 2 domains — but CONFOUNDED with the SFT producer being the strongest solver (0.700 vs 0.514).
+- This is an HONEST, well-controlled NEGATIVE/modest-positive result set, NOT an award-tier novel mechanism. The two
+  most exciting hooks (MaxRL weak-solver-teaches-better §56; best-for-imitation≠best-for-RL §63) BOTH failed replication/controls.
+NEXT OPTIONS (honest): (a) accept a modest, rigorous paper on "authorship/source quality of verified traces for transfer,
+with careful nulls"; (b) find a regime where an authorship×RL effect is LARGE and robust (different continuation objective,
+harder transfer gap, bigger scale) before claiming; (c) Gate C selection pilot only if a real signal reappears — currently unmotivated.
