@@ -115,8 +115,8 @@ def build_args():
     p.add_argument("--no-lora", action="store_true",
                    help="FULL fine-tuning instead of LoRA (crossover-magnitude sweep: LoRA caps "
                         "drift, likely compressing the coverage phenomenon). Needs ZeRO-3.")
-    p.add_argument("--reward-mode", default="math", choices=["math","code"],
-                   help="code = self-repair execute-verify dense reward (code_repair_reward); disables novelty")
+    p.add_argument("--reward-mode", default="math", choices=["math","code","comp"],
+                   help="code = self-repair execute-verify dense reward; comp = §64 compositional executable reward (comp_code_reward); both disable novelty")
     p.add_argument("--no-vllm", action="store_true")
     p.add_argument("--resume-from", default="", help="checkpoint dir to resume (Component B loop)")
     p.add_argument("--init-adapter", default="", help="warm-start: load this saved LoRA adapter "
@@ -172,6 +172,10 @@ def main():
     if a.reward_mode == "code":
         from rl_training.rewards import code_repair_reward
         reward_funcs = [code_repair_reward]; reward_weights = [1.0]
+        cfg.novelty_enabled = False
+    elif a.reward_mode == "comp":
+        from rl_training.comp_reward import make_comp_reward
+        reward_funcs = [make_comp_reward()]; reward_weights = [1.0]
         cfg.novelty_enabled = False
     else:
         reward_funcs = [correctness_reward]

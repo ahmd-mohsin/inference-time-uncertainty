@@ -47,6 +47,15 @@ def build_dataset(dataset: str, model_name: str, n_problems: int = -1, seed: int
         return Dataset.from_dict({"prompt": [r["prompt"] for r in rows],
                                   "gold_answer": [str(r["gold"]) for r in rows],
                                   "problem_id": list(range(len(rows)))})
+    # §64 COMPOSITIONAL CURRICULUM: dataset="comp:<pool.jsonl>" — rows {prompt, prog, test_inputs} from comp_tasks.
+    # prog/test_inputs carried as JSON strings; comp_code_reward executes the emitted solve() and verifies exactly.
+    if isinstance(dataset, str) and dataset.startswith("comp:"):
+        path = dataset.split("comp:", 1)[1]
+        rows = [json.loads(l) for l in open(path) if l.strip()]
+        if n_problems > 0: rows = rows[:n_problems]
+        return Dataset.from_dict({"prompt": [r["prompt"] for r in rows],
+                                  "prog": [json.dumps(r["prog"]) for r in rows],
+                                  "test_inputs": [json.dumps(r["test_inputs"]) for r in rows]})
     # INTERVENTION arm B: GSM8K + 10% MATH-train MIXED (held-out MATH-500 is the disjoint 'test' split).
     if isinstance(dataset, str) and dataset == "mathmix":
         from src.data.dataset import load_gsm8k, load_math_full, format_prompt
