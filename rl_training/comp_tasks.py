@@ -225,6 +225,33 @@ def build_matched_pools(n_tasks, depth=3, seed0=0):
         A.append(gen_task(900000 + seed0 + i, depth=depth, prog=_canonicalize_pairs(base), kind="repeated"))
     return A, B, C
 
+def _units(prog):
+    """Coverage units of a program: each primitive + each ADJACENT ordered pair (the interaction contexts)."""
+    u = set(prog)
+    for i in range(len(prog) - 1):
+        u.add((prog[i], prog[i + 1]))
+    return u
+
+def build_setcover_pool(n_tasks, depth=5, seed0=0, cand_mult=6):
+    """BET B: greedily SELECT compositions to maximize coverage of (primitive + adjacent-ordered-pair) units — a
+    weighted set-cover curriculum. Compared against RANDOM selection from the SAME candidate universe at matched n.
+    If coverage-selection > random at matched budget, the surviving coverage effect (§66d) becomes a validated selector."""
+    rng = random.Random(seed0)
+    cand = [gen_task(seed0 + i, depth=depth) for i in range(n_tasks * cand_mult)]
+    covered = set(); chosen = []; pool = list(range(len(cand)))
+    while len(chosen) < n_tasks and pool:
+        best_i, best_gain = None, -1
+        for i in pool:
+            g = len(_units(cand[i]["prog"]) - covered)
+            if g > best_gain: best_gain, best_i = g, i
+        if best_gain <= 0:  # everything covered — reset to keep filling with fresh coverage cycles
+            covered = set(); continue
+        covered |= _units(cand[best_i]["prog"]); chosen.append(cand[best_i]); pool.remove(best_i)
+    # top up if needed
+    while len(chosen) < n_tasks and pool:
+        chosen.append(cand[pool.pop(0)])
+    return chosen[:n_tasks]
+
 def component_bank(n_per_prim=40, seed0=10000):
     rows = []; s = seed0
     for name in PRIM_NAMES:
