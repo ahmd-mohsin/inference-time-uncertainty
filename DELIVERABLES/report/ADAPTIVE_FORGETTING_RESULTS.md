@@ -3210,3 +3210,26 @@ FINDINGS (honest):
 INTERPRETATION: M1 is a legit "RL+consolidation" downstream win (+0.106 OOD over RL, +0.018 over SFT), but the NOVELTY-
 critical trace-selection-by-teaching-value is not yet supported at policy level. The distinctive finding is the source
 threshold (avoid base-authored). Next: seed CIs; M2 rejection-FT head-to-head; the teaching-value SELECTION method (M2/§57).
+
+## §58b M1 SAC-RL — 4-SEED CIs REVERSE the 2-seed null; SFT-authored consolidation DOES beat self
+OOD MATH-500, 4 seeds (s0-3):
+| arm | mean ±95%CI | seeds |
+|-----|-------------|-------|
+| D SFT-authored (METHOD) | 0.3897 ±0.0083 | .388/.379/.390/.403 |
+| C GRPO self-traces      | 0.3653 ±0.0146 | .368/.389/.353/.353 |
+| SFT-only (1 seed)       | 0.3650 | |
+| rft1 rejection-FT (base-authored, 1 seed) | 0.3438 | |
+| GRPO-only               | 0.2775 | |
+D−C=+0.0244 (diff 95%CI≈[0.008,0.041], excludes 0 — marginally significant). At 2 seeds C had a lucky high seed
+(0.389) → looked null; at 4 seeds C regressed to 0.365 and D held 0.390. => the teaching≠solving-based SELECTION
+is SUPPORTED: consolidate the RL policy on SFT-AUTHORED traces > its OWN RL traces (+0.024) > SFT-only (+0.025)
+> iterative rejection-FT (+0.046) >> GRPO-only (+0.112). THE METHOD (SAC-RL): a GRPO policy transfers poorly OOD
+(0.278); SFT-consolidating it on SFT-operator-authored verified traces yields 0.390 — the best of all recipes, beating
+plain SFT and rejection-FT. CAVEAT: D−C is MARGINAL (needs seeds 4-5 to firm; launched). The order rft1(0.344) <
+B_baseauth(0.348) < SFT-only(0.365) ~ C-self(0.365) < D-SFTauth(0.390) is a clean SOURCE-QUALITY gradient.
+
+## §58c 2nd-DOMAIN (OlympiadBench) — INCONCLUSIVE (floor), NOT a refutation
+7B recipients (base/SFT/GRPO/MaxRL producer banks) on OlympiadBench n=120 k=4: 0.063/0.056/0.042/0.063 — all at the
+NOISE FLOOR (~5-7 of 120 solved; deltas = 1-2 problems). OlympiadBench too hard for 7B recipients → non-discriminative.
+Per the moderate-difficulty rule ([[rl-focus-moderate-difficulty-benchmarks]]), re-running the 2nd-domain teaching test
+on AMC/SVAMP (moderate) where scores aren't floored. Verdict on domain-robustness of "SFT best teacher" PENDING.
