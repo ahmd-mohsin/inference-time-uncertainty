@@ -3735,3 +3735,13 @@ Diagnosis→mechanism→method→control, all supported here:
 This separates RL-as-explorer from RL-as-learner with a measured mechanism and a decisive count/coverage control — a dense,
 positive contribution. NOT yet award-certified: owes cost-accounting, family-transfer mechanism, seeds/scale, and the
 SOAR/SEAL/outcome-exploration head-to-head. But it is the first LARGE, control-surviving POSITIVE result of the program.
+
+## §71c TRACK C 4-SEED + mechanism — effect ROBUST, but sparse-bridge NOT the driver (decisive control launched)
+Held-out evalC, 4 seeds: union(RL-aug,225)=0.352±0.005 | sft-2x(more SFT,205)=0.276±0.004 | sft-only(159)=0.250±0.003 | sft-2x+34RL-excl(239)=0.293±0.028.
+union − sft-2x = +0.076, t=23.0 (ROBUST, tight). => RL-augmented bank ≫ more-SFT-sampling at matched/higher budget — the
+positive METHOD result holds strongly. MECHANISM: adding just the 34 SFT-unreachable RL-exclusive compositions lifts sft-2x
+only +0.018 -> the gain is NOT a few "bridge" problems (sparse-bridge NOT supported, consistent w/ §66c). It's BROADER
+RL-solution CONTENT: union keeps GRPO-policy-authored solutions (for 218 solved prompts) while sft-2x has SFT-authored
+solutions. CONFOUND: union vs sft-2x differ in BOTH solution authorship AND prompt set. DECISIVE CONTROL launched: SAME
+shared prompts, RL-authored vs SFT-authored verified solutions (analogous to §66d B') — isolates solution-authorship from coverage.
+Honest: the METHOD-level positive (RL-generated verified experience > more SFT sampling, +0.076 t=23) stands; the MECHANISM claim awaits this control.
