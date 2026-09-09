@@ -3568,3 +3568,22 @@ diagnostics) does. HONEST CAVEATS (must resolve before claiming): (1) B-vs-C pri
 frequency artifact; running TIGHTER-matched B' control. (2) n=4 share ONE common-init (conditional). (3) 1.5B, one domain, k=1.
 (4) GRPO-null needs a longer-horizon check. NEXT: H2 sparse-bridge sweep (fraction of diagnostics 0/5/10/25/50/100%, RFT) +
 family-level transfer matrix (nonlocal?) + tighter-matched control. This is the strongest lead of the whole program.
+
+## §66c H2 SPARSE-BRIDGE SWEEP — dose-dependent, NOT sparse (honest); + decisive control launched
+RFT held-out evalB vs fraction f of diagnostics in an otherwise-random pool (init=0.247, n=2/pt):
+| f% | held-out | gain/init |
+|----|----------|-----------|
+| 0  | 0.283 | +0.036 |
+| 5  | 0.290 | +0.043 |
+| 10 | 0.300 | +0.053 |
+| 25 | 0.310 | +0.063 |
+| 50 | 0.320 | +0.073 |
+| 100| 0.300 | +0.053 (n=2 noisy; 4-seed §66b gave 0.328) |
+Gain rises ~MONOTONICALLY with diagnostic fraction (to ~50%) — NO sharp small-fraction saturation. Per the directive's
+failure criterion, this is "diagnostic compositions are better TRAINING DATA (dose-dependent)" = compositional-data-design,
+NOT a special sparse-bridge phenomenon. H2 (few bridges → broad transfer) NOT supported at n=2.
+STANDING: H1 CONFIRMED (diagnostic>random under RFT, +0.040 t=6.10). H2-sparse NOT supported. DECISIVE VALIDITY CHECK now
+running: tighter-matched control B' = C's EXACT programs with the noncommuting pair in CANONICAL (non-diagnostic) order on
+fresh non-separating inputs — identical primitives AND pair-presence, differing ONLY in whether the order is diagnostic.
+If C>B' -> the effect is the diagnostic ARRANGEMENT (real). If C≈B' -> H1 was a frequency/coverage artifact (§66 residual 0.18).
+Also queued: family-level transfer matrix (does the gain spread to many held-out families = nonlocal, even if dose-dependent).
