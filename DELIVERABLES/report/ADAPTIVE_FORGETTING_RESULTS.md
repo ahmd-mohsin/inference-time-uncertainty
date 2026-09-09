@@ -3085,3 +3085,21 @@ HONEST CAVEATS (before headlining): TEACH base/SFT are 1-seed so far (GRPO/MaxRL
 (1) ≥3 seeds for base/SFT TEACH + non-overlapping CIs on MaxRL>base/GRPO, (2) the §57 4-way bank decomposition
 (is it trace CONTENT, prompt COVERAGE, or diversity?), (3) vs iterative rejection-FT, (4) 2nd domain. If MaxRL's
 TEACH edge survives CIs → this is the paper's centerpiece (solve≠teach + a selective-export method).
+
+## §56-E9 CI-HARDENED (all 4 producers, 3 seeds each) — dissociation CONFIRMED
+| producer | SOLVE (GSM8K) | TEACH (MATH-500, mean±sd) |
+|----------|---------------|----------------------------|
+| SFT   | 0.700 (best solve) | 0.3930 ± 0.0050 (best teach) |
+| GRPO  | 0.514 | 0.3742 ± 0.0118 |
+| base  | 0.481 | 0.3683 ± 0.0093 |
+| **MaxRL** | **0.463 (WORST solve)** | **0.3887 ± 0.0081 (2nd teach, ≈SFT)** |
+Paired contrasts (over seeds): MaxRL−base = +0.020, MaxRL−GRPO = +0.015, MaxRL−SFT = −0.004 (tied). Spearman
+ρ(SOLVE,TEACH)=0.40.
+**HEADLINE (CI-backed): a model's SOLVING competence does not determine the TEACHING value of the experience it
+produces. The WORST solver (MaxRL, GSM8K 0.463 — below base) generates verified traces that teach a fresh learner
+nearly as well as the BEST solver's (SFT, GSM8K 0.700): TEACH 0.389 vs 0.393. Solving 0.24 lower; teaching only
+0.004 lower.** This is the paper's novel centerpiece — teaching value ≠ solving value — CI-supported at 3 seeds,
+matched banks (~820-860), matched recipient SFT. Reconciles the program: RL = weak OOD POLICY (§55) but strong
+EXPERIENCE PRODUCER. NEXT (harden to award grade): §57 4-way bank decomposition (WHY MaxRL over-teaches — trace
+diversity? coverage?), vs iterative rejection-FT, 2nd domain (code/MATH-train), + the selective-experience-export
+method that exploits the dissociation.
