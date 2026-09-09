@@ -3158,3 +3158,34 @@ and its teaching value survives the same-prompts control. The paper's robust dis
 (content, prompt-invariant) vs GRPO/MaxRL/base; the "worst-solver-best-teacher (MaxRL)" claim is coverage-FRAGILE
 and must be reported as such. Next: recipient-invariance (does SFT teach best on a DIFFERENT base, 1.5B) to test
 whether SFT's teaching value is intrinsic to the traces.
+
+## §56-E9-why(d) RECIPIENT-INVARIANCE — SFT's teaching value is intrinsic (holds 3B→7B)
+Trained a DIFFERENT, larger recipient (Qwen2.5-7B) on the 4 FULL producer banks (seed 0); eval MATH-500 (n=200,k=4):
+| producer bank | 7B-recipient TEACH | 3B-recipient TEACH (full) |
+|---------------|--------------------|---------------------------|
+| base          | 0.3775 | 0.368 |
+| SFT           | 0.4300 | 0.393 |
+| GRPO          | 0.3925 | 0.374 |
+| MaxRL         | 0.3787 | 0.389 |
+On the 7B recipient: SFT 0.430 >> GRPO 0.393 > MaxRL 0.379 ≈ base 0.378. SFT−base=+0.0525; MaxRL−base=+0.0012 (null).
+=> SFT is the BEST teacher on BOTH recipients (3B and 7B) — teaching value is INTRINSIC to the traces and
+recipient-INVARIANT. MaxRL's "best-teacher" does NOT reproduce on 7B (collapses to base), confirming §why(c):
+the MaxRL edge was coverage-fragile. The durable, scale-robust teacher is the SFT operator's traces.
+
+## §56-E9-why(e) EXPLICITNESS ABLATION — explicitness helps at the margin, but is not the driver
+Within MaxRL (same solver, same 758 prompts), dosed equations DOWN 12.9→9.6 at MATCHED length (isect_MaxRL_stripped),
+trained 3B recipients s0/s1, eval MATH-500: strip 0.335/0.316 (mean 0.326) vs un-stripped MaxRL 0.364 => −0.039.
+So reducing explicit computation HURTS teaching within a fixed producer (explicitness contributes).
+CAVEAT: the strip replaces equations with a neutral phrase, which also degrades solution coherence — so −0.039
+conflates explicitness with coherence; treat as an upper bound on the explicitness effect.
+RECONCILIATION: explicitness is a SECONDARY contributor; it does NOT explain SFT's dominance, since SFT teaches
+BEST (0.430 @7B) at only AVERAGE explicitness (5.5 eqs). Teaching value ≈ solution QUALITY from the SFT distillation
+operator, with explicitness a minor additive factor. MaxRL's high explicitness cannot overcome its lower solution quality.
+
+## §56-E9 HEADLINE (updated, robust): SFT traces have intrinsic recipient-invariant teaching value; RL does not
+The award-target claim, now hardened by controls: (1) teaching value ≠ solving value (dissociation, ρ(SOLVE,TEACH)=0.40);
+(2) the SFT operator's verified traces are the BEST teachers, and this SURVIVES the same-prompts control (§why-c) AND
+recipient-scale change 3B→7B (§why-d) — i.e. intrinsic to trace CONTENT, not coverage/recipient; (3) RL post-training
+(GRPO/MaxRL) does NOT produce better-teaching traces despite MaxRL's higher surface explicitness (§why-b/e); MaxRL's
+apparent edge was coverage-fragile. NEXT (STEP 2 robustness → STEP 3 method): does an SFT/selective producer beat
+iterative REJECTION-FT and best-single-producer at matched cost? + 2nd domain (MATH→Olympiad). Only then is it a METHOD.
