@@ -3189,3 +3189,24 @@ recipient-scale change 3B→7B (§why-d) — i.e. intrinsic to trace CONTENT, no
 (GRPO/MaxRL) does NOT produce better-teaching traces despite MaxRL's higher surface explicitness (§why-b/e); MaxRL's
 apparent edge was coverage-fragile. NEXT (STEP 2 robustness → STEP 3 method): does an SFT/selective producer beat
 iterative REJECTION-FT and best-single-producer at matched cost? + 2nd domain (MATH→Olympiad). Only then is it a METHOD.
+
+## §58 DOWNSTREAM METHOD M1 — SAC-RL (consolidate the RL policy on verified traces) — OOD MATH-500
+Operationalizes teaching≠solving into "make RL transfer better": take a GRPO policy (e1_C_grpo_s0), SFT-consolidate it
+(--init-adapter, 300 steps) on differently-AUTHORED verified banks, eval the RESULTING model's own OOD MATH-500 (n=200,k=4, 2 seeds).
+| arm (consolidate GRPO policy on…) | OOD MATH-500 | sd |
+|-----------------------------------|--------------|-----|
+| D — SFT-authored traces (METHOD)  | 0.3831 | 0.0044 |
+| C — GRPO self-traces (control)    | 0.3781 | 0.0106 |
+| B — base-authored (rej-FT-ish)    | 0.3481 | 0.0031 |
+| GRPO-only (no consolidation)      | 0.2775 | — |
+| SFT-only (base→SFT)               | 0.3650 | — |
+FINDINGS (honest):
+- STRONG & real: a GRPO policy transfers POORLY OOD (0.278); SFT-consolidation lifts it to 0.383 = +0.106. "Make RL better."
+- RL→SFT-consolidation (0.383) BEATS plain SFT (0.365) by +0.018 — keeps RL in-domain gains + exceeds SFT OOD (needs CI/seeds).
+- Trace SOURCE matters: strong-source (SFT-authored OR the policy's own RL-verified) ≈0.38, both BEAT base-authored (0.348) by +0.035.
+- NULL on the sharp claim: SFT-authored is NOT > self-authored (D−C=+0.005, inside C's seed sd 0.011). At the policy-
+  consolidation level, AUTHOR IDENTITY washes out — only strong-vs-weak source separates. teaching≠solving does NOT
+  transfer into "SFT-authored beats self-authored" here. Reported straight. Adding seeds 2/3 for D,C to resolve +0.018 & +0.005.
+INTERPRETATION: M1 is a legit "RL+consolidation" downstream win (+0.106 OOD over RL, +0.018 over SFT), but the NOVELTY-
+critical trace-selection-by-teaching-value is not yet supported at policy level. The distinctive finding is the source
+threshold (avoid base-authored). Next: seed CIs; M2 rejection-FT head-to-head; the teaching-value SELECTION method (M2/§57).
