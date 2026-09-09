@@ -3061,3 +3061,27 @@ TWO conclusions:
    the recipient's SFT operator fixed. (B is essentially one round of self-distillation/RAFT: 0.368→0.393.)
 => STRENGTHENS the path to E9: producer identity has measurable teaching value. Next: E2 (initialization) then
 E9 proper (do RL-producers TEACH better than their SOLVE rank predicts? rank(SOLVE)≠rank(TEACH)).
+
+# ============================================================================
+# §56-E9 RESULT — TEACHING VALUE ≠ SOLVING VALUE (the novel dissociation) — 2026-09-09
+# ============================================================================
+DISSOCIATION TABLE (Qwen2.5-3B; producers trained on GSM8K; TEACH = fresh recipient MATH-500 after SFT on the
+producer's verified-GSM8K bank; SOLVE = producer's own GSM8K-test acc; matched bank sizes ~820-860):
+| producer | SOLVE (GSM8K-test) | TEACH (recipient MATH-500) | bank |
+|----------|--------------------|----------------------------|------|
+| SFT      | 0.70  (best solve) | 0.393 (best teach)          | 856 |
+| **MaxRL**| **0.463 (WORST solve)** | **0.389 (2nd teach, ≈SFT)** | 831 |
+| GRPO     | 0.514              | 0.374                       | 823 |
+| base     | 0.481              | 0.368 (worst teach)         | 824 |
+**Spearman ρ(SOLVE, TEACH) = 0.40** — SOLVE order [SFT>GRPO>base>MaxRL] ≠ TEACH order [SFT>MaxRL>GRPO>base].
+HEADLINE: **MaxRL is the WORST policy (solves 0.463, below base) but the ~2nd-BEST TEACHER (0.389 ≈ SFT's 0.393
+and > base 0.368, > GRPO 0.374).** A producer's ability to SOLVE does NOT predict the transferable capability its
+verified traces impart to a fresh learner. This is the novel §57 claim, EMPIRICALLY OBSERVED: teaching value is
+dissociable from solving value; RL producers (esp. MaxRL) punch above their solving weight as data engines.
+Mechanism-consistent: MaxRL's success-rate weighting explores broader verified solutions → its traces teach OOD
+better than its own (poor) policy would suggest. Reconciles the whole program: RL is a weak POLICY for OOD
+(§55) but a strong TEACHER (here).
+HONEST CAVEATS (before headlining): TEACH base/SFT are 1-seed so far (GRPO/MaxRL 3-seed); n=200×k4 eval; need
+(1) ≥3 seeds for base/SFT TEACH + non-overlapping CIs on MaxRL>base/GRPO, (2) the §57 4-way bank decomposition
+(is it trace CONTENT, prompt COVERAGE, or diversity?), (3) vs iterative rejection-FT, (4) 2nd domain. If MaxRL's
+TEACH edge survives CIs → this is the paper's centerpiece (solve≠teach + a selective-export method).
