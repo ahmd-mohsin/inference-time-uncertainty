@@ -2793,3 +2793,29 @@ WORKS (unlike the saturated arithmetic domain §52c). This is the substantial re
 NEXT: (1) build the DYNAMIC consolidation-scheduled RL method (gap-gated SFT blocks in RL) vs fixed SFT→RL /
 difficulty / pure-GRPO at matched TOTAL compute; (2) generality on Domain-3 (MATH→Olympiad); (3) e_sftbase
 per-seed (SFT-from-base was ≥ consolidate-from-ckpt on s0 — check if the method should consolidate EARLY).
+
+## §55-Stage3 VERDICT — dynamic method is a NULL; pure SFT dominates (honest, 2 seeds)
+Matched ~300-step compute, MATH-500 (n=200 k=4):
+| arm | s0 | s1 | mean |
+|-----|----|----|------|
+| **pure SFT (300)** | 0.361 | 0.348 | **0.354** (BEST) |
+| fixed SFT→RL (SFT150→GRPO150) | 0.341 | 0.344 | 0.343 |
+| dynamic consolidation-scheduled | 0.311 | 0.306 | 0.309 |
+| pure GRPO (300) | 0.291 | 0.294 | 0.293 (worst) |
+**ORDERING: pure-SFT > fixed-SFT→RL > dynamic > pure-GRPO.** The dynamic consolidation-scheduled method is WORSE
+than both fixed SFT→RL AND pure SFT → the scheduling/RL-interleaving does NOT help; it HURTS. Mechanism-consistent
+with the foundation (§37-49): GRPO degrades OOD transfer, so the MORE GRPO a schedule contains, the worse —
+dyn (3 GRPO blocks, ends on GRPO) < fixedSR (1 GRPO block) < pure-SFT (0 GRPO). The gap-diagnostic fired
+correctly (0.13→0.24) but consolidating between GRPO blocks can't overcome the GRPO damage.
+### HONEST SYNTHESIS (kill-criterion S3 triggered): the METHOD does not beat pure SFT.
+- §55-D1 (consolidation>difficulty, Δ+0.040 CI[+0.017,+0.062]) is a WITHIN-RL result (both branch from a GRPO
+  ckpt) — real, but it does NOT beat the trivial pure-SFT baseline (0.354 > all RL-containing arms).
+- No RL schedule (dynamic, fixed, difficulty) beats pure verified-trace SFT for OOD transfer at matched compute.
+=> THE PAPER'S CONTRIBUTION IS FOUNDATION + MECHANISM, not a new method:
+  (1) FOUNDATION: verified-trace SFT ≫ GRPO for converting successful experience into OOD capability (§37-49,
+      4 domains, 16 families, multi-seed, tuned-GRPO-robust).
+  (2) MECHANISM: RL reweights but can't place mass; the solve→compose gap widens as reward saturates (§52b/S1a);
+      GRPO monotonically dilutes OOD transfer the more it is applied (§55-Stage3).
+  (3) METHOD (honest null): consolidation-scheduled RL was tested rigorously and does NOT beat pure SFT — RL
+      interleaving hurts OOD. The actionable recommendation is simply: for OOD transfer of verified experience,
+      SFT on the verified traces; do not add RL. Reported straight (multi-seed confirm queued).
