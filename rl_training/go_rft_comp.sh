@@ -13,7 +13,7 @@ export CUDA_VISIBLE_DEVICES=$GPU
 cur="$INIT"
 echo "[rft_comp $TAG] init=$INIT pool=$POOL rounds=$ROUNDS gpu=$GPU $(date -u +%H:%M:%SZ)"
 for r in $(seq 1 "$ROUNDS"); do
-  merged=$($PY -c "from rl_training.model_utils import merge_adapter_if_needed as m; print(m('$cur'))" 2>>$G/logs/rft_${TAG}.log)
+  merged=$($PY -c "from rl_training.model_utils import merge_adapter_if_needed as m; print(m('$cur'))" 2>>$G/logs/rft_${TAG}.log | tail -1)
   [ -z "$merged" ] && { echo "[rft_comp $TAG] merge failed r$r"; exit 1; }
   $PY -m rl_training.comp_gen --model "$merged" --pool "$POOL" --k 4 --n 400 --temperature 0.8 \
     --out $G/comp_data/accepted_${TAG}_r${r}.jsonl >>$G/logs/rft_${TAG}.log 2>&1
