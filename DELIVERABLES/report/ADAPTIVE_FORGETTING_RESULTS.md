@@ -3614,3 +3614,19 @@ of training data helps held-out composition (dose-dependent, coverage-driven —
 This is a rigorous NEGATIVE-RESULTS + methods contribution (controls that kill plausible mechanisms), NOT an award-winning
 novel methodology. Manufacturing one by launching more variants of nulled ideas is not scientifically honest. The credible
 paths remaining require a genuinely new mechanism hypothesis with a real prior — not another sweep of the same space.
+
+## §68 PARALLEL BET PORTFOLIO — Bet A (verifier resolution) is a STRONG new lead
+All RFT, Coder-1.5B depth-5, held-out evalB (init=0.247), 4 seeds; reuse existing baselines (discrimC=0.328, randB=0.288).
+- BET A — VERIFIER RESOLUTION: SAME pool C, accept by discriminating checker (order-separating inputs) vs coarse (1 random input):
+  discriminating=0.328 vs coarse=0.280 → +0.0483, t=8.12 (STRONG). DATA IDENTICAL → NOT a coverage artifact. The
+  verification RESOLUTION during RFT acceptance drives transfer: strict verification of the interaction teaches it; loose
+  acceptance admits order-WRONG solutions that dilute the signal. Reframes the program: not WHICH compositions (data/arrangement
+  was null §66d) — HOW STRICTLY you VERIFY training solutions.
+- BET B — COVERAGE-SELECTION METHOD: set-cover (max primitive/pair coverage) vs random selection, matched budget:
+  setcover=0.315 vs random=0.288 → +0.0267, t=2.15 (marginal-significant). The surviving coverage effect works as a selector.
+- BET C — GRPO-long (300-step) vs RFT: training (does the GRPO-null persist with 2x horizon?).
+HONEST CAVEATS on A (must resolve before claiming): (1) ACCEPT-RATE confound — coarse accepts MORE (incl. order-wrong), so
+bank size/quality differ; need matched-accept-rate / matched-bank-size control to isolate "resolution" from "bank size".
+(2) generalization — does discrim>coarse hold on RANDOM pools too, or only C? (running coarse-B). (3) 1.5B, one domain, k=1.
+IF A survives matched-accept control + generalizes → the AWARD-TARGET reframing: "verification resolution, not data selection,
+governs compositional transfer in RFT" + an allocation method (spend verification budget on discriminating tests). Beyond "stronger tests help": the sharp SAME-DATA control + executable ground truth.
