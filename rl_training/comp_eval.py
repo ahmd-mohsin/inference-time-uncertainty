@@ -29,6 +29,11 @@ def main():
     a = ap.parse_args()
 
     rows = [json.loads(l) for l in open(a.pool) if l.strip()][: a.n]
+    # vLLM can't load a bare LoRA adapter — merge into base first (no-op for a full model dir / HF id).
+    if os.path.isdir(a.model) and os.path.exists(os.path.join(a.model, "adapter_config.json")) \
+            and not os.path.exists(os.path.join(a.model, "config.json")):
+        from rl_training.model_utils import merge_adapter_if_needed
+        a.model = merge_adapter_if_needed(a.model)
     from vllm import LLM, SamplingParams
     from transformers import AutoTokenizer
     tok = AutoTokenizer.from_pretrained(a.model, trust_remote_code=True)
