@@ -20,7 +20,7 @@ for r in $(seq 1 "$ROUNDS"); do
   na=$(wc -l < $G/comp_data/accepted_${TAG}_r${r}.jsonl 2>/dev/null || echo 0)
   echo "[rft_comp $TAG] round $r accepted=$na"
   [ "$na" -lt 5 ] && { echo "[rft_comp $TAG] too few accepted ($na) — stop"; break; }
-  $PY -m rl_training.sft_train --model Qwen/Qwen2.5-Coder-7B-Instruct --init-adapter "$cur" \
+  $PY -m rl_training.sft_train --model ${COMP_MODEL:-Qwen/Qwen2.5-Coder-1.5B-Instruct} --init-adapter "$cur" \
     --data $G/comp_data/accepted_${TAG}_r${r}.jsonl --out $G/rft_${TAG}_r${r} --max-steps 200 --seed $((SEED+r)) --bsz 4 \
     >>$G/logs/rft_${TAG}.log 2>&1 || { echo "[rft_comp $TAG] sft failed r$r"; exit 1; }
   cur=$G/rft_${TAG}_r${r}
