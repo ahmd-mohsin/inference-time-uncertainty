@@ -3433,3 +3433,17 @@ Authorship matters in BOTH rows (SFT-authored > GRPO-authored, significant); RL 
 reviewer's suspicion: DROP the initial RL stage from the proposed method — SAC-RL is dominated by plain fresh-SFT on
 SFT-authored traces. Remaining check: in-domain GSM8K (does GRPO-recipient preserve an RL-specific capability fresh lacks?) — running.
 COMPUTE NOTE: fresh path = 1 SFT (300 steps). GRPO-recipient path = GRPO training + 1 SFT. Fresh is strictly cheaper AND ≥ on OOD.
+
+## §62b GATE A in-domain (GSM8K) + FINAL DECISION
+GSM8K (in-domain, n=200 k=4):
+| recipient init | GRPO-authored | SFT-authored |
+|----------------|---------------|--------------|
+| Fresh base     | 0.6354 ±0.019 | 0.6975 ±0.005 |
+| GRPO recipient | 0.6392 ±0.008 | 0.7033 ±0.010 |
+Even IN-DOMAIN, GRPO-recipient barely edges fresh (+0.004..+0.006, within noise). Consolidation EQUALIZES both at ~0.70.
+=> the "SAC-RL keeps RL in-domain gains" claim is FALSE — the fresh recipient reaches the same GSM8K after consolidation.
+GATE A FINAL DECISION: DROP the initial RL stage. It adds nothing on OOD (fresh 0.397 ≥ SAC 0.386) OR in-domain
+(0.698 vs 0.703, n.s.), at strictly higher cost (GRPO training + SFT vs SFT alone). SAC-RL is DOMINATED by plain
+fresh-SFT on SFT-authored traces. Authorship (SFT-authored > GRPO-authored) dominates BOTH axes (OOD +0.02-0.03, in-domain +0.06),
+but is confounded with the SFT producer being the best solver (§61.4). Phi cross-family CI firmed: SFT 0.336±0.004 best (+0.027 vs GRPO), 3 seeds.
+NEXT = GATE B: does trace AUTHORSHIP change SUBSEQUENT-RL learning? (the only path to a novel mechanism; SAC-RL retired to baseline.)
