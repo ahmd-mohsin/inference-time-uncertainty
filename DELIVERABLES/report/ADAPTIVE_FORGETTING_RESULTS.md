@@ -3122,3 +3122,19 @@ base-MaxRL 0.916, SFT-GRPO 0.930, SFT-MaxRL 0.935, GRPO-MaxRL 0.921; INTERSECTIO
 The difference must be the SOLUTIONS (trace content) each writes for the SAME problems. Running same-prompts
 decomposition: recipients SFT on the 758-prompt INTERSECTION, producer-specific solutions (gu/e9i_{base,SFT,GRPO,
 MaxRL}_s{0,1}) → eval MATH-500. If MaxRL edge persists on identical prompts → CONTENT-driven (clean mechanism).
+
+## §56-E9-why(b) CONTENT SIGNATURE — MaxRL teaches via EXPLICITNESS, not length (on the SAME 758 prompts)
+Feature-profile of the 4 producer banks restricted to the 758 shared prompts (isect_*.jsonl, producer-specific solutions):
+| bank  | words | steps | eqs  | nums | ops  | chars |
+|-------|-------|-------|------|------|------|-------|
+| base  | 133.1 | 18.2  | 5.8  | 20.1 | 9.4  | 742.7 |
+| SFT   | 133.7 | 18.2  | 5.5  | 20.7 | 10.9 | 731.1 |
+| GRPO  | 133.4 | 18.1  | 5.7  | 20.4 | 10.2 | 738.5 |
+| MaxRL | 131.8 | 19.9  | 12.9 | 20.7 | 15.1 | 727.9 |
+Length is MATCHED (words 132-134, chars 728-743, #numbers ~20 all identical). The ONLY separating feature:
+MaxRL's solutions carry ~2.2× the explicit EQUATIONS ("=": 12.9 vs 5.5-5.8) and ~1.5× operators (15.1 vs 9.4-10.9).
+=> The worst SOLVER (MaxRL 0.463) writes the most computationally-EXPLICIT solutions, and those teach best.
+Teaching value = intermediate-computation explicitness, NOT verbosity. This is a concrete, testable mechanism.
+CAUSAL follow-up queued: within-producer explicitness ablation (MaxRL_dense vs MaxRL_stripped) — if stripping the
+equation lines kills the teaching edge, explicitness is causal (controls for solver, prompts, length).
+Pending: same-prompts MATH-500 eval of e9i_* (content-vs-coverage verdict) — running on 8 GPUs.
