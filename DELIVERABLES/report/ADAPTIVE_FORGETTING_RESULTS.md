@@ -3278,3 +3278,11 @@ policy's OWN traces for consolidation, +0.020, t=2.86) and the large D>>GRPO-onl
 MARGINAL (+0.016, p≈0.06) — SAC-RL is at least as good as plain SFT and strictly better than self-consolidation and
 raw RL. So the paper's method contribution: "when consolidating an RL policy for OOD transfer, AUTHOR the consolidation
 traces with the SFT operator, not the RL policy — the RL policy solves well but teaches (even itself) worse." rft CI next.
+
+## §58g rejection-FT CI + generality wave launched (cross-family, harder OOD)
+Rejection-FT (rft1, SFT base on base-authored bank) 3-seed CI: 0.3567 ([.344,.361,.365]). Finalized MATH-500 ordering:
+D-SFTauth 0.386 > SFT-only 0.370 ≈ C-self 0.366 > rft 0.357 >> GRPO-only 0.295. D−rft=+0.029, D−C=+0.020(t=2.86).
+GENERALITY WAVE (toward award tier):
+- CROSS-FAMILY recipient-invariance: Phi-3.5-mini (C2) + SmolLM2-1.7B (C3) recipients trained on the 4 QWEN-authored
+  producer banks → eval MATH-500. Q: does SFT-authored (Qwen) still teach a DIFFERENT-family recipient best? (Llama/Gemma gated.)
+- HARDER OOD: eval M1 arms (D/C/refs) on AMC (competition math) → does the method's margin GROW on harder OOD?
