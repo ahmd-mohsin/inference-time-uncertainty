@@ -1,3 +1,47 @@
+# ============================================================================
+# CURRENT PROGRESS (2026-09-08, for review — decide next steps)
+# ============================================================================
+## ONE-LINE STANDING
+Rigorous testing produced a SOLID mechanism paper, NOT a method paper: verified-trace SFT ≫ GRPO for OOD
+transfer (foundation) + WHY (mechanism); every attempt to build an RL method that beats pure SFT was tested
+and FAILED (honest nulls). Recommendation trending: harden the foundation+mechanism (the real contribution).
+
+## WHAT IS ESTABLISHED (solid, multi-seed, pushed)
+1. FOUNDATION (§37-49): SFT-on-verified ≫ GRPO for converting successful experience into capability.
+   - Code HumanEval OOD +0.096; dense OOD @7B: MMLU-Pro C0.408/A0.304 (+0.104), full-MATH C0.382/A0.323,
+     OlympiadBench C0.135/A0.100; §49 in-dist too (SFT 0.705 vs tuned-GRPO 0.52). 4 domains, ~16 families.
+   - §42 tuned-GRPO fairness: gap SURVIVES KL=0 / 2×steps / group16 (signal-structural, not a tuning artifact).
+2. MECHANISM (§44,§52b,§55): RL REWEIGHTS existing mass, cannot PLACE new mass on unreached OOD-correct regions.
+   - §44: GRPO+forward-KL self-distillation (β_sd 0.05-20, 3 seeds) FLAT ~0.335, never reaches SFT 0.41.
+   - §52b/S1a: the solve→compose gap EXISTS and WIDENS with training (reward saturates before skill generalizes).
+   - §55-Stage3: GRPO MONOTONICALLY dilutes OOD transfer — pure-SFT 0.354 > fixedSR 0.343 > dynamic 0.309 >
+     pure-GRPO 0.293 (MATH-500, matched compute). The more RL in the schedule, the worse the OOD transfer.
+
+## WHAT FAILED (rigorously tested nulls — honest, each strengthens the mechanism)
+- H1 monotonic mass-placing axis; H2 GRPO-rescue (§44) — refuted.
+- §45 "GRPO erodes SFT" — refuted (SFT→GRPO complementary, but see below).
+- H5 subspace localization (§46), H6 cheap-ignition (§48), H9 in-dist crossover (§49) — refuted.
+- H-A consolidation branch on arithmetic (§52c) — NULL (domain too saturated); H-C coverage (§54) — NULL.
+- §55-D1: consolidation>difficulty WITHIN-RL is real (Δ+0.040 CI[+0.017,+0.062], 6 seeds, GSM8K→MATH) BUT
+  §55-Stage3 shows NO RL schedule (dynamic/fixed/difficulty) beats PURE SFT → the METHOD does not beat the
+  trivial baseline. Kill-criterion S3 triggered: the dynamic consolidation-scheduled method is a NULL.
+
+## ACTIONABLE TAKEAWAY (the honest result)
+For OOD transfer of verified experience: SFT the verified traces; do NOT add RL. RL (any schedule) dilutes it.
+
+## RUNNING NOW
+Stage-3 multi-seed CI (s2/s3/s4 × dyn/fixedSR/grpo/sft) to error-bar the ordering; MATH-train harvest (Domain-3).
+
+## OPEN OPTIONS FOR NEXT STEPS (your call)
+A. HARDEN FOUNDATION (highest ROI now): one COMPLETE matched SFT-vs-GRPO OOD comparison per model family
+   (Llama/Mistral/DeepSeek/Qwen-Instruct) + ρ/M1-M4 mechanism probes multi-seed + §49 generality w/ tuned-GRPO.
+   → makes the mechanism paper airtight & broad. (recommended)
+B. DEEPEN MECHANISM: measure ρ (log-prob mass on OOD-correct traces) directly across SFT vs GRPO; the u_G(p)
+   advantage-vanishing curve; entropy dynamics — turn "RL can't place mass" into a measured, causal story.
+C. LAST METHOD SHOT: a genuinely different method (e.g. SFT with RL only as a tiny final polish that provably
+   doesn't touch OOD mass; or off-policy weighting) — HIGH risk given §55-Stage3 says RL hurts OOD.
+D. CODE/other domains for the FOUNDATION (not method): fix the code executor (sequential verify) → SFT-vs-GRPO
+   on MBPP→HumanEval as another foundation domain (executable).
 # Verified-Experience Consolidation in RL Post-Training
 ### When does a verified success become a TRANSFERABLE skill — and can we keep learning until it does?
 ### (HEADLINE / current methodology — see §50 for the award-target plan governing next steps)
