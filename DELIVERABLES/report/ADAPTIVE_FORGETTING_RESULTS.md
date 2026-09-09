@@ -3792,3 +3792,31 @@ control (the RL-specific residual is the first authorship effect to NOT wash out
 paper: "where do compositional-transfer gains in verified-experience post-training actually come from" — adaptation >
 RL-specific-content > coverage, cleanly separated. Award-tier still needs: scale, math-domain replication, family-transfer
 (nonlocal), and SOAR/SEAL/outcome-exploration head-to-head. But the core positive claims are controlled and reproducible.
+
+# ============================================================================
+# §73 THEORY — Advantage-Density: WHY GRPO fails and RFT/explore-then-learn wins (theorem + validation)
+# ============================================================================
+SETUP: binary verifier reward R∈{0,1}, GRPO group size G, per-prompt success prob p=Pr_{y~π}[R=1]. A group gives ZERO
+advantage (no gradient) iff all G samples share the same reward (all-fail or all-success).
+
+THEOREM 1 (advantage density). The expected fraction of zero-advantage ("dead") GRPO groups is
+    D(G) = E_{prompt}[ p^G + (1-p)^G ].
+The expected usable-signal (live-group) fraction is 1 − D(G). (Proof: for a group of G i.i.d. samples at success prob p,
+P(all 1)=p^G, P(all 0)=(1-p)^G; advantage std=0 iff all equal; take expectation over the prompt-wise p distribution.)
+COROLLARY. GRPO's effective gradient scales with (1−D(G)); it VANISHES as the per-prompt p-distribution concentrates near
+0 or 1 (bimodal). RFT is DENSITY-IMMUNE: it trains on every verified success regardless of its group's composition, so its
+signal ∝ E[p] (the success mass), not (1−D). Hence on bimodal/low-p tasks RFT ≫ GRPO in usable signal per rollout.
+
+EMPIRICAL VALIDATION (Coder-1.5B, hard compositions pool_C, k=16, G=8):
+  GRPO policy: mean_p=0.250 → PREDICTED D(8)=0.686 ; MEASURED GRPO reward_zero_std ≈ 0.70 (§70 P2). PREDICTION ≈ OBSERVED.
+  p-distribution is BIMODAL: 117/200 prompts at p∈[0,.1] (near-all-fail) + 21/200 at p∈[.9,1] (near-all-success) — U-shaped.
+  SFT-init: mean_p=0.192 → PREDICTED D(8)=0.777 (even more dead, more p≈0 mass).
+=> This DERIVES + VALIDATES the §70/§72 mechanism: compositional tasks induce a BIMODAL per-prompt success distribution;
+by Theorem 1 that forces ~70% dead groups; GRPO is signal-starved (poor LEARNER), matching the measured 0.70 near-exactly.
+WHY OUR METHOD FOLLOWS: (a) EXPLORE-WITH-RL: high-temperature policy sampling converts some p≈0 prompts to observed
+successes (discovers the SFT-unreachable tail, §71) — shifting probability mass out of the dead region. (b) LEARN-WITH-RFT:
+density-immune assimilation captures that signal that GRPO's advantage estimator discards. The +0.076 method gain (§71c) and
+its decomposition (adaptation +0.050 > RL-specific +0.020 > coverage +0.018, §71e) are consequences of this density account.
+PREDICTIONS (falsifiable, for generalization): (i) D(G) tracks measured dead-fraction across domains/models; (ii) GRPO-vs-RFT
+transfer gap grows with bimodality of p; (iii) larger G reduces D only polynomially — can't fix a p-distribution with mass at 0.
+NEXT: validate D(G) prediction on MATH domain (2nd domain) + across G∈{4,8,16}; matched-COMPUTE RFT-vs-GRPO curves.
