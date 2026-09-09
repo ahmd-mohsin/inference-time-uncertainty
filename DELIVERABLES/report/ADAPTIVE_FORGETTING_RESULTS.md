@@ -3263,3 +3263,18 @@ rejection-FT (+0.042), and GRPO-only (+0.108). This operationalizes teaching≠s
 authors weaker teaching traces than the SFT operator; consolidating on SFT-authored traces gives the best OOD transfer.
 REMAINING RIGOR: SFT-only + rejection-FT are 1-seed (getting multi-seed CIs to firm D>SFT-only, D>rft). 2nd-domain
 teaching (SVAMP §58d) already replicates the producer→TEACH ranking (SFT best).
+
+## §58f REFERENCE CIs + finalized SAC-RL comparison (honest significance)
+Multi-seed references (OOD MATH-500): SFT-only 0.3696 ±0.010 (n=3, [.365,.362,.381]); GRPO-only 0.2950 ±0.031
+(n=3, [.278,.331,.276], high RL variance). Finalized method table (D = SAC-RL = GRPO policy + SFT-authored consolidation):
+| comparison | Δ | test | verdict |
+|------------|-----|------|---------|
+| D(0.386) − GRPO-only(0.295) | +0.091 | large, sd-separated | SOLID (RL alone transfers poorly OOD; consolidation fixes it) |
+| D(0.386) − C self-traces(0.366) | +0.020 | t=2.86, p≈0.02 (n=6/6) | SOLID — the teaching≠solving payoff (author with SFT, not the RL policy) |
+| D(0.386) − SFT-only(0.370) | +0.016 | t≈2.3, p≈0.06 (n=6/3) | MARGINAL — reported as such |
+| D(0.386) − rejection-FT(0.344) | +0.042 | rft CI training (C2 s1,s2) | pending |
+HONEST HEADLINE for the method: SAC-RL's firmly-significant distinctive claim is D>C (SFT-authored beats the RL
+policy's OWN traces for consolidation, +0.020, t=2.86) and the large D>>GRPO-only (+0.091). The D>SFT-only edge is
+MARGINAL (+0.016, p≈0.06) — SAC-RL is at least as good as plain SFT and strictly better than self-consolidation and
+raw RL. So the paper's method contribution: "when consolidating an RL policy for OOD transfer, AUTHOR the consolidation
+traces with the SFT operator, not the RL policy — the RL policy solves well but teaches (even itself) worse." rft CI next.
