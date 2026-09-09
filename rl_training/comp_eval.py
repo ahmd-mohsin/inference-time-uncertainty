@@ -66,6 +66,19 @@ def main():
            "acc": acc, "by_kind": {k: v[0] / v[1] for k, v in by_kind.items()},
            "by_kind_counts": {k: v for k, v in by_kind.items()}}
     os.makedirs(a.out_dir, exist_ok=True)
+    # per-problem pass + family key (noncommuting pair present, else primitive multiset) for family-transfer analysis
+    from rl_training.comp_tasks import NONCOMMUTING
+    pairset = {frozenset(p) for p in NONCOMMUTING}
+    perprob = []
+    for r, o in zip(rows, outs):
+        task = {"prog": r["prog"], "test_inputs": _ensure_test_inputs(r)}
+        ok = any(verify_solution(c.text, task) for c in o.outputs)
+        prog = r["prog"]; fam = "none"
+        for i in range(len(prog) - 1):
+            if frozenset((prog[i], prog[i + 1])) in pairset:
+                fam = "%s|%s" % tuple(sorted((prog[i], prog[i + 1]))); break
+        perprob.append({"prog": prog, "fam": fam, "ok": int(ok)})
+    res["per_problem"] = perprob
     with open(os.path.join(a.out_dir, f"comp_{a.tag}.json"), "w") as f:
         json.dump(res, f, indent=2)
     print(f"[comp_eval {a.tag}] n={len(rows)} k={a.k} acc={acc:.4f} by_kind=" +
