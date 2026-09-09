@@ -2962,3 +2962,14 @@ COMPUTE: bottleneck = INTERPRETABILITY not GPU count. Cluster A=E0 audit→E1; B
    ckpts→E2 grid; C=repair verifier + immutable banks/confirmation splits→E3→E9. DO NOT launch training cells
    before E0 passes. Preregister metric/threshold/resource-axis/ckpt-rule/stop; dev-select, untouched confirm
    set; cluster uncertainty over prompts/families + training-seed; report negative attempts.
+
+## §56-E0(verifier) RESULT + correction — verifier WORKS (my §55-D2 diagnosis was WRONG)
+Ran e0_verifier_fixture on the pod: run_tests correctly classifies correct/wrong-answer/exception/timeout in
+BOTH sequential AND pooled modes (4/5; the 1 "miss" = a malformed entry in the fixture itself, not a verifier
+bug). => The code verifier is NOT broken in the shared-PID pod. CORRECTION: §55-D2's claim ("pooled executor
+returns 0 → harvest blocked") is REFUTED — the low ~25-trace harvest had a different cause (likely generation
+yield / shard-count / I checked mid-run), not the executor. The CODE domain (MBPP→HumanEval) is VIABLE for the
+foundation SFT-vs-GRPO comparison. (Honest: I over-diagnosed a bug; the fixture caught it.)
+NEXT E0 (the important one): E0(a) pure-SFT-INSIDE-hybrid gradient equivalence — does the hybrid trainer's SFT/
+NLL path == standalone sft_train on identical batch (loss/grads/first-update/logits)? This gates whether §44's
+flat mass-placing axis is a real result or a hybrid-trainer artifact. Building next.
