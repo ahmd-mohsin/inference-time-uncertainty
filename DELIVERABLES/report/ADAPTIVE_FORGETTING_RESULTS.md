@@ -3630,3 +3630,19 @@ bank size/quality differ; need matched-accept-rate / matched-bank-size control t
 (2) generalization — does discrim>coarse hold on RANDOM pools too, or only C? (running coarse-B). (3) 1.5B, one domain, k=1.
 IF A survives matched-accept control + generalizes → the AWARD-TARGET reframing: "verification resolution, not data selection,
 governs compositional transfer in RFT" + an allocation method (spend verification budget on discriminating tests). Beyond "stronger tests help": the sharp SAME-DATA control + executable ground truth.
+
+## §68b BET A SHARPENED — a DATA × VERIFIER INTERACTION (the award-target mechanism candidate)
+RFT held-out evalB, 4 seeds, 2x2 (pool × verifier):
+| pool | discriminating | coarse | Δresolution |
+|------|----------------|--------|-------------|
+| C (interaction-bearing) | 0.328 | 0.280 | +0.048 (t=8.12) |
+| B (random)              | 0.288 | 0.278 | +0.010 (t=1.24, null) |
+INTERACTION = (discrimC−coarseC) − (discrimB−coarseB) = +0.038: verification-resolution benefit is ~5x larger when the
+training data CONTAINS the hard interaction. MECHANISM (novel, clean): compositional transfer in RFT needs the CONJUNCTION
+of (a) interaction-bearing training problems AND (b) an interaction-RESOLVING verifier — NEITHER ALONE suffices. This
+RECONCILES the arc: §66d arrangement-null (both discriminatingly verified → no diff); §66 C>B (C has interactions, strictly
+verified; B doesn't); §68 discrim>coarse on C only (strict verification OF the interactions is the active ingredient). The
+generalization NULL (coarse-B≈discrim-B) also rules out a generic bank-size artifact. REMAINING confound: matched-accept-rate
+(coarse admits order-wrong solutions -> larger/lower-quality bank); running discrim-cap vs coarse-cap at MATCHED bank size to
+isolate RESOLUTION from COUNT. If it survives: "verifier resolution × interaction-bearing data governs RFT compositional
+transfer" — beyond "stronger tests help", with a verification-budget ALLOCATION method (spend budget resolving interactions).
