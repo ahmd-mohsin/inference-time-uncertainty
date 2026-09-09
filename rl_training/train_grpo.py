@@ -58,6 +58,9 @@ def build_args():
     p.add_argument("--save-total-limit", type=int, default=0, help="override kept-checkpoint cap (0=cfg; set high to keep the whole kill trajectory for the Gp sweep)")
     p.add_argument("--lr", type=float, default=RLConfig.learning_rate)
     p.add_argument("--beta", type=float, default=RLConfig.beta)
+    # §56-E1: scale_rewards="group" = std-normalized GRPO; "none" = advantage R−mean(=R−p̂ for binary) =
+    # MaxRL-approx (outcome-weighting w/o std normalization). Tests if std-norm/weighting drives the SFT-GRPO gap.
+    p.add_argument("--scale-rewards", default=RLConfig.scale_rewards, choices=["group", "batch", "none"])
     p.add_argument("--max-completion-length", type=int, default=RLConfig.max_completion_length)
     p.add_argument("--gradient-accumulation-steps", type=int,
                    default=RLConfig.gradient_accumulation_steps,
@@ -147,7 +150,7 @@ def main():
     a.model = _resolve_local_model(a.model)
     cfg = RLConfig(model_name=a.model, dataset=a.dataset, n_problems=a.n_problems, seed=a.seed,
                    difficulty_json=a.difficulty_json, output_dir=a.output_dir,
-                   num_generations=a.num_generations, num_train_steps=a.num_train_steps,
+                   num_generations=a.num_generations, num_train_steps=a.num_train_steps, scale_rewards=a.scale_rewards,
                    learning_rate=a.lr, beta=a.beta,
                    max_completion_length=a.max_completion_length,
                    gradient_accumulation_steps=a.gradient_accumulation_steps,
