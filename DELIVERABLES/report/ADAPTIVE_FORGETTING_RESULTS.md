@@ -2775,3 +2775,21 @@ scoring (like §37's code_score). DEFERRED (rabbit hole, not blocking). Domain-2
 sequential-verify fix later; for now Domain-1 (GSM8K→MATH, working + positive 2-seed) is the primary method
 evidence, with a 6-seed CI in progress. Domain-3 (MATH-train→Olympiad, pure non-GSM8K) is the cleaner
 generality follow-up (no code executor needed).
+
+## §55-D1-CI CONFIRMED — consolidation > difficulty on GSM8K→MATH (6 seeds, SIGNIFICANT)
+Branch from GRPO-GSM8K ckpt-150, 150-step matched compute, eval MATH-500 (n=200 k=4):
+| seed | b_consol | d_diff | Δ |
+|------|----------|--------|---|
+| s0 | 0.330 | 0.301 | +0.029 |
+| s1 | 0.363 | 0.315 | +0.048 |
+| s2 | 0.350 | 0.285 | +0.065 |
+| s3 | 0.329 | 0.320 | +0.009 |
+| s4 | 0.356 | 0.296 | +0.060 |
+| s5 | 0.346 | 0.319 | +0.028 |
+**Δ mean = +0.0397, 95% CI(t,5df) = [+0.017, +0.062] — EXCLUDES 0. All 6 seeds positive.** consolidation mean
+0.346 vs difficulty 0.306 on MATH-500. => On a REAL large-gap domain, spending matched compute CONSOLIDATING
+verified successes beats spending it on harder tasks (difficulty allocation) — the consolidation-interval method
+WORKS (unlike the saturated arithmetic domain §52c). This is the substantial real-domain method result.
+NEXT: (1) build the DYNAMIC consolidation-scheduled RL method (gap-gated SFT blocks in RL) vs fixed SFT→RL /
+difficulty / pure-GRPO at matched TOTAL compute; (2) generality on Domain-3 (MATH→Olympiad); (3) e_sftbase
+per-seed (SFT-from-base was ≥ consolidate-from-ckpt on s0 — check if the method should consolidate EARLY).
