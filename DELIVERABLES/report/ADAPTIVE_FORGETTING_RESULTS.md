@@ -3114,3 +3114,11 @@ trace CONTENT), (2) producer-unique solved prompts (isolates COVERAGE), (3) rand
 mixture. Also: does MaxRL solve a harder/more-teachable prompt SUBSET (its worst-solver status means it solves a
 different set)? This is the mechanism the paper needs. Centerpiece dissociation (§56-E9 CI-hardened) STANDS;
 the WHY is the open depth (queued).
+
+## §56-E9-why(a) PROMPT-OVERLAP — coverage RULED OUT (it's the solutions, not the problems)
+Producer banks' solved-prompt sets are ~93% identical: pairwise Jaccard base-SFT 0.934, base-GRPO 0.909,
+base-MaxRL 0.916, SFT-GRPO 0.930, SFT-MaxRL 0.935, GRPO-MaxRL 0.921; INTERSECTION (all 4 solve) = 758 of ~820-856.
+=> MaxRL's teaching edge is NOT which problems it solves (coverage) — the producers solve nearly the SAME set.
+The difference must be the SOLUTIONS (trace content) each writes for the SAME problems. Running same-prompts
+decomposition: recipients SFT on the 758-prompt INTERSECTION, producer-specific solutions (gu/e9i_{base,SFT,GRPO,
+MaxRL}_s{0,1}) → eval MATH-500. If MaxRL edge persists on identical prompts → CONTENT-driven (clean mechanism).
