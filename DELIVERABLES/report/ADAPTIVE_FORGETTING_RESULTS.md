@@ -2894,3 +2894,71 @@ The paper is a MECHANISM paper, not a method paper:
 ACTIONABLE: for OOD transfer of verified experience, SFT the verified traces; do not add RL.
 AWAITING USER DIRECTION on next steps (options A-D in the CURRENT PROGRESS block at top). Not launching the
 large foundation-hardening sweep until directed.
+
+# ============================================================================
+# §56 GOVERNING PLAN (reviewer, 2026-09-09) — "Verified Experience and Transfer in LLM Post-Training"
+# ============================================================================
+RETIRE the dynamic consolidation scheduler + the consolidation-interval proposal (do NOT keep modifying the test
+domain to rescue it). The ledger establishes empirical differences UNDER PARTICULAR PROCEDURES — it does NOT
+establish that RL cannot create capability, that every RL schedule harms transfer, or that the mechanism is
+settled. Goal = find a REPRODUCIBLE BOUNDARY between regimes + predict an intervention that changes the sign;
+a method follows the discovery.
+
+## CENTRAL HYPOTHESIS
+Much of the SFT–GRPO transfer gap is produced by HOW successful experience is SAMPLED, WEIGHTED, and REUSED at a
+particular initialization — not by an intrinsic inability of reward-based learning to change unseen correct
+behavior. (Falsifiable: if outcome-weighting or reuse closes the gap, the "operator" story weakens.)
+
+## PRESENTATION CORRECTIONS (apply to all claims henceforth)
+- §55 metric = MEAN SAMPLED CORRECTNESS (pass@1 estimate) on a 200-Q subset × 4 samples — NOT full MATH-500, NOT
+  pass@4. Keep TRAINING-SEED uncertainty SEPARATE from EVAL-QUESTION uncertainty.
+- 16 model variants ≠ 16 independent families; SFT-vs-BASE ≠ SFT-vs-GRPO. Code headline = SFT>base only; the
+  full code SFT-vs-GRPO comparison still needed (+ executor fix §55-D2).
+- MATH-500 vs full-MATH subset need OVERLAP accounting before "independent confirmations".
+- §50 caveat governs the headline: shared source-task pool ≠ matched trajectories/exposure.
+
+## MECHANISM CLAIMS TO REPAIR (stop over-claiming)
+1. Reward saturation NOT demonstrated: u_G(.522)=.992 (G=8) — near-52% prompts give MIXED groups almost always.
+   Must LOG per-prompt all-success/all-fail/mixed fractions directly; don't apply u_G to the aggregate mean.
+2. Widening n3–n5 gap = unequal improvement, NOT proof advantage-vanishing caused it (length changes difficulty).
+3. Probability placement is NOT SFT-exclusive: ∇p_θ = p_θ·E_{y|R=1}[∇logπ] — success-conditioned likelihood ≈
+   binary-reward PG (matched weighting, targets fixed). Differences = replay/weighting/negatives/clip/optimizer.
+   0/256 ≠ zero support; finite-bank trace likelihood ≠ P(correctness). Flat λ-sweep ≠ impossibility (λ=1 IS SFT;
+   the equivalent-trainer endpoint check is STILL PENDING; 1200-step SFT vs 400-step hybrids ≠ matched dose).
+
+## MISSING BASELINES / PRIOR ART (must test/cite)
+MaxRL (Feb26, empirical-success-rate weighting, zero-success handling) = TOP missing baseline. OAPL (off-policy),
+NFT (negatives; = GRPO grad in on-policy limit), Group-Relative-REINFORCE-is-off-policy, DeReason (SFT→RL
+curriculum + difficulty gate — close prior art), PEAR (good-SFT-optimizes-SFT-better-SFT-preps-RL), Rethinking-
+Generalization-in-SFT, Online Self-Weighted FT (success-weighted SFT — direct competitor), RL-builds-
+compositional-strategies (POSITIVE RL control — rejection-FT plateaus, RL composes), Outcome-based Exploration /
+SOAR / Self-Adapting-LM / Reuse-your-FLOPs (RL-as-data-producer is a starting point, not novel alone).
+
+## EXPERIMENTS (gated; E0 before any new training sweep)
+E0 (PREREQUISITE — interpretability): pure-SFT INSIDE hybrid trainer vs standalone (identical ckpt/opt/batches/
+   masks; RL+KL+aux OFF; compare loss/grads/updates/logits first few steps, tolerance from repeat runs). GRPO
+   audit (valid tokens, truncation/parse fails, per-prompt reward dist, clip frac, grad norms, rollout sync,
+   behavior=train logprob check). CODE VERIFIER fixture (known correct/incorrect/exception/timeout; sequential
+   vs pooled; infra-fail ≠ wrong). STOP: any endpoint mismatch/bad reward path blocks causal interpretation.
+E1 (fresh vs replay vs outcome-weighting): one math domain, same init/prompts/verifier. A=fixed-bank SFT,
+   B=fresh positive-trace likelihood (per-prompt mean; zero-success handling explicit; identification control,
+   NOT a new algo), C=fresh GRPO (audited), D=MaxRL (published estimator), E(cond)=OAPL if staleness implicated.
+   Two fairness questions kept separate: matched TOTAL compute vs matched EXPERIENCE (shared bank/exposure).
+E2 (resolve §45-vs-§55 tension): branch from SFT-150 AND SFT-1200; at each compare continued-SFT / fresh-
+   positive / GRPO / MaxRL; ≥3 seeds; ≥2 preregistered horizons; track Δ-from-init AND Δ-from-continued-SFT;
+   optimizer-state continuous (+ reset-vs-preserve check). Scale only if beats budget-matched alternative.
+E3 (residual mechanism via interventions): frozen fresh group batch → decompose pos/neg-advantage, group-norm,
+   token-reduction; dev outcome-gradient ĝ_dev inner-product with actual Δθ predicts held-out Δcorrect (noisy;
+   verify with reversible updates); optimizer-aware (analyze real Δθ, not LoRA-factor norms); small enumerable
+   verifiable language for total-correctness-probability (support test) w/ tabular counterpart.
+E9 (conditional METHOD bet — RL as EXPERIENCE PRODUCER): does checkpoint task-reward ranking differ from its
+   traces' TEACHING value to a common learner? producers {base, strong-SFT, GRPO, SFT→GRPO} → same prompts/
+   budget → verified banks → same recipient. Data-quality (matched examples/prompts/len) + full-pipeline (cost)
+   analyses. Kill: no recipient advantage after matching+cost → retire RL-as-producer. Position vs Outcome-Expl/
+   SOAR/Self-Adapting-LM. Smallest worthwhile: +2 abs pts or 20% cost cut at matched acc.
+DOWNSTREAM: frozen one-shot program synthesis (after verifier fix); MBPP→HumanEval + controlled algo/composition
+   split; separate syntax/visible-test/hidden-test/truncation/timeout; report one-sample correctness.
+COMPUTE: bottleneck = INTERPRETABILITY not GPU count. Cluster A=E0 audit→E1; B=eval existing SFT-150/1200/§45
+   ckpts→E2 grid; C=repair verifier + immutable banks/confirmation splits→E3→E9. DO NOT launch training cells
+   before E0 passes. Preregister metric/threshold/resource-axis/ckpt-rule/stop; dev-select, untouched confirm
+   set; cluster uncertainty over prompts/families + training-seed; report negative attempts.
