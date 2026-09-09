@@ -3668,3 +3668,28 @@ plausible-sounding RL-transfer mechanisms, leaving one robust effect (verified-t
 flashy novel mechanism. The scientific value is the controls (same-prompts, freq-matched B', matched-accept-rate) that
 distinguish real effects from coverage/count/arrangement artifacts — exactly what the field's "curriculum/teacher/verifier
 helps" claims usually omit.
+
+# ============================================================================
+# §70 POSITIVE-METHODOLOGY PLAN (governing) — 3 tracks + prerequisite audit gate
+# ============================================================================
+GOAL: a POSITIVE methodology that improves on the strongest demonstrated learners (verified-trace SFT + iterative RFT),
+with a causal account predicting when it helps. Keep RFT-C + strong RFT control in every comparison; log ID learning too.
+PREREQUISITE AUDIT (small compute cap, gates everything):
+  (P1) Trainer-equivalence: standalone SFT vs pure-SFT endpoint of the hybrid trainer must match losses, gradients, ACTUAL
+       first Adam updates, and logits within a tolerance from repeated identical runs (NOT raw-grad ratio; Adam≠172x). Redo §56.
+  (P2) RL diagnostics + TRAIN-distribution positive control: per-prompt all-fail/mixed/all-success groups, truncation/parse
+       fails, reward correctness, clipping, KL, effective update, rollout-vs-train logprob agreement; DEMONSTRATE GRPO learns
+       its TRAIN objective. Flat OOD is uninterpretable if GRPO also fails to improve train. (KEY: validates RFT>>GRPO headline.)
+  (P3) Implement REAL MaxRL (success-rate normalization + zero-success handling); current "MaxRL" was centered-no-stdnorm.
+TRACKS (run SEPARATELY, oracle pilot → gate → scale; alloc A45/B30/C25 AFTER audit):
+  A (1st): behavioral geometry of gradient NOISE — hold mean update fixed, manipulate noise COVARIANCE, measure executed
+     behavior; V_f=tr(J_f Σ J_f^T); control-variate baseline b*_M(x)=E[R s^T M s|x]/E[s^T M s|x] in a behavioral metric M=J_f^T J_f.
+     Gate: beats ordinary variance-reduction (RLOO/OTB) + rotation control at matched cost; OOD gain survives. Baselines incl OTB, MaxRL.
+  B: local counterfactual advantages via BRANCHING in the comp env (matched-prefix interventions); arms {RFT, partial-trace SFT,
+     whole-traj RL, local-advantage RL, random-localization}. Decisive control: RFT on the SAME recovered traces. Baselines: InT, IBPO, GraphPO.
+  C: RL for MARGINAL useful discovery beyond a STRONG SFT sampler; equal-cost bank additions; gate: RL-discovered bank improves
+     fresh recipients MORE per total cost than extra strong-SFT sampling. Baselines: SOAR/SEAL/outcome-based-exploration.
+DECISION: preregister primary score, dev checkpoint-selection, budget, min useful effect (~+3 abs pts over strongest matched
+baseline OR ≥25% less compute at noninferior acc), confirmation looks. Paired per-problem + training-seed + family-cluster
+uncertainty. Matched-experience AND matched-total-cost views. Split by program/reasoning FAMILY, not random ID. evalB = dev only now.
+STATUS: starting P2 (GRPO train-distribution learning check) — the cheapest gating audit of the RFT>>GRPO headline.
