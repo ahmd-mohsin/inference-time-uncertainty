@@ -3308,3 +3308,56 @@ different arch/tokenizer/pretraining), +0.02-0.04 over the next producer. Teachi
 transfers ACROSS MODEL FAMILIES — not a Qwen artifact. SmolLM2-1.7B floored on MATH-500 (too weak); re-eval on SVAMP.
 Combined generality of "SFT best teacher": 3 model families × 2 domains (MATH-500 + SVAMP) × recipient scales 1.7-7B.
 Firming Phi with multi-seed CI; SmolLM2 salvage on SVAMP pending.
+
+# ============================================================================
+# §60 CURRENT STATE — EXECUTIVE SUMMARY (for feedback, as of this checkpoint)
+# ============================================================================
+## THE PAPER IN ONE PARAGRAPH
+An RL-trained (GRPO) policy transfers POORLY out-of-distribution and — despite solving in-domain well — authors
+verified traces that are WEAKER teachers than traces authored by an SFT model. We (1) establish this dissociation
+(teaching value ≠ solving value), (2) show the SFT operator's traces have INTRINSIC, recipient- and family-invariant
+teaching value, and (3) turn it into a downstream method — SAC-RL: consolidate a GRPO policy on SFT-AUTHORED verified
+traces — which gives the best OOD transfer of any recipe tested.
+
+## HEADLINE NUMBERS (OOD MATH-500, Qwen2.5-3B, honest effect sizes)
+| recipe | OOD | vs SAC-RL |
+|--------|-----|-----------|
+| SAC-RL = GRPO policy + SFT-authored consolidation (D) | 0.386 ±0.008 (n=6) | — |
+| GRPO policy + self-trace consolidation (C)            | 0.366 ±0.014 (n=6) | D−C=+0.020, t=2.86, p≈0.02 |
+| SFT-only                                              | 0.370 ±0.010 (n=3) | D−SFT=+0.016, p≈0.06 (MARGINAL) |
+| iterative rejection-FT                                | 0.357 ±0.010 (n=3) | D−rft=+0.029 |
+| raw GRPO (no consolidation)                           | 0.295 ±0.031 (n=3) | D−GRPO=+0.091 (+33% rel) |
+HONEST: the one LARGE effect is SAC-RL vs raw GRPO (+33% rel) — but raw GRPO is a WEAK baseline. The NOVEL deltas
+(D>self, D>SFT-only) are SMALL (+0.02, +0.016) though the D>self one is significant. This small-effect-size is the
+paper's main weakness for award tier.
+
+## GENERALITY MATRIX ("SFT-authored traces teach best" — the finding)
+| recipient | domain | SFT best? | SFT−next |
+|-----------|--------|-----------|----------|
+| Qwen2.5-3B  | MATH-500 | yes | small |
+| Qwen2.5-7B  | MATH-500 | yes | +0.037 |
+| Qwen2.5-7B  | SVAMP    | yes | +0.044 |
+| Phi-3.5-mini (diff family) | MATH-500 | yes | +0.024 (CI in progress) |
+| SmolLM2-1.7B | MATH-500 | (SFT) | FLOOR |
+| SmolLM2-1.7B | SVAMP    | (SFT) | +0.013 (weak model) |
+=> SFT-authored traces teach best across 3 model families × 2 domains × scales 1.7–7B. CONSISTENT but SMALL margins.
+
+## ROBUSTNESS / HONEST NULLS (kept, not hidden)
+- MaxRL "worst-solver-best-teacher" (the original exciting hook) was COVERAGE-FRAGILE — vanished on same-prompts control. RETRACTED honestly.
+- 2nd-domain OlympiadBench: FLOOR, uninformative (not a refutation).
+- Harder-OOD AMC: method margin difficulty-INVARIANT (D−C=+0.021 ≈ MATH-500), NOT bigger. "Bigger margins on harder data" hypothesis FAILED.
+- Explicitness (MaxRL's 2.2× equations): a SECONDARY, confounded factor; not the driver.
+
+## MECHANISM (partial)
+Teaching value tracks SFT-operator solution QUALITY, not length, not coverage (same-prompts control), not surface
+explicitness (secondary). NO clean single causal knob yet — this is an open gap.
+
+## RUNNING NOW / NEXT
+- BIGGER-POLICY SAC-RL at 7B (harvesting clean 7B SFT-authored + GRPO-self banks) — KEY test: does D−self / D−SFT grow with scale? (small effect is the weakness; scale is the hope.)
+- Phi cross-family CI (3 seeds) finishing.
+- OPEN for award tier: (a) bigger models / full-FT for larger margins; (b) a task/regime with a wider SFT-vs-RL transfer gap; (c) a clean causal mechanism; (d) a non-math domain (code) for SAC-RL itself.
+
+## HONEST TIER ASSESSMENT
+Solid conference paper (consistent, CI-backed, honest). NOT award-tier yet: novel effect sizes are small (+0.02),
+the large effect is vs a weak baseline, scope is math+LoRA+≤7B, and there's no clean mechanism. Award path = make the
+margin BIG somewhere (scale/regime) + a mechanism.
