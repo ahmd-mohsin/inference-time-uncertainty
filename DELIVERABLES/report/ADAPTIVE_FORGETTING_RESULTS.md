@@ -3552,3 +3552,19 @@ replicates. HONEST CAVEATS: n=2 seeds (NOT yet confirmed — expanding to 4+); a
 (need common-init-on-evalB anchor: is 150-step GRPO / 2-round RFT even helping vs the init?); B random not perfectly
 freq-matched to C (L1 0.18). Per pre-registered rule: continue ONLY if C>B reproducibly at useful effect + comparable cost.
 NEXT: seeds 2/3 (all cells), common-init evalB anchor, and if RFT C>B holds at 4 seeds → H2 sparse-bridge sweep.
+
+## §66b 6-CELL 4-SEED — GATE PASSED: RFT on diagnostic compositions transfers ~2x better (t=6.10)
+Held-out depth-5 compositions (evalB), common-init baseline=0.247, 4 seeds/cell:
+| pool | GRPO mean±95CI | RFT mean±95CI | RFT gain over init |
+|------|----------------|----------------|--------------------|
+| A repeated   | 0.257±0.011 | 0.290±0.013 | +0.043 |
+| B random     | 0.253±0.011 | 0.288±0.013 | +0.042 |
+| C diagnostic | 0.258±0.003 | 0.328±0.006 | +0.082 |
+GATE C vs B: RFT C-B=+0.0400, SE=0.0066, t=6.10 (STRONG, non-overlapping CIs, 4 seeds). GRPO C-B=+0.0050 t=1.01 (NULL).
+=> Under REJECTION-FT, training on DIAGNOSTIC compositions gives ~2x the held-out transfer of matched-random/repeated
+compositions (C +0.082 vs B/A +0.042 over init). PRE-REGISTERED GATE (C>B reproducibly, useful effect, matched cost) PASSED.
+Procedure-specific: 150-step GRPO does NOT move held-out (≈init 0.247) — RFT (train on verified self-solutions to the
+diagnostics) does. HONEST CAVEATS (must resolve before claiming): (1) B-vs-C primitive-freq residual L1=0.18 — could be a
+frequency artifact; running TIGHTER-matched B' control. (2) n=4 share ONE common-init (conditional). (3) 1.5B, one domain, k=1.
+(4) GRPO-null needs a longer-horizon check. NEXT: H2 sparse-bridge sweep (fraction of diagnostics 0/5/10/25/50/100%, RFT) +
+family-level transfer matrix (nonlocal?) + tighter-matched control. This is the strongest lead of the whole program.
