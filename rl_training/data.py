@@ -56,6 +56,34 @@ def build_dataset(dataset: str, model_name: str, n_problems: int = -1, seed: int
         return Dataset.from_dict({"prompt": [r["prompt"] for r in rows],
                                   "prog": [json.dumps(r["prog"]) for r in rows],
                                   "test_inputs": [json.dumps(r["test_inputs"]) for r in rows]})
+    # §73 MATH-TRAIN source (for the advantage-density gap-vs-D validation): pure MATH-train prompts, gold from \boxed{}.
+    if isinstance(dataset, str) and dataset == "mathtrain":
+        from datasets import load_dataset
+        import re as _re
+        d = None
+        for did in ["EleutherAI/hendrycks_math", "hendrycks/competition_math", "lighteval/MATH"]:
+            try:
+                dd = load_dataset(did)
+                d = dd["train"] if "train" in dd else dd[list(dd.keys())[0]]
+                break
+            except Exception:
+                continue
+        if d is None:
+            raise SystemExit("MATH-train unavailable")
+        rows = {"prompt": [], "gold_answer": [], "problem_id": []}
+        _BOX = _re.compile(r"\\boxed\{(.+?)\}")
+        n = 0
+        for r in d:
+            sol = r.get("solution", r.get("answer", ""))
+            m = _BOX.findall(sol)
+            if not m:
+                continue
+            from src.data.dataset import format_prompt
+            rows["prompt"].append(format_prompt({"question": r.get("problem", r.get("question", ""))}, model_name))
+            rows["gold_answer"].append(m[-1].strip()); rows["problem_id"].append(n); n += 1
+            if n_problems > 0 and n >= n_problems:
+                break
+        return Dataset.from_dict(rows)
     # INTERVENTION arm B: GSM8K + 10% MATH-train MIXED (held-out MATH-500 is the disjoint 'test' split).
     if isinstance(dataset, str) and dataset == "mathmix":
         from src.data.dataset import load_gsm8k, load_math_full, format_prompt
