@@ -3029,3 +3029,21 @@ DISSOCIATION + controlled WHY + a selective-export method that wins under full c
 Retain a verified trace for the learner's bank only when its MEASURED marginal teaching contribution exceeds
 readily-available alternatives (deterministic selection rule from the bank experiment first; a learned controller
 only if it beats the deterministic rule). Keep the final learner on the best update rule (SFT). 
+
+## §56-E1 VERDICT — outcome-weighting is PART of the gap, not all of it (honest, GSM8K→MATH-500)
+Mean sampled correctness (pass@1 est, 200-Q × k=4), per-seed then mean:
+| arm | seeds | mean |
+|-----|-------|------|
+| A_sft (fixed verified bank, SFT) | 0.365,0.359,0.381 | **0.368** |
+| D_maxrl (MaxRL-approx, R−p̂, NO std-norm) | 0.308,0.306 | 0.307 |
+| C_grpo (GRPO, std-normalized) | 0.278,0.283,0.304 | 0.288 |
+FINDING: D(no-std) > C(std) by **+0.019** → removing std-normalization CLOSES ~24% of the C→SFT gap (0.080).
+But D (0.307) remains WELL BELOW SFT (0.368) → **~76% of the gap PERSISTS without std-norm**. So the SFT-GRPO OOD
+gap is PARTLY a reward-weighting/normalization effect (real, procedural — supports part of §56 central hypothesis)
+but NOT purely so — a large residual remains. 
+CRITICAL CONFOUND (must resolve before attribution): A_sft trains on a FIXED curated bank (824 traces); C/D
+generate FRESH on-policy rollouts. So A-vs-{C,D} confounds OPERATOR with DATA (fixed-curated vs fresh-online).
+NEXT: arm B = fresh positive-trace SFT (SFT on the policy's OWN fresh verified rollouts) — separates SFT-operator
+from fixed-curated-data. If B≈A → operator; if B falls toward C/D → the fixed curated bank was the lever. Also
+TRUE MaxRL estimator (published, zero-success handling) vs the scale_rewards=none proxy. Then E3 for the residual.
+This is a defensible mechanism result: weighting explains ~1/4; the rest is operator-or-data, TBD by arm B/E3.
