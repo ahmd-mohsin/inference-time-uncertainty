@@ -19,6 +19,8 @@ def main():
     ap.add_argument("--verify-mode", choices=["discriminating", "coarse"], default="discriminating",
                     help="BET A: discriminating = check the stored order-separating test inputs (default); "
                          "coarse = accept if it matches the reference on ONE random input (weak signal, higher accept rate)")
+    ap.add_argument("--cap", type=int, default=0, help="BET A control: cap accepted bank to N (matched bank size) to "
+                    "isolate verification RESOLUTION from bank COUNT")
     a = ap.parse_args()
     import random as _rnd
     from rl_training.comp_tasks import _rand_records, run_program
@@ -55,6 +57,8 @@ def main():
             n_solved += 1
             # store as a clean ```python block completion for SFT
             accepted.append({"prompt": r["prompt"], "completion": best if "```" in best else "```python\n" + best + "\n```"})
+    if a.cap and len(accepted) > a.cap:
+        _rnd.Random(0).shuffle(accepted); accepted = accepted[: a.cap]
     with open(a.out, "w") as f:
         for r in accepted:
             f.write(json.dumps(r) + "\n")
