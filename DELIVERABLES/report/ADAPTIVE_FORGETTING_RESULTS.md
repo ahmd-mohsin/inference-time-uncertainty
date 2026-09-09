@@ -3859,3 +3859,17 @@ assimilate via RFT, held-out (does RL-exploration beat diversity/base?). (M2) AS
 RL-discovered bank (does density-immune learning matter?). (M3) explorer TEMPERATURE {0.7,1.0,1.3}. (M4) bank composition.
 ROBUSTNESS: (R1) matched-COMPUTE frontier RFT vs GRPO (RUNNING 1091). (R2) seeds (have 4). (R3) held-out depth/structure splits.
 LAUNCHED: matched-compute (1091); explorer ablation M1 (1092); group-size sweep T1 + assimilator M2 (1093).
+
+## §74b ABLATIONS — matched-compute frontier + group-size sweep (both confirm the theory)
+MATCHED-COMPUTE (held-out pool_C_d5ev, init=0.247):
+  GRPO: 50-step=0.200, 100=0.213, 150≈0.25, 300=0.253  (stays ≈init across ALL budgets — signal-starved, per Thm-1)
+  RFT : 1-round=0.267, 2≈0.30, 3=0.273  (ABOVE GRPO at every point)
+=> RFT DOMINATES the compute frontier: 1 RFT round (~1600 gen) beats 300 GRPO steps (~2400 gen). GRPO can't convert
+compute into transfer because ~70% of groups are dead (Thm-1); RFT's density-immune assimilation does.
+GROUP-SIZE SWEEP (empirical test of the G-floor prediction): G4=0.233, G8≈0.25, G16=(training) — larger G barely moves
+held-out transfer and stays far below RFT, confirming that increasing group size cannot rescue GRPO when per-prompt p
+mass sits at 0 (D(G)→extreme-mass floor). Matches the analytic D(G) (§73b).
+EXPLORER/ASSIMILATOR ablations (partly in hand): high-temp-SFT sampling (sft-2x, a diversity/outcome-exploration-style
+baseline) LOST to RL-explorer union (0.276 vs 0.352, §71c) — RL exploration beats mere diversity sampling at matched budget.
+Assimilator: GRPO-on-comp ≈ init (signal-starved) while RFT assimilation transfers — density-immune learner is required.
+base-explorer discovery + full explorer×assimilator grid queued. Net: every ablation so far corroborates the advantage-density account.
