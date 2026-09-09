@@ -3873,3 +3873,35 @@ EXPLORER/ASSIMILATOR ablations (partly in hand): high-temp-SFT sampling (sft-2x,
 baseline) LOST to RL-explorer union (0.276 vs 0.352, §71c) — RL exploration beats mere diversity sampling at matched budget.
 Assimilator: GRPO-on-comp ≈ init (signal-starved) while RFT assimilation transfers — density-immune learner is required.
 base-explorer discovery + full explorer×assimilator grid queued. Net: every ablation so far corroborates the advantage-density account.
+
+## §74c EXPLORER ABLATION (fair strong baseline) — base-Instruct DOMINATES; RL-exploration does NOT win (honest reframe)
+Held-out evalC (pool_C_d5ev, n=150, 0 train/eval overlap verified), recipients RFT-assimilated from comp_init, matched:
+| solution author (explorer) | held-out acc |
+|----------------------------|--------------|
+| BASE Coder-1.5B-Instruct   | 0.543 [.540/.547/.540/.547] (4 seeds, tight) |
+| RL-policy (GRPO), union    | 0.352 |
+| SFT-on-compositions        | 0.313 |
+| high-temp-SFT (sft-2x)     | 0.276 |
+| SFT-init only              | 0.250 |
+(base model DIRECT held-out, no training = 0.40; group-size sweep G4=0.233 G8≈0.25 G16=0.240 — all flat, G-floor confirmed.)
+CRITICAL HONEST FINDING: authoring verified solutions with the STRONG BASE model + RFT (0.543) DOMINATES RL-policy authoring
+(0.352) and every adapted-policy path. The earlier "RL-specific solution effect" (§71e +0.020) and "explore-with-RL" gains
+were RELATIVE TO A CRIPPLED comp_init (SFT-on-primitives dropped the base 0.40→0.247); against the fair base baseline,
+RL-exploration/authoring LOSES badly. => The "explore-with-RL, learn-with-RFT" METHOD is RETRACTED as an RL-advantage claim;
+what wins is simple VERIFIED REJECTION-FT on a strong sampler's solutions. (Caught only by running the fair base-explorer control.)
+
+## §75 HONEST REFRAMED STANDING — the durable positive contribution
+After the fair base-explorer control, the RL-method claims collapse (as every prior "RL is special" claim did under control).
+WHAT SURVIVES, rock-solid and positive:
+1. THEORY — Advantage-Density (§73): D(G)=E_prompt[p^G+(1-p)^G] predicts GRPO's zero-advantage (dead) group fraction;
+   VALIDATED near-exact (pred 0.686 vs measured 0.70) and CROSS-DOMAIN (GSM8K 0.31 < MATH-500 0.56 < comp 0.69, tracks
+   difficulty/bimodality). Model-agnostic, falsifiable. Explains WHEN/WHY on-policy binary-reward RL fails to transfer.
+2. RFT/rejection-FT ≫ GRPO for compositional/OOD transfer — matched-COMPUTE frontier (1 RFT round > 300 GRPO steps),
+   horizon-robust, group-size-robust (G4/8/16 flat). Consequence of Thm-1: GRPO wastes ~70% of rollouts on dead groups.
+3. The BEST experience source is verified rejection-FT on a STRONG SAMPLER (base model), 0.543 vs GRPO-authored 0.352 —
+   and Thm-1 explains why on-policy RL can't match it (signal starvation), while rejection-FT is density-immune.
+HONEST HEADLINE (positive, defensible, dense): "Advantage density governs when reinforcement fine-tuning fails: a simple
+per-prompt-success law predicts on-policy RL's dead-gradient fraction across math and compositional tasks; consequently
+verified rejection-FT on a strong sampler dominates GRPO for out-of-distribution/compositional transfer at matched compute."
+This is a rigorous theory+empirics contribution. NOT an "RL-is-special" method (that didn't survive controls). Award-tier
+would still want scale + more model families; the THEORY is the strongest, most general asset.
