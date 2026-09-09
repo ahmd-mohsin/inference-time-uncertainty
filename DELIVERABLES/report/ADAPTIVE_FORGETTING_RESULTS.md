@@ -3447,3 +3447,26 @@ GATE A FINAL DECISION: DROP the initial RL stage. It adds nothing on OOD (fresh 
 fresh-SFT on SFT-authored traces. Authorship (SFT-authored > GRPO-authored) dominates BOTH axes (OOD +0.02-0.03, in-domain +0.06),
 but is confounded with the SFT producer being the best solver (§61.4). Phi cross-family CI firmed: SFT 0.336±0.004 best (+0.027 vs GRPO), 3 seeds.
 NEXT = GATE B: does trace AUTHORSHIP change SUBSEQUENT-RL learning? (the only path to a novel mechanism; SAC-RL retired to baseline.)
+
+# ============================================================================
+# §63 GATE B — RANKING REVERSAL: best-for-imitation ≠ best-for-subsequent-RL (PROMISING, n=1, replicating)
+# ============================================================================
+Fresh recipient SFT'd on each producer bank, then cloned into {continued-SFT (100) | GRPO continuation (100, GSM8K)};
+eval OOD MATH-500. Δ_RL = OOD(+GRPO) − OOD(post-SFT). (1 seed/cell — REPLICATION LAUNCHED.)
+| consolidation bank | post-SFT (imitation) | +contSFT | +GRPO | Δ_RL | RL vs contSFT |
+|--------------------|----------------------|----------|-------|------|---------------|
+| SFT-authored  | 0.4025 (BEST imit) | 0.3900 | 0.3875 | -0.0150 | -0.0025 |
+| GRPO-authored | 0.3738 | 0.3550 (worst contSFT) | 0.4063 (BEST after RL) | +0.0325 | +0.0513 |
+| base          | 0.3700 | 0.3625 | 0.3650 | -0.0050 | +0.0025 |
+| MaxRL         | 0.3675 | 0.3575 | 0.3625 | -0.0050 | +0.0050 |
+RANKING post-SFT:   SFT > GRPO > base > MaxRL
+RANKING post-+GRPO: GRPO > SFT > base > MaxRL   <-- REVERSAL at the top
+FINDING (provisional, n=1): the bank that teaches best for IMMEDIATE IMITATION (SFT-authored, 0.403) is NOT the bank
+that prepares the recipient best for SUBSEQUENT RL. The GRPO-authored bank is WORST for continued-SFT (0.355) yet BEST
+after a GRPO continuation (0.406), a +0.051 RL-SPECIFIC gain over its own continued-SFT control (vs ~0 for all others);
+the SFT-authored recipient DEGRADES under RL (-0.015). This is exactly the reviewer's hypothesis (best-for-imitation ≠
+best-for-RL; PEAR-adjacent) with an AUTHOR-CONTENT angle: RL-authored (on-policy-style) traces prime for further RL.
+EFFECT SIZE (+0.05 RL-specific) is LARGER than the entire imitation-only story (+0.02). IF it survives replication, THIS
+is the mechanism to build the RL-aware author around (Gate C).
+CAVEAT (honest): n=1/cell, RL continuations are high-variance. Multi-seed replication (GRPO-continuation seeds 1-3 ×4 banks)
+launched before any claim. Also confounds to rule out: recipient-seed variance, GRPO-continuation instability, GSM8K-only continuation.
