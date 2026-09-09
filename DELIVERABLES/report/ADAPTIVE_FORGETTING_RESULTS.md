@@ -3745,3 +3745,24 @@ RL-solution CONTENT: union keeps GRPO-policy-authored solutions (for 218 solved 
 solutions. CONFOUND: union vs sft-2x differ in BOTH solution authorship AND prompt set. DECISIVE CONTROL launched: SAME
 shared prompts, RL-authored vs SFT-authored verified solutions (analogous to §66d B') — isolates solution-authorship from coverage.
 Honest: the METHOD-level positive (RL-generated verified experience > more SFT sampling, +0.076 t=23) stands; the MECHANISM claim awaits this control.
+
+## §71d DECISIVE MECHANISM — RL-authored solutions transfer better on IDENTICAL prompts (SURVIVES same-prompts control)
+Same 184 shared prompts (both SFT-init and GRPO-policy solve), RL-authored vs SFT-authored verified solutions, held-out evalC, 4 seeds:
+  RL-sol = 0.333±0.012 [.313/.347/.340/.333] ; SFT-sol = 0.263±0.006 [.267/.267/.267/.253] ; RL-sol − SFT-sol = +0.070, t=10.2.
+=> On IDENTICAL problems with matched verification, RL-policy-authored verified solutions transfer +0.070 better to unseen
+compositions than SFT-authored solutions. This is the CLEAN mechanism behind the §71b/§71c method result (+0.076): SOLUTION
+CONTENT, not coverage/prompt-identity. CRITICALLY this is the FIRST mechanism claim in the whole program that SURVIVES its
+decisive same-prompts control (§66d arrangement washed out; §68 verifier-resolution washed out at matched bank; here it HOLDS).
+HONEST refinement owed: the GRPO policy was RL-trained ON compositions while the SFT-init saw only primitives — so the clean
+next control is RL-policy solutions vs a MATCHED SFT-ON-COMPOSITIONS model's solutions (isolate "RL" from "composition-adapted").
+Also characterize WHAT differs in RL solutions (length/structure/intermediate steps) + family-transfer matrix + math replication.
+
+## §72 (updated) DENSE POSITIVE METHODOLOGY — now with a control-surviving mechanism
+"EXPLORE WITH RL, LEARN WITH RFT": (1) RFT/SFT ≫ GRPO for compositional/OOD transfer, horizon-robust (§68c). (2) MECHANISM-A
+(P2): GRPO signal-starved (~70% zero-advantage groups) → poor LEARNER. (3) RL is a useful EXPLORER (§71): its policy solves
+compositions SFT sampling can't reach. (4) METHOD: assimilate RL-generated verified experience via RFT — +0.076 held-out over
+more-SFT-sampling (t=23, 4 seeds), control-surviving. (5) MECHANISM-B (§71d, CLEAN): RL-authored verified SOLUTIONS transfer
++0.070 better than SFT-authored on IDENTICAL prompts (t=10, survives same-prompts control) — the content, not coverage.
+This is a dense, POSITIVE, mechanism-grounded contribution whose central claim survived the exact control that falsified the
+program's earlier leads. Remaining for award-tier: RL-vs-composition-adapted control, characterize RL-solution content,
+family-transfer (nonlocal?), math-domain replication, scale, SOAR/SEAL/outcome-exploration head-to-head, full cost accounting.
