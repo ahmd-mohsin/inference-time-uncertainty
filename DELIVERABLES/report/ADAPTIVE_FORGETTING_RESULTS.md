@@ -3850,3 +3850,12 @@ advantage-density D — computable from the per-prompt success distribution — 
 to transfer and RFT/explore-then-learn wins. Falsifiable PREDICTION now testable: RFT−GRPO transfer gap should be larger on
 MATH-500 (D=0.56) than GSM8K (D=0.31), and largest on compositions (D≈0.69) — matching our observed arc (RFT≫GRPO strongest
 on compositions §68c; the SFT>GRPO OOD foundation on math). This is the dense, domain-general "WHY" behind the methodology.
+
+## §74 ABLATION BATTERY (for award-tier) — plan + launches
+THEORY ablations: (T1) empirical GROUP-SIZE sweep G∈{4,8,16} GRPO on comp — does larger G rescue transfer? (theory: NO,
+p≈0 mass → D(∞) floor). (T2) D↔transfer-gap correlation across GSM8K/MATH/comp (predict RFT−GRPO gap from D).
+METHOD ablations: (M1) EXPLORER choice — RL-policy vs high-temp-SFT (diversity) vs base-model, matched generation budget,
+assimilate via RFT, held-out (does RL-exploration beat diversity/base?). (M2) ASSIMILATOR — RFT vs GRPO on the SAME
+RL-discovered bank (does density-immune learning matter?). (M3) explorer TEMPERATURE {0.7,1.0,1.3}. (M4) bank composition.
+ROBUSTNESS: (R1) matched-COMPUTE frontier RFT vs GRPO (RUNNING 1091). (R2) seeds (have 4). (R3) held-out depth/structure splits.
+LAUNCHED: matched-compute (1091); explorer ablation M1 (1092); group-size sweep T1 + assimilator M2 (1093).
