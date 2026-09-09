@@ -3233,3 +3233,16 @@ B_baseauth(0.348) < SFT-only(0.365) ~ C-self(0.365) < D-SFTauth(0.390) is a clea
 NOISE FLOOR (~5-7 of 120 solved; deltas = 1-2 problems). OlympiadBench too hard for 7B recipients → non-discriminative.
 Per the moderate-difficulty rule ([[rl-focus-moderate-difficulty-benchmarks]]), re-running the 2nd-domain teaching test
 on AMC/SVAMP (moderate) where scores aren't floored. Verdict on domain-robustness of "SFT best teacher" PENDING.
+
+## §58d 2nd-DOMAIN REPLICATION (SVAMP) — SFT is the best teacher again (domain-robust)
+7B recipients (base/SFT/GRPO/MaxRL producer banks) on SVAMP n=200 k=4 (non-floored):
+| producer bank | SVAMP TEACH | MATH-500(7B) TEACH |
+|---------------|-------------|--------------------|
+| base  | 0.7950 | 0.3775 |
+| SFT   | 0.8387 | 0.4300 |
+| GRPO  | 0.7925 | 0.3925 |
+| MaxRL | 0.7937 | 0.3787 |
+SFT is the BEST teacher on SVAMP (0.839, +0.044 over the ~0.79 cluster), REPLICATING the MATH-500 ranking.
+=> "SFT-authored verified traces have intrinsic teaching value" is now DOMAIN-ROBUST (MATH-500 + SVAMP) AND
+recipient-scale-robust (3B + 7B), SFT winning by ~+0.04 on both benchmarks. base/GRPO/MaxRL do not separate.
+(OlympiadBench §58c was uninformative at floor; SVAMP is the valid moderate-difficulty 2nd domain.)
