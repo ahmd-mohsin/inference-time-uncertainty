@@ -3286,3 +3286,11 @@ GENERALITY WAVE (toward award tier):
 - CROSS-FAMILY recipient-invariance: Phi-3.5-mini (C2) + SmolLM2-1.7B (C3) recipients trained on the 4 QWEN-authored
   producer banks → eval MATH-500. Q: does SFT-authored (Qwen) still teach a DIFFERENT-family recipient best? (Llama/Gemma gated.)
 - HARDER OOD: eval M1 arms (D/C/refs) on AMC (competition math) → does the method's margin GROW on harder OOD?
+
+## §58h HARDER-OOD (AMC) — method margin is difficulty-INVARIANT (robust, not bigger)
+M1 arms on AMC (competition math, harder than MATH-500): D-SFTauth 0.1878 (3s) > SFT-only 0.1747 > C-self 0.1667 (3s)
+> GRPO-only 0.1506. D−C=+0.0211 (≈ MATH-500's +0.020), D−SFTonly=+0.0131, D−GRPO=+0.0371.
+HONEST: the "bigger margins on harder data" hypothesis did NOT hold — D−C is difficulty-INVARIANT (+0.021 on both
+MATH-500 and AMC), and D−GRPO SHRANK on AMC (+0.037 vs +0.091) because raw GRPO isn't as bad relatively at low base
+rates. Positive spin unwarranted; the real result is ROBUSTNESS: the SFT-authored>self consolidation advantage
+(+0.02) reproduces on a second, harder OOD benchmark. Bigger MARGINS will need bigger MODELS/full-FT, not harder eval.
