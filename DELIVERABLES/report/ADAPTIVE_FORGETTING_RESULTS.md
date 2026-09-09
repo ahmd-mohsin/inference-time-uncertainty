@@ -3536,3 +3536,19 @@ target) => substantial composition gap with real headroom. A≈B≈C at BASELINE
 TRAINING on the arrangement, not baseline difficulty). Now: common SFT init (Coder-1.5B on component bank, primitives
 only), then the 6-cell {A,B,C}×{GRPO, iterative-RFT}×4-seed experiment on depth-5 pools; endpoint = frozen acc on HELD-OUT
 depth-5 compositions; DECISION: continue iff C reproducibly > B. Eval note: reporting mean sampled correctness (k), not pass@k.
+
+## §66 6-CELL COMPOSITIONAL EXPERIMENT — first result (n=2 seeds, PROMISING RFT signal, replicating)
+Coder-1.5B, depth-5, common SFT init (components), train on A/B/C_d5 (400) via {GRPO 150-step, iterative-RFT 2-round},
+eval frozen on HELD-OUT depth-5 compositions (evalB, seed0=500000), k=1:
+| pool | GRPO s0/s1 (mean) | RFT s0/s1 (mean) |
+|------|-------------------|------------------|
+| A repeated   | .253/.247 (0.250) | .280/.280 (0.280) |
+| B random     | .240/.253 (0.247) | .273/.300 (0.287) |
+| C diagnostic | .260/.260 (0.260) | .333/.327 (0.330) |
+GATE C vs B: GRPO C-B=+0.013 (flat/noise); RFT C-B=+0.043 (C-A=+0.050), BOTH RFT-C seeds agree (.333/.327).
+=> PROCEDURE-DEPENDENT signal: under REJECTION-FT, diagnostic compositions transfer better than matched-random (+0.043);
+under GRPO, no effect. This matches the directive's "C improves one procedure" row — scientifically interesting IF it
+replicates. HONEST CAVEATS: n=2 seeds (NOT yet confirmed — expanding to 4+); all cells ~0.25-0.33 < dev baseline ~0.40
+(need common-init-on-evalB anchor: is 150-step GRPO / 2-round RFT even helping vs the init?); B random not perfectly
+freq-matched to C (L1 0.18). Per pre-registered rule: continue ONLY if C>B reproducibly at useful effect + comparable cost.
+NEXT: seeds 2/3 (all cells), common-init evalB anchor, and if RFT C>B holds at 4 seeds → H2 sparse-bridge sweep.
