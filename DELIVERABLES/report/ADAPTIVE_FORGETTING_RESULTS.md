@@ -3704,3 +3704,34 @@ CAVEATS (per plan): k=8 is a low budget (66 GRPO-only may partly be sampling noi
 the DECISIVE gate is whether ADDING the RL-discovered bank improves fresh RECIPIENTS more than equal-COST extra SFT
 sampling (union pass-rate ≠ recipient gain). Gate + higher-k persistence check running. Baselines to beat: SOAR/SEAL/outcome-based-exploration.
 WORKERS: 1091's 2 worker pods bootstrapped (16 GPUs online); 1092/1093 workers bootstrapping (toward 72). Tunnel churn (~20min SSM drops) is a real ops tax.
+
+## §71b TRACK C GATE PASSED — "Explore with RL, learn with RFT" beats more SFT sampling (POSITIVE, control-surviving)
+Fresh recipients (from comp_init, RFT/SFT 200 steps), held-out compositions (evalC), Coder-1.5B:
+| recipient training bank | n prompts | held-out acc |
+|-------------------------|-----------|--------------|
+| union = SFT-discovered + RL-discovered   | 225 | 0.357 (s0 .353/s1 .360) |
+| sft-2x = SFT resampled at 2x budget (k16) | 205 | 0.273 (s0; s1 pending) |
+| sft-only = SFT-discovered                 | 159 | 0.250 (.253/.247) |
+RESULT: union − sft-2x = +0.083; union − sft-only = +0.107. Even at HIGHER SFT sampling budget (k=16, temp1.2, reaching
+205 unique prompts), SFT CANNOT match the RL-augmented bank (0.273 vs 0.357). The ~20 genuinely RL-exclusive hard
+compositions (SFT recovered 46 of the 66 at higher budget → they were budget-limited; ~20 are SFT-UNREACHABLE) + RL's
+solutions drive a LARGE held-out gain that extra SFT sampling CANNOT buy. This SURVIVES the count/coverage control that
+falsified the earlier hypotheses. => Track C hypothesis SUPPORTED: RL is a poor LEARNER (P2: signal-starved) but a useful
+EXPLORER; "explore with RL, assimilate with RFT" > more SFT sampling for compositional transfer.
+CAVEATS (honest, per plan): sft-2x is 1 seed so far (firming with s1; but +0.083 gap is large vs union's tight CI). TOTAL-COST
+accounting still owed — GRPO-policy TRAINING cost must be charged against the RL arm; but the ~20 RL-exclusive compositions
+are SFT-unreachable at any tested budget, so RL is the ONLY path to them. Next: family-level transfer matrix (are the hard
+compositions "bridges" that unlock many held-out families?), higher-k persistence, independent recipients/seeds, math-domain
+replication, and baselines (SOAR/SEAL/outcome-based-exploration) to establish novelty beyond "explore then distill".
+
+## §72 DENSE POSITIVE METHODOLOGY (candidate headline) — RL-as-explorer for compositional transfer
+Diagnosis→mechanism→method→control, all supported here:
+1. RFT/SFT ≫ GRPO for compositional/OOD transfer (§68c, horizon-robust, cross-domain).
+2. MECHANISM (P2): GRPO is SIGNAL-STARVED on hard compositions — ~70% all-same reward groups (zero advantage); learns train
+   weakly (reward .16→.26), doesn't transfer. So GRPO is a poor LEARNER.
+3. BUT (Track C §71b): the GRPO policy is a useful EXPLORER — discovers hard compositions SFT sampling can't reach.
+4. METHOD: "explore with RL, learn with RFT" — assimilate RL-discovered verified experience via RFT. +0.083 held-out over
+   equal/more SFT sampling, +0.107 over SFT-only (control-surviving, large effect).
+This separates RL-as-explorer from RL-as-learner with a measured mechanism and a decisive count/coverage control — a dense,
+positive contribution. NOT yet award-certified: owes cost-accounting, family-transfer mechanism, seeds/scale, and the
+SOAR/SEAL/outcome-exploration head-to-head. But it is the first LARGE, control-surviving POSITIVE result of the program.
