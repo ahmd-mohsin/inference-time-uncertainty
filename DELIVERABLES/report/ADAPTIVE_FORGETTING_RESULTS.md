@@ -3103,3 +3103,14 @@ matched banks (~820-860), matched recipient SFT. Reconciles the program: RL = we
 EXPERIENCE PRODUCER. NEXT (harden to award grade): §57 4-way bank decomposition (WHY MaxRL over-teaches — trace
 diversity? coverage?), vs iterative rejection-FT, 2nd domain (code/MATH-train), + the selective-experience-export
 method that exploits the dissociation.
+
+## §56-E9 mechanism probe (WHY MaxRL over-teaches) — surface diversity does NOT explain it (honest)
+Bank stats (verified GSM8K traces): base n836 4gram94245 sdLen99 · SFT n856 4gram96141 sdLen72 · GRPO n823
+4gram93268 sdLen81 · MaxRL n831 4gram90936 sdLen93. MaxRL's bank is NOT more diverse (LOWEST unique-4grams,
+mid length-variance) — so MaxRL's teaching edge is NOT a simple trace-diversity effect. The WHY is subtler:
+likely WHICH problems each producer solves (subset coverage / difficulty mix) or reasoning structure, not surface
+lexical diversity. RESOLVE via §57 4-way decomposition: (1) same-prompts × alt-solutions per producer (isolates
+trace CONTENT), (2) producer-unique solved prompts (isolates COVERAGE), (3) randomized-source control, (4)
+mixture. Also: does MaxRL solve a harder/more-teachable prompt SUBSET (its worst-solver status means it solves a
+different set)? This is the mechanism the paper needs. Centerpiece dissociation (§56-E9 CI-hardened) STANDS;
+the WHY is the open depth (queued).
