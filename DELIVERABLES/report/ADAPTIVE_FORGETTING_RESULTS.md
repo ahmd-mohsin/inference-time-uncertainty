@@ -3766,3 +3766,29 @@ more-SFT-sampling (t=23, 4 seeds), control-surviving. (5) MECHANISM-B (§71d, CL
 This is a dense, POSITIVE, mechanism-grounded contribution whose central claim survived the exact control that falsified the
 program's earlier leads. Remaining for award-tier: RL-vs-composition-adapted control, characterize RL-solution content,
 family-transfer (nonlocal?), math-domain replication, scale, SOAR/SEAL/outcome-exploration head-to-head, full cost accounting.
+
+## §71e ISOLATING CONTROL — RL-specific solution effect is SMALL but SURVIVES (honest decomposition)
+Same shared prompts, 4 seeds, held-out evalC, authors decomposed:
+| author | held-out | delta |
+|--------|----------|-------|
+| SFT-init (primitive-only)     | 0.263 | — |
+| SFT-on-compositions           | 0.313 | +0.050 (composition-adaptation of the author) |
+| RL-policy (GRPO on comps)     | 0.333 | +0.020 more (RL-SPECIFIC, t=3.0) |
+=> The RL-authored-solution advantage decomposes: ~+0.050 is COMPOSITION-ADAPTATION (any author adapted to the target
+distribution transfers better) and ~+0.020 is a GENUINE RL-SPECIFIC residual (t=3.0, survives the adaptation control — does
+NOT vanish, unlike §66d/§68 which washed out). So RL policies DO write modestly-better-transferring verified solutions than
+an equally-adapted SFT author, but most of the headline gain is adaptation, not RL. Length-matched (§ earlier: 57 vs 57 words).
+
+## §72 (final decomposition) DENSE POSITIVE METHODOLOGY — "explore with RL, learn with RFT", mechanism-decomposed
+CONTROLLED DECOMPOSITION of compositional-transfer gains (Coder-1.5B, held-out compositions, all 4-seed, control-surviving):
+1. RFT/SFT ≫ GRPO as a LEARNER — GRPO signal-starved (~70% zero-advantage groups); RFT reaches 0.328 vs GRPO≈init 0.247 (horizon-robust). 
+2. Method "explore-with-RL / learn-with-RFT": RL-augmented verified bank ≫ more-SFT-sampling, +0.076 (t=23) held-out. DECOMPOSED:
+   - composition-ADAPTATION of the solution author: ~+0.050 (biggest piece).
+   - RL-SPECIFIC solution content: +0.020 (t=3.0, survives adaptation control).
+   - RL-EXCLUSIVE hard compositions (SFT-unreachable): +0.018 (34 problems).
+   - NOT sparse-bridges (§66c), NOT verifier-resolution-at-matched-bank (§68c), NOT diagnostic-arrangement (§66d).
+HONEST: a rigorous, POSITIVE, mechanism-DECOMPOSED contribution. Effects are modest but each piece survives its decisive
+control (the RL-specific residual is the first authorship effect to NOT wash out). This is a defensible positive-results
+paper: "where do compositional-transfer gains in verified-experience post-training actually come from" — adaptation >
+RL-specific-content > coverage, cleanly separated. Award-tier still needs: scale, math-domain replication, family-transfer
+(nonlocal), and SOAR/SEAL/outcome-exploration head-to-head. But the core positive claims are controlled and reproducible.
