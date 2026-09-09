@@ -2973,3 +2973,17 @@ foundation SFT-vs-GRPO comparison. (Honest: I over-diagnosed a bug; the fixture 
 NEXT E0 (the important one): E0(a) pure-SFT-INSIDE-hybrid gradient equivalence — does the hybrid trainer's SFT/
 NLL path == standalone sft_train on identical batch (loss/grads/first-update/logits)? This gates whether §44's
 flat mass-placing axis is a real result or a hybrid-trainer artifact. Building next.
+
+## §56-E0(a) RESULT — §44 was NOT a fair SFT proxy (reduction/LR artifact; important correction)
+e0_sft_equiv on Qwen2.5-3B + verified bank (n=8): standalone-SFT (MEAN-token NLL) loss=0.500 |g|=3.68 vs hybrid
+forward_kl (SEQ-SUM NLL, = coverage_trainer.forward_kl_penalty = -Σ logπ) loss=86.2 |g|=634.6 → **|g| ratio 172×**.
+The forward_kl term shares SFT's DIRECTION (push up verified-trace logprob) but its SEQ-SUM reduction makes the
+gradient ~172× larger + per-sequence-weighted, so at a FIXED LR the μ-coefficient sweep applied a wildly
+different effective update dose than matched SFT. (cosine printed 1.22 = a numerical/alignment bug in the probe;
+the |g|-ratio is the robust result.) CONSEQUENCE: §44's headline reading — "GRPO+rehearsal CANNOT reconstruct
+SFT, flat at 0.335, irreducible" — is UNRELIABLE: the μ=1 endpoint was NOT the SFT operator, and μ=20 was not
+"20× dose" of a matched SFT but a mis-scaled seq-sum term. E0 did its job: §44 cannot support an
+impossibility/irreducibility claim. FIX: redo the mass-placing/hybrid axis with a PROPER mean-token NLL loss at
+matched LR (λ=1 must equal standalone SFT numerically) before any claim. This weakens the "mechanism-irreducible"
+framing and supports the §56 central hypothesis (differences are procedural — reduction/weighting/LR — not an
+intrinsic operator barrier). Log per-run reduction + effective-LR henceforth.
