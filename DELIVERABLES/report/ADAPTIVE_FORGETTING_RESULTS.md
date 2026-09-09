@@ -3523,3 +3523,16 @@ CORRECTIONS carried: describe eval as n=200,k=4 mean sampled correctness (NOT fu
 equivalence before any operator-barrier claim; implement real MaxRL (not R−p̂) if used; §54 null ≠ saturation.
 STATUS: building the instrument (comp_tasks.py generator + executable verifier + A/B/C pools) — pure code, GPU-free. 3 new
 p4d clusters connected (ports 1091/1092/1093) for calibration+training. Retired candidates remain as baselines/appendix.
+
+## §65 COMPOSITIONAL INSTRUMENT — CALIBRATED & PROTOCOL LOCKED
+Base model Qwen2.5-Coder-7B too strong (components 1.00, composed ~0.60-0.73 at depth 3-5; no composition DEFICIT for a
+curriculum to fix). Dropped to Qwen2.5-Coder-1.5B-Instruct. Calibration (n=150-200, k=1 greedy, executable verify):
+| model | components | composed d3 (A/B/C) | composed d5 (A/B/C) |
+|-------|-----------|---------------------|---------------------|
+| Coder-7B  | 1.000 | 0.74/0.73/0.73 | 0.61/0.60/0.60 |
+| Coder-1.5B| 0.800 | 0.64/0.69/0.57 | 0.413/0.400/0.393 |
+LOCKED PROTOCOL: Coder-1.5B, DEPTH 5. Components competent (0.80, in the 80-95% target), composed ~0.40 (in the 20-60%
+target) => substantial composition gap with real headroom. A≈B≈C at BASELINE (matched, as designed — the intervention is
+TRAINING on the arrangement, not baseline difficulty). Now: common SFT init (Coder-1.5B on component bank, primitives
+only), then the 6-cell {A,B,C}×{GRPO, iterative-RFT}×4-seed experiment on depth-5 pools; endpoint = frozen acc on HELD-OUT
+depth-5 compositions; DECISION: continue iff C reproducibly > B. Eval note: reporting mean sampled correctness (k), not pass@k.
