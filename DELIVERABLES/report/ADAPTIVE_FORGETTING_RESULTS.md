@@ -3646,3 +3646,25 @@ generalization NULL (coarse-B≈discrim-B) also rules out a generic bank-size ar
 (coarse admits order-wrong solutions -> larger/lower-quality bank); running discrim-cap vs coarse-cap at MATCHED bank size to
 isolate RESOLUTION from COUNT. If it survives: "verifier resolution × interaction-bearing data governs RFT compositional
 transfer" — beyond "stronger tests help", with a verification-budget ALLOCATION method (spend budget resolving interactions).
+
+## §68c PARALLEL BETS — final verdicts (honest)
+- BET C (GRPO-long, robust POSITIVE): GRPO-long 300-step held-out C=0.247, B=0.257 — STILL ≈ init (0.247), same as 150-step;
+  RFT-C=0.328. => RFT/SFT ≫ GRPO for compositional OOD is ROBUST TO HORIZON (GRPO can't do compositional OOD even at 2x).
+  Clean cross-domain replication of the durable SFT>GRPO-transfer finding.
+- BET A (verifier resolution — did NOT survive matched control): at MATCHED bank size (cap=150), discrim-cap=0.302±0.008 vs
+  coarse-cap=0.283±0.021, diff=+0.018 t=1.59 (n.s.). The uncapped +0.048 (t=8.12) was substantially BANK COUNT/composition
+  (discrim's larger correct bank), NOT resolution per se. Same pattern as prior hypotheses: a proper control shrinks the
+  effect below significance. The data×verifier INTERACTION (§68b) may still hold qualitatively but the clean "resolution" claim is not confirmed.
+- BET B (coverage-selection, marginal): set-cover 0.315 vs random 0.288, +0.027 t=2.15 — modest, holds-ish.
+
+## §69 STANDING AFTER PARALLEL BETS — the ONE robust result
+Across every hypothesis tried (MaxRL-teaching, imitation≠RL reversal, diagnostic-arrangement, verifier-resolution — ALL
+shrank/vanished under proper controls), the SINGLE robust, replicated finding is: TRAINING ON VERIFIED TRACES (SFT/RFT)
+TRANSFERS OOD/COMPOSITIONALLY FAR BETTER THAN GRPO — now shown in BOTH math (GSM8K→MATH) and compositional-code
+(components→held-out compositions), robust to RL horizon (GRPO flat at init even at 2x steps). Modest positives: SFT-authored
+traces are consistently-better imitation teachers (confounded w/ solver strength); coverage-selection > random (marginal).
+HONEST: this is a rigorous methods + negative-results contribution — a battery of clean controls that FALSIFY several
+plausible-sounding RL-transfer mechanisms, leaving one robust effect (verified-trace SFT/RFT >> GRPO for transfer). NOT a
+flashy novel mechanism. The scientific value is the controls (same-prompts, freq-matched B', matched-accept-rate) that
+distinguish real effects from coverage/count/arrangement artifacts — exactly what the field's "curriculum/teacher/verifier
+helps" claims usually omit.
