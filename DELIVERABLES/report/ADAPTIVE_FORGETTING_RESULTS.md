@@ -3138,3 +3138,23 @@ Teaching value = intermediate-computation explicitness, NOT verbosity. This is a
 CAUSAL follow-up queued: within-producer explicitness ablation (MaxRL_dense vs MaxRL_stripped) — if stripping the
 equation lines kills the teaching edge, explicitness is causal (controls for solver, prompts, length).
 Pending: same-prompts MATH-500 eval of e9i_* (content-vs-coverage verdict) — running on 8 GPUs.
+
+## §56-E9-why(c) SAME-PROMPTS CONTROL — MaxRL's teaching edge does NOT survive (honest correction)
+Trained 8 recipients on the 758 SHARED prompts (isect_*, producer-specific solutions), 2 seeds; eval MATH-500 (n=200,k=4):
+| producer | TEACH (same-prompts) | vs full-bank TEACH |
+|----------|----------------------|--------------------|
+| base     | 0.3569 (s0 .365/s1 .349) | 0.368 |
+| SFT      | 0.3969 (s0 .394/s1 .400) | 0.393 |
+| GRPO     | 0.3594 (s0 .361/s1 .358) | 0.374 |
+| MaxRL    | 0.3644 (s0 .374/s1 .355) | 0.389 |
+On matched prompts: SFT 0.397 >> MaxRL 0.364 ≈ GRPO 0.359 ≈ base 0.357. MaxRL−base=+0.008, MaxRL−GRPO=+0.005
+(both INSIDE the seed spread ±0.02); MaxRL−SFT=−0.033. SFT RETAINS its full-bank teaching (0.397≈0.393);
+MaxRL LOSES its edge (0.364 vs full 0.389).
+VERDICT (honest, overturns why(a)'s inference): MaxRL's full-bank teaching advantage is NOT its shared-prompt
+solution CONTENT — the 2.2× explicitness (why-b) does NOT causally produce teaching gain on matched prompts.
+MaxRL's full-bank edge came from prompt COVERAGE/mix (its ~73 unique problems) or was marginal.
+=> The DURABLE, content-driven teacher is SFT: it teaches best on IDENTICAL prompts at AVERAGE explicitness,
+and its teaching value survives the same-prompts control. The paper's robust dissociation is SFT-as-teacher
+(content, prompt-invariant) vs GRPO/MaxRL/base; the "worst-solver-best-teacher (MaxRL)" claim is coverage-FRAGILE
+and must be reported as such. Next: recipient-invariance (does SFT teach best on a DIFFERENT base, 1.5B) to test
+whether SFT's teaching value is intrinsic to the traces.
