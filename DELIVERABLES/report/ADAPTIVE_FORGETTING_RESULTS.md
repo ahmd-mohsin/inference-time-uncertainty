@@ -3693,3 +3693,14 @@ DECISION: preregister primary score, dev checkpoint-selection, budget, min usefu
 baseline OR ≥25% less compute at noninferior acc), confirmation looks. Paired per-problem + training-seed + family-cluster
 uncertainty. Matched-experience AND matched-total-cost views. Split by program/reasoning FAMILY, not random ID. evalB = dev only now.
 STATUS: starting P2 (GRPO train-distribution learning check) — the cheapest gating audit of the RFT>>GRPO headline.
+
+## §71 TRACK C — RL-as-EXPLORER (positive): GRPO policy discovers compositions the SFT-learner misses
+Discovery on pool_C_d5tr (k=8, union over 4 shards), Coder-1.5B:
+  SFT-learner(comp_init) solved 159/400 | GRPO-policy solved 218/400 | GRPO-only (RL finds, SFT misses) = 66 | SFT-only = 7 | union = 225.
+=> RL EXPLORATION finds 66 solvable compositions the SFT sampler misses (vs 7 the other way). Combined with P2 (GRPO is
+signal-starved, 70% dead groups → poor LEARNER, doesn't transfer), the DENSE positive story is: RL is a poor LEARNER but a
+useful EXPLORER for compositional transfer — assimilate RL-discovered experience via RFT rather than learning with GRPO.
+CAVEATS (per plan): k=8 is a low budget (66 GRPO-only may partly be sampling noise — verify persistence at higher k);
+the DECISIVE gate is whether ADDING the RL-discovered bank improves fresh RECIPIENTS more than equal-COST extra SFT
+sampling (union pass-rate ≠ recipient gain). Gate + higher-k persistence check running. Baselines to beat: SOAR/SEAL/outcome-based-exploration.
+WORKERS: 1091's 2 worker pods bootstrapped (16 GPUs online); 1092/1093 workers bootstrapping (toward 72). Tunnel churn (~20min SSM drops) is a real ops tax.
