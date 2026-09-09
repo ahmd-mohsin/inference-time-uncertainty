@@ -3587,3 +3587,30 @@ running: tighter-matched control B' = C's EXACT programs with the noncommuting p
 fresh non-separating inputs — identical primitives AND pair-presence, differing ONLY in whether the order is diagnostic.
 If C>B' -> the effect is the diagnostic ARRANGEMENT (real). If C≈B' -> H1 was a frequency/coverage artifact (§66 residual 0.18).
 Also queued: family-level transfer matrix (does the gain spread to many held-out families = nonlocal, even if dose-dependent).
+
+## §66d DECISIVE CONTROL — diagnostic ARRANGEMENT is NOT causal (C≈B'); H1 was a coverage artifact (honest null)
+RFT, held-out evalB, 4 seeds:
+| condition | mean±95CI | seeds |
+|-----------|-----------|-------|
+| C  (diagnostic order)              | 0.328±0.005 | .333/.327/.333/.320 |
+| B' (C's SAME programs, canonical/non-diagnostic order) | 0.322±0.015 | .333/.340/.307/.307 |
+C − B' = +0.0067, SE=0.0081, t=0.83 (NULL). B' has IDENTICAL primitives + pair-presence as C, differing ONLY in whether
+the noncommuting pair is in diagnostic (order-separating) order. It teaches JUST AS WELL. => the §66 C>B gap (+0.040) was
+NOT the diagnostic ARRANGEMENT — it was the primitive/pair COVERAGE that C's programs carry and the random pool B lacked
+(the 0.18 freq residual). Exactly the directive's failure criterion: gains vanish after matching component exposure.
+VERDICT: H1's causal claim (diagnostic compositions that separate competing hypotheses cause disproportionate transfer)
+is NOT supported. What survives = ordinary compositional-COVERAGE data design (which pairs you cover helps under RFT),
+NOT the novel "diagnostic identification" mechanism. H2-sparse already unsupported (§66c). CLOSE this branch per pre-registered rule.
+
+## §67 PROGRAM-LEVEL HONEST STANDING (2026-09-09)
+THREE successive "exciting" hypotheses have now been rigorously tested and NULLED by proper controls:
+1. MaxRL weak-solver-teaches-better (§56) — coverage-fragile, vanished on matched prompts / 7B.
+2. best-for-imitation ≠ best-for-subsequent-RL reversal (§63) — n=1 noise, gone at 4 seeds.
+3. diagnostic-composition curriculum (§64-66) — the C>B gap is coverage, not diagnostic arrangement (C≈B', t=0.83).
+Durable, honest findings (modest, not award-tier): (a) SFT-on-verified-traces transfers OOD better than GRPO, grows with
+scale; (b) SFT-authored traces are consistently (small, confounded) better imitation-teachers across families/domains;
+(c) the RL-INIT stage is redundant for OOD (fresh-SFT dominates SAC-RL at lower cost); (d) under RFT, compositional-coverage
+of training data helps held-out composition (dose-dependent, coverage-driven — not a novel identification mechanism).
+This is a rigorous NEGATIVE-RESULTS + methods contribution (controls that kill plausible mechanisms), NOT an award-winning
+novel methodology. Manufacturing one by launching more variants of nulled ideas is not scientifically honest. The credible
+paths remaining require a genuinely new mechanism hypothesis with a real prior — not another sweep of the same space.
