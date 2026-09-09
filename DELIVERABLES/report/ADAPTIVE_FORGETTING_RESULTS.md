@@ -4,6 +4,17 @@
 _Canonical results doc. Headline finding + all current-methodology results up top; prior failed techniques
 below are retained as MOTIVATION. Base: Qwen2.5-3B unless noted. All runs pushed to GitHub main._
 
+## HEADLINE STANDING (2026-09-08, after rigorous method testing)
+CONTRIBUTION = FOUNDATION + MECHANISM (the method was tested rigorously and is an honest NULL):
+- FOUNDATION: verified-trace SFT ≫ GRPO for converting successful experience into OOD capability — 4 domains,
+  ~16 model families, multi-seed, tuned-GRPO-robust (§37-49). Also general (in-dist too, §49).
+- MECHANISM: RL reweights, can't place mass; solve→compose gap widens as reward saturates (§52b/S1a); GRPO
+  monotonically dilutes OOD transfer the more it's applied (§55-Stage3: pure-SFT 0.354 > fixedSR 0.343 > dyn
+  0.309 > GRPO 0.293 on MATH-500).
+- METHOD (honest null): consolidation-scheduled RL does NOT beat pure SFT (RL interleaving hurts OOD). §55-D1
+  (consolidation>difficulty, within-RL) is real but does not beat the trivial SFT baseline. Actionable
+  recommendation: for OOD transfer of verified experience, SFT the traces; don't add RL.
+
 ## HEADLINE (accurate, per reviewer — mechanism NOT yet settled)
 **Under the evaluated procedures, verified-trace SFT converts available successful experience into capability
 more effectively than GRPO, and subsequent RL adds further gains** (holds in-distribution AND OOD, §49). The
