@@ -3420,3 +3420,16 @@ held-out recipients; full cost accounting.
 authorship experiments separate immediate imitation gains from later RL improvement, and a learned author produces
 material that improves transfer under matched training resources." Keep SAC-RL as an empirical BASELINE. Scale only the
 intervention that survives Gates A/B/C — model size alone will NOT resolve the novelty/attribution gaps.
+
+## §62 GATE A — controlled 4-cell factorial (matched banks/config, 3 INDEPENDENT reps, independent upstream GRPO)
+OOD MATH-500 (n=200,k=4):
+| recipient init | GRPO-authored bank | SFT-authored bank | SFT-auth benefit |
+|----------------|--------------------|-------------------|------------------|
+| Fresh base     | 0.3658 ±0.0089 | 0.3967 ±0.0146 | +0.0309 (t≈3.2) |
+| GRPO recipient | 0.3654 ±0.0052 | 0.3862 ±0.0030 (=SAC-RL) | +0.0208 (t≈6.3) |
+GATE A VERDICT (OOD): the initial RL stage contributes NOTHING to OOD transfer. Fresh ≥ GRPO-recipient in BOTH banks;
+fresh+SFT-authored (0.397) ≥ SAC-RL (0.386), Δ=+0.011 t≈1.3 (n.s.) — a MATCH at LOWER cost (fresh skips GRPO training).
+Authorship matters in BOTH rows (SFT-authored > GRPO-authored, significant); RL INIT does not add. This CONFIRMS the
+reviewer's suspicion: DROP the initial RL stage from the proposed method — SAC-RL is dominated by plain fresh-SFT on
+SFT-authored traces. Remaining check: in-domain GSM8K (does GRPO-recipient preserve an RL-specific capability fresh lacks?) — running.
+COMPUTE NOTE: fresh path = 1 SFT (300 steps). GRPO-recipient path = GRPO training + 1 SFT. Fresh is strictly cheaper AND ≥ on OOD.
