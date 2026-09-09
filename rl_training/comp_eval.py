@@ -4,7 +4,16 @@
 # Usage: python -m rl_training.comp_eval --model <path|id> --pool /path/pool.jsonl --k 1 [--n 200] [--tag t]
 import argparse, json, os, sys, collections
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from rl_training.comp_tasks import verify_solution
+import random as _random
+from rl_training.comp_tasks import verify_solution, _rand_records
+
+
+def _ensure_test_inputs(r):
+    ti = r.get("test_inputs")
+    if ti:
+        return ti
+    rng = _random.Random(abs(hash(r["prompt"])) % 10 ** 7)   # component-bank rows carry no test_inputs
+    return [_rand_records(rng, rng.randint(6, 10)) for _ in range(6)]
 
 
 def main():
@@ -41,7 +50,7 @@ def main():
     by_kind = collections.defaultdict(lambda: [0, 0])
     npass = 0
     for r, o in zip(rows, outs):
-        task = {"prog": r["prog"], "test_inputs": r["test_inputs"]}
+        task = {"prog": r["prog"], "test_inputs": _ensure_test_inputs(r)}
         # pass@1 semantics: any of k sampled solutions verifies (k=1 => the single greedy solution)
         ok = any(verify_solution(c.text, task) for c in o.outputs)
         npass += int(ok)
