@@ -2987,3 +2987,45 @@ impossibility/irreducibility claim. FIX: redo the mass-placing/hybrid axis with 
 matched LR (λ=1 must equal standalone SFT numerically) before any claim. This weakens the "mechanism-irreducible"
 framing and supports the §56 central hypothesis (differences are procedural — reduction/weighting/LR — not an
 intrinsic operator barrier). Log per-run reduction + effective-LR henceforth.
+
+# ============================================================================
+# §57 AWARD-TARGET NOVEL METHODOLOGY (user-approved 2026-09-09): E9 — TEACHING VALUE ≠ SOLVING VALUE
+# ============================================================================
+SEQUENCE (confirmed): finish E1 (procedural: does outcome-weighting/refresh close the gap) → E2 (§45-vs-§55
+initialization×continuation tension) → then commit the fleet to E9 as THE contribution.
+
+## THE NOVEL CLAIM (falsifiable, unexplored)
+A checkpoint's SOLVING value (its own task reward) is DISSOCIABLE from its TEACHING value (the transferable
+capability a FRESH common learner gains by SFT-ing on that checkpoint's verified traces). Prediction: producers
+ranked by solve-accuracy do NOT match producers ranked by teach-value; specifically a "weak-as-a-policy" RL
+checkpoint can produce traces that TEACH a common learner better than a "strong" SFT checkpoint's traces.
+Why it reframes everything + turns our nulls into a thesis: RL is NOT a better final POLICY (we showed §55) but
+may be a better EXPERIENCE PRODUCER (data engine) — reconciles §55 (RL hurts the policy) with §45 (SFT→RL helps)
+and the foundation (SFT≫GRPO as policies). If true → a genuinely new role for RL + an actionable export method.
+
+## DESIGN (rigorous — addresses reviewer cautions)
+PRODUCERS P ∈ {base, strong-SFT, GRPO(std), MaxRL, SFT→GRPO}. Each: same TRAIN-ONLY prompt pool, fixed
+generation-token budget; verify outputs (executable/exact); banks carry full source metadata; FAILURES retained
+in cost accounting. RECIPIENTS: ALL start from the SAME fixed checkpoint + identical SFT procedure; ONLY the
+producer of the bank changes; separate recipient seed + untouched final eval.
+TWO fairness analyses (kept separate): (a) DATA-QUALITY: match #verified examples, prompt identities, ~lengths;
+(b) FULL-PIPELINE: natural yield differences + TOTAL cost (train producer + collect bank).
+BANK-DECOMPOSITION (isolates what drives teaching value):
+  1. Same prompts, ALT verified solutions per producer → does trace CONTENT matter beyond prompt coverage?
+  2. Producer-UNIQUE solved prompts at equal budget → do newly-reached examples teach transferable behavior?
+  3. Shared-prompt banks, RANDOMIZED source → do producer effects survive matching?
+  4. Best single producer vs checkpoint MIXTURE → complementary experience?
+HEADLINE MEASUREMENT: TEACH(P) = recipient OOD (MATH-500 + frozen-composition) after SFT on P's bank; SOLVE(P) =
+P's own task accuracy. Show rank(SOLVE) ≠ rank(TEACH) (low/negative correlation) with CIs = the dissociation figure.
+ENDPOINT: recipient frozen-model OOD transfer + one-shot compositional (program-synthesis). Preregister smallest
+worthwhile effect (+2 abs pts OR 20% cost cut at matched accuracy). Multi-seed, task-clustered CIs, dev-select +
+confirm set.
+KILL CRITERION: if no producer's bank beats the strongest SFT-derived bank after matching + cost → retire
+RL-as-producer honestly. Must also beat iterative REJECTION FINE-TUNING (the obvious baseline).
+POSITION vs: Outcome-based Exploration (experience diversity), SOAR (teacher rewarded for student improvement),
+Self-Adapting-LM (downstream-improvement reward), Reuse-your-FLOPs. Contribution = a DEMONSTRATED solve-vs-teach
+DISSOCIATION + controlled WHY + a selective-export method that wins under full cost accounting.
+## METHOD (if dissociation holds): SELECTIVE EXPERIENCE EXPORT
+Retain a verified trace for the learner's bank only when its MEASURED marginal teaching contribution exceeds
+readily-available alternatives (deterministic selection rule from the bank experiment first; a learned controller
+only if it beats the deterministic rule). Keep the final learner on the best update rule (SFT). 
