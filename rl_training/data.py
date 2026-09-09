@@ -61,7 +61,7 @@ def build_dataset(dataset: str, model_name: str, n_problems: int = -1, seed: int
         from datasets import load_dataset
         import re as _re
         d = None
-        for did in ["EleutherAI/hendrycks_math", "hendrycks/competition_math", "lighteval/MATH"]:
+        for did in ["nlile/hendrycks-MATH-benchmark", "qwedsacf/competition_math", "hendrycks/competition_math"]:
             try:
                 dd = load_dataset(did)
                 d = dd["train"] if "train" in dd else dd[list(dd.keys())[0]]
