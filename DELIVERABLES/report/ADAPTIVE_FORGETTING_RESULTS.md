@@ -4450,3 +4450,13 @@ distillation costs ~1.1-1.5x MORE tokens to reach comparable accuracy; it is a S
 speedup. The round-2 "lead" (§99) was an artifact of not charging decompose tokens. Combined with §103b (composition never the bottleneck),
 the honest standing of decomposition-distillation: a modest accuracy improvement acting as a LOCAL-SOLVING SCAFFOLD, at above-baseline cost —
 neither a composition teacher nor an efficiency method. E1 @ 14B: 26/26 (100%) oracle-component recovery — composition trivial at 1.5B/7B/14B.
+
+## §105 CALIBRATED-HARD (depth-9) @ 7B/14B — coverage-causal effect stays NULL, but headroom insufficient (inconclusive)
+depth-9 P1 (full/blocked/randrem, depth-9 OOD): 7B full=0.830 blocked=0.840 randrem=0.830 (full-blocked=-0.010, NULL);
+14B full=0.880 blocked=0.875 randrem=0.885 (full-blocked=+0.005, NULL). => The new-coverage causal effect does NOT return at 7B/14B
+on depth-9. BUT coverage at R1 = 317/400 (7B), 365/400 (14B) = 79%/91% — the strong models still cover most depth-9 problems, so
+depth-9 did NOT create substantial headroom. HONEST: this is INCONCLUSIVE for the headroom law's return-prediction — it is consistent
+with either (a) insufficient headroom (depth-9 too easy for 7B/14B) or (b) the effect being genuinely weak-model-specific. A clean
+return-test requires problems hard enough to push 7B/14B to ~40-50% base coverage (deeper/branching structure), which the linear
+depth-9 pool did not achieve. Current 4-size curve (full-blocked): 1.5B +0.165, 3B ~0, 7B ~0, 14B ~0 — the effect is measured ONLY at
+1.5B; whether it is headroom-gated (returns for strong models on hard-enough tasks) or weak-model-specific remains OPEN.
