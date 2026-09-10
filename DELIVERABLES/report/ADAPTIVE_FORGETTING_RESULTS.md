@@ -3931,3 +3931,23 @@ strong sampler dominates GRPO at matched compute exactly in the high-D regime (c
 (Coder), math+synthetic-compositions; every "RL-is-special" method claim was RETRACTED under controls, leaving the density LAW
 as the durable, general contribution. Award-tier extensions: ≥2 more model families/scales; a tighter theoretical bound linking
 D to the transfer gap; and the D-predicts-gap curve at more points. The theory is the asset; it is falsifiable and it held.
+
+## §78 EXECUTIVE ASSESSMENT — is this an award-winning paper? (honest)
+WHAT WE HAVE (all control-surviving, pushed): a theory-first positive result — the Advantage-Density law
+D(G)=E[p^G+(1-p)^G] that (a) predicts GRPO's dead-group fraction near-exact (0.686 vs measured 0.70), (b) tracks
+difficulty/bimodality across GSM8K(0.31)/MATH(0.56)/compositions(0.69), (c) predicts the RFT−GRPO OOD-transfer gap
+monotonically (gap: GSM8K 0.00 → MATH +0.024 → comp +0.08). Corroborated by matched-compute (RFT>GRPO frontier),
+group-size sweep (G can't rescue p=0 mass), and rejection-FT-on-strong-sampler dominance in the high-D regime. Every
+"RL-is-special" method claim was RETRACTED under its decisive control (MaxRL-teaching, imitation≠RL reversal, diagnostic
+arrangement, verifier resolution, RL-explorer) — leaving the falsifiable LAW as the durable contribution.
+HONEST VERDICT — SOLID, NOT YET A BIG AWARD WIN. Strengths: clean falsifiable law, near-exact prediction, cross-domain,
+predictive capstone, unusually rigorous controls. Weaknesses that block award-tier as-is:
+ (1) SCALE: single model family (Qwen2.5-Coder-1.5B), 1.5B only. A "law" needs ≥3 families × ≥2 scales.
+ (2) THIN CURVE: gap-vs-D is 3 points, one model — needs many points to be a convincing law (fit + CIs).
+ (3) ELEMENTARY THEOREM: P(all-G-same)=p^G+(1-p)^G is basic probability; the value is the VALIDATION + predictive use,
+     not deep theory. Award-tier wants a sharper bound (e.g., a quantitative link D→transfer-gap with assumptions), not just the identity.
+ (4) MODEST EFFECTS: gaps 0–0.08 absolute; the "big" numbers were vs weak/self-crippled baselines (retracted).
+ (5) NOVELTY OVERLAP: "rejection-FT ≥ on-policy RL for OOD" is known-adjacent; our novelty is the WHEN (density law), which must be sold hard against SFT-vs-RL prior work.
+TIER: strong workshop / solid mid-conference as-is. AWARD PATH (concrete): D→gap curve at 8-12 points across Qwen/Llama/
+Gemma × {1.5B,7B,14B}; a tighter theorem (bound the transfer gap by D under stated assumptions); larger-effect regime;
+independent-seed CIs on every point; head-to-head vs PAC/SOAR/MaxRL(real). The theory is the right spine and it is honest — but it is not, by itself, a big award win yet.
