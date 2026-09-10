@@ -4015,3 +4015,21 @@ sampling(+0.073). More base sampling SATURATES (~255 prompts) — it cannot reac
 solves. This is GENUINE source complementarity: the improved source supplies verified experience that neither base-alone nor
 MORE base sampling provides. First control-surviving POSITIVE result in the source-preservation direction. Round-1→2 already
 shows PRESERVE (B∪F 0.610) > CURRENT-only (F 0.585). Testing round-3: does {base ∪ F_t} keep improving and keep beating current-only.
+
+## §82 MULTI-ROUND — self-training compounds; but FIXED source-preservation has a CROSSOVER (honest)
+Held-out evalC, 4 seeds, source solves: base 225 → F 290 → F2 336 (source strengthens each round):
+| round | preserve {base∪F_t} | current-only F_t |
+|-------|---------------------|------------------|
+| R1 base+RFT | 0.545 | — |
+| R2          | 0.610 | 0.585 |
+| R3          | 0.717 [.70/.72/.713/.733] | 0.753 [.747/.747/.753/.767] |
+TWO findings: (1) BIG POSITIVE — iterative verified rejection-FT self-training COMPOUNDS: 0.545→0.585→0.753 (+0.21 over the
+base+RFT R1 reference, +0.35 over base-direct 0.40) in 3 rounds, all verified-correct, no RL. (2) HONEST NUANCE — FIXED
+source-preservation (always mix base) has a CROSSOVER: preserve WINS R2 (+0.025, base≈learner) but current-only WINS R3
+(−0.037, learner≫base). Once the learner (F2=0.610 solver) far surpasses base (0.40 solver), mixing in base's weaker solutions
+DILUTES rather than complements — exactly the reviewer's H3 failure mode ("if one source is always better, a mixture wastes budget").
+=> FIXED preservation is NOT a monotone win. The reviewer's ADAPTIVE α_t (preservation floor that DECAYS as the learner
+surpasses base) is the correct form, if any — fixed preserve is dominated by current-only late. Complementarity (§81/§81b) is
+REAL but TRANSIENT (helps only while base is competitive with the learner). HONEST STANDING: the durable positive is iterative
+RFT self-improvement (+0.21/3 rounds); source-PRESERVATION as a fixed method does not beat plain iterative RFT past round 2.
+NEXT (if pursued): adaptive-α source rule (H3 controller) vs iterative-RFT-only — must beat current-only's 0.753 to justify the machinery.
