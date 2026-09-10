@@ -4247,3 +4247,21 @@ Fair math (Qwen2.5-1.5B-Instruct), math500 pass@1: shared base+RFT=0.468, RFT+=0
 => RFT+ > GRPO in MATH too (directional replication of §91b), but both gains are SMALL vs the compositional +0.21 — because math
 has less coverage headroom for this base (§93 law). Consistent unified picture: RFT beats GRPO for OOD wherever coverage can expand,
 and the size of that advantage tracks headroom. (grpo-none math eval shard incomplete; group suffices for the comparison.)
+
+## §96 CONSOLIDATED STORY SPINE (post double-down) — three hardened pillars + one positive method
+The verified-experience / self-improvement program now rests on four load-bearing, control-surviving results:
+1. COVERAGE IS CAUSAL & SCALES WITH HEADROOM. New-problem coverage causally drives multi-round gains (§84/§89: full 0.79 vs
+   coverage-blocked 0.625 = +0.165 at 5x scale, = random-removal so not volume). The effect's MAGNITUDE ~ available headroom:
+   1.5B/hard +0.165, weak-base/math +0.046 compounding, 7B null (§93), math-tuned null (§86). A quantified scaling boundary.
+2. VERIFIED RFT >> GRPO FOR OOD. From an identical checkpoint, one more verified RFT round beats on-policy GRPO by +0.21
+   (§91b/§91d, robust over 3 seeds); GRPO's train reward rises but OOD is flat (§91c) — reweighting vs coverage expansion.
+   Replicates directionally in math, headroom-limited (§91e).
+3. THE CEILING IS ROBUST. Verified self-improvement cannot place mass on base pass@k=0 problems; repair (§87), archive (§84b),
+   delayed-value (§85), and difficulty-escalation (§90b, nulls vs fair fixed-hard control) all fail to break it.
+4. DECOMPOSITION-DISTILLATION — THE POSITIVE METHOD THAT DOES break it (partially). Structured decomposition recovers pass@k=0
+   frontier problems (§94: 8%->35%, scales with model), and distilling those recovered solutions into the DIRECT single-shot policy
+   expands single-shot OOD coverage beyond the RFT ceiling (§95/§95b: +0.06 @1.5B, +0.02 @7B; gain ~ headroom).
+HONEST FRAMING: pillars 1-3 are a rigorous CHARACTERIZATION of the limits of verified self-improvement; pillar 4 is a genuine
+(if modest, headroom-bounded) POSITIVE METHOD on top. Together: "verified self-improvement is coverage-bound; we characterize the
+bound (causal, headroom-scaled, RFT>GRPO, repair/archive/escalation can't break it) and give a method — decomposition-distillation —
+that provably places-and-internalizes mass past it." (3B headroom-curve midpoint pending.)
