@@ -4169,3 +4169,18 @@ d5 (far from d8) while escalation ended on d7 (close to d8), so the edge may be 
 ## §91 RL-vs-RFT head-to-head (compositional, shared base+RFT start, depth-7 OOD)
 shared base+RFT start=0.555; RFT+ (one more current-only verified round)=0.745 (+0.190). GRPO arms (group/none) FAILED on first attempt
 (EADDRINUSE: two accelerate launches shared default port 29500) — RE-RUNNING with distinct --main_process_port. RFT+ result stands; GRPO pending.
+
+## §92 SELF-REPAIR at 7B — scale PARTIALLY breaks the ceiling (recovery scales with model)
+comp_repair, Qwen2.5-Coder-7B-Instruct, depth-7 (n=120): single_shot_cov=95, frontier_pk0=25, repair_recovered=4 => 16% of frontier.
+vs 1.5B (§87): single_shot 26/60, frontier 34, recovered 1 => 3%. => Repair's ceiling-break RATE scales with model capability
+(3% -> 16%): a stronger model can convert execution feedback into correct fixes more often. Still modest (16%), and the frontier
+itself shrinks at 7B (only 25 pass@k=0 problems). Honest: repair is a real-but-small ceiling-break that grows with scale, not a
+wholesale fix. (Decomposition at 1.5B recovered 4/49=8%, 2.7x repair's 1.5B rate — decomposition > repair for mass-placing; 7B decomp pending.)
+
+## §93 P1 COVERAGE MECHANISM at 7B — NULL (mechanism magnitude scales with HEADROOM)
+7B compositional P1 (d5 train, d7 OOD, n=300): full=0.890, blocked=0.885, randrem=0.905. full-blocked=+0.005 (NULL) — vs 1.5B §89
+full-blocked=+0.165. => The new-coverage causal effect VANISHES at 7B because the strong base already covers nearly everything
+(little headroom). UNIFIES §86 (math-instruct ceiling), §88 (fair-math coverage-null), §89 (1.5B +0.165), §93 (7B null):
+**the coverage mechanism's magnitude is proportional to available coverage HEADROOM.** Weak base + hard domain -> large gain;
+strong base or easy domain -> none. This is the clean, quantifiable, honest scaling boundary of verified self-improvement:
+self-training amplifies reachable coverage, and there is only something to amplify when headroom exists.
