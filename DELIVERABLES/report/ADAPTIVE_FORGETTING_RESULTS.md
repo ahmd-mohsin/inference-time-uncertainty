@@ -4053,3 +4053,13 @@ control ruling out the volume confound. R4 still climbing (no saturation yet). S
 Relation to prior art: ReST/ReST-EM establish iterate-generate-filter-FT; our added value = the matched-COST control showing
 frozen sampling saturates (coverage-limited) while the improving sampler compounds, + the coverage-expansion MECHANISM (225→368).
 HONEST scope: 1.5B-Coder, compositions, single eval set (huge monotone effect mitigates but fresh-eval + cross-domain/family confirmation owed).
+
+## §83 ANCESTRY CORRECTION (reviewer) — the .753/.798 trajectory was NOT always-current
+Tracing checkpoints: R3 current-only (0.753) was sampled from F2 = crec_BFsrc (the MIXED B∪F round-2 ckpt, 0.610), NOT from
+the current-only R2 ckpt (0.585); R4 (0.798) descends from that. So §82/§82b's "always-current 0.545→0.585→0.753→0.798" is
+INCORRECT — the true lineage is base → current(0.585) → [SWITCHED source to mixed 0.610] → current(0.753) → current(0.798),
+a MIXED-then-current history. Also (reviewer theory fix): base-3x plateau supports a FINITE-BUDGET efficiency statement, NOT
+"frozen source can't get these at ANY budget" (c_K=1-(1-p)^K→1 as K→∞). And archive-use needs p_c≥p_a to be beaten, else
+current dominates at equal cost. CORRECTIVE PLAN: run CLEAN INDEPENDENT trajectories (each round samples from its OWN ancestor):
+(A) always-current, (B) always-mix, (C) mix-once-then-current; + a MATCHED-ROUND frozen-base control (base sampler all rounds,
+accumulate, RFT) at equal stages/cost; on a FROZEN FRESH structural-OOD test (depth-7, unseen depth) — evalC is now DEV-ONLY.
