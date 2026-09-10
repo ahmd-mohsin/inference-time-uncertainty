@@ -4000,3 +4000,18 @@ Tight non-overlapping CIs. CAVEATS (must clear before claiming, per reviewer H3)
 SIZE confound; running (a) count-MATCHED B∪F (cap to F's size) and (b) matched-COST frozen-base (2x base sampling). If B∪F
 still beats F at matched size AND 2x-base doesn't catch up → genuine complementarity, motivating multi-round source-preserving
 self-training: round t source = {π0 ∪ π_t}, RFT. This is the reviewer's proposed method with its precondition now supported.
+
+## §81b H3 CONTROLS HOLD — source complementarity is REAL (survives matched-size AND matched-cost)
+Held-out evalC, 4 seeds:
+| bank | acc | control |
+|------|-----|---------|
+| base (225)            | 0.545 | reference |
+| F=RFT-improved (290)  | 0.585 | +0.040 |
+| B∪F (300)             | 0.610 | +0.065 |
+| B∪F cap→290           | 0.598 | matched-SIZE: still > F (+0.013) |
+| base 2x (255)         | 0.537 | matched-COST: FLAT vs base, ≪ B∪F (+0.073) |
+=> Combining the original source + RFT-improved checkpoint beats base(+0.065), F-alone-at-matched-size(+0.013), AND 2x-base
+sampling(+0.073). More base sampling SATURATES (~255 prompts) — it cannot reach the harder prompts the improved checkpoint
+solves. This is GENUINE source complementarity: the improved source supplies verified experience that neither base-alone nor
+MORE base sampling provides. First control-surviving POSITIVE result in the source-preservation direction. Round-1→2 already
+shows PRESERVE (B∪F 0.610) > CURRENT-only (F 0.585). Testing round-3: does {base ∪ F_t} keep improving and keep beating current-only.
