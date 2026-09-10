@@ -4460,3 +4460,12 @@ with either (a) insufficient headroom (depth-9 too easy for 7B/14B) or (b) the e
 return-test requires problems hard enough to push 7B/14B to ~40-50% base coverage (deeper/branching structure), which the linear
 depth-9 pool did not achieve. Current 4-size curve (full-blocked): 1.5B +0.165, 3B ~0, 7B ~0, 14B ~0 — the effect is measured ONLY at
 1.5B; whether it is headroom-gated (returns for strong models on hard-enough tasks) or weak-model-specific remains OPEN.
+
+## §106 E1-DAG — composition IS the bottleneck in a DAG/branching domain (validates recomposition premise)
+New DAG domain (comp_dag.py): ops form a DAG with branching, merge (concat/union_id/zip_sum), and intermediate REUSE — data-flow
+WIRING is non-trivial. E1 oracle diagnostic (1.5B, 6 nodes, n=300): base zero-success cohort = 272/300 (91% — DAG is far harder than
+linear); oracle-components recovery = 27/272 = **9.9%** (vs 100% in the linear domain §103b). => Giving CORRECT per-op code recovers
+almost nothing: the model FAILS TO WIRE the data-flow even with the pieces. COMPOSITION IS THE BOTTLENECK here, unlike linear pipelines.
+This is the missing prerequisite: the review's recomposition hypothesis (teach dependency/interface relationships) is now TESTABLE and
+WARRANTED in the DAG domain. Launching E2: does training on verified RECOMPOSED variants (rewired dependencies) teach composition that
+transfers to unseen DAG wiring, beyond plain RFT / random augmentation? Also checking whether the composition bottleneck is scale-robust (E1-DAG @ 7B).
