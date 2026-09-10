@@ -22,9 +22,15 @@ def main():
               gpu_memory_utilization=float(os.environ.get("GEN_GPU_MEM", 0.45)), enforce_eager=True)
     tok = llm.get_tokenizer()
     def wrap(p): return tok.apply_chat_template([{"role":"user","content":p}], tokenize=False, add_generation_prompt=True)
+    def toks(outs):  # (prompt_tokens, completion_tokens) summed over a generate() call
+        pt = sum(len(o.prompt_token_ids) for o in outs)
+        ct = sum(len(s.token_ids) for o in outs for s in o.outputs)
+        return pt, ct
+    tok_stats = {}
     # ---- direct single-shot pass@k (baseline coverage) ----
     outs = llm.generate([wrap(t["prompt"]) for t in tasks],
                         SamplingParams(n=a.k, temperature=1.0, top_p=0.95, max_tokens=1024, stop=["<|im_end|>","<|endoftext|>"]))
+    tok_stats["direct_prompt_tok"], tok_stats["direct_completion_tok"] = toks(outs)
     bank = []; solved = set()
     for i, (t, o) in enumerate(zip(tasks, outs)):
         for s in o.outputs:
@@ -35,6 +41,7 @@ def main():
     recovered = set()
     if dprompts:
         douts = llm.generate(dprompts, SamplingParams(n=a.k_decomp, temperature=1.0, top_p=0.95, max_tokens=2048, stop=["<|im_end|>","<|endoftext|>"]))
+        tok_stats["decomp_prompt_tok"], tok_stats["decomp_completion_tok"] = toks(douts)
         for i, o in zip(frontier, douts):
             for s in o.outputs:
                 if verify_solution(s.text, tasks[i]):
@@ -45,7 +52,7 @@ def main():
         for r in bank: f.write(json.dumps(r) + "\n")
     stats = {"n": len(tasks), "direct_cov": len(solved), "frontier_pk0": len(frontier),
              "decomp_recovered": len(recovered), "total_cov": len(solved) + len(recovered),
-             "ceiling_break": len(recovered)}
+             "ceiling_break": len(recovered), **tok_stats}
     print("[comp_decompose]", json.dumps(stats))
     if a.stats_out: json.dump(stats, open(a.stats_out, "w"))
 
