@@ -4357,3 +4357,48 @@ ceiling null-battery (repair/archive/delayed-value/escalation). MODEST parts: de
 (+0.06->+0.015, dominates RFT every round §99) but does NOT diverge (§99b) — it does not deliver the qualitative "self-expanding"
 unlock. VERDICT: a strong, honest, theorem-backed empirical paper (solid main-track); NOT a best-paper/award unless the positive
 method is made larger/qualitative. The theory + 4-size curve is the most defensible, novel, memorable asset.
+
+## §101 THEORY CORRECTION (supersedes §98) — operational reachability, honest bounds, cost reframing
+A rigorous review identified real errors in §98. Corrections:
+
+ERR-1 (support is budget-independent). §98's R_k(π)={x:Pr_{y~π}[V=1]>0} does NOT depend on k: for finite k≥1,
+Pr(≥1 success in k) = 1-(1-p(x))^k > 0 iff p(x)>0, so R_k=R_1. It cannot denote a "budget-dependent frontier". Moreover under
+finite-logit softmax every allowed sequence has positive prob, so exact support is enormous unless the decoder (top-k/top-p/length)
+is specified. FIX — operational reachability: for generator G, total budget C (search + generation + verification), threshold τ:
+  s_G(x;C) = Pr(G returns a verified solution within budget C);   R_{C,τ}(G) = { x : s_G(x;C) ≥ τ }.
+This is estimable with uncertainty and genuinely budget-dependent. All "reachable support" claims now use R_{C,τ}.
+
+ERR-2 (zero successes ≠ probability zero). "pass@k=0 frontier" is an OBSERVED-ZERO-SUCCESS COHORT under a sampling budget n,
+not a proven p=0 region. One-sided 95% bound: p ≤ 1-0.05^{1/n} (≈0.171 at n=16, 0.023 at n=128). Rename "frontier" →
+"observed zero-success cohort under budget n"; report n. Selecting a cohort and measuring recovery on the SAME samples needs
+independent-sample care (do the recovery assay on fresh draws).
+
+ERR-3 (Thm 1 Gen term unfalsifiable). "R_k(π1) ⊆ R_k(π0) ∪ Gen" with unconstrained Gen is not predictive. CORRECTED Thm 1
+(honest, weaker): verified-only training supplies NO DIRECT supervised gradient on x∉supp_x(B); therefore any improvement on such x
+is attributable to PARAMETER-SHARED GENERALIZATION, an empirically MEASURABLE quantity (train on bank, measure Δs on held-out
+unreached x), NOT a free set. Claim only: direct-supervision coverage ⊆ generator's reached set; generalization is measured, not assumed zero.
+
+ERR-4 (Cor 2 scope). The bound ΔAcc_newcov ≤ H·(transferable value) applies ONLY to the gain component restricted to the uncovered
+subset. The measured full−blocked intervention is NOT bounded by uncovered test-fraction: removing newly-discovered training examples
+can also change reliability on ALREADY-REACHED problems. Restate: headroom gates the NEW-COVERAGE component; the total bank-identity
+effect (§89 +0.165) is a measured causal quantity, not a quantity the corollary bounds. Reachability and reliability are distinct endpoints.
+
+ERR-5 (wrong target: headroom-independent ABSOLUTE gain). For any reference a, Acc-a ≤ 1-a — absolute gains must vanish near
+saturation; that is a METRIC CEILING, not a distinctive limitation of self-improvement. Do NOT seek a "headroom-independent absolute
+gain". Report absolute gain AND normalized error-reduction AND cost-to-threshold; the decomposition method's shrinking +0.06/+0.02/+0.015
+is partly this ceiling, not purely a headroom law.
+
+ERR-6 (Thm 3 "breaks its own premise" is vacuous). Changing the generator does not violate a fixed-generator theorem. CORRECTED
+Thm 3 — acquisition-cost statement (assumptions explicit): with m components, per-component retry cost c_i, success q_i, sound local
+verification cost v_i, reusable correct components, compatible interfaces, and correct assembly:
+  E[C_whole] = (Σc_i + v_whole)/Πq_i    vs    E[C_local] = Σ (c_i+v_i)/q_i + C_assembly.
+(equal q=0.5, 8 components: ~2048 vs ~16 expected component-calls — TOY numbers under these assumptions, not measured). Decomposition's
+benefit is this classical factorization of acquisition cost, valid only when the assumptions hold; interface errors / fallible local
+verifiers / required revision of earlier components add terms. This is NOT original by virtue of being applied to an LLM; the research
+question is where the assumptions hold in real data and whether the acquired solutions internalize into a direct student at lower TOTAL cost.
+
+CONSEQUENCES FOR CLAIMS: (a) drop "verified RFT cannot acquire capabilities outside initial support" (unproven; softmax support is huge;
+generalization is real). (b) The 4-size curve shows the intervention effect CHANGES with size/difficulty — an empirical dependence, not a
+proven universal monotonic law; the matrix is SPARSE (composition 4 sizes; math fewer; GSM8K 1; code not yet usable) — describe populated
+cells + uncertainty, not "16 replications". (c) Reframe the decomposition contribution as a COST-to-fixed-accuracy question (the underused
+round-2 0.865 > round-3-RFT 0.855 signal), contingent on charging decomposition's extra acquisition cost. (d) No runaway self-improvement claim.
