@@ -4429,3 +4429,13 @@ error to fix. MECHANISM of §95 decomposition-distillation is therefore RE-READ:
 composition-transfer hypothesis (composition is free). Testing it requires a NON-LINEAR (DAG/branching/intermediate-reuse) domain where
 oracle-components does NOT give ~100%. Honest scoping result: E2-as-composition-teaching is closed in the linear domain; a structured
 domain is a prerequisite to pose the question at all.
+
+## §103b E1 ROBUST across scale AND depth — composition is NEVER the bottleneck in linear pipelines
+Oracle-component recovery on base zero-success cohort (k=8): 1.5B/depth-7 = 160/160 (100%); 7B/depth-7 = 32/32 (100%);
+1.5B/depth-9 = 207/207 (100%). => UNIVERSALLY 100% regardless of model size or pipeline depth. In the linear-pipeline domain,
+supplying correct per-primitive code always yields correct composition; the entire frontier difficulty is LOCAL COMPONENT GENERATION.
+DECISIVE CLOSURE: the composition-transfer / recomposition hypothesis (E2) CANNOT be posed in this domain at any tested scale/depth —
+composition is free. Decomposition-distillation (§95) is confirmed to be a LOCAL-SOLVING SCAFFOLD, not a composition teacher. To study
+transferable composition at all requires a genuinely NON-LINEAR domain (DAG dependencies, branching, shared-intermediate reuse) where
+oracle-components does NOT saturate at 100%. This reframes the paper's honest scope: the compositional testbed measures coverage/local-
+solving, not composition; claims about "teaching composition" are out of scope until a structured domain shows a composition bottleneck.
