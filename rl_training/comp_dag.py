@@ -87,18 +87,100 @@ def verify(text, task, timeout=5):
         except Exception: pass
         return False
 
+def reference_solve_code(dag):
+    ops_u = sorted({s["op"] for s in dag["steps"] if s["kind"] == "un"})
+    ops_b = sorted({s["op"] for s in dag["steps"] if s["kind"] == "bin"})
+    L = ["def solve(records):"]
+    for op in ops_u:
+        L.append(f"    def u_{op}(r):")
+        for ln in PRIMS[op]["code"].split("\n"): L.append("        " + ln)
+        L.append("        return r")
+    for op in ops_b:
+        for ln in BIN_CODE[op].replace("def op(", f"def b_{op}(").split("\n"): L.append("    " + ln)
+    L.append("    records = [dict(x) for x in records]")
+    for s in dag["steps"]:
+        if s["kind"] == "un": L.append(f"    {s['var']} = u_{s['op']}([dict(x) for x in {s['args'][0]}])")
+        else: L.append(f"    {s['var']} = b_{s['op']}([dict(x) for x in {s['args'][0]}], [dict(x) for x in {s['args'][1]}])")
+    L.append(f"    return {dag['out']}")
+    return "\n".join(L)
+
+def recompose(dag, seed):
+    # keep the same op multiset + node count; REWIRE args (which prior vars feed each op) -> new valid DAG
+    rng = random.Random(seed); steps = []; nvars = ["records"]
+    for s in dag["steps"]:
+        v = s["var"]
+        if s["kind"] == "bin" and len(nvars) >= 2:
+            a, b = rng.sample(nvars, 2); steps.append({"var": v, "kind": "bin", "op": s["op"], "args": [a, b]})
+        else:
+            src = rng.choice(nvars)
+            op = s["op"] if s["kind"] == "un" else UNARY[rng.randrange(len(UNARY))]
+            steps.append({"var": v, "kind": "un", "op": op, "args": [src]})
+        nvars.append(v)
+    return {"steps": steps, "out": nvars[-1]}
+
 def make_task(seed, n_nodes):
     dag = gen_dag(seed, n_nodes)
     ti = [_rand_records(random.Random(seed*100+j), random.Random(seed).randint(6, 10)) for j in range(6)]
     return {"dag": dag, "test_inputs": ti, "prompt": render(dag), "seed": seed, "n_nodes": n_nodes}
 
+def valid_task(seed, n_nodes):
+    # keep only DAGs whose reference executes on all test inputs (filters schema-mismatch DAGs)
+    t = make_task(seed, n_nodes)
+    try:
+        for inp in t["test_inputs"]: run_dag(inp, t["dag"])
+        return t
+    except Exception:
+        return None
+
+def gen_valid(n, n_nodes, seed0):
+    out = []; s = seed0
+    while len(out) < n:
+        t = valid_task(s, n_nodes)
+        if t is not None: out.append(t)
+        s += 1
+    return out
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=["emit", "diag"], default="emit")
+    ap.add_argument("--mode", choices=["emit", "diag", "bank", "eval"], default="emit")
+    ap.add_argument("--arm", choices=["B", "F", "C"], default="B")
     ap.add_argument("--n", type=int, default=300); ap.add_argument("--nodes", type=int, default=6)
     ap.add_argument("--seed0", type=int, default=0); ap.add_argument("--out", default="")
     ap.add_argument("--model", default=""); ap.add_argument("--k", type=int, default=8); ap.add_argument("--stats-out", default="")
     a = ap.parse_args()
+    if a.mode == "bank":
+        # SFT bank {prompt, completion=reference_solve_code}. B: n straight refs. F: n/2 refs + n/2 recomposed (rewired,
+        # same ops). C: n/2 refs + n/2 fresh-random DAGs (matched count, no interface focus).
+        base = gen_valid((a.n + 1)//2 if a.arm != "B" else a.n, a.nodes, a.seed0)
+        recs = [{"prompt": t["prompt"], "completion": reference_solve_code(t["dag"])} for t in base]
+        if a.arm == "F":
+            for i, t in enumerate(base):
+                rc = recompose(t["dag"], a.seed0 + 500000 + i)
+                tt = {"dag": rc, "test_inputs": t["test_inputs"]}
+                try:
+                    for inp in tt["test_inputs"]: run_dag(inp, rc)
+                    recs.append({"prompt": render(rc), "completion": reference_solve_code(rc)})
+                except Exception: pass
+        elif a.arm == "C":
+            extra = gen_valid(len(base), a.nodes, a.seed0 + 900000)
+            recs += [{"prompt": t["prompt"], "completion": reference_solve_code(t["dag"])} for t in extra]
+        with open(a.out, "w") as f:
+            for r in recs: f.write(json.dumps(r) + "\n")
+        print(f"[bank arm={a.arm}] wrote {len(recs)} SFT records -> {a.out}"); return
+    if a.mode == "eval":
+        from vllm import LLM, SamplingParams
+        tasks = gen_valid(a.n, a.nodes, a.seed0)
+        llm = LLM(model=a.model, dtype="bfloat16", trust_remote_code=True, max_model_len=4096,
+                  gpu_memory_utilization=float(os.environ.get("EVAL_GPU_MEM", 0.5)), enforce_eager=True)
+        tok = llm.get_tokenizer()
+        def wrap(p): return tok.apply_chat_template([{"role":"user","content":p}], tokenize=False, add_generation_prompt=True)
+        outs = llm.generate([wrap(t["prompt"]) for t in tasks],
+                            SamplingParams(n=a.k, temperature=0.8, top_p=0.95, max_tokens=1536, stop=["<|im_end|>","<|endoftext|>"]))
+        soln = sum(1 for t, o in zip(tasks, outs) if any(verify(s.text, t) for s in o.outputs))
+        acc = round(soln / max(1, len(tasks)), 4)
+        print(f"[dag_eval] acc={acc} n={len(tasks)} k={a.k}")
+        if a.stats_out: json.dump({"acc": acc, "n": len(tasks), "k": a.k}, open(a.stats_out, "w"))
+        return
     tasks = [make_task(a.seed0 + i, a.nodes) for i in range(a.n)]
     if a.mode == "emit":
         with open(a.out, "w") as f:
