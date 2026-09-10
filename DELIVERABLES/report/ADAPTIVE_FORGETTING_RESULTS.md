@@ -4126,3 +4126,14 @@ HONEST BOTTOM LINE: the durable, control-surviving contribution is PLAIN CURRENT
 (ReST-EM-adjacent), whose compounding is causally explained by NEW-PROBLEM COVERAGE (P1) and for which immediate accuracy is a
 sufficient iteration signal (P3); the fancier alternatives the reviewer proposed (source preservation P2, delayed-value selection P3)
 do NOT beat it. This is a rigorously-controlled study + a clean coverage mechanism, NOT a new award-caliber method.
+
+## §86 CROSS-DOMAIN (MATH) REPLICATION of the P1 coverage mechanism — FLAT (ceiling-effect confound)
+Ported the current-only iterative verified RFT + new-coverage design to MATH (base Qwen2.5-Math-1.5B-Instruct,
+n=800 MATH-train, k=8, eval math500 held-out via evaluate_passk shards). Coverage: R1=444 R2=456 R3=457; base3x(k24)=470.
+math500 pass@1: R1=0.707, R2=0.715, R3=0.704 (pass@4: 0.824/0.826/0.816). => ITERATIVE SELF-TRAINING GIVES ~NOTHING in math:
+pass@1 flat/noisy across rounds, coverage barely grows (444->457), matched-cost base-3x covers MORE (470).
+CONFOUND (important, do not over-read as refutation): the base is ALREADY math-instruction-tuned (0.707 base pass@1) => no
+headroom for a "cover new problems" mechanism; the base already covers nearly everything it can at k=8. The COMPOSITIONAL win
+lived in a toy domain with a WEAK base + large headroom. CLEAN cross-domain test REQUIRES a weaker GENERAL base (Qwen2.5-1.5B,
+not Math-Instruct) with real headroom — QUEUED on fresh nodes. HONEST READ so far: external validity of the coverage mechanism
+is IN DOUBT; it may be specific to high-headroom regimes. This LOWERS the ceiling unless the general-base re-run recovers it.
