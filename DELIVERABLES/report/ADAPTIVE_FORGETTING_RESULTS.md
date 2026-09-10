@@ -3975,3 +3975,13 @@ and "law/G-floor" claims remain demoted (§79). KEY CORRECTED STATISTIC: D_fail=
 are overwhelmingly ALL-FAIL. Consequence (honest, and it MOTIVATES the new direction): RFT is NOT density-immune on all-fail
 prompts — it has no positive example there either — so a RETAINED SOURCE that can still produce a verified success on those
 prompts is exactly what's needed. This reframes advantage-density from "why RL fails" to "why preserving a capable SOURCE matters."
+
+## §80 REFERENCE-TO-BEAT established + init-agnosticism (per reviewer)
+Base-to-base RFT (BASE init + base-authored bank, 4 seeds) = 0.545 [.527/.547/.553/.553] ≈ comp-init base-explorer 0.543.
+=> The primitive-SFT warm-start does NOT actually harm the FINAL recipient when RFT'ing on strong base-authored solutions
+(0.545 base-init ≈ 0.543 comp-init); the recipient init is nearly IRRELEVANT — it's the base-authored SOLUTION CONTENT that
+drives ~0.545 (base-DIRECT 0.40 → +0.145 via verified rejection-FT). RL-union authoring (0.352) ≪ 0.545. CONFIRMED reviewer
+points: (a) base-sampler+RFT (~0.545) is THE reference-to-beat; (b) RL-explorer/author advantage RETRACTED; (c) the earlier
+"crippled init" framing (§74c/§75) overstated — init barely matters at the endpoint. HONEST reference table (held-out compositions):
+  base+RFT 0.545 ≈ comp-init+base-bank 0.543 > base-direct 0.40 > RL-union 0.352 > SFT-on-comp 0.31 > primitive-SFT-init 0.247.
+The durable positive fact: VERIFIED REJECTION-FT ON A STRONG BASE SAMPLER (+0.145 over base) dominates on-policy RL and adapted-policy authoring for compositional transfer. This is the baseline any proposed source-preservation method (H1-H3) must beat.
