@@ -23,10 +23,17 @@ def main():
     for r,o in zip(rows,outs):
         t={"prog":r["prog"],"test_inputs":r["test_inputs"]}; s=sum(verify_solution(c.text,t) for c in o.outputs); ps.append(s/a.k)
     import statistics as st
-    G=a.G; dead=st.mean([p**G+(1-p)**G for p in ps])
+    from math import comb
+    G=a.G; K=a.k
+    counts=[round(p*K) for p in ps]
+    def unbiasedD(c): return (comb(c,G)+comb(K-c,G))/comb(K,G) if K>=G else float('nan')
+    dead=st.mean([unbiasedD(c) for c in counts])           # UNBIASED dead-group fraction
+    d_fail=st.mean([ (comb(K-c,G)/comb(K,G)) for c in counts])
+    d_succ=st.mean([ (comb(c,G)/comb(K,G)) for c in counts])
+    succ_mass=st.mean([p*G for p in ps])
     hist={f"{lo/10:.1f}-{(lo+1)/10:.1f}":sum(1 for p in ps if lo/10<=p<(lo+1)/10 or (lo==9 and p==1.0)) for lo in range(10)}
-    res={"tag":a.tag,"n":len(ps),"k":a.k,"G":G,"mean_p":st.mean(ps),"predicted_dead_frac":dead,"p_hist":hist}
+    res={"tag":a.tag,"n":len(ps),"k":a.k,"G":G,"mean_p":st.mean(ps),"dead_frac_unbiased":dead,"d_fail":d_fail,"d_success":d_succ,"success_mass_per_group":succ_mass,"counts":counts,"p_hist":hist}
     os.makedirs("/tmp/instance_storage/gu/eval_out",exist_ok=True)
     json.dump(res,open(f"/tmp/instance_storage/gu/eval_out/pcount_{a.tag}.json","w"),indent=2)
-    print(f"[pcount {a.tag}] mean_p={st.mean(ps):.3f} predicted_dead_frac(G={G})={dead:.3f} p_hist={hist}")
+    print(f"[pcount {a.tag}] mean_p={st.mean(ps):.3f} dead_unbiased={dead:.3f} d_fail={d_fail:.3f} d_succ={d_succ:.3f} p_hist={hist}")
 if __name__=="__main__": main()
