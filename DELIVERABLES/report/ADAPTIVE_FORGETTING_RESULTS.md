@@ -4286,3 +4286,41 @@ comp_repair, depth-7 frontier (base pass@k=0) recovery: 1.5B recovered 1/34 (3%)
 => The fraction of unreachable frontier problems that self-repair can recover GROWS sharply with model capability (3%->16%->40%),
 even as the frontier itself shrinks (bigger models leave fewer pass@k=0 problems: 34->25->10). Clean scaling trend: stronger models
 convert execution feedback into correct fixes far more often. Repair is a capability-gated ceiling-break (small at 1.5B, substantial at 14B).
+
+## §98 THEORY — the Headroom Bound for verified self-improvement (formal)
+SETUP. Problems x with verifier V(x,y)∈{0,1}. Sampler/policy π; k samples. Define the k-REACHABLE SUPPORT
+  R_k(π) = { x : Pr_{y~π(·|x)}[V(x,y)=1] > 0 }  (problems π solves with nonzero prob in k tries).
+A VERIFIED-RFT bank harvested from generator π0 is B(π0) = { (x, y) : x∈pool, y~π0, V(x,y)=1 } — by construction its
+prompt-support supp_x(B) ⊆ R_k(π0). Let U(θ; B) be the imitation (SFT/RFT) update: it minimizes E_{(x,y)~B}[-log π_θ(y|x)].
+
+ASSUMPTIONS. (A1) verified-only training: the learner sees positive traces only, drawn from B(π0). (A2) imitation is
+support-respecting: with no signal on x∉supp_x(B), the update does not systematically increase solve-probability on such x
+except through generalization G (a bounded, distribution-dependent transfer term). (A3) a fixed verifier and pool.
+
+THEOREM 1 (support-boundedness of one RFT round). For the RFT-updated policy π1 = U(θ; B(π0)),
+  R_k(π1) ⊆ R_k(π0) ∪ Gen(π0),   where Gen(π0) = generalization set (x∉R_k(π0) newly solved by transfer).
+I.e. a single verified-RFT round can only teach problems the generator ALREADY reaches, plus whatever generalizes; it cannot
+directly place mass on x that were pass@k=0 under π0. (Immediate from A1–A2: B carries zero gradient signal on x∉R_k(π0).)
+
+DEF (HEADROOM). For an OOD target set T with in-principle-solvable subset S⊆T, headroom H_k(π0;T) = |S \ R_k(π0)| / |S|
+= fraction of solvable OOD problems the generator cannot yet reach.
+
+COROLLARY 2 (headroom-gating of the coverage gain). The NEW-COVERAGE component of the OOD gain of iterated verified RFT is
+upper-bounded by reachable headroom: ΔAcc_newcov ≤ H_k(π0;T) · (per-problem transferable value). Hence as H_k→0 (strong base or
+easy/saturated domain) the new-coverage gain →0, while the WITHIN-support component (better/more-reliable solutions to already-
+reachable x) is unaffected. => two SEPARATE effects: within-support amplification (always present, small when saturated) and
+new-coverage expansion (present only under headroom). This is EXACTLY the measured dissociation (§97): compounding replicates in
+every dataset; the full≫blocked causal-coverage effect appears only at 1.5B-compositional (H large, +0.165) and vanishes at 3B/7B
+and in math/GSM8K (H≈0). The size×dataset curve (full−blocked: 1.5B +0.165 → 3B ~0 → 7B ~0) is the confirmation of Corollary 2.
+
+THEOREM 3 (why decomposition escapes the bound). Let π0^dec be the generator RESTRUCTURED by structured decomposition
+(solve-by-parts, each step within π0's reliable competence). Then R_k(π0^dec) ⊋ R_k(π0): composing reliably-solved subtasks
+reaches x that direct sampling never verifies (empirically §94: +8→40% of the pass@k=0 frontier, scaling with model). Distilling
+B(π0^dec) UNDER THE DIRECT PROMPT trains π_θ to emit the composed solution directly, so supp_x of the new bank exceeds R_k(π0):
+verified-RFT's support bound (Thm 1) is broken because the GENERATOR's reachable support was enlarged before harvesting.
+This is the mechanism of the §95/§95b positive result (dec-distill > rft-distill, +0.06/+0.02, gain ∝ headroom per Cor. 2).
+
+OPEN (the award-shaped claim, under test): the SELF-EXPANDING COVERAGE LOOP. If R_k(π_{t}^dec) grows each round —
+i.e. decomposition off a more-capable π_t reaches a strictly larger frontier than off π_{t-1} — then iterating decompose→distill
+expands reachable support super-linearly relative to plain RFT (which is trapped in R_k by Thm 1). Testing whether coverage COMPOUNDS
+across rounds under dec-distill vs plateaus under RFT (experiment running).
