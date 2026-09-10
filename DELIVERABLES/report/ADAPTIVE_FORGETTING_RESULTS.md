@@ -4335,3 +4335,25 @@ depth-7 ceiling (~0.87) by R2 while RFT needs 3 rounds and nearly catches up (R3
 a persistent per-round lead, NOT yet a cleanly DIVERGING self-expansion — because depth-7 OOD saturates for both. The strong
 "self-expanding" claim requires a HARDER eval (depth-8) where RFT cannot reach the ceiling and DEC's enlarged support should show a
 sustained gap. Depth-8 eval of both R3 models RUNNING.
+
+## §99b DEPTH-8 DIVERGENCE TEST — self-expanding loop does NOT diverge (honest negative for the strong claim)
+dec_r3 vs rft_r3 on depth-8 OOD: dec=0.810, rft=0.795 (+0.015). The DEC-over-RFT gap does NOT widen on harder eval (it is +0.015,
+similar to the R3 depth-7 gap). => The STRONG "self-expanding coverage loop" (a diverging, super-linear DEC advantage) is NOT supported:
+decomposition-distillation gives a persistent SMALL lead + faster convergence to the ceiling, not a runaway expansion. RFT is not trapped
+far below DEC. Honest downgrade of the award-shaped claim: decomposition-distillation is a REAL but MODEST positive method, not a
+qualitative capability unlock.
+
+## §93b/§95c 14B COMPLETES THE SCALING CURVES (confirms the theory; method shrinks with headroom)
+14B compositional P1: full=0.940, blocked=0.930, randrem=0.925 => coverage-causal NULL at 14B (+0.010). HEADROOM CURVE COMPLETE across
+FOUR sizes: full-blocked = 1.5B +0.165 -> 3B ~0 -> 7B ~0 -> 14B ~0. This is a clean 4-point confirmation of §98 Corollary 2 (headroom-gating):
+the new-coverage causal effect exists only at the weakest base and vanishes monotonically with capability.
+14B decomposition-distillation: rft=0.920, dec=0.935 (+0.015). Method gain vs scale: 1.5B +0.06, 7B +0.02, 14B +0.015 — POSITIVE at every
+scale but SHRINKING with headroom (consistent with Cor 2: less headroom -> less mass to place). 
+
+## §100 HONEST STANDING (post theory + scaling + loop)
+STRONG, award-grade parts: (1) a FORMAL headroom bound (§98 Thm1/Cor2/Thm3) with a clean 4-size confirming curve (§93b) and
+cross-dataset dissociation (§97); (2) RFT>>GRPO for OOD, +0.21, 3 seeds + learns-not-generalizes sanity (§91b-e); (3) a robust
+ceiling null-battery (repair/archive/delayed-value/escalation). MODEST parts: decomposition-distillation is a genuine positive method
+(+0.06->+0.015, dominates RFT every round §99) but does NOT diverge (§99b) — it does not deliver the qualitative "self-expanding"
+unlock. VERDICT: a strong, honest, theorem-backed empirical paper (solid main-track); NOT a best-paper/award unless the positive
+method is made larger/qualitative. The theory + 4-size curve is the most defensible, novel, memorable asset.
