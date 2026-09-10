@@ -4104,3 +4104,25 @@ CONSOLIDATED CLEAN STORY (P1+P2): the winning method is PLAIN CURRENT-ONLY itera
 because the improving sampler covers NEW problems (P1, +0.23 causal); retaining the base archive doesn't help (learner
 out-covers it) and dilutes on shared prompts (P2). Honest, coherent, controlled. Remaining shot at a NOVEL method = P3
 (select updates by next-generation teaching value); else current-only iterative RFT + the new-coverage mechanism is the endpoint.
+
+## §85 P3 NEXT-GENERATION TEACHING VALUE — NULL (no reversal; immediate acc suffices)
+Fresh-recipient assay: gen-2 banks discovered by a LOW-immediate source (P1blocked, imm=0.42, gen-2 coverage 296) vs a
+HIGH-immediate source (P1full, imm=0.65, gen-2 coverage 365); common fresh recipients trained on each gen-2 bank; J_next=depth-7 OOD acc (2 seeds).
+  J_next from Blocked-source (imm 0.42) = 0.690 [0.70, 0.68]
+  J_next from Full-source    (imm 0.65) = 0.817 [0.80, 0.833]
+Full-source's next-generation teaching value BEATS Blocked's, SAME ranking as immediate accuracy => NO reversal. Immediate
+accuracy is a sufficient statistic for selecting which update to iterate on; the reviewer's delayed-value-selection method (P3) NULLS.
+(Note: gen-2 recipients EXCEED their gen-1 sources: 0.42->0.69, 0.65->0.82 — self-training still climbing, consistent with §82b R4=0.798;
+but the source RANKING is monotone, so no objective-change win.) Mechanism: better solver -> broader coverage -> better next-gen source, monotone.
+
+## §85z CONSOLIDATED THREE-PROBE VERDICT (P1/P2/P3) — one clean positive, two honest nulls
+P1 (new-coverage causal): POSITIVE. full R3 bank 0.65 vs base-coverage-blocked 0.42 (+0.23) vs random-removal-matched 0.59 (+0.06 size).
+  => The improving sampler's gains are CAUSED by covering NEW problems, not by re-solving old ones or by data volume.
+P2 (selective archive / source-preservation): NULL. current-only 0.657 vs +archive-on-uncovered 0.637 (-0.02) vs archive-on-shared 0.607 (-0.05).
+  => Once the learner out-covers the base archive, retaining it does not help and mixing base solutions on shared prompts DILUTES.
+P3 (next-generation teaching value / delayed-value selection): NULL. J_next tracks immediate acc monotonically (Full 0.82 > Blocked 0.69).
+  => Immediate accuracy already ranks updates correctly for the next generation; no objective-change / reversal win.
+HONEST BOTTOM LINE: the durable, control-surviving contribution is PLAIN CURRENT-ONLY iterative verified RFT self-training
+(ReST-EM-adjacent), whose compounding is causally explained by NEW-PROBLEM COVERAGE (P1) and for which immediate accuracy is a
+sufficient iteration signal (P3); the fancier alternatives the reviewer proposed (source preservation P2, delayed-value selection P3)
+do NOT beat it. This is a rigorously-controlled study + a clean coverage mechanism, NOT a new award-caliber method.
