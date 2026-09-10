@@ -4145,3 +4145,27 @@ model cannot convert a concrete (input->got vs expected) mismatch into the corre
 limit (cf. §44/§45 operator mass-placing: RL/self-training reweight, cannot place OOD mass). Open: a stronger base (7B) may exploit
 feedback; not the small-model win we sought. Emerging honest arc: the ceiling is ROBUST — repair (§87), archive (§84b P2),
 delayed-value (§85 P3) all fail to break it; difficulty-escalation (manufacturing headroom) is the remaining candidate (running).
+
+## §88 FAIR CROSS-DOMAIN (MATH, weak general base Qwen2.5-1.5B-Instruct = real headroom)
+Iterative current-only verified RFT, math500 held-out pass@1 (n=500): R1(base+RFT)=0.468, R2=0.504, R3=0.513 (coverage 386->402->406).
+Matched-cost base-3x(k24)=0.467. => ITERATIVE COMPOUNDING REPLICATES IN MATH with headroom: R3 0.513 > matched-cost base3x 0.467 (+0.046),
+mirroring §82b. This VINDICATES discarding the Math-Instruct run (§86): the flatness there was a ceiling confound, not a refutation.
+BUT the P1 NEW-COVERAGE causal decomposition does NOT replicate in math: full=0.500 ~= blocked=0.493 ~= randrem=0.516 (all within noise).
+=> In math the compounding is NOT attributable to newly-covered problems (unlike compositional §84/§89); mechanism is domain-dependent
+(math gains likely come from better solutions to already-reachable problems). Honest: compounding generalizes; the SPECIFIC coverage mechanism does not.
+
+## §89 1000-PROBLEM PANEL — P1 coverage-causal REPLICATES at 5x scale (compositional)
+Fresh 1000-problem depth-5 train pool, depth-7 OOD eval (n=400). Coverage grows R1=549 -> R2=734 -> R3=866. Recipients:
+full(R3 bank)=0.790, blocked(base-covered only)=0.625, random-removal(size-matched)=0.795. full-blocked=+0.165 (new-coverage causal),
+full~=randrem (0.790 vs 0.795, NOT data volume). => The §84 P1 result is ROBUST at 5x scale with tight n=400 eval: NEWLY-COVERED
+problems causally drive the multi-round gain. Strongest single confirmation of the coverage mechanism.
+
+## §90 DIFFICULTY-ESCALATION (manufacture headroom) — PRELIMINARY positive, needs fixed-hard control
+Compositional, depth-8 OOD (n~300 via comp_eval). base=0.325; fixed-difficulty R3 (d5->d5->d5)=0.695; ESCALATION R3 (d5->d6->d7)=0.750
+(+0.055 over matched-compute fixed). => Escalation helps on the hardest OOD. CONFOUND (flagged, do not over-read): the fixed arm trained on
+d5 (far from d8) while escalation ended on d7 (close to d8), so the edge may be train-test PROXIMITY, not curriculum. FAIR control = fixed-HARD
+(d7->d7->d7, same final difficulty, matched compute); if escalation still beats fixed-d7 the gradual curriculum genuinely matters. QUEUED.
+
+## §91 RL-vs-RFT head-to-head (compositional, shared base+RFT start, depth-7 OOD)
+shared base+RFT start=0.555; RFT+ (one more current-only verified round)=0.745 (+0.190). GRPO arms (group/none) FAILED on first attempt
+(EADDRINUSE: two accelerate launches shared default port 29500) — RE-RUNNING with distinct --main_process_port. RFT+ result stands; GRPO pending.
