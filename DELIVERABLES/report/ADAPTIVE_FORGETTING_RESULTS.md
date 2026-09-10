@@ -3951,3 +3951,19 @@ predictive capstone, unusually rigorous controls. Weaknesses that block award-ti
 TIER: strong workshop / solid mid-conference as-is. AWARD PATH (concrete): D→gap curve at 8-12 points across Qwen/Llama/
 Gemma × {1.5B,7B,14B}; a tighter theorem (bound the transfer gap by D under stated assumptions); larger-effect regime;
 independent-seed CIs on every point; head-to-head vs PAC/SOAR/MaxRL(real). The theory is the right spine and it is honest — but it is not, by itself, a big award win yet.
+
+# ============================================================================
+# §79 THEORY CORRECTIONS (reviewer, 2026-09-10) — advantage-density claims §73-78 were flawed; corrected
+# ============================================================================
+The identity D_G=E_x[p^G+(1-p)^G] (zero-relative-advantage group fraction) is correct, BUT several §73-78 deductions were WRONG:
+1. BIASED ESTIMATOR: plugging p̂=c/K into p̂^G+(1-p̂)^G is UPWARD-BIASED for G>1. Unbiased (K≥G, IID) =
+   [C(c,G)+C(K-c,G)]/C(K,G) (fraction of G-subsets with uniform outcome). Example p=.1,G=8,K=16: TRUE D≈.430 vs plug-in≈.509.
+   => our reported D=0.686 (plug-in) is BIASED HIGH; must recompute from per-prompt counts with the unbiased estimator. (RE-MEASURING.)
+2. NO p=0 ATOM IDENTIFICATION: 0/16 successes gives 95% upper CL p≈.171, NOT p=0. So "D(8)≈D(∞)=extreme-mass floor" (§73b) is UNSUPPORTED — finite-K zero bins don't identify true atoms.
+3. G-SCALING: for fixed 0<p<1 both terms decay EXPONENTIALLY in G (not "polynomially"/"barely" as §73b claimed). Boundary mass changes the aggregate rate; needs assumptions.
+4. "RFT density-immune" (§72/§75) OVERCLAIM: RFT learns from all-success groups but has NO positive example from an all-fail group unless a SOURCE/replay supplies one. (This actually MOTIVATES the source-preservation direction.)
+5. "expected gradient ∝ live fraction": event frequency alone insufficient — conditional advantage magnitude/direction/normalization/optimizer matter.
+6. "3 domains establish a LAW" (§76): domain×transfer-structure CONFOUNDED, no independent predictive validation. It is a 3-point OBSERVATIONAL association, NOT a causal/universal law. Demote.
+7. D MERGES REGIMES: p=.05 and p=.95 give SAME D(8)=.663 but success-mass .4 vs 7.6/group. Keep D_fail=E[(1-p)^G], D_success=E[p^G], and success-mass SEPARATELY.
+8. The .050/.020/.018 effects (§72) are contrasts from DIFFERENT comparisons — NOT an additive decomposition of the .076 union effect. Retract the "decomposition" framing.
+STATUS: advantage-density is a useful DIAGNOSTIC (dead groups, cf. AERO/RL-ZVP), NOT the central novelty. Re-measuring unbiased D_G + D_fail/D_success/success-mass; demoting §76 "law" to observational.
