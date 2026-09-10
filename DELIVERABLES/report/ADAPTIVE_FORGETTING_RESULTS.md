@@ -4241,3 +4241,9 @@ Combined with 1.5B §95 (+0.060): decomposition-distillation is POSITIVE at BOTH
 scales); (2) distilling those recovered solutions back into the DIRECT single-shot policy expands single-shot OOD coverage beyond the
 verified-RFT ceiling (§95/§95b: +0.06/+0.02). This is the award-relevant contribution sitting on top of the coverage characterization +
 the RFT>>GRPO result + the headroom scaling law.
+
+## §91e MATH RL-vs-RFT (cross-domain of the headline) — same direction, headroom-limited magnitude
+Fair math (Qwen2.5-1.5B-Instruct), math500 pass@1: shared base+RFT=0.468, RFT+=0.489 (+0.021), GRPO(group)=0.474 (+0.006).
+=> RFT+ > GRPO in MATH too (directional replication of §91b), but both gains are SMALL vs the compositional +0.21 — because math
+has less coverage headroom for this base (§93 law). Consistent unified picture: RFT beats GRPO for OOD wherever coverage can expand,
+and the size of that advantage tracks headroom. (grpo-none math eval shard incomplete; group suffices for the comparison.)
