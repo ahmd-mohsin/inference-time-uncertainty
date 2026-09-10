@@ -4280,3 +4280,9 @@ UNIFIED, VERIFIED PICTURE (two distinct effects, do not conflate):
       as capability/ease removes headroom. Headroom curve (compositional full-blocked): 1.5B +0.165 -> 3B ~0 -> 7B ~0.
 This is the honest, well-verified scaling boundary: self-training always amplifies reachable coverage (A), but only expands into NEW
 problems where headroom exists (B). (14B P1/repair/decomp-distill + code-domain RFT running to complete the matrix.)
+
+## §92b SELF-REPAIR ceiling-break RATE scales strongly with model size (1.5B->7B->14B)
+comp_repair, depth-7 frontier (base pass@k=0) recovery: 1.5B recovered 1/34 (3%), 7B 4/25 (16%), 14B 4/10 (40%).
+=> The fraction of unreachable frontier problems that self-repair can recover GROWS sharply with model capability (3%->16%->40%),
+even as the frontier itself shrinks (bigger models leave fewer pass@k=0 problems: 34->25->10). Clean scaling trend: stronger models
+convert execution feedback into correct fixes far more often. Repair is a capability-gated ceiling-break (small at 1.5B, substantial at 14B).
