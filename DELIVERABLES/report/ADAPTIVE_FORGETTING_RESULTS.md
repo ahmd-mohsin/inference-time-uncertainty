@@ -4199,3 +4199,11 @@ unreachable problems, and both scale with model capability. Decomposition is the
 test): does DISTILLING the decomposition-recovered solutions into a single-shot policy make the model solve those frontier problems
 DIRECTLY (internalize the capability past the sampling ceiling)? If yes, decomposition-distillation genuinely expands single-shot coverage
 beyond verified-RFT's limit. Distillation confirmation QUEUED.
+
+## §91b RL-vs-RFT head-to-head COMPLETE (compositional, shared base+RFT start, depth-7 OOD)
+From an IDENTICAL shared base+RFT checkpoint (0.555): RFT+ (one more current-only verified round)=0.745 (+0.190);
+GRPO scale-rewards=group (std-normalized)=0.555 (+0.000); GRPO scale-rewards=none (R-mean = R-p_hat, MaxRL-flavored)=0.580 (+0.025).
+=> VERIFIED RFT DRAMATICALLY BEATS GRPO for OOD generalization from a shared start (+0.19 vs +0.00-0.03). GRPO barely moves off
+the checkpoint while RFT+ jumps. Mechanistically consistent with the coverage story: RFT expands coverage (solves/distills NEW
+problems), GRPO only reweights already-reachable mass (matches §44/§45 mass-placing and the SFT>GRPO OOD result). This is the
+reviewer's demanded RL-vs-RFT comparison, matched-checkpoint and matched-steps; it favors verified RFT decisively for coverage-driven OOD.
