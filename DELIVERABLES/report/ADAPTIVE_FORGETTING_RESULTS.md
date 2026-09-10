@@ -4134,3 +4134,14 @@ so its results are DISCARDED rather than reported as a null — a flat number fr
 The FAIR cross-domain test uses a WEAK GENERAL base (Qwen2.5-1.5B, low math pass@1 = real headroom), matched compute, same
 current-only iterative-RFT + new-coverage controls as §84 P1. RUNNING on fresh nodes; only this fair comparison will be reported.
 (Working principle: when a comparison is confounded/unfair, re-run it fairly — do not bank the confounded outcome. [[rl-discard-unfair-comparisons]])
+
+## §87 SELF-REPAIR DISTILLATION (break the coverage ceiling) — NEGATIVE at 1.5B
+Flagship out-of-the-box attempt to break the fundamental verified-RFT limit (can only amplify pass@k>0 coverage, cannot
+place mass on pass@k=0 problems). Method (comp_repair.py): for each base pass@k=0 "frontier" problem, run execute->feedback
+->repair (concrete input/got/expected fed back, up to 4-6 turns), then distill any RECOVERED solution as a clean single-shot target.
+RESULT (Qwen2.5-Coder-1.5B-Instruct, compositional): depth-7 recovered 1/34 frontier; depth-6 recovered 1/60 frontier (noise-level,
+constant ~1 across difficulty). => Self-repair with exact execution feedback does NOT break the coverage ceiling at 1.5B: the small
+model cannot convert a concrete (input->got vs expected) mismatch into the correct pipeline ordering. REINFORCES the coverage-bound
+limit (cf. §44/§45 operator mass-placing: RL/self-training reweight, cannot place OOD mass). Open: a stronger base (7B) may exploit
+feedback; not the small-model win we sought. Emerging honest arc: the ceiling is ROBUST — repair (§87), archive (§84b P2),
+delayed-value (§85 P3) all fail to break it; difficulty-escalation (manufacturing headroom) is the remaining candidate (running).
