@@ -4265,3 +4265,18 @@ HONEST FRAMING: pillars 1-3 are a rigorous CHARACTERIZATION of the limits of ver
 (if modest, headroom-bounded) POSITIVE METHOD on top. Together: "verified self-improvement is coverage-bound; we characterize the
 bound (causal, headroom-scaled, RFT>GRPO, repair/archive/escalation can't break it) and give a method — decomposition-distillation —
 that provably places-and-internalizes mass past it." (3B headroom-curve midpoint pending.)
+
+## §97 DIVERSE-DATASET + 3B VERIFICATION — separates two effects; coverage-CAUSAL is headroom-gated
+Added GSM8K (easy math) and a 3B compositional point to the size×dataset matrix. Findings:
+- GSM8K (Qwen2.5-1.5B-Instruct, pass@1 n=1319): iterative R1=0.616 R2=0.637 R3=0.652; matched-cost base-3x=0.614 => iterative
+  COMPOUNDING replicates (+0.038 R3 vs base3x). P1 controls: full=0.662, blocked=0.654, randrem=0.646 => coverage-CAUSAL NULL (full~=blocked).
+- 3B compositional P1 (d5 train, d7 OOD): full=0.885, blocked=0.890, randrem=0.890 => coverage-CAUSAL NULL at 3B (like 7B §93).
+UNIFIED, VERIFIED PICTURE (two distinct effects, do not conflate):
+  (A) ITERATIVE COMPOUNDING (R3 > matched-cost base-3x): replicates in EVERY dataset — compositional (large), math +0.046 (§88),
+      GSM8K +0.038. Robust, domain-general, but small where coverage saturates.
+  (B) NEW-COVERAGE CAUSAL EFFECT (full >> coverage-blocked): appears ONLY under substantial headroom = weak base (1.5B) + hard domain
+      (compositional depth-7): +0.165 (§89). NULL at 3B, 7B (§93), and in math/GSM8K (easy or saturated). => The causal-coverage
+      mechanism is HEADROOM-GATED: it is real and large exactly when the base cannot already reach most solvable problems, and vanishes
+      as capability/ease removes headroom. Headroom curve (compositional full-blocked): 1.5B +0.165 -> 3B ~0 -> 7B ~0.
+This is the honest, well-verified scaling boundary: self-training always amplifies reachable coverage (A), but only expands into NEW
+problems where headroom exists (B). (14B P1/repair/decomp-distill + code-domain RFT running to complete the matrix.)
