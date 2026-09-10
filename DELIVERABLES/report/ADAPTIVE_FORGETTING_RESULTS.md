@@ -4184,3 +4184,18 @@ full-blocked=+0.165. => The new-coverage causal effect VANISHES at 7B because th
 **the coverage mechanism's magnitude is proportional to available coverage HEADROOM.** Weak base + hard domain -> large gain;
 strong base or easy domain -> none. This is the clean, quantifiable, honest scaling boundary of verified self-improvement:
 self-training amplifies reachable coverage, and there is only something to amplify when headroom exists.
+
+## §90b ESCALATION vs FAIR CONTROL (fixed-hard d7) — ESCALATION NULLS
+Depth-8 OOD: base=0.325, fixed-d5(d5->d5->d5)=0.695, ESCALATION(d5->d6->d7)=0.750, fixed-HARD(d7->d7->d7)=0.770.
+=> fixed-d7 (0.770) BEATS escalation (0.750). The §90 escalation "+0.055 over fixed-d5" was exactly the train-test PROXIMITY
+confound flagged there (d7 train closer to d8 eval than d5), NOT a curriculum benefit. FAIR verdict: difficulty escalation does
+NOT beat simply training on the hardest available difficulty. Manufacturing-headroom-via-curriculum NULLS. (Add to the ceiling-break
+null battery: repair §87, archive §84b, delayed-value §85, escalation §90b.)
+
+## §94 DECOMPOSITION BOOTSTRAPPING — best ceiling-break, scales with model (still modest)
+comp_decompose (implement each pipeline step as a helper, then compose) on base pass@k=0 frontier problems, depth-7:
+1.5B recovered 4/49 (8%); 7B recovered 6/21 (29%). vs self-repair: 1.5B 3%, 7B 16%. => DECOMPOSITION > REPAIR for placing mass on
+unreachable problems, and both scale with model capability. Decomposition is the strongest ceiling-break route found. OPEN (the award
+test): does DISTILLING the decomposition-recovered solutions into a single-shot policy make the model solve those frontier problems
+DIRECTLY (internalize the capability past the sampling ceiling)? If yes, decomposition-distillation genuinely expands single-shot coverage
+beyond verified-RFT's limit. Distillation confirmation QUEUED.
