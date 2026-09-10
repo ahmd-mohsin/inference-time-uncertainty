@@ -4324,3 +4324,14 @@ OPEN (the award-shaped claim, under test): the SELF-EXPANDING COVERAGE LOOP. If 
 i.e. decomposition off a more-capable π_t reaches a strictly larger frontier than off π_{t-1} — then iterating decompose→distill
 expands reachable support super-linearly relative to plain RFT (which is trapped in R_k by Thm 1). Testing whether coverage COMPOUNDS
 across rounds under dec-distill vs plateaus under RFT (experiment running).
+
+## §99 SELF-EXPANDING COVERAGE LOOP (dec-distill vs RFT, 3 rounds, 1.5B, depth-7) — DEC dominates every round; depth-8 divergence test pending
+ReST-EM reset each round; generator = previous round's model; depth-7 OOD single-shot.
+  DEC (decompose->distill): R1 cov214/ood0.640, R2 cov349/ood0.865, R3 cov370/ood0.870
+  RFT (verified->distill):  R1 cov180/ood0.605, R2 cov293/ood0.735, R3 cov337/ood0.855
+=> DEC STRICTLY DOMINATES RFT at EVERY round on both coverage and OOD (Thm 3: decomposition enlarges the generator's reachable
+support each round, so the harvested bank exceeds RFT's support-bound Thm 1). Largest gap mid-training (R2 +0.130); DEC reaches the
+depth-7 ceiling (~0.87) by R2 while RFT needs 3 rounds and nearly catches up (R3 gap +0.015). HONEST: this is faster-ceiling-approach +
+a persistent per-round lead, NOT yet a cleanly DIVERGING self-expansion — because depth-7 OOD saturates for both. The strong
+"self-expanding" claim requires a HARDER eval (depth-8) where RFT cannot reach the ceiling and DEC's enlarged support should show a
+sustained gap. Depth-8 eval of both R3 models RUNNING.
