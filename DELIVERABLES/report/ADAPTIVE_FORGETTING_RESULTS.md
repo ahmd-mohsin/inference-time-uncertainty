@@ -4417,3 +4417,15 @@ records; SFT/eval costs are equal across arms so the differential is entirely in
 per-call TOKEN INSTRUMENTATION (prompt+completion tokens, execution/verification calls) and report accuracy vs measured total tokens.
 Until then, decomposition-distillation stands as a SMALL final-accuracy gain (+0.015, §99b) of UNKNOWN cost-efficiency — not an
 established speedup. This directly answers the review's "efficiency passes only if the gain survives all acquisition costs": not yet shown.
+
+## §103 E1 ORACLE DIAGNOSTIC — bottleneck is LOCAL COMPONENT GENERATION, not composition (closes E2 for this domain)
+1.5B, depth-7, n=300: base observed-zero-success cohort at k=8 = 160/300. Giving the CORRECT per-primitive code (oracle components;
+wiring/order already in the prompt) and asking only to compose: recovery = 160/160 = **100%**. => In the linear-pipeline domain,
+COMPOSITION/ASSEMBLY IS TRIVIAL — the entire frontier difficulty is writing correct per-step code. Per the review's gate ("if local
+computations remain the dominant error after supplying structure, invest in local solving; do not assert an interface intervention is the
+bottleneck"), the RECOMPOSITION method (E2, teaching dependency/interface relationships) is NOT WARRANTED here: there is no composition
+error to fix. MECHANISM of §95 decomposition-distillation is therefore RE-READ: it helps by scaffolding correct LOCAL component generation
+(then trivial composition), NOT by teaching transferable composition. IMPLICATION: the synthetic linear domain cannot even TEST the
+composition-transfer hypothesis (composition is free). Testing it requires a NON-LINEAR (DAG/branching/intermediate-reuse) domain where
+oracle-components does NOT give ~100%. Honest scoping result: E2-as-composition-teaching is closed in the linear domain; a structured
+domain is a prerequisite to pose the question at all.
