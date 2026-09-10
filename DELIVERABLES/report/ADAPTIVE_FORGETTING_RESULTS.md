@@ -4439,3 +4439,14 @@ composition is free. Decomposition-distillation (§95) is confirmed to be a LOCA
 transferable composition at all requires a genuinely NON-LINEAR domain (DAG dependencies, branching, shared-intermediate reuse) where
 oracle-components does NOT saturate at 100%. This reframes the paper's honest scope: the compositional testbed measures coverage/local-
 solving, not composition; claims about "teaching composition" are out of scope until a structured domain shows a composition bottleneck.
+
+## §104 E0-PROPER (token-instrumented) — decomposition-distillation is NOT an efficiency win (efficiency reframing FAILS)
+Real per-phase tokens (1.5B, depth-7, n=400, k=8): DIRECT phase (= one RFT round) = 161,601 prompt + 825,195 completion = 986,796 tok
+(3200 samples, ~258 completion tok/sample). DECOMPOSE phase = 111,974 + 972,822 = 1,084,796 tok (1832 samples, ~531 tok/sample —
+decompose completions ~2x longer). => DEC round = direct + decompose = 2.07M tok = 2.10x an RFT round. Cost-to-fixed-accuracy (using
+loop frontier 212/102/47 and measured per-sample rates): RFT reaches 0.855 at ~2.96M cumulative tok; DEC reaches 0.865 at ~3.31M
+(1.12x MORE) and 0.870 at ~4.49M (1.52x MORE). VERDICT: the §102 ambiguity is RESOLVED on the pessimistic side — decomposition-
+distillation costs ~1.1-1.5x MORE tokens to reach comparable accuracy; it is a SMALL ACCURACY GAIN (+0.015, §99b) at HIGHER cost, NOT a
+speedup. The round-2 "lead" (§99) was an artifact of not charging decompose tokens. Combined with §103b (composition never the bottleneck),
+the honest standing of decomposition-distillation: a modest accuracy improvement acting as a LOCAL-SOLVING SCAFFOLD, at above-baseline cost —
+neither a composition teacher nor an efficiency method. E1 @ 14B: 26/26 (100%) oracle-component recovery — composition trivial at 1.5B/7B/14B.
