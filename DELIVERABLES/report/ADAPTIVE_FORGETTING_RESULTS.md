@@ -3985,3 +3985,18 @@ points: (a) base-sampler+RFT (~0.545) is THE reference-to-beat; (b) RL-explorer/
 "crippled init" framing (§74c/§75) overstated — init barely matters at the endpoint. HONEST reference table (held-out compositions):
   base+RFT 0.545 ≈ comp-init+base-bank 0.543 > base-direct 0.40 > RL-union 0.352 > SFT-on-comp 0.31 > primitive-SFT-init 0.247.
 The durable positive fact: VERIFIED REJECTION-FT ON A STRONG BASE SAMPLER (+0.145 over base) dominates on-policy RL and adapted-policy authoring for compositional transfer. This is the baseline any proposed source-preservation method (H1-H3) must beat.
+
+## §81 H3 COMPLEMENTARITY — POSITIVE (first live signal in the source-preservation direction)
+Held-out evalC, recipients from base, 4 seeds, vs base-source reference 0.545:
+| source bank | held-out | vs base |
+|-------------|----------|---------|
+| base (B, 225)                 | 0.545 [.527/.547/.553/.553] | — |
+| F = RFT-improved ckpt (290)   | 0.585 [.593/.580/.580/.587] | +0.040 |
+| B∪F complementarity (300)     | 0.610 [.600/.620/.613/.607] | +0.065 (and +0.025 over F alone) |
+TWO signals: (1) the RFT-improved checkpoint F authors BETTER-transferring verified solutions than base (+0.040) — one round
+of SOURCE self-improvement; (2) B∪F beats BOTH base and F alone — combining the ORIGINAL and IMPROVED sources > either single
+source = the COMPLEMENTARITY precondition for source-preservation (base and improved-ckpt solve/author complementary prompts).
+Tight non-overlapping CIs. CAVEATS (must clear before claiming, per reviewer H3): B∪F (300) is LARGER than base(225)/F(290) —
+SIZE confound; running (a) count-MATCHED B∪F (cap to F's size) and (b) matched-COST frozen-base (2x base sampling). If B∪F
+still beats F at matched size AND 2x-base doesn't catch up → genuine complementarity, motivating multi-round source-preserving
+self-training: round t source = {π0 ∪ π_t}, RFT. This is the reviewer's proposed method with its precondition now supported.
