@@ -4469,3 +4469,23 @@ almost nothing: the model FAILS TO WIRE the data-flow even with the pieces. COMP
 This is the missing prerequisite: the review's recomposition hypothesis (teach dependency/interface relationships) is now TESTABLE and
 WARRANTED in the DAG domain. Launching E2: does training on verified RECOMPOSED variants (rewired dependencies) teach composition that
 transfers to unseen DAG wiring, beyond plain RFT / random augmentation? Also checking whether the composition bottleneck is scale-robust (E1-DAG @ 7B).
+
+## §107 E2 RECOMPOSITION — FALSIFIED (recomposition hurts; plain reference distillation wins)
+DAG domain, held-out unseen wiring (n=200, k=4), all SFT from base (1.5B): arm B (straight reference solutions)=0.83,
+arm C (refs + random extra DAGs, matched count)=0.81, arm F (refs + RECOMPOSED variants: same ops, rewired dependencies)=0.77.
+=> F is WORST. Training on rewired-dependency variants does NOT teach transferable composition — it DEGRADES held-out accuracy
+below both plain refs and random augmentation. The review's recomposition hypothesis is FALSIFIED in the DAG domain: interface/
+dependency interventions do not help; the clean reference-distillation signal (B) is best, and adding variety (C) or rewired
+interventions (F) only dilutes it. HONEST CLOSURE: there is no positive recomposition method here. (Possible reasons: rewired variants
+add harder/degenerate targets; the model learns wiring fine from straight refs; the intervention adds noise not signal.)
+
+## §107b E1-DAG @ 7B — composition bottleneck is CAPABILITY-GATED
+DAG oracle-components recovery: 1.5B = 27/272 (9.9%), 7B = 59/112 (52.7%). Frontier shrinks (272->112) AND wiring competence rises
+(9.9%->52.7%) with scale. => composition/wiring difficulty in the DAG domain is capability-gated: severe at 1.5B, moderate at 7B.
+Composition IS a genuine bottleneck (unlike linear), but it diminishes with model size like every other effect measured here.
+
+## §105b HEADROOM depth-14 @ 7B — coverage-causal effect partially RETURNS with real headroom
+depth-14 (7B now covers only R1=233/400 = 58% => real headroom): full=0.605, blocked=0.585, randrem=0.600 => full-blocked=+0.020.
+vs depth-9 @7B (79% coverage): null. => The new-coverage causal effect PARTIALLY returns once strong models face genuine headroom,
+leaning toward HEADROOM-GATED over weak-model-specific — but the effect is much smaller at 7B (+0.020) than 1.5B (+0.165), so it is
+both headroom-gated AND weak-model-amplified. (14B depth-14 running.)
