@@ -4063,3 +4063,20 @@ a MIXED-then-current history. Also (reviewer theory fix): base-3x plateau suppor
 current dominates at equal cost. CORRECTIVE PLAN: run CLEAN INDEPENDENT trajectories (each round samples from its OWN ancestor):
 (A) always-current, (B) always-mix, (C) mix-once-then-current; + a MATCHED-ROUND frozen-base control (base sampler all rounds,
 accumulate, RFT) at equal stages/cost; on a FROZEN FRESH structural-OOD test (depth-7, unseen depth) — evalC is now DEV-ONLY.
+
+## §83b CLEAN CORRECTED RESULT — always-current self-training compounds on FRESH depth-7 OOD, beats matched-round frozen-base
+Strict always-current lineage (each round samples its OWN ancestor, recipient reset to base = ReST-EM), matched-round
+frozen-base control (base sampler all rounds, accumulate, RFT), eval on FROZEN depth-7 OOD (unseen greater depth, 0 train overlap, dev-only evalC retired):
+| round | always-current | frozen-base (matched-round) |
+|-------|----------------|-----------------------------|
+| R1 | 0.400 | 0.427 |
+| R2 | 0.453 | 0.433 |
+| R3 | 0.667 | 0.487 |
+Always-current COMPOUNDS 0.40→0.667 (+0.267); frozen-base SATURATES 0.427→0.487 (+0.06). R3 gap = +0.180 at matched
+rounds/cost. R1 sanity: current≈frozen (identical base sampler), then current pulls away monotonically. This is the CORRECTED,
+CLEAN version of the §82b finding — it survives (a) clean always-current ancestry (no mixed splice), (b) a FRESH structural-OOD
+test (depth-7, unseen depth), (c) a matched-ROUND frozen-base control. => The improving sampler compounds via genuine
+self-improvement; a frozen sampler saturates even with matched rounds/accumulation. Generalizes to HARDER structural OOD
+(depth-7, lower absolute than depth-5 evalC's 0.545→0.798, same pattern). This is the durable, control-surviving POSITIVE core.
+NEXT (reviewer P1/P2/P3): P1 — do NEWLY-COVERED problems cause the gain (vs solution content / more practice)? bank interventions.
+P2 — selective archive use (only where current fails). P3 — select updates by next-generation teaching value (higher-upside).
