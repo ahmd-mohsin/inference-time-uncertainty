@@ -4402,3 +4402,18 @@ generalization is real). (b) The 4-size curve shows the intervention effect CHAN
 proven universal monotonic law; the matrix is SPARSE (composition 4 sizes; math fewer; GSM8K 1; code not yet usable) — describe populated
 cells + uncertainty, not "16 replications". (c) Reframe the decomposition contribution as a COST-to-fixed-accuracy question (the underused
 round-2 0.865 > round-3-RFT 0.855 signal), contingent on charging decomposition's extra acquisition cost. (d) No runaway self-improvement claim.
+
+## §102 E0 COST ACCOUNTING (reviewer priority #2) — decomposition efficiency is UNRESOLVED (token-instrumented rerun required)
+Per-round generation samples: RFT = n·k = 400·8 = 3200 (@≤1024 tok). DEC = 3200 (direct pass@k) + frontier·k_decomp decompose
+samples (@≤2048 tok). Loop frontier/round = 212/102/47 (from dec bank stats). Cumulative-cost vs OOD (1024-tok-sample units):
+  RFT: (3200,0.605) (6400,0.735) (9600,0.855)
+  DEC @2x decompose length: (6592,0.640) (11424,0.865) (15376,0.870)
+  DEC @1x length:           (4896,0.640) (8912,0.865)  (12488,0.870)
+COST-TO-FIXED-ACCURACY (~0.855-0.87): RFT reaches 0.855 at 9600. DEC reaches 0.865 at 11424 (1.19x MORE, NO win) if decompose
+completions are ~2x longer, OR at 8912 (0.93x, marginal win) if equal length. => The round-2 "lead" (0.865 > RFT-round-3 0.855, §99)
+does NOT robustly survive cost accounting: whether decomposition is cheaper-to-accuracy HINGES on decompose-completion token length,
+which was NOT logged (max_tokens 2048 vs 1024 is only an upper bound). HONEST VERDICT: the efficiency claim is UNDETERMINED with current
+records; SFT/eval costs are equal across arms so the differential is entirely in generation. REQUIRED (proper E0): rerun the loop with
+per-call TOKEN INSTRUMENTATION (prompt+completion tokens, execution/verification calls) and report accuracy vs measured total tokens.
+Until then, decomposition-distillation stands as a SMALL final-accuracy gain (+0.015, §99b) of UNKNOWN cost-efficiency — not an
+established speedup. This directly answers the review's "efficiency passes only if the gain survives all acquisition costs": not yet shown.
