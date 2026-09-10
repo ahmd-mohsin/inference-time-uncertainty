@@ -4127,13 +4127,10 @@ HONEST BOTTOM LINE: the durable, control-surviving contribution is PLAIN CURRENT
 sufficient iteration signal (P3); the fancier alternatives the reviewer proposed (source preservation P2, delayed-value selection P3)
 do NOT beat it. This is a rigorously-controlled study + a clean coverage mechanism, NOT a new award-caliber method.
 
-## §86 CROSS-DOMAIN (MATH) REPLICATION of the P1 coverage mechanism — FLAT (ceiling-effect confound)
-Ported the current-only iterative verified RFT + new-coverage design to MATH (base Qwen2.5-Math-1.5B-Instruct,
-n=800 MATH-train, k=8, eval math500 held-out via evaluate_passk shards). Coverage: R1=444 R2=456 R3=457; base3x(k24)=470.
-math500 pass@1: R1=0.707, R2=0.715, R3=0.704 (pass@4: 0.824/0.826/0.816). => ITERATIVE SELF-TRAINING GIVES ~NOTHING in math:
-pass@1 flat/noisy across rounds, coverage barely grows (444->457), matched-cost base-3x covers MORE (470).
-CONFOUND (important, do not over-read as refutation): the base is ALREADY math-instruction-tuned (0.707 base pass@1) => no
-headroom for a "cover new problems" mechanism; the base already covers nearly everything it can at k=8. The COMPOSITIONAL win
-lived in a toy domain with a WEAK base + large headroom. CLEAN cross-domain test REQUIRES a weaker GENERAL base (Qwen2.5-1.5B,
-not Math-Instruct) with real headroom — QUEUED on fresh nodes. HONEST READ so far: external validity of the coverage mechanism
-is IN DOUBT; it may be specific to high-headroom regimes. This LOWERS the ceiling unless the general-base re-run recovers it.
+## §86 CROSS-DOMAIN (MATH) REPLICATION — fair test pending (confounded run DISCARDED)
+A first math port used base Qwen2.5-Math-1.5B-INSTRUCT — but that base is ALREADY math-instruction-tuned (~0.71 pass@1),
+so there is NO coverage headroom and a "new-coverage" mechanism CANNOT be exercised. That is an UNFAIR test (ceiling effect),
+so its results are DISCARDED rather than reported as a null — a flat number from a rigged comparison would mislead.
+The FAIR cross-domain test uses a WEAK GENERAL base (Qwen2.5-1.5B, low math pass@1 = real headroom), matched compute, same
+current-only iterative-RFT + new-coverage controls as §84 P1. RUNNING on fresh nodes; only this fair comparison will be reported.
+(Working principle: when a comparison is confounded/unfair, re-run it fairly — do not bank the confounded outcome. [[rl-discard-unfair-comparisons]])
