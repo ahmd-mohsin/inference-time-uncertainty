@@ -4094,3 +4094,13 @@ VERDICT: NEWLY-COVERED problems (the ~105 the improving sampler reaches that bas
 (random-removal only −0.06). This is the reviewer's P1/H1 with the required removal control. MECHANISM CLOSED: frozen-base
 SATURATES because it cannot cover new problems (§82b/§83b); the improving sampler compounds by continually covering NEW problems;
 removing that new coverage removes the gain. A specific, causal bank-contribution finding (NOT the retracted sparse-bridge — this is a broad 105-problem coverage effect).
+
+## §84b P2 SELECTIVE-ARCHIVE — NULL (current-only wins; archive doesn't help + dilutes)
+Depth-7 OOD, 2 seeds: current-only(325)=0.657 | +archive-on-uncovered(333,+8)=0.637 (−0.020) | archive-on-shared(dilution)=0.607 (−0.050).
+By R3 the improving learner covers all but 8 of the base archive's prompts, so archive adds ~nothing (−0.02) and replacing
+current solutions with base solutions on shared prompts DILUTES (−0.05). => Reviewer's source-PRESERVATION method (P2) NULLS:
+selective archive does not beat current-only once the learner out-covers the archive; the §82 crossover mechanism (dilution) confirmed.
+CONSOLIDATED CLEAN STORY (P1+P2): the winning method is PLAIN CURRENT-ONLY iterative verified RFT self-training; it compounds
+because the improving sampler covers NEW problems (P1, +0.23 causal); retaining the base archive doesn't help (learner
+out-covers it) and dilutes on shared prompts (P2). Honest, coherent, controlled. Remaining shot at a NOVEL method = P3
+(select updates by next-generation teaching value); else current-only iterative RFT + the new-coverage mechanism is the endpoint.
