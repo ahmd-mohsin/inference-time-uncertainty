@@ -3967,3 +3967,11 @@ The identity D_G=E_x[p^G+(1-p)^G] (zero-relative-advantage group fraction) is co
 7. D MERGES REGIMES: p=.05 and p=.95 give SAME D(8)=.663 but success-mass .4 vs 7.6/group. Keep D_fail=E[(1-p)^G], D_success=E[p^G], and success-mass SEPARATELY.
 8. The .050/.020/.018 effects (§72) are contrasts from DIFFERENT comparisons — NOT an additive decomposition of the .076 union effect. Retract the "decomposition" framing.
 STATUS: advantage-density is a useful DIAGNOSTIC (dead groups, cf. AERO/RL-ZVP), NOT the central novelty. Re-measuring unbiased D_G + D_fail/D_success/success-mass; demoting §76 "law" to observational.
+
+## §80b CORRECTED D (unbiased) + the statistic that matters
+Unbiased subset-estimator D(8) ≈ 0.727 (vs plug-in ~0.748; measured plug-in was 0.686) — the bias correction is MODEST
+because mass sits at the boundaries; the DIAGNOSTIC (GRPO signal-starved on compositions, high D) holds, but the exact-number
+and "law/G-floor" claims remain demoted (§79). KEY CORRECTED STATISTIC: D_fail=0.608 ≫ D_success=0.119 — GRPO's dead groups
+are overwhelmingly ALL-FAIL. Consequence (honest, and it MOTIVATES the new direction): RFT is NOT density-immune on all-fail
+prompts — it has no positive example there either — so a RETAINED SOURCE that can still produce a verified success on those
+prompts is exactly what's needed. This reframes advantage-density from "why RL fails" to "why preserving a capable SOURCE matters."
