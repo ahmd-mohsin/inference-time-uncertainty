@@ -4080,3 +4080,17 @@ self-improvement; a frozen sampler saturates even with matched rounds/accumulati
 (depth-7, lower absolute than depth-5 evalC's 0.545→0.798, same pattern). This is the durable, control-surviving POSITIVE core.
 NEXT (reviewer P1/P2/P3): P1 — do NEWLY-COVERED problems cause the gain (vs solution content / more practice)? bank interventions.
 P2 — selective archive use (only where current fails). P3 — select updates by next-generation teaching value (higher-upside).
+
+## §84 P1 CAUSAL TEST — NEW COVERAGE causally drives the compounding (clean, with removal control)
+Depth-7 OOD, recipients from base, 2 seeds, R3 improved-source bank interventions:
+| bank | acc | |
+|------|-----|--|
+| full R3 (325, new+old coverage)                 | 0.650 [.653/.647] | reference |
+| BLOCKED to base-coverage (220, improved SOLUTIONS, no new problems) | 0.420 [.420/.420] | −0.230 |
+| random-removal matched (220)                    | 0.590 [.580/.600] | −0.060 (size only) |
+full − blocked = +0.230 (removing NEW-COVERAGE prompts collapses to ≈base-level 0.40); full − random-removal = +0.060 (size).
+VERDICT: NEWLY-COVERED problems (the ~105 the improving sampler reaches that base cannot) CAUSALLY drive the multi-round gain
+— NOT better solutions to familiar problems (blocked, same-prompts improved solutions ≈ base 0.42) and NOT mere data volume
+(random-removal only −0.06). This is the reviewer's P1/H1 with the required removal control. MECHANISM CLOSED: frozen-base
+SATURATES because it cannot cover new problems (§82b/§83b); the improving sampler compounds by continually covering NEW problems;
+removing that new coverage removes the gain. A specific, causal bank-contribution finding (NOT the retracted sparse-bridge — this is a broad 105-problem coverage effect).
