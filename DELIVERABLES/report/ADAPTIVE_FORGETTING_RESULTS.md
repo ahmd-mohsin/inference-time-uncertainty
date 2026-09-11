@@ -4629,3 +4629,20 @@ CTH vs uniform-RFT, comp depth-7 OOD, 3 seeds each: 1.5B cth 0.636 vs uniform 0.
 This CONFIRMS the headroom-gating law (coverage-targeting helps only where the base cannot already reach most prompts) but FALSIFIES CTH as a
 general method. Same capability-gated pattern as every effect in this program. HONEST: CTH is a mechanism-confirmation (headroom-gated coverage-
 quality), not a scale-robust positive method. The award "method that generalizes" is not met by CTH.
+
+## §120 CONVERGENCE — every positive effect is capability-gated; no scale-robust method (honest terminal state of the method search)
+M6 pilot (partial): iid k=16 single-shot cov 174/300 (frontier 126); repair loop running; decompose ERRORED (rerun needed). But the overall
+verdict no longer depends on M6: across the entire program, EVERY positive effect is CAPABILITY-GATED — large at 1.5B/high-headroom, vanishing
+or reversing by 3B-14B:
+  - Coverage-causal effect: 1.5B +0.165 -> 3B/7B/14B ~0 (§93/§93b).
+  - CTH method: 1.5B +0.083 -> 3B -0.032 (loses) -> 7B +0.005 (§119).
+  - Decomposition-distillation: 1.5B +0.06 -> 7B +0.02 -> 14B +0.015 (§95b).
+  - Self-repair recovery: capability-scaled but small (§92b).
+  - RFT-GRPO OOD gap: +0.21 (1.5B) shrinks with scale (§113), and is a COVERAGE/REPLAY effect, not the objective (§114).
+=> There is NO scale-robust positive method here. The award-shaped "method that generalizes across scale" is NOT achievable from this program;
+the register's ranked methods (M1 CTH confirmed-but-1.5B-only; M6 partial) do not change this. HONEST TERMINAL STATE: the durable, defensible
+contribution is a MECHANISM-CHARACTERIZATION with a unifying law: "verified self-improvement gains are headroom-gated — they appear where the
+base is weak / the task hard, and vanish with capability; and the RFT>GRPO OOD advantage is training-data coverage/replay, not the update objective."
+Backed by: the estimator-knob ladder (§114), the removal-controlled coverage-causal test (§89), the 4-size headroom curve (§93-§119), the DAG
+composition-bottleneck instrument (§106), and a null battery with correct controls (§84b/85/87/90b/107/112/114/119). This is a solid main-track
+paper, NOT a best-paper/award. Continuing to spend GPUs on more capability-gated confirmations has diminishing returns.
