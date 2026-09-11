@@ -132,9 +132,24 @@ def plan_then_code(dag):
     plan.append(f"#   output = {dag['out']}")
     return "\n".join(plan) + "\n" + reference_solve_code(dag)
 
+def value_scram_code(dag):
+    # PLACEBO: same code + same-length value comments, but VALUES SCRAMBLED across vars (wrong data-flow).
+    # Isolates whether Tvalue's gain is the data-flow SIGNAL vs merely longer targets.
+    ann = _intermediates(dag); keys = list(ann); vals = [ann[k] for k in keys]
+    random.Random(abs(hash(str(dag["steps"]))) % (2**31)).shuffle(vals)
+    scram = {k: vals[i] for i, k in enumerate(keys)}
+    code = reference_solve_code(dag); out = []
+    for l in code.split("\n"):
+        out.append(l); s = l.strip()
+        for v in scram:
+            if s.startswith(v + " = "):
+                out.append(" " * (len(l) - len(l.lstrip())) + f"# {v} on example == {json.dumps(scram[v])[:140]}")
+    return "\n".join(out)
+
 def target_code(dag, target):
     if target == "value": return value_annotated_code(dag)
     if target == "plan": return plan_then_code(dag)
+    if target == "vscram": return value_scram_code(dag)
     return reference_solve_code(dag)
 
 def recompose(dag, seed):
@@ -177,7 +192,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["emit", "diag", "bank", "eval"], default="emit")
     ap.add_argument("--arm", choices=["B", "F", "C"], default="B")
-    ap.add_argument("--target", choices=["plain", "value", "plan"], default="plain")
+    ap.add_argument("--target", choices=["plain", "value", "plan", "vscram"], default="plain")
     ap.add_argument("--n", type=int, default=300); ap.add_argument("--nodes", type=int, default=6)
     ap.add_argument("--seed0", type=int, default=0); ap.add_argument("--out", default="")
     ap.add_argument("--model", default=""); ap.add_argument("--k", type=int, default=8); ap.add_argument("--stats-out", default="")
