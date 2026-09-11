@@ -61,6 +61,8 @@ def build_args():
     # §56-E1: scale_rewards="group" = std-normalized GRPO; "none" = advantage R−mean(=R−p̂ for binary) =
     # MaxRL-approx (outcome-weighting w/o std normalization). Tests if std-norm/weighting drives the SFT-GRPO gap.
     p.add_argument("--scale-rewards", default=RLConfig.scale_rewards, choices=["group", "batch", "none"])
+    p.add_argument("--adv-transform", default="none", choices=["none", "zeroneg", "successcount"],
+                   help="Tier-1 ladder knob: zeroneg=clamp advantages>=0 (R3, positives-only); successcount=(adv>0) unit weight per success (R4)")
     p.add_argument("--max-completion-length", type=int, default=RLConfig.max_completion_length)
     p.add_argument("--gradient-accumulation-steps", type=int,
                    default=RLConfig.gradient_accumulation_steps,
@@ -246,6 +248,14 @@ def main():
                 model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
                 train_dataset=train_dataset, peft_config=peft_config,
                 bank=bank, proj_cfg=pc)
+    elif getattr(a, "adv_transform", "none") != "none":
+        from rl_training.ladder_trainer import LadderGRPOTrainer
+        print(f">> Tier-1 ladder: adv_transform={a.adv_transform}")
+        trainer = LadderGRPOTrainer(
+            model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
+            train_dataset=train_dataset, peft_config=peft_config,
+            adv_transform=a.adv_transform,
+        )
     else:
         trainer = GRPOTrainer(
             model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
