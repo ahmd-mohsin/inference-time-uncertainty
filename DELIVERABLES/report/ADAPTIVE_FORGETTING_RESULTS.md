@@ -4646,3 +4646,14 @@ base is weak / the task hard, and vanish with capability; and the RFT>GRPO OOD a
 Backed by: the estimator-knob ladder (§114), the removal-controlled coverage-causal test (§89), the 4-size headroom curve (§93-§119), the DAG
 composition-bottleneck instrument (§106), and a null battery with correct controls (§84b/85/87/90b/107/112/114/119). This is a solid main-track
 paper, NOT a best-paper/award. Continuing to spend GPUs on more capability-gated confirmations has diminishing returns.
+
+## §121 PREREGISTRATION (before 7B/9B-hard results read) — the PREDICTIVE-LAW test (award upgrade) + new hypotheses
+CORE PREDICTION (H-PRED, headroom-not-size): CTH gain and coverage-causal (full-blocked) are governed by HEADROOM h (=1-base_coverage on
+OOD), NOT model size. Existing anchors: 1.5B/d7 (h~0.45) CTH +0.083; 7B/d7 (h~0.13, cov 87%) CTH +0.005; 7B/d9 (h~0.21) full-blocked -0.01;
+7B/d14 (h~0.42, cov 58%) full-blocked +0.02. PREREGISTERED out-of-sample predictions (before results): at 7B-HARD (d12->d14, h large) CTH
+RETURNS to >= +0.04 (vs +0.005 at 7B-easy); at 9B-HARD similar >= +0.03; and CTH gain correlates with measured h across {1.5B,3B,7B,9B}x{easy,hard}.
+=> If these land, the characterization becomes a PREDICTIVE LAW (gain predicted before training from h) — the award-shaped upgrade that
+defeats the "small-model artifact" blocker. KILL: 7B/9B-hard CTH stays < +0.02 despite h large -> effect is size-specific, not headroom -> law falsified.
+ALSO RUNNING (multi-hypothesis award battery): (a) RFT+ vs GRPO at 7B-HARD (does the +0.21 gap return with headroom? server-mode GRPO);
+(b) coverage-causal full/blocked at 7B-hard + 9B-hard (removal control at scale); (c) CTH cross-domain at 7B (math, GSM8K); (d) full CTH
+size curve at hard {1.5B,3B,7B,9B}. Every cell: matched samples/controls, >=3 seeds before headline.
