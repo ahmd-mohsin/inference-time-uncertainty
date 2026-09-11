@@ -4713,3 +4713,17 @@ SIGNIFICANCE: this DISSOCIATES two claims that §120/§122 had conflated —
 The predictive law now has a positive out-of-sample confirmation: gap ∝ headroom holds ACROSS sizes AND within 7B across depths.
 HONEST CAVEATS: GRPO side is 1 seed so far (RFT+ is 3) — 2 more GRPO-7B-hard seeds queued; estimator-knob ladder at 7B-hard (zeroneg/
 successcount arms) RUNNING to confirm at scale it is coverage-not-objective (predict both ~= GRPO 0.455, << RFT 0.567). Not yet cross-domain at 7B.
+
+## §125 GRID RESULT (size × depth) — CTH-targeting is MODEL-SIZE-gated (not headroom); DVR-dominance is headroom-gated (§124). Two dissociated laws.
+CTH vs uniform-RFT (matched samples, 3 seeds), Δ = cth − uniform, comp:
+  1.5B easy(d7) +0.083 | mid(d7->9) +0.072 | hard(d12->14) +0.125 (cth .385 vs uni .260; uniform=0.26 => MASSIVE headroom)
+  3B   easy(d7) -0.032 | hard(d12->14) +0.015 (cth .470 vs uni .455)
+  7B   easy(d7) +0.005 | mid(d9->12) +0.010 (cth .707 vs uni .697) | hard(d12->14) +0.003
+  9B   Yi-Coder-9B hard(d12->14) +0.013 (cth .533 vs uni .520)  [VALID rung: solves domain at 0.52, unlike invalid general-Yi 0.0 §122]
+DECISIVE DISSOCIATION at IDENTICAL depth-14 task (same headroom structure): 1.5B +0.125 but 3B +0.015 / 7B +0.003 / 9B +0.013.
+=> the CTH coverage-TARGETING gain is driven by MODEL SIZE, not by task headroom (1.5B-hard has huge headroom AND huge gain; 7B-hard has
+real headroom but ~0 gain). CTH is WEAK-MODEL-SPECIFIC — dead as a scalable method. Closes §121 prereg (KILL condition confirmed across the grid).
+CONTRAST WITH §124 (the award result): the RFT+/DVR-vs-GRPO DOMINANCE is HEADROOM-gated and RETURNS at 7B (+0.112 at d14 vs +0.025 at d7).
+=> TWO CLEAN, DISSOCIATED LAWS: (1) coverage-TARGETING gain ~ f(model size) [weak-model only]; (2) DVR-over-GRPO dominance ~ f(headroom)
+[scale-robust, returns wherever the base can't sample successes]. The paper keeps (2) as the method/mechanism and reports (1) as the honest
+boundary of the coverage-targeting trick. uniform-RFT baselines banked for the DVR matrix: 1.5B-hard .260, 3B-hard .455, 7B-hard .567, 9B-hard .520.
