@@ -104,6 +104,39 @@ def reference_solve_code(dag):
     L.append(f"    return {dag['out']}")
     return "\n".join(L)
 
+def _example_records(): return _rand_records(random.Random(0), 6)
+
+def _intermediates(dag):
+    env = {"records": [dict(x) for x in _example_records()]}; ann = {}
+    for s in dag["steps"]:
+        if s["kind"] == "un": env[s["var"]] = PRIMS[s["op"]]["fn"](deepcopy(env[s["args"][0]]))
+        else: env[s["var"]] = BIN[s["op"]](deepcopy(env[s["args"][0]]), deepcopy(env[s["args"][1]]))
+        ann[s["var"]] = env[s["var"]]
+    return ann
+
+def value_annotated_code(dag):
+    # ROUTE B (distillation form): inline each intermediate's VERIFIED value on the example -> dense wiring/data-flow signal
+    ann = _intermediates(dag); code = reference_solve_code(dag); out = []
+    for l in code.split("\n"):
+        out.append(l)
+        s = l.strip()
+        for v in ann:
+            if s.startswith(v + " = "):
+                out.append(" " * (len(l) - len(l.lstrip())) + f"# {v} on example == {json.dumps(ann[v])[:140]}")
+    return "\n".join(out)
+
+def plan_then_code(dag):
+    # explicit data-flow PLAN (dependency graph) before code -> separates wiring from op-writing
+    plan = ["# data-flow plan (each vN's inputs):"]
+    for s in dag["steps"]: plan.append(f"#   {s['var']} <- {s['op']}(" + ", ".join(s["args"]) + ")")
+    plan.append(f"#   output = {dag['out']}")
+    return "\n".join(plan) + "\n" + reference_solve_code(dag)
+
+def target_code(dag, target):
+    if target == "value": return value_annotated_code(dag)
+    if target == "plan": return plan_then_code(dag)
+    return reference_solve_code(dag)
+
 def recompose(dag, seed):
     # keep the same op multiset + node count; REWIRE args (which prior vars feed each op) -> new valid DAG
     rng = random.Random(seed); steps = []; nvars = ["records"]
@@ -144,6 +177,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["emit", "diag", "bank", "eval"], default="emit")
     ap.add_argument("--arm", choices=["B", "F", "C"], default="B")
+    ap.add_argument("--target", choices=["plain", "value", "plan"], default="plain")
     ap.add_argument("--n", type=int, default=300); ap.add_argument("--nodes", type=int, default=6)
     ap.add_argument("--seed0", type=int, default=0); ap.add_argument("--out", default="")
     ap.add_argument("--model", default=""); ap.add_argument("--k", type=int, default=8); ap.add_argument("--stats-out", default="")
@@ -152,7 +186,7 @@ def main():
         # SFT bank {prompt, completion=reference_solve_code}. B: n straight refs. F: n/2 refs + n/2 recomposed (rewired,
         # same ops). C: n/2 refs + n/2 fresh-random DAGs (matched count, no interface focus).
         base = gen_valid((a.n + 1)//2 if a.arm != "B" else a.n, a.nodes, a.seed0)
-        recs = [{"prompt": t["prompt"], "completion": reference_solve_code(t["dag"])} for t in base]
+        recs = [{"prompt": t["prompt"], "completion": target_code(t["dag"], a.target)} for t in base]
         if a.arm == "F":
             for i, t in enumerate(base):
                 rc = recompose(t["dag"], a.seed0 + 500000 + i)
