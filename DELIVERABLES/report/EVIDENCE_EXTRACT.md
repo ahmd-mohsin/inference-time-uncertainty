@@ -114,3 +114,30 @@ law and "RFT expands / RL reweights" mechanism (success-gradient identity + meas
 - Math-domain estimator ladder (R3/R4 cross-domain) — RUNNING.
 - 7B/14B GRPO server-mode (complete the generality grid's GRPO side).
 - Preregistered out-of-sample predictions (H2.1 headroom, H2.2 D_fail) — NOT yet run; required to call the curve a "law".
+
+============================================================
+## I. SYNC UPDATE §113–§120 (the award-procedure results — the current mechanism + method evidence)
+### I1. THE MECHANISM (award-core): the RFT>>GRPO OOD gap is COVERAGE/REPLAY, not the objective (§114, grounded §111)
+Estimator-knob ladder from a SHARED base+RFT checkpoint (1.5B comp, depth-7 OOD, 3 seeds): GRPO(group)=0.555; GRPO(no-std)=0.580;
+R3 zero-negatives=0.548; R4 success-count weighting=0.567; RFT+=0.745. => Removing negatives (H1.1) and adopting RFT's implicit
+success-count weighting (H1.2) BOTH leave GRPO at baseline (~0.55) — the two ways the estimators differ do NOT close the +0.19 gap.
+R4 IS RFT's implicit weighting applied ONLINE and still fails => the lever is OFFLINE broad-bank multi-epoch replay / training-prompt
+COVERAGE, not the RL objective. Grounded in the success-gradient identity (§111): RFT and outcome-RL share a per-prompt gradient direction.
+### I2. GENERALITY of RFT+ > GRPO (§113/§113b): 2 families × 4 sizes from shared checkpoints (RFT+ − GRPO-group)
+deepseek-coder-1.3B +0.095 (0.495 vs 0.400); Qwen-Coder-1.5B +0.190; Qwen-Coder-3B +0.110 (0.905 vs 0.795); Qwen-Coder-7B RFT+ +0.025
+(0.895; GRPO side needs server-mode). Sign INVARIANT; magnitude shrinks with capability. GRPO learns in-dist (train reward 0.375→0.6, §91c).
+### I3. COVERAGE COLLAPSE CURVE (§117): uniform-RFT k-sweep, comp depth-7 OOD (1 seed)
+k=2 N_dist132 OOD0.460; k=4 N_dist195 OOD0.530; k=8 N_dist234 OOD0.620; k=16 N_dist283 OOD0.645; k=32 N_dist294 OOD0.670.
+Monotone WITHIN the k-sweep (coverage drives OOD), BUT N_dist alone is NOT the law (see I4): uniform-1.5x had MOST N_dist yet LOWEST OOD.
+### I4. M1 CTH — coverage-targeted harvesting, CONFIRMED positive at 1.5B but CAPABILITY-GATED (§118/§119)
+1.5B (6 seeds, matched total samples + matched N_dist): CTH 0.636 [0.590,0.675] vs uniform-RFT 0.553 [0.535,0.565] => +0.083, NON-OVERLAPPING;
+matched-1.5x-budget control (uni15) 0.5175 (loses). Gain is coverage-QUALITY (hard/newly-reachable prompts), NOT count (CTH N_dist 240 ≈ uniform 236).
+GENERALITY: 1.5B +0.083 -> 3B -0.032 (LOSES) -> 7B +0.005 (tie). => CTH is a real method ONLY in the high-headroom/weak-model regime; it
+CONFIRMS the headroom law but is NOT scale-robust. (M2 NCW-RFT §116: ncw3 0.810 > random-mass 0.790, +0.02, 2 seeds — weighting new-coverage
+examples helps, small; needs 4 seeds + banks were lost to pod rotation.)
+### I5. THE UNIFYING LAW (§120) — the paper's spine
+Every positive effect is CAPABILITY-GATED: large at 1.5B/high-headroom, vanishing or reversing by 3B-14B — coverage-causal (+0.165→~0),
+CTH (+0.083→-0.032→+0.005), decomposition-distillation (+0.06→+0.02→+0.015), repair (3%→16%→40% recovery but small), RFT-GRPO gap
+(+0.21 shrinking). => "Verified self-improvement gains are headroom-gated; the RFT>GRPO OOD advantage is training-data coverage/replay,
+not the update objective." NO scale-robust positive method exists in this program. Deliverable = mechanism-characterization (solid main-track), NOT award.
+### I6. ADD TO NULL BATTERY (A): estimator knobs (negatives/weighting) §114 — do not close the gap; CTH-generality §119 — capability-gated, loses at 3B.
