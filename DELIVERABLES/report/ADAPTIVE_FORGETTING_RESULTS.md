@@ -4727,3 +4727,21 @@ CONTRAST WITH §124 (the award result): the RFT+/DVR-vs-GRPO DOMINANCE is HEADRO
 => TWO CLEAN, DISSOCIATED LAWS: (1) coverage-TARGETING gain ~ f(model size) [weak-model only]; (2) DVR-over-GRPO dominance ~ f(headroom)
 [scale-robust, returns wherever the base can't sample successes]. The paper keeps (2) as the method/mechanism and reports (1) as the honest
 boundary of the coverage-targeting trick. uniform-RFT baselines banked for the DVR matrix: 1.5B-hard .260, 3B-hard .455, 7B-hard .567, 9B-hard .520.
+
+## §126 ASTRA-GUIDED PIVOT: DVR-vs-GRPO scales (1.5B->9B), VSF method implemented+validated, non-starved-GRPO de-risk launched
+Adopted Astra (GPT-6) reframe (DELIVERABLES/report/ASTRA_ADVICE.md): headline = "verified SUPPORT (acquisition+preservation), not on-policy
+updates" — not "RFT beats RL". VSF (Verified Support Floor) = GRPO + persistent prompt-balanced verified-bank replay loss (rl_training/vsf_trainer.py).
+DVR (RFT) vs GRPO matrix — the SCALE story (3 seeds RFT; GRPO 1-3 seeds, matched samples/pool):
+  MID (d7->9):  1.5B RFT 0.482 vs GRPO 0.235 = +0.247 | 3B RFT 0.668 vs GRPO 0.368 = +0.300
+  HARD (d12->14): 7B RFT 0.567 vs GRPO 0.455 = +0.112 | 9B RFT 0.520 vs GRPO 0.395 = +0.125
+  => the DVR>>GRPO OOD gap is LARGE and PERSISTS 1.5B->9B; GRPO degrades below base on hard/mid (dead-group starvation), replay holds.
+ESTIMATOR LADDER at 7B-HARD (mechanism-at-scale, C3): GRPO 0.455 | zeroneg(positives-only) 0.515 | RFT 0.567 (successcount arm re-run pending).
+  zeroneg recovers part of the gap (removing negative-advantage updates reduces degradation) but does NOT reach RFT -> full closure needs the
+  replay/support channel, consistent with the coverage account (not merely the sign of advantages).
+VSF STATUS: implemented + VALIDATED at 1.5B (trains cleanly, vsf_replay_loss logged alongside GRPO loss); VSF 7B-hard server-mode RUNNING (1094);
+VSF 1.5B-mid RUNNING (worker). Prediction (Astra E4): GRPO+VSF should close much of the GRPO->RFT gap using the SAME verified bank.
+DE-RISK (Astra E3, the #1 paper risk = "starved GRPO baseline"): non-starved GRPO (num_generations 16, halves dead-group rate P_fail(G=8)=0.66
+-> P_fail(G=16)=0.44) RUNNING at 7B-hard (1093, completion 320 after num_gen16 OOM'd at 512) + 1.5B-mid (worker). If the gap SURVIVES larger
+groups, the starved-baseline critique is defused; if it closes, we rebuild the claim honestly around informative-sampling/support-acquisition.
+NEXT per Astra: alpha/beta acquisition-vs-preservation decomposition (C7) on the 7B/9B evals; coverage-vs-reward reconciliation table (A2:
+57% is pass@K not pass@1 at p~0.05, 1-(1-0.05)^16~0.56); predictive-law train/test split (D7). CTH stays only as the honest size-gated boundary.
