@@ -146,10 +146,37 @@ def value_scram_code(dag):
                 out.append(" " * (len(l) - len(l.lstrip())) + f"# {v} on example == {json.dumps(scram[v])[:140]}")
     return "\n".join(out)
 
+def value_irrelevant_code(dag):
+    # H1 control (Ttrue-irrelevant): correct code + CORRECT-but-IRRELEVANT aux computations (similar ops/range,
+    # disconnected from target data-flow), length-matched. Tests relevant data-flow vs generic correct-aux practice.
+    ann = _intermediates(dag); code = reference_solve_code(dag); out = []
+    rng = random.Random(abs(hash(str(dag["steps"]))) % (2**31))
+    for l in code.split("\n"):
+        out.append(l); s = l.strip()
+        for v in ann:
+            if s.startswith(v + " = "):
+                aux = _rand_records(rng, 6); op = UNARY[rng.randrange(len(UNARY))]
+                try: auxval = PRIMS[op]["fn"]([dict(x) for x in aux])
+                except Exception: auxval = aux
+                out.append(" " * (len(l) - len(l.lstrip())) + f"# aux == {json.dumps(auxval)[:140]}")
+    return "\n".join(out)
+
+def value_mask_code(dag):
+    # H1 control (Tmask): format-matched placeholder, no value info. Isolates formatting/position from factual labels.
+    ann = _intermediates(dag); code = reference_solve_code(dag); out = []
+    for l in code.split("\n"):
+        out.append(l); s = l.strip()
+        for v in ann:
+            if s.startswith(v + " = "):
+                out.append(" " * (len(l) - len(l.lstrip())) + f"# {v} on example == <hidden>")
+    return "\n".join(out)
+
 def target_code(dag, target):
     if target == "value": return value_annotated_code(dag)
     if target == "plan": return plan_then_code(dag)
     if target == "vscram": return value_scram_code(dag)
+    if target == "tirrel": return value_irrelevant_code(dag)
+    if target == "tmask": return value_mask_code(dag)
     return reference_solve_code(dag)
 
 def recompose(dag, seed):
@@ -192,7 +219,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["emit", "diag", "bank", "eval"], default="emit")
     ap.add_argument("--arm", choices=["B", "F", "C"], default="B")
-    ap.add_argument("--target", choices=["plain", "value", "plan", "vscram"], default="plain")
+    ap.add_argument("--target", choices=["plain","value","plan","vscram","tirrel","tmask"], default="plain")
     ap.add_argument("--n", type=int, default=300); ap.add_argument("--nodes", type=int, default=6)
     ap.add_argument("--seed0", type=int, default=0); ap.add_argument("--out", default="")
     ap.add_argument("--model", default=""); ap.add_argument("--k", type=int, default=8); ap.add_argument("--stats-out", default="")
