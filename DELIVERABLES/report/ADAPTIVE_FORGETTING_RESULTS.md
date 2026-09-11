@@ -4591,3 +4591,15 @@ M3 scaffolded harvest: "scaffolded harvest covers >=15% of base zero-success DAG
 M6 portfolio: "cost/newly-covered-prompt crosses at p_hat<=0.05 @1.5B; portfolio>CTH by >=0.02 at matched total tokens, larger margin @7B; shuffled-cost < portfolio."
 M7 dense-reward GRPO: "dense reward halves D_fail + raises in-dist reliability; held-out wiring changes <0.02 (reweight not coverage)."
 Kill rules per METHOD_REGISTER_v3.md. Launching now (parallel with coverage factorial): M2 (SFT-only, reuses §89 banks), M1, M3, M7.
+
+## §116 METHODS M1(CTH) + M2(NCW-RFT) — 2-seed first read (both positive, small; M1 challenges the N_dist keystone)
+M2 NCW-RFT (matched SFT steps, panel depth-7 OOD, 2 seeds): uniform 0.780, ncw1 0.800, ncw3 0.810, random-mass 0.790, downweight-old 0.7975.
+=> ncw3 - random-mass = +0.020 (meets prereg threshold); ncw3 - uniform = +0.030; up-weighting OLD (0.7975) ~ random-mass. WEIGHTING the
+newly-covered examples helps (small, real); passes its decisive control. [Needs 4 seeds to firm up.]
+M1 CTH (matched total samples = n*8): N_dist cth=244, uniform(k=8)=234, uniform-1.5x(k=12)=257; OOD cth 0.625/0.620 (0.6225),
+uniform 0.600/0.535 (0.5675), uni15 0.565/0.565 (0.565). => CTH BEATS uniform AND uniform-1.5x on OOD (+0.055; decisive budget control PASSES,
+uni15 does NOT match). BUT N_dist gain is only +4.3% (<10% prereg) AND uniform-1.5x has the MOST N_dist (257) yet the LOWEST OOD (0.565).
+=> CRITICAL: OOD is NOT monotone in N_dist. CTH's gain comes from covering the HARD / newly-reachable prompts (coverage QUALITY), not the
+COUNT. This challenges the H-C1 "OOD = f(N_dist)" collapse keystone as stated; the truer statistic is new/hard-coverage (consistent with the
+§89 removal control, where identity-of-covered-prompts, not count, carried the +0.165). Launching the k-sweep collapse curve to test directly
+whether (N_dist, OOD) collapses or whether coverage-composition dominates. NOTE: 2 seeds only — below the register's 4-seed rule; treat as first read.
