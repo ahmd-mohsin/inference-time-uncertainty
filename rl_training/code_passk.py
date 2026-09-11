@@ -52,6 +52,12 @@ def load_bench(bench):
             items.append({"id": f"mbpp+/{r['task_id']}", "prompt": r["prompt"] + "\n",
                           "test": "\n".join(r["test_list"]), "plus_test": r["test"],
                           "entry": None, "mbpp": True})
+    elif bench == "humaneval_plus":
+        # EvalPlus HumanEval+ : ~80x more tests than base HumanEval (rigorous). Canonical hard eval.
+        d = load_dataset("evalplus/humanevalplus")["test"]
+        for r in d:
+            items.append({"id": r["task_id"], "prompt": r["prompt"], "test": r.get("test", ""),
+                          "entry": r.get("entry_point")})
     else:
         raise SystemExit(f"bad bench {bench}")
     return items
