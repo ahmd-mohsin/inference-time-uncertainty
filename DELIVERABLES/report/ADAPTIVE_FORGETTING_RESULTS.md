@@ -4562,3 +4562,11 @@ Shared base+RFT checkpoint per size; RFT+ (one more verified round) vs GRPO(grou
 PENDING: 2nd-family cell (deepseek-coder-1.3b, open; Llama-3.2-3B was HF-gated -> swapped) running; math analogues; 7B/14B GRPO via server-mode.
 NOTE: these are single-run-per-arm generality points (RFT+ has 3-seed CIs at 1.5B from §91d); H2.4 spec requires >=3-4 seeds before headlining —
 treat as sign-confirmation pending seeded CIs. The MECHANISM (why RFT+>GRPO) is the Tier-1 ladder (R3 negatives / R4 weighting), not yet run.
+
+## §113b H2.4 2nd FAMILY (deepseek-coder-1.3b) — RFT+>>GRPO sign holds across families
+deepseek-coder-1.3b-instruct, comp depth-7 OOD: shared 0.385 -> RFT+ 0.495 (+0.110), GRPO-group 0.400 (+0.015), GRPO-none 0.350 (-0.035).
+=> RFT+ beats GRPO-group by +0.095 on a DIFFERENT family. Combined grid (RFT+ minus GRPO-group): deepseek-1.3b +0.095, Qwen-Coder-1.5b +0.190,
+Qwen-Coder-3b +0.110, Qwen-Coder-7b +0.025(RFT+ side only). SIGN INVARIANT across 2 families x 4 sizes; magnitude shrinks with capability.
+=> Award-checklist item #1 (headline contrast at >=2 families x >=2 sizes from shared checkpoints) is met AT SIGN LEVEL. STILL REQUIRED before
+headlining: >=4 training seeds per cell (only 1.5B has 3-seed CIs, §91d); math-domain cells; 7B/14B GRPO via server-mode; and — the decisive
+award piece — the TIER-1 LADDER (mechanism: which estimator knob, R3 negatives / R4 weighting, produces the gap) which is NOT yet run.
