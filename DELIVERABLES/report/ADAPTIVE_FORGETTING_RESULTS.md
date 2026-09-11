@@ -4657,3 +4657,19 @@ defeats the "small-model artifact" blocker. KILL: 7B/9B-hard CTH stays < +0.02 d
 ALSO RUNNING (multi-hypothesis award battery): (a) RFT+ vs GRPO at 7B-HARD (does the +0.21 gap return with headroom? server-mode GRPO);
 (b) coverage-causal full/blocked at 7B-hard + 9B-hard (removal control at scale); (c) CTH cross-domain at 7B (math, GSM8K); (d) full CTH
 size curve at hard {1.5B,3B,7B,9B}. Every cell: matched samples/controls, >=3 seeds before headline.
+
+## §122 PREDICTIVE-LAW TEST RESULT (7B/9B-hard CTH) — prediction FAILED; "headroom not size" FALSIFIED for CTH
+Preregistered (§121): at 7B-HARD with real headroom, CTH gain RETURNS to >= +0.04 (else effect is size-specific).
+RESULT (comp depth-12 train -> depth-14 OOD, 3 seeds, matched samples):
+  7B-HARD: CTH {0.575,0.565,0.570} mean 0.570 vs uniform-RFT {0.590,0.535,0.575} mean 0.567 => Δ=+0.003 (FLAT), N_dist cth295/uni281.
+    Depth-14 gives 7B ~43% headroom (base cov ~57%, §105b), yet CTH does NOT return. => KILL condition met.
+  9B (Yi-1.5-9B-Chat): CTH 0.000/0.000/0.000 vs uniform 0.115/0.095/0.070, N_dist 130/132 (near-floor harvest) => Yi is UNSUITED to
+    the comp domain; CTH arm collapsed to 0.0 (format/merge artifact) => INVALID cell, DISCARDED (unfair-comparison discipline, cf §86).
+VERDICT: the CTH gain is NOT headroom-recoverable at scale. Even with large headroom at 7B, CTH ties uniform-RFT (+0.003) — matching the
+7B/depth-7 tie (+0.005, §119) despite very different headroom. => CTH is WEAK-MODEL-SPECIFIC, not headroom-gated. "Headroom-not-size" is
+FALSIFIED for CTH: adding headroom at 7B does NOT bring the method back. Blocker #2 resolves the pessimistic way for CTH — it is a
+small-model phenomenon, not a scale-invariant law. [Confirmation in-flight: 1.5B-hard vs 3B-hard vs 7B-hard on IDENTICAL depth-14 OOD — if
+1.5B shows a large gain where 7B shows 0 at the SAME headroom, that pins the driver as model size, not headroom. Grid cells running.]
+Honest consequence: this does NOT upgrade the paper to a predictive law via CTH. The characterization (§120, capability-gated) stands; the
+scale expansion CONFIRMED capability-gating rather than defeating it. Remaining award lever = the RFT>>GRPO coverage mechanism at scale (7B
+GRPO server-mode), not CTH.
