@@ -4538,3 +4538,16 @@ submodular coverage structure of the state-selection objective F(Q). INFO-THEORE
 trace is deterministic (no added Shannon info) — Tvalue's SFT benefit is bounded-learner USABILITY, not new information; for RL with coarse
 verifier feedback, extra state checks DO change the observed channel. NEW FRAMING (testable, not a law): "which verified execution states
 teach compositional generalization, and how does the benefit depend on the computation, the supervision content/cost, and the update rule?"
+
+## §112 H1 MECHANISM — VALUE-SUPERVISION THESIS FALSIFIED (it's structural annotation, not execution values)
+Held-out DAG wiring, 1.5B, 3 seeds: Tvalue (correct values)=0.857; Tmask (per-intermediate PLACEHOLDER comments, NO value info, same
+format/position)=0.850; B (plain)=0.787; Tscram (scrambled values)=0.780; Tirrel (correct-but-IRRELEVANT aux values, length-matched)=0.698.
+=> Tmask (0.850) ~= Tvalue (0.857): the placeholder captures the ENTIRE gain. The benefit is STRUCTURAL ANNOTATION of the intermediate
+variables (redundantly marking each vN in the target scaffolds the model to reproduce the wiring), NOT the verified execution VALUES.
+Correct values add ~nothing beyond the format; INCORRECT value content HURTS (irrelevant 0.698 < B 0.787; scrambled 0.780 ~ B) via
+conflicting gradients. The §110 scramble-placebo (scram~B) was consistent with "values matter" but was the WRONG control; the reviewer-
+demanded MASK control is decisive and FALSIFIES the "verified process/execution-value supervision" mechanism. HONEST CONSEQUENCE: the
+award-shaped "verified process supervision teaches composition" thesis is DEAD. What remains is a real-but-mundane effect: structurally
+annotating intermediate computations (even with placeholders) improves compositional-wiring transfer (+0.06), while wrong annotations hurt —
+close to known scratchpad/structural-formatting effects, not a novel verified-supervision contribution. Per the pre-committed stopping rule,
+the claim is NARROWED accordingly; H2 (state-selection method) is MOOT for the value-supervision framing (no value signal to select).
