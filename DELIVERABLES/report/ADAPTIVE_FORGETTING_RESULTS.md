@@ -4570,3 +4570,16 @@ Qwen-Coder-3b +0.110, Qwen-Coder-7b +0.025(RFT+ side only). SIGN INVARIANT acros
 => Award-checklist item #1 (headline contrast at >=2 families x >=2 sizes from shared checkpoints) is met AT SIGN LEVEL. STILL REQUIRED before
 headlining: >=4 training seeds per cell (only 1.5B has 3-seed CIs, §91d); math-domain cells; 7B/14B GRPO via server-mode; and — the decisive
 award piece — the TIER-1 LADDER (mechanism: which estimator knob, R3 negatives / R4 weighting, produces the gap) which is NOT yet run.
+
+## §114 TIER-1 LADDER (1.5B comp, primary) — R3/R4 both FAIL to close the RFT-GRPO gap (advantage-shape knobs killed)
+From the shared base+RFT checkpoint, depth-7 OOD, 3 seeds: R3 zero-negatives (adv.clamp>=0) = 0.560/0.540/0.545 (mean 0.548);
+R4 success-count weighting ((adv>0), positives-only unit-per-success = RFT's implicit weighting) = 0.565/0.595/0.540 (mean 0.567).
+Anchors: GRPO-group 0.555, GRPO-none 0.580, RFT+ 0.745. => BOTH new rungs sit at the GRPO baseline (~0.55-0.57), NOT near RFT (0.745).
+Per the register kill rules (R3<30%, R4<30% of the gap): H1.1 (negatives) and H1.2 (prompt-weighting) are FALSIFIED as the dominant knob.
+INTERPRETATION: R4 IS RFT's implicit weighting (positives-only, success-count) but applied ONLINE (fresh rollouts from the updating
+policy, num_generations=8/prompt => narrow per-step prompt coverage), whereas RFT+ is OFFLINE multi-epoch mean-NLL SFT on a FIXED broad
+bank (n=400 prompts x k=8, harvested once from the frozen checkpoint). Since R4~GRPO<<RFT, the lever is the OFFLINE-BROAD-REPLAY / TRAINING-
+PROMPT-COVERAGE difference (ladder R6 / collection), NOT the estimator advantage shape. HONEST CONSEQUENCE for the award thesis: the
+"fix a knob INSIDE the RL estimator to recover RFT transfer" (H1.5) does not hold for the advantage-shape knobs; the remaining lever (broad
+multi-epoch replay) largely REDUCES TO RFT, i.e. not a novel inside-RL fix. Next decisive test: R6 (add fixed-broad-bank multi-epoch replay
+to R4) and a direct prompt-COVERAGE control (GRPO with many distinct prompts/step vs few). Generality cells (3B/deepseek/math/seeds) pending.
