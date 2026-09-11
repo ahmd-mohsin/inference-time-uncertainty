@@ -4622,3 +4622,10 @@ with NON-OVERLAPPING 6-seed ranges (CTH min 0.590 > uniform max 0.565). Combined
 and matched N_dist, this is a SEED-ROBUST POSITIVE METHOD whose gain is coverage-QUALITY (hard/newly-reachable prompts), not count. This is
 "a law (OOD governed by hard-prompt coverage, §89/§117) that predicts its own method (CTH)", beating the strongest matched-cost baseline —
 the award-shaped result. Still needed: cross-family/size + math replication of CTH; the 7B headroom prediction (CTH gain shrinks where h small).
+
+## §119 CTH GENERALITY — capability-gated, does NOT generalize (confirms headroom law, kills CTH as a general method)
+CTH vs uniform-RFT, comp depth-7 OOD, 3 seeds each: 1.5B cth 0.636 vs uniform 0.553 (+0.083); 3B cth 0.800 vs uniform 0.832 (-0.032, LOSES);
+7B cth 0.877 vs uniform 0.872 (+0.005, tie). => The CTH win is 1.5B-ONLY (high-headroom/weak-model). It VANISHES at 7B and REVERSES at 3B.
+This CONFIRMS the headroom-gating law (coverage-targeting helps only where the base cannot already reach most prompts) but FALSIFIES CTH as a
+general method. Same capability-gated pattern as every effect in this program. HONEST: CTH is a mechanism-confirmation (headroom-gated coverage-
+quality), not a scale-robust positive method. The award "method that generalizes" is not met by CTH.
