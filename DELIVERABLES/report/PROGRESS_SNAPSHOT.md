@@ -87,3 +87,42 @@ hits a specific bottleneck and helps in proportion to it, placebo-controlled). N
 1. Build the paper on the unifying "amplify the binding bottleneck" law (recommended), or insist on chasing a scale-invariant method?
 2. Route B is the keystone positive — keep hunting for a variant that persists at scale (e.g., process-level RL, harder DAGs at 7B), or lock the story?
 3. OK to start the actual paper draft now (intro/thesis/figures), or more experiments first?
+
+---
+# v4 UPDATE (2026-09-10, latest) — value-supervision thesis FALSIFIED; honest final standing
+## What happened
+The reviewer-demanded H1 controls were run and **falsified the value-supervision method** (§112):
+| held-out DAG wiring, 1.5B, 3 seeds | acc |
+|---|---|
+| Tvalue (correct execution values) | 0.857 |
+| **Tmask (placeholder, NO values, same format)** | **0.850** ← ties Tvalue |
+| B (plain distillation) | 0.787 |
+| Tscram (scrambled values) | 0.780 |
+| Tirrel (correct-but-irrelevant values) | 0.698 ← HURTS |
+=> The +0.07 gain is **structural annotation of intermediates (scaffolding), NOT verified execution values**. A placeholder captures the
+whole effect; wrong values hurt. This is a known-adjacent formatting effect, not a novel verified-supervision contribution. Also retracted
+(§111): the universal "amplify-not-expand" law and the "RFT-expands/RL-reweights" universal mechanism (success-gradient identity: same gradient direction).
+
+## Every positive-method swing is now deflated by clean controls
+- Recomposition (post-hoc rewiring): FALSIFIED — hurts vs plain refs (§107).
+- Decomposition-distillation: modest + NOT efficient (2.1× tokens/round, §104); local scaffold not composition teacher (§103b).
+- Value/process supervision: FALSIFIED — structural-formatting artifact (§112).
+=> No award-caliber POSITIVE METHOD emerged. Honest.
+
+## What is SOLID (the paper that actually exists)
+A rigorous **characterization** paper (NOT an impossibility law, NOT a method):
+1. **RFT ≫ GRPO for OOD** — +0.21, 3 seeds, shared checkpoint; success-gradient identity explains it as a weighting/collection effect (§91/§111).
+2. **Coverage is causal + headroom-scaled** — removal-controlled +0.165 at 1.5B, curve to ~0 at 7B/14B, partial return at depth-14 (§89/§93/§105b).
+3. **DAG composition-bottleneck diagnostic** — oracle-component recovery 9.9%→52.7% (1.5B→7B), a reusable instrument (§106/§107b).
+4. **A null battery with CORRECT controls** — repair/archive/delayed-value/escalation/recomposition/value-supervision all fail clean tests
+   (now a STRENGTH: the obvious positive methods don't survive scrutiny).
+
+## Honest verdict
+- **Not a spotlight/award paper** — there is no surviving positive method, and no honest law.
+- **Is a solid, honest main-track characterization paper** if written around (1)-(4) without overclaiming.
+- Getting to award would require a fundamentally new, principled hypothesis that has not surfaced; the obvious-mechanism search space is exhausted.
+
+## Recommendation / decision for you
+1. **Write the characterization paper** (my recommendation): intro → RFT-vs-GRPO mechanism → coverage/headroom → DAG diagnostic → honest null battery → limitations.
+2. Or pause for a genuinely new principled hypothesis before spending more compute (fleet is idle; I won't chase methods blind).
+Which do you want? If (1), I'll produce the consolidated draft as the deliverable.
