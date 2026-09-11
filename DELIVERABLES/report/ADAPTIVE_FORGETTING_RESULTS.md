@@ -4551,3 +4551,14 @@ award-shaped "verified process supervision teaches composition" thesis is DEAD. 
 annotating intermediate computations (even with placeholders) improves compositional-wiring transfer (+0.06), while wrong annotations hurt —
 close to known scratchpad/structural-formatting effects, not a novel verified-supervision contribution. Per the pre-committed stopping rule,
 the claim is NARROWED accordingly; H2 (state-selection method) is MOOT for the value-supervision framing (no value signal to select).
+
+## §113 H2.4 GENERALITY GRID (RFT-vs-GRPO from shared checkpoint, comp depth-7 OOD) — sign holds across sizes
+Shared base+RFT checkpoint per size; RFT+ (one more verified round) vs GRPO(group) vs GRPO(no-std), all from the SAME checkpoint:
+  1.5B (§91): shared 0.555 -> RFT+ 0.745 (+0.190), GRPO-group 0.555 (+0.000), GRPO-none 0.580 (+0.025)
+  3B:         shared 0.825 -> RFT+ 0.905 (+0.080), GRPO-group 0.795 (-0.030), GRPO-none 0.825 (+0.000)
+  7B:         shared 0.870 -> RFT+ 0.895 (+0.025), GRPO arms DEFERRED (colocate OOM at 7B on 40GB; needs server-mode vLLM+ZeRO, §27p)
+=> RFT+ > GRPO at EVERY size (RFT+ beats GRPO-group by +0.19 / +0.11 / [pending]); sign INVARIANT, magnitude shrinks with scale
+(headroom-consistent). GRPO-group even REGRESSES at 3B (-0.03). This is the award-checklist "headline across sizes" (size axis of H2.4).
+PENDING: 2nd-family cell (deepseek-coder-1.3b, open; Llama-3.2-3B was HF-gated -> swapped) running; math analogues; 7B/14B GRPO via server-mode.
+NOTE: these are single-run-per-arm generality points (RFT+ has 3-seed CIs at 1.5B from §91d); H2.4 spec requires >=3-4 seeds before headlining —
+treat as sign-confirmation pending seeded CIs. The MECHANISM (why RFT+>GRPO) is the Tier-1 ladder (R3 negatives / R4 weighting), not yet run.
