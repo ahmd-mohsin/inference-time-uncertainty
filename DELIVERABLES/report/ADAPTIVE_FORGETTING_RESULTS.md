@@ -4489,3 +4489,11 @@ depth-14 (7B now covers only R1=233/400 = 58% => real headroom): full=0.605, blo
 vs depth-9 @7B (79% coverage): null. => The new-coverage causal effect PARTIALLY returns once strong models face genuine headroom,
 leaning toward HEADROOM-GATED over weak-model-specific — but the effect is much smaller at 7B (+0.020) than 1.5B (+0.165), so it is
 both headroom-gated AND weak-model-amplified. (14B depth-14 running.)
+
+## §108 COMPOSITION-TEACHING PORTFOLIO (DAG held-out wiring, 1.5B) — Tvalue/curriculum top, but WITHIN NOISE (seeds needed)
+Held-out unseen DAG wiring (n=200, k=4), all SFT from base, matched n=600: Tvalue (Route B: verified intermediate VALUES inlined =
+dense data-flow supervision)=0.82; cur (curriculum 3->5 nodes -> eval 6)=0.82; C (random-aug)=0.80; B (plain reference distillation)=0.78;
+Tplan (explicit plan-then-code)=0.455 (DERAILS — the plan prefix badly hurts). => Tvalue and curriculum are the top arms (+0.04 over plain B),
+BUT B measured 0.83 in the §107 E2 run and 0.78 here — a 0.05 run-to-run swing on the SAME arm. The +0.04 Tvalue/cur advantage is therefore
+WITHIN run variance and NOT yet established. HONEST STATUS: promising direction (dense wiring supervision + curriculum both land at the top,
+plan-then-code clearly hurts), but a clean claim REQUIRES multi-seed CIs and a 7B persistence check. Launching B/Tvalue/cur x3 seeds.
