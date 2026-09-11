@@ -1,3 +1,12 @@
+# ⚠️ THESIS FALSIFIED (§112) — see "STATUS" below before reading further.
+# STATUS 2026-09-10: The H1 mask control (reviewer-demanded) FALSIFIED the value-supervision thesis:
+# Tmask (placeholder, no values) 0.850 ≈ Tvalue (correct values) 0.857; irrelevant values HURT (0.698). The gain is STRUCTURAL
+# ANNOTATION of intermediates (scaffolding), NOT verified execution values — a known-adjacent formatting effect, not a novel
+# verified-supervision method. This draft's original thesis (below) is retained only for record; the paper pivots to the
+# CHARACTERIZATION (RFT>>GRPO + coverage/headroom + the DAG composition-bottleneck diagnostic + null battery), reframed WITHOUT
+# any impossibility law. No award-caliber positive method emerged across recomposition/decomposition/value-supervision.
+#
+# --- original (now-falsified) draft below ---
 # Which Execution States Teach Compositional Generalization?
 _(method-centered alt-title if the selector wins: "Learning Compositional Reasoning from Distinguishing Execution States")_
 _Working draft — 2026-09-10. Numbers from ADAPTIVE_FORGETTING_RESULTS.md §§79–111; not yet independently replicated._
