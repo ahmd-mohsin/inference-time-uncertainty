@@ -4508,3 +4508,17 @@ data-flow, transferring to UNSEEN DAG structures. This is the first positive com
 where composition provably matters, with matched controls (beats plain distillation AND random-augmentation §108 C=0.80). REMAINING for
 the award claim: (1) 7B PERSISTENCE (does +0.07 survive scale, unlike every headroom-gated effect?); (2) PLACEBO (scrambled/wrong inlined
 values) — is the gain the data-flow SIGNAL or just longer targets? Both launched.
+
+## §110 ROUTE B controls — placebo PASSES (signal is real), but gain is CAPABILITY-GATED (7B persistence weak)
+PLACEBO (vscram: correct code + SCRAMBLED inlined values, 1.5B, 3 seeds): 0.81/0.765/0.765 (mean 0.780) ≈ B 0.787, and << Tvalue 0.857.
+=> The +0.07 is the DATA-FLOW SIGNAL (correct intermediate values), NOT a target-length artifact. Clean placebo pass.
+7B PERSISTENCE (3 seeds): B=0.87/0.89/0.89 (0.883); Tvalue=0.905/0.90/0.89 (0.898). Tvalue-B = +0.015 at 7B (ranges nearly touching)
+vs +0.070 at 1.5B. => The Route B benefit SHRINKS with scale, like the composition bottleneck itself (E1-DAG oracle-recovery 9.9%@1.5B
+-> 52.7%@7B). VERDICT: Route B is a REAL, mechanistically-validated positive (placebo-confirmed data-flow signal, seed-robust, on the
+domain where composition provably limits) — but it is CAPABILITY-GATED, not a scale-invariant unlock. The clean "gain persists at scale"
+award criterion is NOT met (+0.015 at 7B).
+UNIFYING THESIS (the paper's spine): every self-improvement intervention here helps IN PROPORTION TO THE BOTTLENECK IT ADDRESSES, and
+every bottleneck shrinks with capability — so ALL gains are capability/headroom-gated. Coverage-expansion helps where coverage is limited
+(headroom, §89/§93/§105b); composition-teaching (Route B) helps where wiring is limited (weak model + DAG structure, §109/§110); repair
+recovers more where the model can use feedback (§92b); RFT>>GRPO because RFT expands coverage where GRPO only reweights (§91). One law:
+self-improvement amplifies the binding bottleneck, and the amplifiable gap closes as models get stronger.
