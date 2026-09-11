@@ -65,3 +65,25 @@ attempted *positive methods* are modest or fail. One last positive-mechanism swi
 72 GPUs = 3 SSM-main nodes (ports 1093/1094/1095, profile greenlandw) + 6 workers (via `sshpass -p '' ssh -p 2222`, auth "none").
 New code this cycle: `comp_repair.py`, `comp_decompose.py` (token-instrumented), `comp_oracle_diag.py`, `comp_dag.py` (DAG domain +
 bank/eval/target-format modes). Death-proofed: report + code in git after every result; pods ~24h TTL; pools regenerate deterministically.
+
+---
+# v3 UPDATE (2026-09-10, later) — Route B resolved + the unifying law
+## Route B result (dense data-flow supervision on the DAG domain)
+- **Seed-robust positive at 1.5B (§109):** Tvalue 0.857 vs plain-distill B 0.787 = **+0.07, non-overlapping 3-seed ranges**, on held-out DAG wiring.
+- **Placebo PASSES (§110):** scrambled-value targets = 0.780 ≈ B 0.787 << Tvalue 0.857 → the gain is the **data-flow signal**, not target length.
+- **But capability-gated (§110):** gain shrinks +0.07 (1.5B) → +0.015 (7B), tracking the composition bottleneck (E1-DAG oracle-recovery 9.9%→52.7%).
+  The clean "scale-invariant unlock" award criterion is NOT met.
+
+## THE THESIS (recommend building the paper on this)
+**Self-improvement amplifies the binding bottleneck; the amplifiable gap closes with capability.** Unifies every result:
+coverage-expansion (RFT, headroom-gated) · composition-teaching (Route B, wiring-gated, PLACEBO-VALIDATED designed confirmation) ·
+repair (feedback-usage-gated) · RFT≫GRPO (expand vs reweight). One law, one mechanism per bottleneck, all capability-gated.
+
+## Honest award read
+Strong, shortlist-PLAUSIBLE main-track paper IF framed on the unifying law with Route B as the keystone (designed intervention that
+hits a specific bottleneck and helps in proportion to it, placebo-controlled). NOT a guaranteed award (no scale-invariant SOTA method).
+
+## FEEDBACK NEEDED
+1. Build the paper on the unifying "amplify the binding bottleneck" law (recommended), or insist on chasing a scale-invariant method?
+2. Route B is the keystone positive — keep hunting for a variant that persists at scale (e.g., process-level RL, harder DAGs at 7B), or lock the story?
+3. OK to start the actual paper draft now (intro/thesis/figures), or more experiments first?
