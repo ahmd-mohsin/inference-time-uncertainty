@@ -4696,3 +4696,20 @@ WHY AWARD-SHAPED (honest): overturns the prevailing "use GRPO/outcome-RL" defaul
 magnitude, or that coverage-targeting (CTH) is a scalable method (it is not, §122).
 CONFIRMATIONS IN FLIGHT / QUEUED (72-GPU): (a) GRPO 7B-hard server-mode vs RFT+ 0.567 [running 1093]; (b) size-vs-headroom grid 1.5B/3B/7B
 at matched depth-14 [running, 4 workers]; (c) estimator-knob ladder at 7B-hard [queued 1093]; (d) valid code-9B rung [running 1094].
+
+## §124 KEY POSITIVE (scale): the RFT+ ≫ GRPO dominance is HEADROOM-GATED and RETURNS at 7B — NOT a small-model artifact
+Server-mode GRPO (vLLM GPU0 + ZeRO-2 LoRA GPU1-7) on hard comp (depth-12 train), eval depth-14 OOD:
+  GRPO 7B-HARD = 0.455 (1 seed) vs RFT+ 7B-HARD = 0.567 (3 seeds, from CTH uniform arm 0.590/0.535/0.575) => RFT+ − GRPO = +0.112.
+CONTRAST across headroom at FIXED capability (7B):
+  7B-EASY (depth-7, base cov ~87%, low headroom): RFT+ − GRPO ~ +0.025 (§113b).
+  7B-HARD (depth-14, base cov ~57%, real headroom): RFT+ − GRPO = +0.112.  => the gap GROWS with headroom at the SAME model size.
+MECHANISM (why GRPO fails at high headroom): GRPO train reward stayed at FLOOR (~0.02-0.08 over 300 steps) — on hard comp the base rarely
+samples a success, so most GRPO groups are all-fail (dead groups, §79) => near-zero advantage signal => GRPO not only fails to learn but
+DEGRADES OOD below base (0.455 < ~0.57 base cov). RFT+ replays the OFFLINE-harvested verified successes and holds 0.567. This is exactly the
+Decoupled-Verified-Replay (DVR) thesis (§123): decoupling collection from the update wins precisely where on-policy sampling starves.
+SIGNIFICANCE: this DISSOCIATES two claims that §120/§122 had conflated —
+  (a) coverage-TARGETING (CTH, a trick to redirect harvest budget) is CAPABILITY-gated and does NOT return at 7B (§122, +0.003) — abandoned as a method;
+  (b) the DVR-vs-GRPO DOMINANCE is HEADROOM-gated and RETURNS at 7B (+0.112) — this is the scale-robust award result.
+The predictive law now has a positive out-of-sample confirmation: gap ∝ headroom holds ACROSS sizes AND within 7B across depths.
+HONEST CAVEATS: GRPO side is 1 seed so far (RFT+ is 3) — 2 more GRPO-7B-hard seeds queued; estimator-knob ladder at 7B-hard (zeroneg/
+successcount arms) RUNNING to confirm at scale it is coverage-not-objective (predict both ~= GRPO 0.455, << RFT 0.567). Not yet cross-domain at 7B.
