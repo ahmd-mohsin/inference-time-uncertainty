@@ -4603,3 +4603,14 @@ uni15 does NOT match). BUT N_dist gain is only +4.3% (<10% prereg) AND uniform-1
 COUNT. This challenges the H-C1 "OOD = f(N_dist)" collapse keystone as stated; the truer statistic is new/hard-coverage (consistent with the
 §89 removal control, where identity-of-covered-prompts, not count, carried the +0.165). Launching the k-sweep collapse curve to test directly
 whether (N_dist, OOD) collapses or whether coverage-composition dominates. NOTE: 2 seeds only — below the register's 4-seed rule; treat as first read.
+
+## §117 AWARD PROCEDURES — collapse curve + M1 CTH: the law is coverage-QUALITY, not N_dist count; CTH is a real method
+COLLAPSE CURVE (uniform-RFT k-sweep, 1 seed, comp depth-7 OOD): k=2 (N_dist 132) 0.460; k=4 (195) 0.530; k=8 (234) 0.620; k=16 (283) 0.645;
+k=32 (294) 0.670. => within the k-sweep, OOD rises monotonically with N_dist (coverage drives OOD, directional).
+M1 CTH (2 seeds, MATCHED total samples): CTH N_dist=240 OOD=0.640 (0.62/0.66); uniform(k8) N_dist=236 OOD=0.550; uniform-1.5x(k12)
+N_dist=259 OOD=0.5175. => DECISIVE: (a) CTH beats uniform by +0.090 at MATCHED N_dist (240~236) -> gain is NOT from count; (b) uniform-1.5x
+has the MOST N_dist (259) but the LOWEST OOD (0.5175) -> OOD is NOT a function of N_dist across sampling strategies. The H-C1 "OOD=f(N_dist)"
+collapse FAILS as a tight law (cross-strategy residuals ~0.1); the SUPPORTED law is coverage-QUALITY: OOD governed by hard/newly-reachable
+prompt coverage (consistent with the §89 removal control, where identity-of-covered-prompts carried +0.165). M1 CTH is a GENUINE POSITIVE
+METHOD: coverage-targeted harvesting (redirect budget to unsolved prompts) beats uniform RFT (+0.09) AND the matched-1.5x-budget control
+(+0.12), consistent across 2 seeds. NEEDS: 4-seed CIs (register rule) + framing as coverage-quality not N_dist. M6 portfolio pilot still running.
