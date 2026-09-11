@@ -4522,3 +4522,19 @@ every bottleneck shrinks with capability — so ALL gains are capability/headroo
 (headroom, §89/§93/§105b); composition-teaching (Route B) helps where wiring is limited (weak model + DAG structure, §109/§110); repair
 recovers more where the model can use feedback (§92b); RFT>>GRPO because RFT expands coverage where GRPO only reweights (§91). One law:
 self-improvement amplifies the binding bottleneck, and the amplifiable gap closes as models get stronger.
+
+## §111 THEORY RETRACTION (reviewer-directed) — drop the universal law + the RFT-vs-RL universal mechanism
+RETRACTED: (a) the headline "self-improvement amplifies, it does not expand" as a LAW — it conflicts with measured generalization and
+with our own coverage-expansion results; keep only the operational-reachability accounting (§101) as bookkeeping, not an impossibility.
+(b) "RFT expands whereas RL only reweights" as a universal mechanism. SUCCESS-GRADIENT IDENTITY: for a param-independent binary verifier V,
+p_theta(x)=E_{y~pi}[V]; then grad p_theta(x) = p_theta(x) * E[grad log pi(y|x) | V=1]. So the within-prompt-normalized expected RFT gradient
+on current-policy successes = grad log p_theta(x), and the binary policy gradient is p_theta(x) times the SAME direction. RFT and outcome-RL
+are NOT fundamentally different gradient families; the observed RFT>>GRPO OOD gap must be attributed to prompt-weighting / success-pooling /
+group-normalization / clipping / KL / collection-policy differences — an empirical question, not an incapability. (cf. Maximum Likelihood RL.)
+(c) "amplify the binding bottleneck" downgraded from law to EXPLANATORY HYPOTHESIS — it is unfalsifiable post-hoc unless the bottleneck is
+measured independently BEFORE training and predicts held-out results.
+KEPT (modest, correct): success-gradient identity; mixed-group formula P_mixed=1-p^G-(1-p)^G (one source of absent terminal signal);
+submodular coverage structure of the state-selection objective F(Q). INFO-THEORETIC caveat: given program+input+interpreter the execution
+trace is deterministic (no added Shannon info) — Tvalue's SFT benefit is bounded-learner USABILITY, not new information; for RL with coarse
+verifier feedback, extra state checks DO change the observed channel. NEW FRAMING (testable, not a law): "which verified execution states
+teach compositional generalization, and how does the benefit depend on the computation, the supervision content/cost, and the update rule?"
