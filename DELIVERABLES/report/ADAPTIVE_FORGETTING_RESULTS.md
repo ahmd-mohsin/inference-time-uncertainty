@@ -4583,3 +4583,11 @@ PROMPT-COVERAGE difference (ladder R6 / collection), NOT the estimator advantage
 "fix a knob INSIDE the RL estimator to recover RFT transfer" (H1.5) does not hold for the advantage-shape knobs; the remaining lever (broad
 multi-epoch replay) largely REDUCES TO RFT, i.e. not a novel inside-RL fix. Next decisive test: R6 (add fixed-broad-bank multi-epoch replay
 to R4) and a direct prompt-COVERAGE control (GRPO with many distinct prompts/step vs few). Generality cells (3B/deepseek/math/seeds) pending.
+
+## §115 METHOD REGISTER v3 — PREREGISTRATION (before any method eval is read)
+M1 CTH: "CTH raises N_dist >=10% at matched T_gen on 1.5B comp; OOD within 0.03 of the coverage curve; uniform-1.5x does NOT match."
+M2 NCW-RFT: "NCW lambda=3 beats random-mass control by >=0.02 at 1.5B/hard; ~0 at 7B; down-weighting N_new hurts."
+M3 scaffolded harvest: "scaffolded harvest covers >=15% of base zero-success DAG cohort; placebo <=5%; plain-prompt distill within 0.03 of curve."
+M6 portfolio: "cost/newly-covered-prompt crosses at p_hat<=0.05 @1.5B; portfolio>CTH by >=0.02 at matched total tokens, larger margin @7B; shuffled-cost < portfolio."
+M7 dense-reward GRPO: "dense reward halves D_fail + raises in-dist reliability; held-out wiring changes <0.02 (reweight not coverage)."
+Kill rules per METHOD_REGISTER_v3.md. Launching now (parallel with coverage factorial): M2 (SFT-only, reuses §89 banks), M1, M3, M7.
