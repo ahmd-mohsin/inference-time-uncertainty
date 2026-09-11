@@ -63,6 +63,10 @@ def build_args():
     p.add_argument("--scale-rewards", default=RLConfig.scale_rewards, choices=["group", "batch", "none"])
     p.add_argument("--adv-transform", default="none", choices=["none", "zeroneg", "successcount"],
                    help="Tier-1 ladder knob: zeroneg=clamp advantages>=0 (R3, positives-only); successcount=(adv>0) unit weight per success (R4)")
+    p.add_argument("--vsf-bank", default="", help="VSF (Verified Support Floor): add a persistent prompt-balanced replay loss "
+                   "over this verified bank jsonl (prompt+completion) alongside the GRPO loss")
+    p.add_argument("--vsf-lambda", type=float, default=1.0, help="weight of the VSF replay loss")
+    p.add_argument("--vsf-bsz", type=int, default=8, help="prompt-balanced replay batch size per step")
     p.add_argument("--max-completion-length", type=int, default=RLConfig.max_completion_length)
     p.add_argument("--gradient-accumulation-steps", type=int,
                    default=RLConfig.gradient_accumulation_steps,
@@ -248,6 +252,14 @@ def main():
                 model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
                 train_dataset=train_dataset, peft_config=peft_config,
                 bank=bank, proj_cfg=pc)
+    elif getattr(a, "vsf_bank", ""):
+        from rl_training.vsf_trainer import VSFTrainer
+        print(f">> VSF: verified-support-floor replay from {a.vsf_bank} (lambda={a.vsf_lambda}, bsz={a.vsf_bsz})")
+        trainer = VSFTrainer(
+            model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
+            train_dataset=train_dataset, peft_config=peft_config,
+            vsf_bank_path=a.vsf_bank, vsf_lambda=a.vsf_lambda, vsf_bsz=a.vsf_bsz,
+        )
     elif getattr(a, "adv_transform", "none") != "none":
         from rl_training.ladder_trainer import LadderGRPOTrainer
         print(f">> Tier-1 ladder: adv_transform={a.adv_transform}")
