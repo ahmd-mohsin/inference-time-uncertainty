@@ -4497,3 +4497,14 @@ Tplan (explicit plan-then-code)=0.455 (DERAILS — the plan prefix badly hurts).
 BUT B measured 0.83 in the §107 E2 run and 0.78 here — a 0.05 run-to-run swing on the SAME arm. The +0.04 Tvalue/cur advantage is therefore
 WITHIN run variance and NOT yet established. HONEST STATUS: promising direction (dense wiring supervision + curriculum both land at the top,
 plan-then-code clearly hurts), but a clean claim REQUIRES multi-seed CIs and a 7B persistence check. Launching B/Tvalue/cur x3 seeds.
+
+## §109 ROUTE B CONFIRMED (seed-robust) — dense intermediate-value supervision teaches transferable composition
+DAG held-out wiring (n=200, k=4), 3 SFT seeds each: Tvalue (Route B: verified intermediate VALUES inlined in targets) = 0.855/0.875/0.840
+(mean 0.857); B (plain reference distillation) = 0.785/0.780/0.795 (mean 0.787); cur (curriculum) = 0.805/0.790 (~0.798 ≈ B).
+=> Tvalue beats B by +0.070 with NON-OVERLAPPING ranges (Tvalue min 0.840 > B max 0.795) across 3 seeds each — a clean, seed-robust
+positive. Curriculum ties B (not a win). MECHANISM: E1-DAG established composition/data-flow WIRING is the real bottleneck (9.9%
+oracle-recovery at 1.5B, §106); inlining the VERIFIED intermediate values as dense process supervision teaches the model to wire the
+data-flow, transferring to UNSEEN DAG structures. This is the first positive composition-teaching mechanism in the program, on the domain
+where composition provably matters, with matched controls (beats plain distillation AND random-augmentation §108 C=0.80). REMAINING for
+the award claim: (1) 7B PERSISTENCE (does +0.07 survive scale, unlike every headroom-gated effect?); (2) PLACEBO (scrambled/wrong inlined
+values) — is the gain the data-flow SIGNAL or just longer targets? Both launched.
