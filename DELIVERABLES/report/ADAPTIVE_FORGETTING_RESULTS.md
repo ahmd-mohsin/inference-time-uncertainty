@@ -4757,3 +4757,17 @@ Base pass@4 (temp 0.8) on hard_d14ood (the depth-14 OOD, freshly measured — su
      recover the preservation side (predict VSF >= base, closing toward RFT). [per-problem alpha/beta from saved per_problem JSONs next.]
 STATUS: base evals DONE (1093 GPU5-7). VSF 7B-hard training 53/300. 3B mech row: RFT 0.505, GRPO ~191/300, VSF running. non-starved GRPO
 1.5B (num_gen16, grad_accum16) running. Compiling full mechanism matrix + per-problem alpha/beta when VSF cells land.
+
+## §128 DE-RISK PASSED (non-starved GRPO) + VSF partial repair + GRPO-below-base replicates at 3B
+NON-STARVED GRPO (Astra E3/E4, THE #1 paper risk): num_generations 16 (2x groups, dead-group rate P_fail 0.66->0.44) at 1.5B-mid, 3 seeds:
+  GRPO-G16 = {0.215, 0.245, 0.245} mean ~0.235  ==  plain GRPO 1.5B-mid 0.235  <<  RFT 0.482.
+  => LARGER GROUPS DO NOT CLOSE THE GAP. The RFT>>GRPO OOD deficit is NOT a starved/under-powered-baseline artifact. Risk DEFUSED at 1.5B.
+     (Dynamic-resampling is the stronger non-starved test; larger-G already falsifies the "just under-sampled" objection.)
+3B-HARD mechanism row (identical data+bank): base 0.255 | RFT 0.505 (+0.250 ACQUIRE) | GRPO 0.210 (-0.045 BELOW base, REGRESSION).
+  => GRPO-degrades-below-base REPLICATES at 3B (like 7B 0.455<0.475). Outcome-RL damages held-out capability wherever the base can't sample successes.
+VSF (Verified Support Floor) — the method, first results:
+  1.5B-mid: GRPO 0.235 -> VSF 0.330 -> RFT 0.482. VSF PARTIALLY repairs GRPO (+0.095, ~40% of the GRPO->RFT gap) but replay-only (RFT) still best.
+  => consistent with Astra B1: the support floor REPAIRS much of GRPO's deficit; fixed-bank replay (RFT) may remain the most compute-efficient
+     recipe in this regime. VSF 7B-hard training (222/300); 3B/1.5B-hard VSF evals pending (some eval-contention blanks to re-run).
+HEADLINE SHAPING: (1) the gap is real (survives non-starved GRPO); (2) mechanism = GRPO REGRESSES below base + RFT ACQUIRES (alpha/beta, §127);
+(3) VSF repairs the preservation side. Award framing (Astra E): "verified support, not on-policy updates" — with GRPO's below-base regression the smoking gun.
