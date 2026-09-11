@@ -4745,3 +4745,15 @@ DE-RISK (Astra E3, the #1 paper risk = "starved GRPO baseline"): non-starved GRP
 groups, the starved-baseline critique is defused; if it closes, we rebuild the claim honestly around informative-sampling/support-acquisition.
 NEXT per Astra: alpha/beta acquisition-vs-preservation decomposition (C7) on the 7B/9B evals; coverage-vs-reward reconciliation table (A2:
 57% is pass@K not pass@1 at p~0.05, 1-(1-0.05)^16~0.56); predictive-law train/test split (D7). CTH stays only as the honest size-gated boundary.
+
+## §127 BASE EVALS + alpha/beta decomposition (Astra C7): GRPO DEGRADES below base, RFT ACQUIRES — on the SAME hard OOD
+Base pass@4 (temp 0.8) on hard_d14ood (the depth-14 OOD, freshly measured — supersedes the pass@K ~0.57 figure; that was a larger budget):
+  base 1.5B = 0.085 | base 3B = 0.255 | base 7B = 0.475   (headroom H = 1-base: 1.5B 0.915, 3B 0.745, 7B 0.525 -> genuine headroom at every size)
+7B-HARD acc-vs-base decomposition (Acc(M)-Acc(B), the sign that matters):
+  RFT 0.567  => +0.092 over base  (ACQUISITION: solves previously-unsolved OOD)
+  GRPO 0.455 => -0.020 BELOW base (REGRESSION: outcome-RL DAMAGES held-out capability on hard tasks)
+  => the +0.112 RFT-GRPO gap is NOT "RFT learns more" alone; it is "RFT acquires (+0.09) AND GRPO regresses (-0.02)". This is Astra's
+     acquisition/preservation split: on-policy RL under dead-group starvation moves mass OFF previously-correct OOD behavior. VSF should
+     recover the preservation side (predict VSF >= base, closing toward RFT). [per-problem alpha/beta from saved per_problem JSONs next.]
+STATUS: base evals DONE (1093 GPU5-7). VSF 7B-hard training 53/300. 3B mech row: RFT 0.505, GRPO ~191/300, VSF running. non-starved GRPO
+1.5B (num_gen16, grad_accum16) running. Compiling full mechanism matrix + per-problem alpha/beta when VSF cells land.
