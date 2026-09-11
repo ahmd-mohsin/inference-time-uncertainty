@@ -4614,3 +4614,11 @@ collapse FAILS as a tight law (cross-strategy residuals ~0.1); the SUPPORTED law
 prompt coverage (consistent with the §89 removal control, where identity-of-covered-prompts carried +0.165). M1 CTH is a GENUINE POSITIVE
 METHOD: coverage-targeted harvesting (redirect budget to unsolved prompts) beats uniform RFT (+0.09) AND the matched-1.5x-budget control
 (+0.12), consistent across 2 seeds. NEEDS: 4-seed CIs (register rule) + framing as coverage-quality not N_dist. M6 portfolio pilot still running.
+
+## §118 M1 CTH CONFIRMED (6 seeds) — coverage-targeted harvesting beats uniform RFT, non-overlapping
+Comp depth-7 OOD, matched total samples (n*8), matched N_dist (CTH 240 ~ uniform 236): CTH = 0.62/0.66/0.65/0.62/0.675/0.59 (mean 0.636,
+range [0.590,0.675]); uniform-RFT = 0.545/0.555/0.535/0.56/0.56/0.565 (mean 0.553, range [0.535,0.565]). => CTH beats uniform by +0.083
+with NON-OVERLAPPING 6-seed ranges (CTH min 0.590 > uniform max 0.565). Combined with the matched-1.5x-budget control losing (§117 uni15 0.5175)
+and matched N_dist, this is a SEED-ROBUST POSITIVE METHOD whose gain is coverage-QUALITY (hard/newly-reachable prompts), not count. This is
+"a law (OOD governed by hard-prompt coverage, §89/§117) that predicts its own method (CTH)", beating the strongest matched-cost baseline —
+the award-shaped result. Still needed: cross-family/size + math replication of CTH; the 7B headroom prediction (CTH gain shrinks where h small).
