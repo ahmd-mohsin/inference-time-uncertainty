@@ -4810,3 +4810,13 @@ and closes 40-100% of the GRPO->RFT gap; it reaches FULL RFT-parity at 7B but on
 outcome-RL's OOD deficit, but fixed-bank replay (RFT) remains >= VSF everywhere (== at 7B) => RFT/DVR is still the most reliable recipe; VSF's value
 is the MECHANISTIC proof (adding persistent verified support to GRPO recovers most of the deficit) + it being a drop-in fix for on-policy pipelines.
 VSF 1.5B-mid seed CI: {0.330, 0.335, s3 pending} -> tight, ~0.33. This does NOT overturn "RFT>=VSF"; it sharpens the repair-not-replacement framing (Astra B1).
+
+## §132 PREREGISTRATION (memo R3/L1) — out-of-sample predictions BEFORE reading in-flight cells (award leg b)
+Fit intuition from finished (base,GRPO,RFT) cells: Δ_GRPO=GRPO-base (regression) and Δ_RFT=RFT-base scale with headroom h=1-base, with a
+family offset (deepseek regresses more per unit h). Anchors: 7B h=.525 ΔG=-.020 ΔR=+.092 | 3B h=.745 ΔG=-.045 ΔR=+.250 | ds6.7B h=.575 ΔG=-.075 ΔR=+.060.
+PREREGISTERED (written before the runs finished; VSF/GRPO arms still training on old nodes):
+  * deepseek-6.7B VSF (base .425, GRPO .350, RFT .485): predict VSF in [0.44, 0.47] — reverses GRPO's regression (>= base .425), PARTIAL vs RFT. Kill: VSF < 0.425 (fails to repair) or VSF > 0.49 (full/over parity, unexpected at this family).
+  * 14B-hard (base .715, LOW headroom h=.285): predict GRPO in [0.66, 0.71] (small regression, ~ -0.01..-0.05, low-headroom => small effect); RFT ~ 0.730 (seen); VSF in [0.71, 0.74] (~= RFT). Kill: GRPO << 0.66 (large regression despite low headroom -> headroom law wrong) or VSF < base.
+  * 14B depth-16 (queued, high headroom): predict GRPO < base (regression RETURNS at 14B once headroom exists); RFT >> base; VSF ~= RFT. This is the decisive top-of-range headroom test.
+LAW CLAIM under test: sign(Δ_GRPO) is negative wherever h is non-trivial (regression is headroom-gated, not size-gated); |Δ_RFT| grows with h.
+These predictions are FROZEN. Reading the in-flight 14B/deepseek results against them = the out-of-sample validation (memo L1).
