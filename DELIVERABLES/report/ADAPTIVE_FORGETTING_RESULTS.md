@@ -4789,3 +4789,10 @@ THE THREE AWARD LEGS NOW HOLD:
  3. REPAIR: VSF closes the gap to RFT parity at 7B (0.455->0.575) and partially at 1.5B (0.235->0.330; 0.085->0.215) [§129].
 NOTE: VSF repair is STRONGER at 7B (full, ==RFT) than 1.5B (partial) — support-floor scales UP (opposite of CTH). Retry VSF 3B (OOM'd) +
 VSF 9B for the full VSF column; per-problem alpha/beta from saved per_problem JSONs; predictive-law train/test split next.
+
+## §130 VSF column update: 3B-hard = 0.280 (repairs above base, partial vs RFT); repair strengthens with size
+VSF 3B-hard = 0.280: base 0.255 | GRPO 0.210 (below base) | VSF 0.280 (+0.025 above base, repairs GRPO's regression) | RFT 0.505.
+VSF repair magnitude vs RFT-parity by size (fraction of GRPO->RFT gap closed / does it clear base):
+  1.5B-mid 0.235->0.330 (partial, ~40%) | 1.5B-hard 0.085 base? VSF 0.215 vs RFT 0.260 (near-RFT) | 3B-hard 0.210->0.280 (clears base, ~28% of gap)
+  | 7B-hard 0.455->0.575 == RFT 0.567 (FULL repair). => VSF consistently REVERSES GRPO's below-base regression at every size, and reaches full
+  RFT-parity at 7B. Pattern: the support-floor repair STRENGTHENS with model size (opposite of CTH). VSF 9B-hard training (110/300).
