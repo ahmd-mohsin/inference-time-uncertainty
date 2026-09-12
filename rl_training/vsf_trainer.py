@@ -14,11 +14,12 @@ from trl import GRPOTrainer
 
 class VSFTrainer(GRPOTrainer):
     def __init__(self, *args, vsf_bank_path: str = "", vsf_lambda: float = 1.0,
-                 vsf_bsz: int = 8, vsf_maxlen: int = 900, **kwargs):
+                 vsf_bsz: int = 8, vsf_maxlen: int = 900, vsf_pg_weight: float = 1.0, **kwargs):
         super().__init__(*args, **kwargs)
         self.vsf_lambda = float(vsf_lambda)
         self.vsf_bsz = int(vsf_bsz)
         self.vsf_maxlen = int(vsf_maxlen)
+        self.vsf_pg_weight = float(vsf_pg_weight)  # scale on the GRPO/PG loss; 0 => replay-only-online (memo W0 VSF-minus-PG)
         self._bank = {}          # prompt -> list[completion]
         self._prompts = []       # distinct covered prompts (coverage unit)
         self._ptr = 0
@@ -91,6 +92,7 @@ class VSFTrainer(GRPOTrainer):
     def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
         out = super().compute_loss(model, inputs, return_outputs=return_outputs, **kwargs)
         loss, extra = (out if isinstance(out, tuple) else (out, None))
+        loss = self.vsf_pg_weight * loss   # W0: pg_weight=0 => replay-only-online (drop the GRPO term, keep verified replay)
         if self.vsf_lambda > 0 and self._prompts:
             rl = self._replay_loss(model)
             loss = loss + self.vsf_lambda * rl

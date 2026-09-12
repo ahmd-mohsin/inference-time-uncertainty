@@ -67,6 +67,7 @@ def build_args():
                    "over this verified bank jsonl (prompt+completion) alongside the GRPO loss")
     p.add_argument("--vsf-lambda", type=float, default=1.0, help="weight of the VSF replay loss")
     p.add_argument("--vsf-bsz", type=int, default=8, help="prompt-balanced replay batch size per step")
+    p.add_argument("--vsf-pg-weight", type=float, default=1.0, help="scale on GRPO/PG loss in VSF; 0 => replay-only-online (memo W0)")
     p.add_argument("--max-completion-length", type=int, default=RLConfig.max_completion_length)
     p.add_argument("--gradient-accumulation-steps", type=int,
                    default=RLConfig.gradient_accumulation_steps,
@@ -259,6 +260,7 @@ def main():
             model=cfg.model_name, args=grpo_args, reward_funcs=reward_funcs,
             train_dataset=train_dataset, peft_config=peft_config,
             vsf_bank_path=a.vsf_bank, vsf_lambda=a.vsf_lambda, vsf_bsz=a.vsf_bsz,
+            vsf_pg_weight=a.vsf_pg_weight,
         )
     elif getattr(a, "adv_transform", "none") != "none":
         from rl_training.ladder_trainer import LadderGRPOTrainer
