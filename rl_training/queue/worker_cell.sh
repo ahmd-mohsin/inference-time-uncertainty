@@ -13,7 +13,7 @@ CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.comp_gen --model $M --pool $TR --k
 echo "bank=$(wc -l <$BANK)" >>$R
 ev $M base
 # RFT
-python3 -m rl_training.sft_train --model $M --data $BANK --out $G/w_${TAG}_rft --seed 1 --max-steps 250 --bsz 8 >$L/w_${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$G/w_${TAG}_rft')">>$L/w_${TAG}_rft.log 2>&1; ev $G/w_${TAG}_rft/merged_full rft
+CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $M --data $BANK --out $G/w_${TAG}_rft --seed 1 --max-steps 250 --bsz 8 >$L/w_${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$G/w_${TAG}_rft')">>$L/w_${TAG}_rft.log 2>&1; ev $G/w_${TAG}_rft/merged_full rft
 # GRPO
 CUDA_VISIBLE_DEVICES=0 VLLM_GPU_MEM_UTIL=$GM MASTER_PORT=29800 python3 -m rl_training.train_grpo --model $M --dataset comp:$TR --reward-mode comp --no-novelty --vllm-mode colocate --num-generations 8 --num-train-steps 300 --max-completion-length 512 --seed 1 --output-dir $G/w_${TAG}_grpo >$L/w_${TAG}_grpo.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$G/w_${TAG}_grpo')">>$L/w_${TAG}_grpo.log 2>&1; ev $G/w_${TAG}_grpo/merged_full grpo
 # VSF
