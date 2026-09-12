@@ -4830,3 +4830,17 @@ program (§120-131: VSF repairs GRPO at 7B, mechanism/alpha-beta, 3-family regre
 RECOVERY: new nodes (1101/1102/1103) now run the decisive memo experiments WITH a results-puller that commits RESULTS_qN.md to GitHub each
 cycle (death-proof). q3 regenerates a 14B point (depth-16, high-headroom). LESSON ENFORCED: on-node results must be pushed every cycle, never
 left for an end-of-run pull (this loss is the second time node-death cost in-flight results; the puller now prevents it).
+
+## §134 DISSOCIATION RESULT (memo X-series, 1.5B-hard OOD, base=0.090) — prior-support wins; disjoint-replay anchors; estimator knobs null
+Full arm sweep (comp depth-12 train -> depth-14 OOD; new p4d nodes, cu126 stack; also in-dist=depth-12):
+  base 0.090 (id 0.140) | GRPO 0.095 (id 0.145) | X6-zeroneg 0.085 | X3-KL0.2 0.090 | X1-disjoint-replay-VSF 0.165 | RFT 0.220 | X9-prior-support(RFT->GRPO) 0.335
+INTERPRETATION (memo X-series):
+ - GRPO ~= base (0.095 vs 0.090): at this near-floor base, GRPO neither acquires nor visibly regresses (too little to regress from). Acquisition failure is the signal here.
+ - X6 zero-neg, X3 KL-leash ~= base: removing negatives / KL-anchoring ALONE do NOT acquire -> estimator knobs are null for ACQUISITION (consistent §114).
+ - X1 DISJOINT-replay (VSF bank from UNRELATED prompts) = 0.165 > GRPO 0.095: replaying verified successes from disjoint prompts STILL helps (+0.07).
+   Per memo X1: supports the ANCHORING interpretation of the replay benefit (stabilizes the policy) as distinct from same-prompt COVERAGE acquisition.
+ - RFT 0.220 (same-pool verified replay) > disjoint 0.165 -> coverage adds acquisition ON TOP of anchoring.
+ - X9 PRIOR-SUPPORT (RFT-then-GRPO) = 0.335, BEST (beats RFT alone): seeding GRPO with verified support first is optimal -> unifies the standard SFT->RL recipe;
+   verified support BEFORE on-policy RL both prevents erosion and enables acquisition. This is the memo's two-factor picture landing: anchor (any replay) + acquire (verified coverage), and prior-support delivers both.
+VALIDATION: worker w15hard (independent p4d node) base 0.075 / GRPO 0.095 == q2 -> reproducible across nodes/hardware.
+STATUS: 9-cluster run live (cu126 stack). 6-worker DVR/GRPO/VSF matrix (1.5/3/7B x mid/hard) in progress; q1(7B)/q3(14B) server-mode arms OOM'd (covered by §124/§129). Puller commits results each cycle.
