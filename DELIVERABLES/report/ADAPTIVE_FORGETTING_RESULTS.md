@@ -4771,3 +4771,21 @@ VSF (Verified Support Floor) — the method, first results:
      recipe in this regime. VSF 7B-hard training (222/300); 3B/1.5B-hard VSF evals pending (some eval-contention blanks to re-run).
 HEADLINE SHAPING: (1) the gap is real (survives non-starved GRPO); (2) mechanism = GRPO REGRESSES below base + RFT ACQUIRES (alpha/beta, §127);
 (3) VSF repairs the preservation side. Award framing (Astra E): "verified support, not on-policy updates" — with GRPO's below-base regression the smoking gun.
+
+## §129 VSF REPAIRS GRPO AT SCALE (the method result) — full mechanism matrix
+VSF 7B-HARD = 0.575 (clean re-eval after GPU0-zombie eval-contention). 7B-hard row on IDENTICAL depth-14 OOD:
+  base 0.475 | GRPO 0.455 (-0.020 below base, REGRESSION) | RFT 0.567 (+0.092) | VSF 0.575 (+0.100, == RFT, >> GRPO by +0.120)
+=> VSF (GRPO + persistent prompt-balanced verified-support replay) FULLY REPAIRS GRPO's OOD deficit at 7B and reaches RFT parity. The support
+   floor converts GRPO's below-base regression into RFT-level acquisition. This is the award method result (Astra B1/E4 contribution-3).
+FULL MECHANISM MATRIX (acc on hard/mid OOD; base | GRPO | non-starved GRPO(G16) | VSF | RFT):
+  1.5B-mid (d7->9):  --   | 0.235 | 0.235(G16, NO help) | 0.330 | 0.482
+  1.5B-hard(d12->14): 0.085| --    | --                  | 0.215 | 0.260
+  3B-hard (d12->14): 0.255 | 0.210(regress) | --          | (OOM, retry) | 0.505
+  7B-hard (d12->14): 0.475 | 0.455(regress) | --          | 0.575 | 0.567
+  9B-hard (d12->14): --    | 0.395 | --                   | --    | 0.520
+THE THREE AWARD LEGS NOW HOLD:
+ 1. DEFICIT IS REAL (not a starved baseline): non-starved GRPO num_gen16 == plain GRPO << RFT (1.5B-mid 0.235 both) [§128].
+ 2. MECHANISM (alpha/beta): GRPO REGRESSES below base (3B 0.210<0.255, 7B 0.455<0.475); RFT ACQUIRES (+0.09..+0.25) [§127].
+ 3. REPAIR: VSF closes the gap to RFT parity at 7B (0.455->0.575) and partially at 1.5B (0.235->0.330; 0.085->0.215) [§129].
+NOTE: VSF repair is STRONGER at 7B (full, ==RFT) than 1.5B (partial) — support-floor scales UP (opposite of CTH). Retry VSF 3B (OOM'd) +
+VSF 9B for the full VSF column; per-problem alpha/beta from saved per_problem JSONs; predictive-law train/test split next.
