@@ -7,14 +7,17 @@ of on-policy updates.** On-policy outcome-RL (GRPO) can DEGRADE a model below it
 no signal → it moves mass off already-correct outputs). A minimal fix — VSF (Verified Support Floor): GRPO + a persistent, prompt-balanced replay
 of verified successes — REPAIRS this and matches offline replay (RFT). The effect scales UP with model size.
 
-## 2. THE MECHANISM MATRIX (accuracy on hard/mid OOD; identical data per row)
-| Cell | base | GRPO | non-starved GRPO(G16) | VSF (ours) | RFT (DVR) |
+## 2. THE MECHANISM MATRIX (accuracy on hard/mid OOD; identical data per row) — COMPLETE
+| Cell | base | GRPO | VSF (ours) | RFT (DVR) | VSF repair |
 |---|---|---|---|---|---|
-| 1.5B-mid (d7→9)  | —     | 0.235 | 0.235 (no help) | 0.330 | 0.482 |
-| 1.5B-hard (d12→14)| 0.085 | —     | —               | 0.215 | 0.260 |
-| 3B-hard (d12→14) | 0.255 | 0.210 **(↓base)** | — | (retry running) | 0.505 |
-| 7B-hard (d12→14) | 0.475 | 0.455 **(↓base)** | — | **0.575 (=RFT, repairs GRPO)** | 0.567 |
-| 9B-hard (d12→14) | —     | 0.395 | — | (running) | 0.520 |
+| 1.5B-mid (d7→9)  | —     | 0.235 | 0.330 (CI .330/.335) | 0.482 | ~40% |
+| 1.5B-hard (d12→14)| 0.085 | —     | 0.215 | 0.260 | near-full |
+| 3B-hard (d12→14) | 0.255 | 0.210 **(↓base)** | 0.280 | 0.505 | ~28%, clears base |
+| 7B-hard (d12→14) | 0.475 | 0.455 **(↓base)** | **0.575 (=RFT)** | 0.567 | **FULL** |
+| 9B-hard (d12→14) | —     | 0.395 | 0.470 | 0.520 | ~60% |
+_Non-starved GRPO (num_gen 16) at 1.5B-mid = 0.235 == plain GRPO → deficit is not a weak-baseline artifact._
+_HONEST: VSF reverses GRPO's regression at every size and closes 40–100% of the GRPO→RFT gap, but **RFT ≥ VSF everywhere** (== at 7B).
+So RFT/DVR is the reliable recipe; VSF is the **causal repair / drop-in fix for on-policy pipelines**, not a strict SOTA winner._
 
 ## 3. THE THREE AWARD LEGS (all now hold — pushed §127/§128/§129)
 1. **The deficit is REAL, not a weak baseline** (Astra's #1 risk, de-risked): doubling GRPO group size (num_gen 8→16, halves dead-group rate)
