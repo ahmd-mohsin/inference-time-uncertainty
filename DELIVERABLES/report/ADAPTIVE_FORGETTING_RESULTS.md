@@ -4820,3 +4820,13 @@ PREREGISTERED (written before the runs finished; VSF/GRPO arms still training on
   * 14B depth-16 (queued, high headroom): predict GRPO < base (regression RETURNS at 14B once headroom exists); RFT >> base; VSF ~= RFT. This is the decisive top-of-range headroom test.
 LAW CLAIM under test: sign(Δ_GRPO) is negative wherever h is non-trivial (regression is headroom-gated, not size-gated); |Δ_RFT| grows with h.
 These predictions are FROZEN. Reading the in-flight 14B/deepseek results against them = the out-of-sample validation (memo L1).
+
+## §133 DATA LOSS (honest): old nodes hit 24h TTL — 14B-GRPO/VSF (depth-14) + deepseek-VSF finals LOST
+Old nodes 1093/1094 died (TargetNotConnected, SSM deregistered at ~24h TTL) with runs in-flight and results NOT pushed. Lost:
+  - 14B-hard(depth-14): GRPO (was ~181/300, never evaled) and VSF (never started/evaled). BANKED before death: base 0.715, RFT 0.730.
+  - deepseek-6.7B: VSF (was training, never evaled). BANKED: base 0.425, RFT 0.485, GRPO 0.350 (regression, §126) — the KEY deepseek finding survives.
+Impact: the §132 preregistered predictions for 14B-GRPO/VSF and deepseek-VSF cannot be scored from these runs. NOT load-bearing — the core
+program (§120-131: VSF repairs GRPO at 7B, mechanism/alpha-beta, 3-family regression incl deepseek-GRPO, de-risk) is pushed + safe.
+RECOVERY: new nodes (1101/1102/1103) now run the decisive memo experiments WITH a results-puller that commits RESULTS_qN.md to GitHub each
+cycle (death-proof). q3 regenerates a 14B point (depth-16, high-headroom). LESSON ENFORCED: on-node results must be pushed every cycle, never
+left for an end-of-run pull (this loss is the second time node-death cost in-flight results; the puller now prevents it).
