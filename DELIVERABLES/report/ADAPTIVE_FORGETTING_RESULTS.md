@@ -4844,3 +4844,15 @@ INTERPRETATION (memo X-series):
    verified support BEFORE on-policy RL both prevents erosion and enables acquisition. This is the memo's two-factor picture landing: anchor (any replay) + acquire (verified coverage), and prior-support delivers both.
 VALIDATION: worker w15hard (independent p4d node) base 0.075 / GRPO 0.095 == q2 -> reproducible across nodes/hardware.
 STATUS: 9-cluster run live (cu126 stack). 6-worker DVR/GRPO/VSF matrix (1.5/3/7B x mid/hard) in progress; q1(7B)/q3(14B) server-mode arms OOM'd (covered by §124/§129). Puller commits results each cycle.
+
+## §135 INDEPENDENT-HARDWARE VALIDATION (new p4d nodes, cu126 stack) — core story reproduces
+6-worker DVR/GRPO/VSF matrix on fresh p4d.24xlarge nodes (torch2.11+cu126 + flash-attn cu126 + nvidia-cuda-runtime-cu13 stack; comp depth->OOD):
+  1.5B-mid (d7->9):  base 0.205 | VSF 0.340 | RFT 0.505    (GRPO arm capture failed; VSF>base+0.135, RFT dominates)
+  1.5B-hard (d12->14): base 0.075 | GRPO 0.095 | VSF 0.180 | RFT 0.375   (RFT>VSF>GRPO~=base; VSF partial-repair; matches §131 "VSF partial at 1.5B")
+  3B-hard (d12->14): base 0.240 | GRPO 0.175 (BELOW base = regression) | RFT/VSF pending
+  7B (mid/hard): base 0.60/0.445 only — 7B colocate OOMs on 40GB p4d (server-mode also OOMs here); 7B/9B covered by old-node §124/§129.
+=> Independent reproduction of the spine: RFT/DVR dominates OOD; VSF partially repairs (below RFT at 1.5B, == RFT at 7B per §129); GRPO ~= base
+   or regresses (3B-hard 0.175<0.240). Cross-hardware + cross-CUDA-stack robustness of the core finding.
+INFRA (validated + committed): fresh pytorch-base-24.12 needs vllm0.23 + transformers4.57.6 + torch/torchvision cu126 + nvidia-cuda-runtime-cu13
+(LD_LIBRARY_PATH, for vllm's cu13 engine) + flash-attn cu126 source build; sft_train must pin CUDA_VISIBLE_DEVICES=0 (DataParallel device bug). All in rl_training/queue/.
+OPEN: 3B RFT/VSF arms finishing; 7B needs a >40GB path or the old-node numbers; GRPO-capture race on some worker cells (accs recoverable from eval logs).
