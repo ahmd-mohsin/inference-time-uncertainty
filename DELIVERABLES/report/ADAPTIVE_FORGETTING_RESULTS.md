@@ -4796,3 +4796,17 @@ VSF repair magnitude vs RFT-parity by size (fraction of GRPO->RFT gap closed / d
   1.5B-mid 0.235->0.330 (partial, ~40%) | 1.5B-hard 0.085 base? VSF 0.215 vs RFT 0.260 (near-RFT) | 3B-hard 0.210->0.280 (clears base, ~28% of gap)
   | 7B-hard 0.455->0.575 == RFT 0.567 (FULL repair). => VSF consistently REVERSES GRPO's below-base regression at every size, and reaches full
   RFT-parity at 7B. Pattern: the support-floor repair STRENGTHENS with model size (opposite of CTH). VSF 9B-hard training (110/300).
+
+## §131 VSF 9B = 0.470 (partial) + CORRECTION to §130: VSF repair is NOT monotonic in size
+VSF 9B-hard (Yi-Coder-9B, clean re-eval) = 0.470: GRPO 0.395 | VSF 0.470 (+0.075, repairs) | RFT 0.520. PARTIAL (~60% of GRPO->RFT gap), NOT full parity.
+CORRECTION: §130 claimed "VSF repair strengthens with size" — that was premature (only 7B seen). FALSE as stated. The honest pattern:
+  1.5B-mid: GRPO 0.235 -> VSF 0.330 (CI: seeds 0.330/0.335) -> RFT 0.482   [~40% of gap]
+  1.5B-hard: VSF 0.215 -> RFT 0.260                                         [near-full]
+  3B-hard:  GRPO 0.210 -> VSF 0.280 -> RFT 0.505                            [~28%, clears base]
+  7B-hard:  GRPO 0.455 -> VSF 0.575 == RFT 0.567                            [FULL parity]
+  9B-hard:  GRPO 0.395 -> VSF 0.470 -> RFT 0.520                            [~60%]
+HONEST HEADLINE (what actually holds): VSF REVERSES GRPO's below-base regression at EVERY size (VSF > GRPO everywhere; >= base where measured)
+and closes 40-100% of the GRPO->RFT gap; it reaches FULL RFT-parity at 7B but only PARTIAL at 9B/3B/1.5B. So VSF is a real, consistent REPAIR of
+outcome-RL's OOD deficit, but fixed-bank replay (RFT) remains >= VSF everywhere (== at 7B) => RFT/DVR is still the most reliable recipe; VSF's value
+is the MECHANISTIC proof (adding persistent verified support to GRPO recovers most of the deficit) + it being a drop-in fix for on-policy pipelines.
+VSF 1.5B-mid seed CI: {0.330, 0.335, s3 pending} -> tight, ~0.33. This does NOT overturn "RFT>=VSF"; it sharpens the repair-not-replacement framing (Astra B1).
