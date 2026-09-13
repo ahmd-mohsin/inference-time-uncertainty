@@ -4886,3 +4886,21 @@ L3 MATH (2nd domain, MATH-500 level-5, 1.5B, k=1/2/4): base 0.083/0.139/0.208 | 
   regression is NOT a comp-generator artifact (memo L3 direction; corroborates §40 OlympiadBench GRPO 0.100<base 0.106). 7B math GRPO OOM'd (colocate).
 STATUS: VSF arms at 3B blank (failed/eval-missing); math RFT/VSF arms not run. Enough for: spine reproduced clean; predictive law REVISED to
 accessibility-gated; 2nd-domain regression corroborated.
+
+## §138 H0 GATE (memo regression-budget) — hidden acquisition CONFIRMED, but oracle-envelope FAILS the gate -> retention-fix-on-GRPO not worth funding
+Per-problem k=16, c15mid, n=200 (base vs GRPO/RFT/VSF on same OOD pool; alpha=P(RL=1|base=0), beta=P(RL=0|base=1), O=E[max(base,RL)]):
+  GRPO: alpha .214  beta .203  acc .430  O=0.505
+  VSF : alpha .389  beta .081  acc .585  O=0.615
+  RFT : alpha .635  beta .068  acc .745  O=0.770
+FINDING 1 (memo H0 thesis VALIDATED): GRPO's near-flat net (.430 vs base .370) HIDES substantial acquisition (alpha .214) offset by
+substantial regression (beta .203). Averaged accuracy conceals both directions -> per-problem measurement is essential (as the memo argued).
+FINDING 2 (GATE = NO-GO for the retention-fix paper): the ORACLE ENVELOPE of the observed GRPO trajectory O=E[max(base,GRPO)]=0.505 is FAR below
+continued RFT (0.745). Per the memo's own kill-rule, "if even this envelope cannot surpass continued RFT, merely preserving the gains of the
+observed RL trajectory cannot produce the desired winner." => The ceiling is NOT regression; it is that GRPO ACQUIRES TOO LITTLE (alpha .214 vs
+RFT .635). A regression-budget/retention fix on the GRPO trajectory cannot beat RFT.
+FINDING 3 (VSF mechanism, real): VSF improves BOTH axes over GRPO (alpha .214->.389 acquires MORE; beta .203->.081 regresses LESS) -> the support
+floor genuinely helps acquisition AND preservation. But O(VSF)=0.615 still < RFT 0.745; RFT dominates on both axes here.
+SCOPE/CAVEAT: this is the GRPO-from-base trajectory; the memo's H1 starts RL FROM the RFT checkpoint (different oracle E[max(RFT, RL-from-RFT)]).
+The small alpha_GRPO makes a large H1 win over RFT unlikely, but H1-from-RFT is not strictly closed by this. HONEST VERDICT: do NOT fund the large
+regression-budget method study on this evidence (memo gate). The publishable results are (a) the hidden-acquisition alpha/beta decomposition and
+(b) VSF's dual-axis (more acquire + less regress) mechanism. Minimal remaining test to fully close H1: one constrained-RL-from-RFT arm vs RFT at matched cost.
