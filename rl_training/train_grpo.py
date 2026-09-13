@@ -212,6 +212,10 @@ def main():
         reward_weights=reward_weights, seed=cfg.seed,
         use_vllm=cfg.use_vllm, vllm_mode=cfg.vllm_mode,
         vllm_gpu_memory_utilization=float(os.environ.get("VLLM_GPU_MEM_UTIL", "0.35")),
+        # cap colocate vLLM context: comp prompts are short (<~1.5k) + max_completion_length=512.
+        # Without this, vLLM reserves KV for the model's full max_model_len (e.g. 65536) and the
+        # KV cache alloc OOMs at low gpu_memory_utilization -> GRPO/VSF init crash. Env-overridable.
+        vllm_max_model_length=int(os.environ.get("VLLM_MAX_MODEL_LEN", "4096")),
         vllm_server_host=cfg.vllm_server_host, vllm_server_port=cfg.vllm_server_port,
         logging_steps=10, save_steps=(a.save_steps or cfg.save_steps),
         save_total_limit=(a.save_total_limit or cfg.save_total_limit),
