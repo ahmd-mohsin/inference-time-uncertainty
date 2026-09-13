@@ -2,3 +2,4 @@
 bank=164
 base acc=0.2650
 rft acc=0.5500
+grpo acc=0.2400
