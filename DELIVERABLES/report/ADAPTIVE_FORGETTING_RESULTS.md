@@ -5110,3 +5110,28 @@ HONEST CAVEATS / what C0 does NOT yet establish (per the memo's own C0 continue-
  2. Checkpoint mismatch: the RFT ckpts were comp-domain-trained, evaluated on DAG; a DAG-native RFT baseline would be the fairer recipient.
  3. This says a richer LABEL SOURCE exists; it does NOT show training on it improves direct OOD generation (that is C1) or that connected-block training adds compositional transfer (C2).
 NEXT (before any C1 training campaign): novelty sub-gate — for a sample of recovered components, prompt the RFT model to produce that transform directly under fresh interface inputs; keep only recoveries the model FAILS directly. If, after removing mastered-operator copies, reliable recovered supervision on genuinely-erred contexts remains substantial, proceed to the fixed-bank C1 (equal-budget whole vs observed-slice vs conditional replay, output format fixed). If it collapses to trivial re-copies, STOP CCT per the memo's stopping policy. Do not launch C1 on volume alone.
+
+## §145 CCT NOVELTY SUB-GATE — FAIL (1% survive): recovered components are ~99% mastered re-copies -> STOP CCT-C1 in this regime
+Per §144's honest caveat, before any C1 training we tested whether the C0-recovered components are on contexts the RFT model STILL ERRS ON. cct_novelty.py: for each op, probe the RFT checkpoint DIRECTLY on single-block tasks (fresh inputs), pass@k=6 coverage = direct mastery. Run on 48 GPUs (2102+2103; 2101 unreachable — main-container sshd/port-forward down), ops replicated across 4-6 RFT checkpoints.
+Direct mastery@k and novelty-adjusted recovered supervision = recovered[op] x (1 - mastery[op]):
+  op              recovered  mastery@k   novel
+  concat            6030       1.00        0
+  reverse            722       1.00        0
+  take3              697       1.00        0
+  take2              652       0.99        4
+  sort_val           601       1.00        0
+  drop1              594       1.00        0
+  sort_ts            529       1.00        0
+  filter_ok          467       1.00        0
+  filter_grpA        465       1.00        0
+  filter_val_pos     452       1.00        0
+  map_val_inc        377       1.00        0
+  map_val_abs        281       1.00        0
+  sum_val            104       0.07       96
+  zip_sum             35        NA        NA
+  dedup_id             9       1.00        0
+  dedup_grp            1       0.86        0
+  TOTAL recovered = 12,016 ; novelty-adjusted = ~100 (1% survive).
+VERDICT: the RFT model already masters (pass@k ~ 1.0) every operator the C0 recoveries cover except sum_val. The conditional-contract mechanism recovers REAL transforms (§144), but for THIS recipient they are ~99% re-copies of already-mastered operators -> essentially zero novel supervision. Per the memo's own C0 stopping rule ("if C0 finds no novel, reliable conditional supervision, stop CCT in this regime"), C1 is NOT launched: an equal-budget replay of mastered re-copies has no expected OOD gain (consistent with the RFT-saturation observation §140).
+WHY / scope (honest): in this DAG domain the LOCAL primitives are individually trivial for a 1.5-3B coder; the genuine bottleneck is data-flow WIRING (§106: composition, not ops). Component-recovery (C0/C1) therefore has ~no headroom here. Any CCT leverage would have to come from (a) the CONNECTION-training hypothesis (C2: does training validated components' wiring reduce held-out binding/join errors?) — which does NOT depend on novel single-op supervision — or (b) a domain where local ops are themselves hard (e.g. real code / BigCodeBench, where sum_val-like low-mastery ops are common). Component-correctness recovery is not the lever in this regime.
+DECISION: STOP the C0->C1 component-recovery line here (gate-killed, honestly). Do not train C1 on mastered re-copies. If pursuing CCT further, jump to the C2 wiring test or move to a hard-local-op domain; otherwise the CCT investment stops at a clean null, matching the memo's discipline.
