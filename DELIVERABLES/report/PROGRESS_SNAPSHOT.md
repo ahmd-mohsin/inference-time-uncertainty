@@ -1,61 +1,48 @@
-# PROGRESS SNAPSHOT v12 — Support-Coverage Theory, PREREGISTERED-VALIDATED
-_2026-09-13. Single source of truth. Detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§141. Theory+preregistration: ADAPTIVE_FORGETTING_RESULTS.md §142 (preregistered commit 3a8b8d7). Method: rl_training/vsf_trainer.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
+# PROGRESS SNAPSHOT v13 — verified self-improvement: characterization + measurement (method search exhausted)
+_2026-09-13. Single source of truth. Full detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§146. Method code: rl_training/{vsf_trainer,cct_c0,cct_gen,cct_novelty,cct_c2_gen}.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
 
 ## 0. STATUS RIGHT NOW
-**72-GPU preregistered validation COMPLETE (§141).** All 5 predictions (P1–P5) of the Support-Coverage Theory confirmed out-of-sample across 3 families (Qwen-1.5B/3B, deepseek-1.3B) × 3 difficulties (mid/hard/vhard). The paper is now a **predictive-theory + methodology** paper, not just characterization: we prove *why* RFT is the accessible-frontier ceiling and confirm it — including two preregistered NEGATIVE predictions (the §139/§140 gate-kills). All three external method-search memos remain gate-killed; that is now a *prediction of the theory*, not a loose end.
+**No experiment running.** Latest batch: the CCT (Contract-to-Composition) program ran and is **closed at all gates** (§144–146). Every method-search branch this program pursued is now honestly exhausted; no method beats decoupled verified replay (RFT) on anything tested. The defensible deliverable is a **characterization + measurement** paper. Infra: clusters 2101/2103 pods died (sshd down); 2102 (24 GPUs) reachable.
 
-## 0b. THE AWARD-LEVEL RESULT (§141 + ADAPTIVE_FORGETTING_RESULTS.md §142)
-- **Theory:** T1 RFT and outcome-RL are the same gradient family (gap is procedural, not fundamental); T2 support-boundedness; T3 gain = headroom × **accessibility** (inverted-U); **T4 RFT is the ceiling of the accessible frontier — no wrapper can beat it.**
-- **Methodology:** α/β hidden-acquisition decomposition (net accuracy conceals a bimodal acquire/regress process) + VSF as a causal coverage-vs-objective probe.
-- **Validation (preregistered, out-of-sample):** P1 RFT>GRPO 8/8 (shrinks with capability); P2 α RFT>VSF>GRPO 8/8; P3 accessibility inverted-U (refutes linear-headroom); P4 β RFT<VSF<GRPO 8/8 (VSF repairs regression); P5 RFT-ceiling holds (no VSF>RFT). All confirmed.
+## 1. HEADLINE (what the data supports — empirical)
+**For verifiable OOD learning, decoupled verified replay (RFT) is the ceiling recipe in every regime tested: it acquires the most and regresses the least. On-policy outcome-RL (GRPO) acquires little and actively regresses; VSF (a verified-replay support floor) causally repairs both axes but does not beat RFT; continued RL after RFT adds nothing; and no acquisition/wiring wrapper (CCT) beats it.** Gains follow an **empirical** headroom×accessibility inverted-U. This is characterization + measurement, reported as empirical regularities — NOT a proven universal theorem (see §4).
 
-## 1. HEADLINE (what the data supports)
-**For verifiable OOD learning, decoupled verified replay (RFT) is the ceiling recipe: it acquires the most and regresses the least. On-policy outcome-RL (GRPO) acquires little and actively regresses; VSF (a support-floor) causally repairs both axes but does not beat RFT; and continued RL after RFT adds nothing.** Gains are governed by headroom × accessibility, not headroom alone. This is a characterization + measurement result, not a new-SOTA-method.
+## 2. PREREGISTERED VALIDATION MATRIX (§141, EMPIRICAL — k16 OOD, seed CIs)
+| cell | fam | base | GRPO | VSF | RFT | R−G | R−base |
+|---|---|---|---|---|---|---|---|
+| c15mid | 1.5B | .390 | .373 | .528 | **.767** | +.394 | +.377 |
+| c15hard | 1.5B | .180 | .200 | .300 | **.435** | +.235 | +.255 |
+| c15vh | 1.5B | .090 | .100 | .140 | **.192** | +.092 | +.102 |
+| c3mid | 3B | .525 | .517 | — | **.833** | +.316 | +.308 |
+| c3hard | 3B | .365 | .338 | .435 | **.615** | +.277 | +.250 |
+| c3vh | 3B | .205 | .180 | — | **.357** | +.177 | +.152 |
+| dsmid | ds1.3B | .330 | .343 | .395 | **.562** | +.219 | +.232 |
+| dshard | ds1.3B | .220 | .197 | .268 | **.370** | +.173 | +.150 |
+| c7mid | 7B | .825 | (server-mode) | — | **.854** | — | +.029 |
+_3 checkpoints / 2 families × 3 difficulties. 7B GRPO/VSF = colocate OOM (server-mode). RFT≫GRPO 8/8 non-overlapping; GRPO<VSF<RFT throughout._
 
-## 2. MECHANISM MATRIX (OOD accuracy; pushed)
-| Cell (family) | base | GRPO | VSF | RFT |
-|---|---|---|---|---|
-| 1.5B-mid (k16, §138) | 0.370 | 0.430 | 0.585 | **0.745** |
-| 1.5B-hard (k16) | 0.180 | 0.210 | 0.390 | **0.535** |
-| 3B-mid (k16) | 0.545 | 0.525↓ | — | **0.845** |
-| 3B-hard (k16) | 0.365 | 0.330↓ | — | **0.620** |
-| 7B-hard (§124-129) | 0.475 | 0.455↓ | 0.575 | 0.567 |
-| 9B-hard (Yi) | — | 0.395 | 0.470 | 0.520 |
-| deepseek-6.7B | 0.425 | 0.350↓ | — | 0.485 |
-_RFT ≫ VSF > GRPO ≈ base. non-starved GRPO(num_gen16)=plain GRPO (§128). Independent-hardware (cu126 nodes) reproduces the spine (§135)._
+## 3. PER-PROBLEM α/β (measurement contribution, §141 — α=acquire|base=0, β=regress|base=1)
+Every cell: **α ordered RFT>VSF>GRPO** (8/8) and **β ordered RFT<VSF<GRPO** (8/8, VSF repairs regression). e.g. c15mid α .151/.307/.656, β .278/.128/.060. β GROWS with difficulty (regression worsens as accessibility drops). Net accuracy HIDES this bimodal acquire/regress split → *report (α,β,O), not net Δacc.*
 
-## 3. PER-PROBLEM α/β (the measurement contribution, §138, 1.5B-mid k16, n=200)
-| Arm | α = acquire\|base=0 | β = regress\|base=1 | oracle O=E[max(base,·)] |
-|---|---|---|---|
-| GRPO | 0.214 | 0.203 | 0.505 |
-| VSF | 0.389 | 0.081 | 0.615 |
-| RFT | 0.635 | 0.068 | 0.770 |
-_GRPO's flat net (0.43 vs 0.37) **hides** α=0.21 acquisition offset by β=0.20 regression — averaged accuracy conceals both. VSF improves both axes; RFT dominates both._
+## 4. THEORY STATUS — scoped after external review (§143)
+- **T1 gradient identity** (per-prompt, exact current-policy): correct as an identity; used descriptively. "All RFT–GRPO gaps are procedural" is NOT established in general (stale multi-epoch bank + clipped/group-normalized GRPO + cross-prompt reweighting need more).
+- **Accessibility-gated inverted-U**: an **empirical** shape (RFT gain rises then falls in headroom; peak ~0.6; bank size collapses with difficulty). The closed form G(h)=τh(1−h^C) and peak h*=(C+1)^(−1/C) are a POSITED model — its predicted peak (0.76–0.90) does NOT match the observed ~0.60; not a validated law.
+- **Theorem 4 (RFT is a universal ceiling): RETRACTED.** Valid counterexample (verified): CE-optimum on the bank ≠ accuracy-maximum (J(2/3)=.583 < J(.9)=.613), same support, 1-D. The VSF<RFT / RL-after-RFT=RFT / CCT<RFT results are **empirical regularities in tested regimes**, NOT proof no method can beat RFT.
 
-## 4. FINDINGS (pushed, controlled)
-1. **RFT ≫ GRPO for OOD**, sign-invariant across 2 families × 4 sizes (§113); **real, not a starved baseline** (non-starved GRPO doesn't help, §128).
-2. **Mechanism = acquisition vs regression** (§127/§138): GRPO acquires little + regresses (below base at 3B/7B/deepseek); RFT/VSF acquire. Shown in 3 families.
-3. **It's replay/coverage, not the objective** (§114 estimator ladder + §111 success-gradient identity).
-4. **Dissociation** (§134): anchoring (disjoint replay helps) + acquisition (same-pool coverage); prior-support (RFT→GRPO) best; estimator knobs null.
-5. **VSF = causal repair, not SOTA** (§129-131/§138): reverses GRPO's regression, full RFT-parity at 7B, partial elsewhere; **RFT ≥ VSF everywhere**.
-6. **Gains are accessibility-gated, NOT linear-in-headroom** (§136→§137): clean matrix showed RFT gain *decreases* at extreme headroom (bank can't be filled). Linear "law" was a mixed-source artifact — corrected.
-7. **2nd-domain corroboration** (§137): MATH-500 L5 GRPO pass@1 0.073<base 0.083 (regresses in non-code domain).
-
-## 5. HYPOTHESES KILLED BY THEIR OWN GATES (honest, not spin)
-- **CTH coverage-targeting** — model-size-gated, weak-model-only (§122/§125).
-- **Linear headroom "law"** — accessibility-gated; the clean matrix refuted the linear fit (§137).
-- **Regression-budget / retention program (memo H1–H5)** — **KILLED at the gate** (§138/§139): H0 oracle O(GRPO)=0.505≪RFT; H1 closer GRPO-from-RFT = RFT within noise (+.03/−.015/+.005/−.010) → RL adds nothing after RFT → constraining it can't beat RFT. **Not funded H1–H5**, per the memo's own kill-rule.
-- **Feedback-acquisition program (memo A0–A4)** — **KILLED at A0** (§140): a 32–82% larger matched-domain verified bank does NOT improve RFT (Δ = +.010/−.020/.000/+.045, mean +.009, within noise; flat even in the highest-headroom cell). The recipient is **saturated** → an acquisition amplifier has no headroom → the query-by-committee active selector (A1–A4) **not built**, per the memo's own kill-rule.
-- Earlier: self-repair distillation, archive/source preservation, delayed-value, difficulty escalation, recomposition, execution-value supervision.
+## 5. HYPOTHESES KILLED BY THEIR OWN GATES (honest)
+- **CCT program (C0→novelty→C1→C2), §144–146** — C0: conditional-contract recovers 12,016 correct components (+52% over observed, rejects accidental agreements) → mechanism REAL; **novelty: 99% are re-copies of ops the RFT model already masters** (pass@k≈1.0) → C1 unwarranted; **C2 wiring: verified connected-fragment training 0.182 < whole-RFT 0.221** on held-out wiring → composition hypothesis falsified. No CCT variant beats RFT in the DAG regime.
+- **Feedback-acquisition (memo A0), §140** — 32–82% larger matched-domain bank doesn't improve RFT (mean Δ +.009) → recipient saturated.
+- **Regression-budget (memo H1–H5), §138/§139** — RL-from-RFT = RFT within noise → constraining it can't beat RFT.
+- **CTH coverage-targeting** (size-gated), **linear-headroom "law"** (accessibility-gated), and earlier: self-repair distillation, archive preservation, delayed-value, difficulty escalation, recomposition, execution-value supervision.
 
 ## 6. HONEST AWARD READ
-The defensible paper is a **characterization + measurement** paper: RFT is the ceiling for verified OOD; the α/β hidden-acquisition decomposition; VSF as a causal repair; accessibility-gated gains; robust across families/domains/hardware; multiple hypotheses killed by pre-registered gates. This is **strong main-track / possibly spotlight**, NOT a clear award — because no *new method* beats RFT. **All three external method proposals now fail their own gates**: VSF (repairs but < RFT), the regression-budget program (§138/§139: RL-from-RFT adds nothing), and the feedback-acquisition amplifier (§140: recipient saturated, bigger bank doesn't help). They converge on one wall — **tuned RFT is the frontier the available verified data supports**. Award-tier would need a method that genuinely beats RFT (none found across all three memos) or a frontier-scale predictive law (accessibility-gated, needs 2-axis data + >9B, currently blocked by 40GB OOM). Reported honestly, without a manufactured winner.
+The defensible paper is **characterization + measurement**: RFT is the empirical ceiling for verified OOD; the α/β hidden-acquisition decomposition (net accuracy misleads); VSF as a causal coverage-vs-objective repair; the empirical accessibility-gated inverted-U; robust across families/difficulties/hardware; and a large battery of pre-registered gate-kills (three external method memos + the full CCT program) — every proposed method that could beat RFT was tested and failed. Strong main-track / possibly spotlight. NOT a clear award: no new method beats RFT, and the ceiling is empirical (the theorem was retracted, §143). Award-tier would need either a method that genuinely beats RFT (none found) or a validated frontier-scale predictive law (the inverted-U closed form is unvalidated; peak mismatch). Reported without a manufactured winner.
 
 ## 7. DATA GAPS / INFRA
-- Old nodes died at 24h TTL, lost 14B-GRPO/VSF + deepseek-VSF finals (§133, non-load-bearing). 7B/14B OOM on 40GB (colocate + server); no clean >9B point. 3B VSF arms failed to capture in the clean matrix.
-- Env solved + committed (`FULL_BOOTSTRAP.sh`: vllm0.23 + transformers4.57.6 + torch/torchvision cu126 + nvidia-cuda-runtime-cu13 on LD_LIBRARY_PATH + flash-attn cu126 source-build; sft pins CUDA_VISIBLE_DEVICES=0). Launch cells from the MAIN via sshpass (laptop→pod SSM tunnels drop within ~5s).
+- 7B GRPO/VSF need server-mode (40GB colocate OOM); no clean >9B point. CCT's one untested regime = a HARD-LOCAL-OP domain (BigCodeBench, low-mastery ops) — separate future investment, unfunded on current evidence.
+- Env recipe committed (FULL_BOOTSTRAP.sh: vllm0.23 + transformers4.57.6 + torch/torchvision cu126 + nvidia-cuda-runtime-cu13 + flash-attn cu126; train_grpo caps vllm_max_model_length=4096 to avoid KV-OOM). SSM tunnels drop frequently; launch detached from the main via sshpass. Pods die at 24h TTL / sshd faults.
 
-## 8. NEXT (nodes idle; honest options)
-- **Write the characterization+measurement paper** from §120–140 (recommended — the science is done and defensible; the method search is now closed, all three memos gate-killed).
-- Non-essential fills: complete 3B VSF / L3 math RFT+VSF arms; a memory-light ≥7B path (TP/QLoRA) for a clean large cell.
-- I will **not** re-fund gate-killed programs (H1–H5 regression-budget, A1–A4 feedback-acquisition) or claim a law/method the data doesn't support. A genuinely new amplifier would need to first show the recipient is NOT saturated (A0 says it is, at this data scale) — e.g. a fundamentally larger/different data source, not a re-harvest of the same domain.
+## 8. NEXT (honest options)
+- **Write the characterization+measurement paper** from §120–146 (recommended — the science is done; method search exhausted).
+- Optional: replicate C2 on a 2nd checkpoint when a cluster returns (result already unambiguous); or test CCT in a hard-local-op domain (BigCodeBench) — the only regime where component recovery could carry novel supervision.
+- Will NOT: claim the retracted ceiling theorem, re-fund gate-killed programs, or present the inverted-U closed form as validated.
