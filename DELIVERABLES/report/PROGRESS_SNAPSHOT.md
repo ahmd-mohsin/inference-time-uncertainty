@@ -1,8 +1,13 @@
-# PROGRESS SNAPSHOT v11 — verified-support program (complete state)
-_2026-09-13. Single source of truth. Detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§140. Method: rl_training/vsf_trainer.py. Memos: ASTRA_ADVICE.md, REGRESSION_BUDGET_MEMO.md, FEEDBACK_ACQUISITION_MEMO.md. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
+# PROGRESS SNAPSHOT v12 — Support-Coverage Theory, PREREGISTERED-VALIDATED
+_2026-09-13. Single source of truth. Detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§141. Theory+preregistration: AWARD_PAPER_SPINE.md (commit 3a8b8d7). Method: rl_training/vsf_trainer.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
 
 ## 0. STATUS RIGHT NOW
-**No experiment running** — all 9 clusters (72 GPUs) idle. A0 gate (feedback-acquisition memo) complete + committed. **All three external memos are now gate-killed** (Astra amplifier, regression-budget, feedback-acquisition) — no acquisition/retention wrapper beats RFT. The method search is closed; the defensible deliverable is the characterization+measurement paper.
+**72-GPU preregistered validation COMPLETE (§141).** All 5 predictions (P1–P5) of the Support-Coverage Theory confirmed out-of-sample across 3 families (Qwen-1.5B/3B, deepseek-1.3B) × 3 difficulties (mid/hard/vhard). The paper is now a **predictive-theory + methodology** paper, not just characterization: we prove *why* RFT is the accessible-frontier ceiling and confirm it — including two preregistered NEGATIVE predictions (the §139/§140 gate-kills). All three external method-search memos remain gate-killed; that is now a *prediction of the theory*, not a loose end.
+
+## 0b. THE AWARD-LEVEL RESULT (§141 + AWARD_PAPER_SPINE.md)
+- **Theory:** T1 RFT and outcome-RL are the same gradient family (gap is procedural, not fundamental); T2 support-boundedness; T3 gain = headroom × **accessibility** (inverted-U); **T4 RFT is the ceiling of the accessible frontier — no wrapper can beat it.**
+- **Methodology:** α/β hidden-acquisition decomposition (net accuracy conceals a bimodal acquire/regress process) + VSF as a causal coverage-vs-objective probe.
+- **Validation (preregistered, out-of-sample):** P1 RFT>GRPO 8/8 (shrinks with capability); P2 α RFT>VSF>GRPO 8/8; P3 accessibility inverted-U (refutes linear-headroom); P4 β RFT<VSF<GRPO 8/8 (VSF repairs regression); P5 RFT-ceiling holds (no VSF>RFT). All confirmed.
 
 ## 1. HEADLINE (what the data supports)
 **For verifiable OOD learning, decoupled verified replay (RFT) is the ceiling recipe: it acquires the most and regresses the least. On-policy outcome-RL (GRPO) acquires little and actively regresses; VSF (a support-floor) causally repairs both axes but does not beat RFT; and continued RL after RFT adds nothing.** Gains are governed by headroom × accessibility, not headroom alone. This is a characterization + measurement result, not a new-SOTA-method.
