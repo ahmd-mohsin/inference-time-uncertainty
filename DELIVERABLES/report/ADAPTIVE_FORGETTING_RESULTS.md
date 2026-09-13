@@ -4904,3 +4904,18 @@ SCOPE/CAVEAT: this is the GRPO-from-base trajectory; the memo's H1 starts RL FRO
 The small alpha_GRPO makes a large H1 win over RFT unlikely, but H1-from-RFT is not strictly closed by this. HONEST VERDICT: do NOT fund the large
 regression-budget method study on this evidence (memo gate). The publishable results are (a) the hidden-acquisition alpha/beta decomposition and
 (b) VSF's dual-axis (more acquire + less regress) mechanism. Minimal remaining test to fully close H1: one constrained-RL-from-RFT arm vs RFT at matched cost.
+
+## §139 H1 CLOSER (GRPO-from-RFT vs RFT) — DEFINITIVE NO-GO: RL adds ~nothing after RFT -> regression-budget program not worth funding
+Continued GRPO from the RFT checkpoint, eval k=16 OOD (vs RFT alone):
+  c15mid RFT .745 -> .775 (+.030) | c15hard .535 -> .520 (-.015) | c3mid .845 -> .850 (+.005) | c3hard .620 -> .610 (-.010)
+=> Continued RL-from-RFT == RFT within noise (mean ~+.0025; 2 up 2 down, all |delta|<=.03). Unconstrained RL after RFT does NOT acquire beyond RFT.
+GATE VERDICT (memo's own kill-rule): a regression-budget / retention method only CONSTRAINS the RL-from-RFT trajectory; since that trajectory
+has ~zero net headroom over RFT, constraining it cannot beat RFT. The mechanism the memo required ("RL acquires MORE when regression-controlled")
+is ABSENT. => Do NOT fund H1-H5. This is the memo's "most informative failure": tuned RFT already reaches the frontier.
+CONSOLIDATED HONEST PICTURE (verified across §120-139, 3 families, 2 domains, independent hardware):
+ 1. RFT / decoupled verified replay is the CEILING recipe for OOD (acquires most, regresses least: alpha .63 / beta .07 at 1.5B, §138).
+ 2. On-policy outcome-RL (GRPO) acquires little (alpha .21) and regresses (beta .20) -> nets ~=base or below; VSF repairs BOTH axes (alpha .39/beta .08) but stays < RFT.
+ 3. Continued RL after RFT adds nothing (§139). => "verified replay, not on-policy updates" is the robust finding; NO RL-continuation method (VSF, regression-budget) beats RFT here.
+ 4. Killed with proper gates (not spin): CTH-targeting (size-gated), linear-headroom law (accessibility-gated, §137), regression-budget program (§138/§139).
+PAPER = an honest CHARACTERIZATION + MEASUREMENT paper: the RFT>>GRPO OOD gap, the alpha/beta hidden-acquisition decomposition, VSF as a causal
+repair (not a SOTA winner), accessibility-gated gains, across families/domains/hardware. NOT a new-SOTA-method paper. This is the defensible contribution.
