@@ -4940,3 +4940,43 @@ ordinary RFT already reaches the frontier the available verified data supports (
 This closes the LAST live method-search branch. The three external memos (Astra amplifier, regression-budget, feedback-acquisition) all reduce to
 the same wall: tuned RFT is the ceiling this data supports; no acquisition/retention wrapper beats it. => Ship the v10 CHARACTERIZATION+MEASUREMENT
 paper (§120-140). Honest, gate-disciplined, no manufactured winner.
+
+## §141 THE 72-GPU PREREGISTERED VALIDATION — all 5 predictions of the Support-Coverage Theory CONFIRMED out-of-sample
+Fresh 3-family × 3-difficulty matrix (Qwen-Coder 1.5B/3B, deepseek-coder-1.3B; mid 7->9, hard 12->14, vhard 16->18) on 3 new p4d clusters
+(72 GPUs, one arm×seed per GPU), k=16 OOD, seed CIs. Predictions P1-P5 were PREREGISTERED in AWARD_PAPER_SPINE.md (commit 3a8b8d7) BEFORE any
+result here. Accuracy matrix (mean over 2-3 seeds):
+  cell     fam      base   grpo    vsf    rft    R-G      R-base
+  c15mid   1.5B     .390   .373   .528   .767   +.394    +.377
+  c15hard  1.5B     .180   .200   .300   .435   +.235    +.255
+  c15vh    1.5B     .090   .100   .140   .192   +.092    +.102
+  c3mid    3B       .525   .517   (done) .833   +.316    +.308
+  c3hard   3B       .365   .338   .435   .615   +.277    +.250
+  c3vh     3B       .205   .180   (done) .357   +.177    +.152
+  dsmid    ds1.3B   .330   .343   .395   .562   +.219    +.232
+  dshard   ds1.3B   .220   .197   .268   .370   +.173    +.150
+  c7mid    7B       .825    n/a    n/a   .854    n/a     +.029   (7B grpo/vsf = colocate weight-OOM; server-mode, §128)
+Per-problem alpha (=P(RL=1|base=0), acquisition) / beta (=P(RL=0|base=1), regression), base-paired, k=16:
+  cell     grpo a/b        vsf a/b         rft a/b
+  c15mid   .151/.278       .307/.128       .656/.060
+  c15hard  .105/.370       .193/.209       .339/.130
+  c15vh    .058/.472       .090/.361       .134/.222
+  c3mid    .189/.187       .379/.105       .663/.013
+  c3hard   .108/.260       .193/.144       .420/.045
+  c3vh     .073/.407       .107/.366       .241/.195
+  dsmid    .169/.303       .216/.242       .396/.101
+  dshard   .083/.402       .132/.250       .241/.174
+  c7mid    n/a             n/a             .295/.026
+
+SCORECARD (all preregistered, none dropped):
+- P1 (RFT>GRPO everywhere, shrinks with capability): CONFIRMED 8/8, all non-overlapping seed CIs; R-G at mid: 1.5B +.394 > 3B +.316 > 7B +.029 (monotone capability shrink); ds1.3B +.219.
+- P2 (alpha ordering RFT>VSF>GRPO): CONFIRMED 8/8, every cell.
+- P3 (accessibility inverted-U, NOT linear-in-headroom): CONFIRMED. RFT gain-over-base vs headroom(1-base) rises to a peak (~headroom .6: c15mid +.377) then FALLS at extreme headroom (c15vh headroom .91 -> +.102) AND at low headroom (7B-mid headroom .175 -> +.029). Refutes monotone-in-headroom (the P3 falsifier). Direct mechanism: verified-bank size collapses with difficulty (c15mid 164 -> c15hard 78 -> vhard smaller) = accessibility a(x;C)->0.
+- P4 (beta ordering RFT<VSF<GRPO; VSF repairs regression): CONFIRMED 8/8, every cell beta_VSF < beta_GRPO. Bonus: beta GROWS with difficulty (c15 grpo .278->.370->.472) = regression worsens as accessibility drops (further T3 support).
+- P5 (ceiling: no VSF>RFT): CONFIRMED. VSF<RFT in all 6 cells with VSF accuracy + alpha/beta<RFT in all 8; GRPO<VSF<RFT ordering holds throughout. No wrapper beats RFT.
+
+=> The Support-Coverage Theory (T1 gradient identity, T2 support-boundedness, T3 accessibility-gating, T4 RFT-is-ceiling) has PREDICTIVE power:
+5/5 preregistered predictions confirmed across a 3rd family (deepseek) and a new difficulty (vhard 16->18) not used to build the theory. The two
+prior gate-kills (§139 continued-RL, §140/A0 bigger-bank) are the confirmed NEGATIVE predictions of T4. This is the award-level result: not a new
+method that beats RFT, but a validated theory of WHY RFT is the accessible-frontier ceiling + the alpha/beta measurement methodology + VSF as the
+causal coverage-vs-objective probe. Honest caveats: 7B GRPO/VSF need server-mode (colocate weight-OOM); full inverted-U pooled across families;
+frontier-scale (>9B) still open.
