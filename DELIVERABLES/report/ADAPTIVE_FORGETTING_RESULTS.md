@@ -5094,3 +5094,19 @@ Checkpoints: Qwen2.5-Coder-1.5B, Qwen2.5-Coder-3B, deepseek-coder-1.3B = 3 check
 
 ### Next direction (memo's recommendation): CCT gate C0 BEFORE any big campaign
 Contract-to-Composition Training: test whether CONDITIONAL correctness of components (a block implements the right transform under independently varied valid interface inputs, even when its observed output is wrong due to an upstream error) is a richer supervision source than whole-solution correctness. Gate C0 (cheap diagnostic, DAG domain): on a common rollout pool, compare whole-success vs observed-slice vs conditional-contract masks; audit recovered blocks on fresh legal inputs; measure whether conditional checking covers contexts on which RFT still errs (vs just re-supplying mastered operators). Proceed to fixed-bank C1 only if C0 shows novel reliable conditional supervision. Do NOT re-open retention/whole-bank branches; do NOT claim the (now-retracted) ceiling.
+
+## §144 CCT GATE C0 — conditional-contract supervision EXISTS on real RFT failures (qualified pass; novelty sub-gate pending)
+72-GPU run: 9 nodes x 8 GPU each sampled k=6 candidates on 64 DAG tasks/GPU from that node's §141 RFT checkpoint (comp-RFT models applied to the DAG domain), then ran the cct_c0 per-block audit (whole / observed-execution / conditional-contract masks + binding check + interface intervention). 68 shards aggregated.
+Totals: 22,218 candidates audited; whole-solution pass 3,970 / fail 18,248 (82% fail on DAG = ample failed-solution supply). Among parsed blocks INSIDE failed whole-solutions (n=101,095):
+  observed-pass       23,215 (23.0%)
+  conditional-pass    34,403 (34.0%)
+  COND-RECOVERED      12,016 (11.9%)   [whole FAIL + observed FAIL + conditional PASS + binding OK] -> correct transforms hidden by upstream error that BOTH whole and observed masking discard
+  accidental-reject    1,352 (1.3%)    [observed PASS but conditional FAIL] -> conditional correctly rejects accidental agreement
+  recovery ratio cond_recovered/observed_pass = 0.52 (conditional adds +52% supervision over observed-slice)
+Recovered-op mix: concat 6030, reverse 722, take3 697, take2 652, sort_val 601, drop1 594, sort_ts 529, filter_* ~1400, map_* ~660, sum_val 104, zip_sum 35, dedup ~10.
+VERDICT: the CCT premise — whole-solution filtering discards conditionally-correct components, and interface-verification recovers them while rejecting accidental agreement — HOLDS on the model's OWN failed rollouts, not just synthetic corruption (§143 selftest). This is a real, richer supervision source.
+HONEST CAVEATS / what C0 does NOT yet establish (per the memo's own C0 continue-criterion):
+ 1. NOVELTY not tested: I measured recovery VOLUME, not whether recovered (op, input-context) pairs are contexts the RFT model STILL ERRS ON vs re-copies of already-mastered operators. The op-mix skews to TRIVIAL ops (concat = 50% of recoveries) — a yellow flag that much of the volume may be low-value.
+ 2. Checkpoint mismatch: the RFT ckpts were comp-domain-trained, evaluated on DAG; a DAG-native RFT baseline would be the fairer recipient.
+ 3. This says a richer LABEL SOURCE exists; it does NOT show training on it improves direct OOD generation (that is C1) or that connected-block training adds compositional transfer (C2).
+NEXT (before any C1 training campaign): novelty sub-gate — for a sample of recovered components, prompt the RFT model to produce that transform directly under fresh interface inputs; keep only recoveries the model FAILS directly. If, after removing mastered-operator copies, reliable recovered supervision on genuinely-erred contexts remains substantial, proceed to the fixed-bank C1 (equal-budget whole vs observed-slice vs conditional replay, output format fixed). If it collapses to trivial re-copies, STOP CCT per the memo's stopping policy. Do not launch C1 on volume alone.
