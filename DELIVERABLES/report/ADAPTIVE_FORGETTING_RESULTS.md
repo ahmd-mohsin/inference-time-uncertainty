@@ -4856,3 +4856,16 @@ STATUS: 9-cluster run live (cu126 stack). 6-worker DVR/GRPO/VSF matrix (1.5/3/7B
 INFRA (validated + committed): fresh pytorch-base-24.12 needs vllm0.23 + transformers4.57.6 + torch/torchvision cu126 + nvidia-cuda-runtime-cu13
 (LD_LIBRARY_PATH, for vllm's cu13 engine) + flash-attn cu126 source build; sft_train must pin CUDA_VISIBLE_DEVICES=0 (DataParallel device bug). All in rl_training/queue/.
 OPEN: 3B RFT/VSF arms finishing; 7B needs a >40GB path or the old-node numbers; GRPO-capture race on some worker cells (accs recoverable from eval logs).
+
+## §136 PRELIMINARY predictive-law fit (memo L1) — headroom predicts gain, out-of-sample LOO lands (CAVEATED)
+Points from committed ledger (h=1-base; gap=RFT-GRPO; dRFT=RFT-base) — 5 cells, MIXED sources/pools (honest caveat):
+  7B-hard h.525 gap+.112 dRFT+.092 dGRPO-.020 | deepseek6.7B h.575 gap+.135 dRFT+.060 dGRPO-.075 | 3B-hard h.745 gap+.295 dRFT+.250 dGRPO-.045
+  | 1.5B-mid h.795 gap+.270 dRFT+.300 | 1.5B-hard h.925 gap+.280 dRFT+.300 dGRPO+.020
+FITS: dRFT ~ 0.66*h - 0.27 (R2=0.87) ; gap(RFT-GRPO) ~ 0.48*h - 0.12 (R2=0.80).
+OUT-OF-SAMPLE (LOO, predict 7B-hard gap from the other 4): predicted +0.147 vs actual +0.112 -> lands within ~0.035.
+READ: supports the headroom LAW (RFT acquisition & the RFT-GRPO gap both scale ~linearly with headroom; dGRPO ~<=0 everywhere = GRPO doesn't
+acquire / regresses). This is the memo-L1 direction with a real out-of-sample hit.
+HONEST CAVEATS (do NOT over-claim — cf retractions box): only 5 points; MIXED pools/protocols/seeds across cells; family confound (deepseek
+dRFT low at +.06 despite h.575). This is PRELIMINARY. A LEGITIMATE law needs the CLEAN same-protocol size x depth matrix (deployers staged on
+mains: ~/deploy_workers.sh) — currently BLOCKED by SSM tunnel instability (short reads land; multi-second launches get cut mid-command). When
+the tunnel is stable, fire the staged cells -> refit on clean points -> confirm/retract. Not claimed as final until then.
