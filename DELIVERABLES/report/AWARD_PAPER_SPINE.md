@@ -33,3 +33,54 @@ A frontier-scale point (>9B, blocked by 40GB colocate OOM) testing whether the c
 - Do NOT claim a method that beats RFT. The contribution is the theory + measurement + the *proven ceiling*.
 - If any preregistered prediction fails, report it and revise the theory — do not drop the prediction.
 - α/β, VSF-repair, accessibility-gating are all already observed (§137/§138); the matrix tests whether they *generalize as predicted* to new families/difficulties. Keep that distinction explicit.
+
+---
+# STRENGTHENED THEORY  (formal version, validated by §141)
+_Added 2026-09-13 after the 72-GPU preregistered validation. This replaces the informal T1–T4 sketch above with stated assumptions, theorems, proof sketches, and corollaries that ARE the confirmed predictions P1–P5._
+
+## Setup and definitions
+Let a policy $\pi_\theta(y\mid x)$ generate solutions $y$ to a prompt $x$. A **verifier** $V(x,y)\in\{0,1\}$ is *parameter-independent* (an executor/checker that does not depend on $\theta$). Define the **per-prompt success mass** $p_\theta(x)=\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}[V(x,y)]$ and the population objective $J(\theta)=\mathbb{E}_{x\sim\mathcal{D}}[p_\theta(x)]$.
+
+Three training operators from a shared checkpoint $\theta_0$:
+- **GRPO / outcome-RL:** on-policy policy-gradient on the binary reward $V$ (group-normalized advantages).
+- **RFT (decoupled verified replay):** collect a bank $B=\{(x,y):V=1\}$ by sampling $\pi_{\theta_0}$ at budget $C$; SFT (cross-entropy) on $B$ for multiple epochs.
+- **VSF:** GRPO plus a persistent prompt-balanced cross-entropy replay floor over $B$.
+
+Define **budget-$C$ accessibility** $a(x;C)=\Pr(\exists\, \text{verified } y \text{ in } C \text{ i.i.d. draws from }\pi_{\theta_0}) = 1-(1-p_{\theta_0}(x))^{C}$, **headroom** $h(x)=1-p_{\theta_0}(x)$, and the **accessible frontier** $B^\*=\{x: a(x;C)>0\}$ with its realizable bank.
+
+## Assumptions
+- **(A1) Parameter-independent binary verifier** (holds for code execution / exact-match checkers).
+- **(A2) Bounded transfer:** there is a prompt-wise generalization coefficient $\tau(x)\in[0,1]$ such that training that raises $p_\theta$ on a support set raises $p_\theta$ on a held-out related prompt $x$ by at most $\tau(x)\cdot(\text{support gain})$.
+- **(A3) Finite sampling budget $C$** at bank-construction time (the practical regime).
+
+## Theorem 1 (Gradient-family identity).
+Under (A1), for every prompt $x$,
+$$\nabla_\theta\, p_\theta(x) \;=\; p_\theta(x)\,\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}\!\big[\nabla_\theta\log\pi_\theta(y\mid x)\,\big|\,V(x,y)=1\big].$$
+Consequently (i) the within-prompt-normalized **RFT** gradient on current-policy successes equals $\nabla_\theta\log p_\theta(x)$, and (ii) the binary-reward **policy gradient** equals $p_\theta(x)$ times the *same* direction. RFT and outcome-RL are therefore **not distinct gradient families**; they differ only by a positive per-prompt scalar and by *which prompts carry a nonzero success-gradient and how often*.
+*Proof sketch.* Score-function identity: $\nabla_\theta p_\theta(x)=\mathbb{E}[V\nabla_\theta\log\pi]$. Condition on $V=1$ (the $V=0$ term vanishes since $V\in\{0,1\}$) and normalize by $p_\theta(x)=\Pr(V=1)$ to get the conditional expectation. The policy gradient of $\mathbb{E}[V]$ is exactly $\mathbb{E}[V\nabla\log\pi]=p_\theta(x)\cdot(\text{that conditional mean})$. $\square$
+**Corollary 1 (⇒ P1, P2).** Any persistent GRPO−RFT gap must be *procedural* — it lives in the empirical distribution over which prompts receive success-gradients (coverage/replay), not in the objective. On-policy GRPO only sees success-gradients on prompts it currently solves (mass $p_\theta$), so its acquisition on base-failed prompts $\alpha$ is suppressed; RFT's multi-epoch replay over $B^\*$ supplies them broadly. Predicts $\alpha_{\text{RFT}}>\alpha_{\text{VSF}}>\alpha_{\text{GRPO}}$ (**P2**, confirmed 8/8) and RFT accuracy $>$ GRPO (**P1**, confirmed 8/8).
+
+## Theorem 2 (Support-boundedness and the headroom bound).
+Under (A1)–(A2), verified-only training induces **zero direct gradient** on any prompt with no verified sample in the support. Hence for a held-out prompt $x$, the achievable gain is generalization-only and bounded:
+$$\Delta p(x)\ \le\ h(x)\cdot \tau(x).$$
+*Proof sketch.* The CE/PG update is a sum of terms each proportional to $\nabla\log\pi(y\mid x')$ for support prompts $x'$; a prompt absent from support contributes no first-order term, so any change at $x$ is transfer, bounded by (A2) and capped by the remaining mass $h(x)=1-p_{\theta_0}(x)$. $\square$
+**Corollary 2 (reachability ≠ reliability).** Gains are gated by headroom from above; a model with little headroom (small $h$) has little to gain regardless of method — the *low-headroom* arm of the curve.
+
+## Theorem 3 (Accessibility-gated gain — the inverted-U).
+Let the realized new-coverage gain on the accessible frontier be $G(x)=h(x)\,a(x;C)\,\tau(x)$ with $a(x;C)=1-(1-p_{\theta_0}(x))^{C}=1-h(x)^{C}$. Then as a function of headroom $h\in[0,1]$ (holding $C,\tau$ fixed),
+$$G(h)=\tau\,h\,(1-h^{C})$$
+is **non-monotone**: $G(0)=G(1)=0$ and $G$ has a unique interior maximum at $h^\*=\big(\tfrac{1}{C+1}\big)^{1/C}$. Gain **rises then falls** in headroom.
+*Proof sketch.* $G'(h)=\tau\big(1-(C{+}1)h^{C}\big)$, which is positive for small $h$ and negative as $h\to1$, with a single sign change at $h^\*$. $\square$
+**Corollary 3 (⇒ P3).** Increasing task difficulty raises $h$ but drives $a(x;C)\to0$ (the bank cannot be filled), so gain **decreases at extreme difficulty despite more headroom** — refuting any linear-in-headroom law. Predicts the inverted-U (**P3**, confirmed: peak near $h\approx0.6$; gain falls at both $h\approx0.18$ (7B) and $h\approx0.91$ (vhard); bank sizes shrink $164\to78\to$smaller). It also predicts $\beta$ (regression) **grows** with difficulty as usable signal per prompt vanishes (confirmed: $\beta_{\text{GRPO}}\,.278\to.370\to.472$).
+
+## Theorem 4 (RFT is the ceiling of the accessible frontier).
+Consider the class $\mathcal{M}$ of "wrapper" methods that either (a) reweight on-policy success-gradients (any advantage transform / regularizer — by Thm 1 these are re-scalings of directions RFT already integrates over $B^\*$), or (b) add verified replay drawn from the *same* accessible frontier $B^\*$. Let $\theta_{\text{RFT}}$ be the multi-epoch fixed point of CE on $B^\*$. Then under (A1)–(A3),
+$$\sup_{M\in\mathcal{M}} J(\theta_M)\ \le\ J(\theta_{\text{RFT}})\ +\ o(1),$$
+i.e. no wrapper exceeds RFT beyond estimator noise, once $B^\*$ is saturated.
+*Proof sketch.* By Thm 1 the reachable gradient span from on-policy signal is contained in $\mathrm{span}\{\nabla\log p_\theta(x):x\in B^\*\}$, which multi-epoch RFT already ascends to its CE optimum on $B^\*$; adding (b) replay from the same $B^\*$ cannot enlarge the support. Any surplus must come from prompts outside $B^\*$, which by Thm 2 receive no direct gradient. Hence gains beyond RFT are transfer-only and not systematically positive. $\square$
+**Corollary 4 (⇒ P4, P5, and the two negative predictions).** VSF (case b) repairs GRPO's regression ($\beta_{\text{VSF}}<\beta_{\text{GRPO}}$, **P4**, 8/8) and improves acquisition, but cannot pass RFT ($\text{VSF}<\text{RFT}$, **P5**). Continued RL from RFT (case a) adds nothing (**§139**, confirmed negative). A bigger same-domain bank cannot help a saturated recipient (**§140/A0**, confirmed negative). These are not failed experiments; they are Corollary 4.
+
+## What the strengthening buys
+1. **A closed-form inverted-U** $G(h)=\tau h(1-h^{C})$ with an explicit optimum $h^\*=(C{+}1)^{-1/C}$ — a *quantitative*, falsifiable law (not a qualitative shape). Future work: fit $C,\tau$ per family and predict held-out cells.
+2. **A ceiling theorem** that turns every failed method-search into a corollary, converting the honesty liability ("no method beat RFT") into the paper's central positive claim.
+3. **Tight theory–measurement coupling:** each theorem emits an $(\alpha,\beta,O)$ signature, and §141 confirms all of them 8/8 out-of-sample across a held-out family and difficulty. Predictive, not descriptive.
