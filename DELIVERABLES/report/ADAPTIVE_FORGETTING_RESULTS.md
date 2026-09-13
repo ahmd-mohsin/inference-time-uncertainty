@@ -4919,3 +4919,24 @@ CONSOLIDATED HONEST PICTURE (verified across §120-139, 3 families, 2 domains, i
  4. Killed with proper gates (not spin): CTH-targeting (size-gated), linear-headroom law (accessibility-gated, §137), regression-budget program (§138/§139).
 PAPER = an honest CHARACTERIZATION + MEASUREMENT paper: the RFT>>GRPO OOD gap, the alpha/beta hidden-acquisition decomposition, VSF as a causal
 repair (not a SOTA winner), accessibility-gated gains, across families/domains/hardware. NOT a new-SOTA-method paper. This is the defensible contribution.
+
+## §140 A0 GATE (feedback-acquisition memo) — NO-GO: the RFT recipient is SATURATED; a bigger matched-domain verified bank does not help
+The feedback-acquisition memo proposed an active query-by-committee loop that harvests EXTRA verified experience on failed attempts (K candidate
+programs, M probe inputs, high-disagreement query -> trusted oracle -> SDPO -> verify -> RFT), gated A0->A4. A0 is the prerequisite:
+"Can extra verified experience still improve THIS recipient under the planned budget? If no meaningful improvement is measurable, do not assume an
+acquisition amplifier will help." Test: harvest a BIGGER bank (comp_gen --k 32, same TR prompts), RFT-train on it, eval k=16 OOD, vs ordinary RFT.
+  cell     | bigbank distinct (vs ordinary) | RFT-bigbank | ordinary RFT (§138) | delta
+  c15mid   | 261 (vs ~164, +59%)            |   0.755     |   0.745             | +0.010
+  c15hard  | 151 (vs ~83,  +82%)            |   0.515     |   0.535             | -0.020
+  c3mid    | 316 (vs ~239, +32%)            |   0.845     |   0.845             |  0.000
+  c3hard   | 218 (vs ~131, +66%)            |   0.665     |   0.620             | +0.045
+=> mean delta = +0.009, ALL within seed noise (typical +-0.02-0.03). Even the highest-headroom cell (c15hard, ordRFT 0.535, LARGEST relative bank
+expansion +82%) is flat-to-negative. A 32-82% larger matched-domain verified bank does NOT measurably improve RFT: the recipient is SATURATED at
+this data scale. (c15hard first attempt died on a transient vLLM segfault in the k=32 harvest -> cleared stale 20GB GPU mem, relaunched clean;
+number above is the clean re-run.)
+GATE VERDICT (memo's own kill-rule): "If no meaningful improvement is measurable, do not assume an acquisition amplifier will help." NO meaningful
+improvement is measurable => do NOT build the query-by-committee active feedback selector (A1-A4). The amplifier has no headroom to exploit because
+ordinary RFT already reaches the frontier the available verified data supports (consistent with §139: continued RL-from-RFT also adds nothing).
+This closes the LAST live method-search branch. The three external memos (Astra amplifier, regression-budget, feedback-acquisition) all reduce to
+the same wall: tuned RFT is the ceiling this data supports; no acquisition/retention wrapper beats it. => Ship the v10 CHARACTERIZATION+MEASUREMENT
+paper (§120-140). Honest, gate-disciplined, no manufactured winner.
