@@ -4869,3 +4869,20 @@ HONEST CAVEATS (do NOT over-claim — cf retractions box): only 5 points; MIXED 
 dRFT low at +.06 despite h.575). This is PRELIMINARY. A LEGITIMATE law needs the CLEAN same-protocol size x depth matrix (deployers staged on
 mains: ~/deploy_workers.sh) — currently BLOCKED by SSM tunnel instability (short reads land; multi-second launches get cut mid-command). When
 the tunnel is stable, fire the staged cells -> refit on clean points -> confirm/retract. Not claimed as final until then.
+
+## §137 CLEAN same-protocol matrix (corrects §136) + L3 math 2nd-domain — headroom x ACCESSIBILITY, not linear
+CLEAN 1.5B/3B x mid/hard matrix (identical protocol, RFT device-pin fixed, cu126 nodes; h=1-base):
+  c3mid  h.66  base .340 | GRPO .315 | RFT .690 (dRFT +.350) | VSF -
+  c15mid h.735 base .265 | GRPO .240 | VSF .335 | RFT .550 (dRFT +.285)
+  c3hard h.775 base .225 | GRPO .215 | RFT .460 (dRFT +.235) | VSF -
+  c15hard h.905 base .095 | GRPO .090 | VSF .220 | RFT .300 (dRFT +.205)
+SPINE HOLDS: RFT >> VSF > GRPO ~= base at every clean cell (GRPO -0.005..-0.025 vs base = no acquisition/slight regression; RFT +0.205..+0.350).
+CORRECTION to §136: on CLEAN same-protocol data, dRFT DECREASES as headroom rises (h.66->.905: dRFT .350->.205) => the simple linear "gain ~ h"
+(R2=.87 in §136) was a MIXED-SOURCE artifact. The real relation is headroom x ACCESSIBILITY (Astra A4): at hard depth the base rarely samples a
+success -> smaller verified bank -> LESS acquisition despite MORE headroom. So gain is INVERTED-U / accessibility-gated, not monotone in h. §136
+downgraded to "mixed-source, superseded". This is the clean-matrix doing its job (prevented an over-claim, cf retractions box).
+L3 MATH (2nd domain, MATH-500 level-5, 1.5B, k=1/2/4): base 0.083/0.139/0.208 | GRPO 0.073/0.139/0.250.
+  => GRPO pass@1 0.073 < base 0.083 REGRESSES in a NON-CODE domain (weak, n=24) while pass@4 rises (redistribution) -> the outcome-RL pass@1
+  regression is NOT a comp-generator artifact (memo L3 direction; corroborates §40 OlympiadBench GRPO 0.100<base 0.106). 7B math GRPO OOM'd (colocate).
+STATUS: VSF arms at 3B blank (failed/eval-missing); math RFT/VSF arms not run. Enough for: spine reproduced clean; predictive law REVISED to
+accessibility-gated; 2nd-domain regression corroborated.
