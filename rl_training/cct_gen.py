@@ -61,7 +61,10 @@ def main():
             code = _extract(c.text)
             if not code:
                 agg["blocks_unparsed"] += 1; continue
-            blocks = audit_candidate(t["records"], t["dag"], code, rng)
+            try:
+                blocks = audit_candidate(t["records"], t["dag"], code, rng)
+            except Exception:
+                agg["blocks_unparsed"] += 1; continue  # one bad candidate must not kill the shard
             if blocks is None:
                 agg["excluded_task"] += 1; continue
             agg["candidates"] += 1

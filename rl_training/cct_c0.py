@@ -23,6 +23,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from rl_training.comp_tasks import _rand_records, PRIMS
 from rl_training.comp_dag import gen_dag, run_dag, render, BIN, UNARY
 
+def _sdc(x):
+    """safe deepcopy: model candidates can produce un-deepcopyable objects (e.g. dict_values); fall back to the object."""
+    try:
+        return deepcopy(x)
+    except Exception:
+        return x
+
 def _contract(step, env):
     """ground-truth value of a block given an env holding its declared args."""
     if step["kind"] == "un":
@@ -98,7 +105,7 @@ def audit_candidate(records, dag, cand_code, rng, n_iface=8):
     if stmts:
         for s in dag["steps"]:
             if s["var"] in stmts:
-                val = _exec_stmt(stmts[s["var"]], {k: deepcopy(v) for k, v in cenv.items()}, G)
+                val = _exec_stmt(stmts[s["var"]], {k: _sdc(v) for k, v in cenv.items()}, G)
                 cenv[s["var"]] = val; cand_vals[s["var"]] = val
     blocks = []
     for s in dag["steps"]:
@@ -120,8 +127,8 @@ def audit_candidate(records, dag, cand_code, rng, n_iface=8):
                 for a in decl:
                     iface[a] = _rand_records(rng, rng.randint(4, 9))
                 # candidate stmt evaluated with declared args bound to iface (bind refs by declared name)
-                cand_out = _exec_stmt(stmt, {v: deepcopy(iface[v]) for v in refs if v in iface}
-                                             | ({"records": deepcopy(iface.get(decl[0]))} if "records" in refs else {}), G)
+                cand_out = _exec_stmt(stmt, {v: _sdc(iface[v]) for v in refs if v in iface}
+                                             | ({"records": _sdc(iface.get(decl[0]))} if "records" in refs else {}), G)
                 try:
                     contract_out = _contract(s, {**{a: deepcopy(iface[a]) for a in decl},
                                                  "records": deepcopy(iface.get(decl[0]))})
