@@ -1,8 +1,19 @@
-# PROGRESS SNAPSHOT v13 — verified self-improvement: characterization + measurement (method search exhausted)
-_2026-09-13. Single source of truth. Full detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§146. Method code: rl_training/{vsf_trainer,cct_c0,cct_gen,cct_novelty,cct_c2_gen}.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
+# PROGRESS SNAPSHOT v14 — verified self-improvement: characterization + measurement (headline defended at pass@1)
+_2026-09-14. Single source of truth. Full detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§151. Method code: rl_training/{vsf_trainer,cct_*,comp_eval}.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
 
 ## 0. STATUS RIGHT NOW
-**No experiment running.** Latest batch: the CCT (Contract-to-Composition) program ran and is **closed at all gates** (§144–146). Every method-search branch this program pursued is now honestly exhausted; no method beats decoupled verified replay (RFT) on anything tested. The defensible deliverable is a **characterization + measurement** paper. Infra: clusters 2101/2103 pods died (sshd down); 2102 (24 GPUs) reachable.
+**Measurement reanalysis complete + headline strengthened (§150–§151).** After the external review, re-evaluated at single-attempt **pass@1** with a turnover-robust estimator: the RFT≫GRPO advantage **survives and sharpens** as a genuine reliability/acquisition gain, and the "regression/forgetting" story was largely a coverage/turnover artifact. Method search remains **exhausted** — no method beats RFT (CCT §144–146, VRT §149 all null). Deliverable: **characterization + measurement** paper, now defended against the review. Infra: 2101/2103 pods dead (48 GPUs); 2102 = 24 GPUs (MAIN running k=32 confirm; workers re-bootstrapping for deepseek reliability replication).
+
+## 0c. THE MEASUREMENT RESULT (§150–§151, review-defended headline)
+Patched comp_eval to log per-completion counts (c/k) + seeds. On c3hard/3B (n=200):
+| arm | pass@1 | coverage@16 | turnover-robust acq A | reg D | net@1 |
+|---|---|---|---|---|---|
+| base | 0.090 | 0.330 | — | — | — |
+| GRPO | 0.091 | 0.353 | 0.010 | 0.009 | **+0.001** |
+| RFT | 0.216 | 0.610 | 0.132 | 0.006 | **+0.126** |
+| VSF | 0.128 | 0.470 | 0.044 | 0.007 | +0.037 |
+- **Coverage overstates reliability** (base .090 vs .330). **RFT lifts single-attempt reliability +0.126 (2.4× base); GRPO ~0.** The advantage is genuine **acquisition**, turnover-robust and seed-stable (§151: pass@1 RFT .215/.215; coverage-null α≤.045/β≤.076 ≪ naive ~0.5).
+- **The β/"forgetting" story was mostly turnover** (true D≈.006 vs null≈.5) → the real mechanism is acquisition, not regression. Corrects the earlier coverage-level α/β framing.
 
 ## 1. HEADLINE (what the data supports — empirical)
 **For verifiable OOD learning, decoupled verified replay (RFT) is the ceiling recipe in every regime tested: it acquires the most and regresses the least. On-policy outcome-RL (GRPO) acquires little and actively regresses; VSF (a verified-replay support floor) causally repairs both axes but does not beat RFT; continued RL after RFT adds nothing; and no acquisition/wiring wrapper (CCT) beats it.** Gains follow an **empirical** headroom×accessibility inverted-U. This is characterization + measurement, reported as empirical regularities — NOT a proven universal theorem (see §4).
