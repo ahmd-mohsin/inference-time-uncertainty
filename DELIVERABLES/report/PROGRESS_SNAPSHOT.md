@@ -1,8 +1,19 @@
-# PROGRESS SNAPSHOT v14 — verified self-improvement: characterization + measurement (headline defended at pass@1)
-_2026-09-14. Single source of truth. Full detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§151. Method code: rl_training/{vsf_trainer,cct_*,comp_eval}.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
+# PROGRESS SNAPSHOT v15 — RVP breaks the post-RFT reliability ceiling (positive-method result, 3 families)
+_2026-09-14. Single source of truth. Full detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§154. Method code: rl_training/{rvp_gen,dpo_train,comp_eval,vsf_trainer,cct_*}.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
 
 ## 0. STATUS RIGHT NOW
-**Measurement reanalysis complete + headline strengthened (§150–§151).** After the external review, re-evaluated at single-attempt **pass@1** with a turnover-robust estimator: the RFT≫GRPO advantage **survives and sharpens** as a genuine reliability/acquisition gain, and the "regression/forgetting" story was largely a coverage/turnover artifact. Method search remains **exhausted** — no method beats RFT (CCT §144–146, VRT §149 all null). Deliverable: **characterization + measurement** paper, now defended against the review. Infra: 2101/2103 pods dead (48 GPUs); 2102 = 24 GPUs (MAIN running k=32 confirm; workers re-bootstrapping for deepseek reliability replication).
+**POSITIVE METHOD FOUND — RVP beats the RFT ceiling at pass@1, replicated across 3 families (§153–§154).** After the measurement pivot (§150: coverage ≫ pass@1 → the post-RFT gap is *reliability*), a **decoupled verified-preference** objective (DPO on the model's own verified correct-vs-incorrect self-samples) lifts single-attempt pass@1 by **+0.13 to +0.38** over RFT, matched-budget, with label + positive-only controls, all 4 preregistered predictions (§152) holding in every family. This is the first method in the whole program to genuinely beat RFT on the honest metric. Difficulty-axis + more-seed replication running on all 24 GPUs. Infra: 2101/2103 pods dead (48 GPUs); 2102 = 24 GPUs (all busy).
+
+## 0d. THE RVP RESULT (§153–§154, the positive-method headline)
+pass@1, matched-budget (+250 steps from each family's RFT), all arms from that RFT:
+| family | RFT | **RVP** | xrft (pos-only) | shuf (ctrl) | RVP−RFT | RVP−xrft |
+|---|---|---|---|---|---|---|
+| Qwen-3B (5 seeds) | 0.215 | **0.415** | 0.305 | 0.205 | **+0.200** | +0.110 |
+| deepseek-1.3B | 0.142 | **0.271** | 0.173 | 0.139 | +0.129 | +0.098 |
+| Qwen-1.5B | 0.258 | **0.637** | 0.412 | 0.265 | +0.379 | +0.225 |
+- **P1** RVP≫RFT (all 3); **P2** coverage rises (no collapse); **P3** shuffled-pair ctrl ≈ RFT (verified signal, not exposure); **P4** RVP≫matched-budget positive-only (negatives carry the reliability signal). β-robust (0.05–0.3).
+- **Mechanism:** RFT maximizes *coverage*; verified *preference* on self ± pairs concentrates mass onto reachable solutions (*selection*) — the axis positive-only imitation structurally can't touch. Grounded in §150 (coverage≫pass@1), preregistered §152.
+- **Honest caveats:** difficulty-axis + ds/1.5B seeds in progress; report greedy+pass@4; prior-art positioning (DPO/V-STaR/RAFT/self-rewarding use verified pairs — contribution = the reliability *diagnosis* + decoupled framing + cross-family magnitude + P3/P4 controls); a 2nd domain (math/BigCodeBench) would strengthen.
 
 ## 0c. THE MEASUREMENT RESULT (§150–§151, review-defended headline)
 Patched comp_eval to log per-completion counts (c/k) + seeds. On c3hard/3B (n=200):
