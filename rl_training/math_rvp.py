@@ -2,23 +2,40 @@
 import argparse, json, os, sys, random
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.data.dataset import load_gsm8k, load_math500, format_prompt, extract_numeric_answer, answers_match
+from src.data.dataset import (load_gsm8k, load_math500, load_math_full, load_competition_math,
+    load_deepmath, load_aime_all, load_amc, load_omni_math, load_olympiad_bench,
+    format_prompt, extract_numeric_answer, extract_boxed_answer, answers_match)
 def verify(text, gold):
-    try: return answers_match(extract_numeric_answer(text), gold)
-    except Exception: return False
+    # try boxed-latex extraction first (MATH/Olympiad), then numeric (GSM8K/AIME/AMC)
+    for extract in (extract_boxed_answer, extract_numeric_answer):
+        try:
+            if answers_match(extract(text), gold): return True
+        except Exception: pass
+    return False
+LOADERS = {
+    "gsm8k":           lambda a: load_gsm8k(split=a.split, n_problems=a.n, seed=a.seed),
+    "math500":         lambda a: load_math500(split="test", n_problems=a.n),
+    "math_full":       lambda a: load_math_full(split="train", n_problems=a.n, seed=a.seed),
+    "competition_math":lambda a: load_competition_math(n_problems=a.n, seed=a.seed),
+    "deepmath":        lambda a: load_deepmath(split="train", n_problems=a.n, seed=a.seed),
+    "aime":            lambda a: load_aime_all(n_problems=a.n),
+    "amc":             lambda a: load_amc(n_problems=a.n),
+    "omni_math":       lambda a: load_omni_math(n_problems=a.n, seed=a.seed, min_difficulty=float(os.environ.get("OMNI_MINDIFF","0"))),
+    "olympiad_bench":  lambda a: load_olympiad_bench(n_problems=a.n, seed=a.seed),
+}
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--mode",required=True,choices=["bank","pairs","eval"])
     ap.add_argument("--model",required=True); ap.add_argument("--split",default="train")
-    ap.add_argument("--dataset",default="gsm8k",choices=["gsm8k","math500"])
+    ap.add_argument("--dataset",default="gsm8k",choices=list(LOADERS.keys()))
     ap.add_argument("--n",type=int,default=500); ap.add_argument("--k",type=int,default=8)
     ap.add_argument("--temperature",type=float,default=0.8); ap.add_argument("--max-pairs-per",type=int,default=2)
     ap.add_argument("--shuffle",action="store_true"); ap.add_argument("--out",required=True); ap.add_argument("--seed",type=int,default=1)
     a=ap.parse_args()
-    rows=(load_math500(split="test",n_problems=a.n) if a.dataset=="math500" else load_gsm8k(split=a.split,n_problems=a.n,seed=a.seed))
+    rows=LOADERS[a.dataset](a)
     from vllm import LLM, SamplingParams
-    llm=LLM(model=a.model,trust_remote_code=True,dtype="bfloat16",gpu_memory_utilization=float(os.environ.get("GEN_GPU_MEM","0.5")),max_model_len=2048,enforce_eager=True)
-    sp=SamplingParams(n=a.k,temperature=(0.0 if a.mode=="eval" and a.k==1 else a.temperature),top_p=0.95,max_tokens=640,seed=a.seed)
+    llm=LLM(model=a.model,trust_remote_code=True,dtype="bfloat16",gpu_memory_utilization=float(os.environ.get("GEN_GPU_MEM","0.5")),max_model_len=int(os.environ.get("MAXLEN","2048")),enforce_eager=True)
+    sp=SamplingParams(n=a.k,temperature=(0.0 if a.mode=="eval" and a.k==1 else a.temperature),top_p=0.95,max_tokens=int(os.environ.get("MAXTOK","640")),seed=a.seed)
     prompts=[format_prompt(r,a.model) for r in rows]
     outs=llm.generate(prompts,sp)
     if a.mode=="eval":
