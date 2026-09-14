@@ -1,8 +1,24 @@
-# PROGRESS SNAPSHOT v16 — RVP breaks the post-RFT reliability ceiling (2 domains × 3 families × 2 difficulties)
-_2026-09-14. Single source of truth. Full detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§159. Method code: rl_training/{rvp_gen,dpo_train,math_rvp,comp_eval,vsf_trainer,cct_*}.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
+# PROGRESS SNAPSHOT v17 — RVP breaks the RFT reliability ceiling: dense (1.3B–7B × 3 families × code+math) + mechanism
+_2026-09-14. Single source of truth. Full detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§163. Method code: rl_training/{rvp_gen,dpo_train,math_rvp,rvp_margin,comp_eval}.py + rvp_scripts/. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
 
 ## 0. STATUS RIGHT NOW
-**POSITIVE METHOD ESTABLISHED — RVP beats the RFT ceiling at pass@1, now across 2 domains × 3 families × 2 difficulties (§153–§159).** Decoupled verified-preference (DPO on the model's own verified correct-vs-incorrect self-samples), from an RFT checkpoint, lifts single-attempt pass@1 above RFT everywhere tested; all 4 preregistered predictions (§152) hold in every cell; metric-robust (pass@4) and β-robust. Larger-LLM: 7B RFT+positive-replay scale up; 7B RVP-DPO finishing (bsz=1). Ready to scale densely when new compute lands (plan in §9). Infra now: only MAIN (2102, 8 GPU) stable; 2102 workers self-wipe; 2101/2103 (48 GPU) dead.
+**RVP DENSELY ESTABLISHED + MECHANISM SHOWN (§161–§163).** On 3 fresh clusters (72 GPUs), the dense matrix confirms decoupled verified-preference (RVP) beats the RFT ceiling at single-attempt pass@1 across **sizes 1.3B→7B, 3 families (Qwen-Coder, Qwen, deepseek-coder), 2 domains (compositional-code + GSM8K), 3 difficulties** — wherever reliability headroom exists; the sole ~0 cell is near-ceiling GSM8K-3B (predicted). Mechanism (§163): RVP raises the correct-vs-incorrect **logit margin by suppressing incorrect modes** (logp(y+) flat, logp(y−) drops), Δmargin tracks the pass@1 gain. Full spine done: measurement → theory → dense empirical → mechanism. Remaining: more seeds/CIs, BigCodeBench, 14B (needs ref-offload).
+
+## 0d. RVP DENSE RESULT (§161–§163) — matched-budget pass@1, RVP vs RFT
+| domain | model | size | RFT | RVP | Δ |
+|---|---|---|---|---|---|
+| comp | Qwen-Coder-1.5B | 1.5B | 0.246 | **0.615** | +0.37 |
+| comp | Qwen-Coder-3B (vhard) | 3B | 0.055 | 0.103 | +0.047 |
+| comp | **deepseek-coder-6.7B** | 6.7B | 0.361 | **0.549** | +0.19 |
+| comp | **Qwen-Coder-7B** | 7B | 0.667 | **0.775** | +0.108 |
+| comp | Qwen-Coder-7B (hard) | 7B | 0.415 | 0.493 | +0.078 |
+| comp | **Qwen-7B (non-coder)** | 7B | 0.544 | 0.647 | +0.103 |
+| GSM8K | Qwen-1.5B | 1.5B | 0.711 | 0.748 | +0.037 |
+| GSM8K | deepseek-1.3B | 1.3B | 0.050 | 0.075 | +0.025 |
+| GSM8K | Qwen-3B (base .83) | 3B | 0.847 | 0.851 | ~0 (ceiling) |
+- Scale trend: gain **shrinks with size but stays positive** (+0.37 @1.5B → +0.11 @7B). shuffled≈RFT & RVP>xrft in every headroom cell. Effect **headroom-gated** (§150/§160).
+- **Theory (§160):** verified preference reallocates mass I→C; positive-only CE is mode-covering and can't suppress I. **Mechanism (§163):** ↑logit-margin via ↓logp(incorrect), Δmargin ∝ Δpass@1.
+- Everything preregistered (§152), controls pass, honest boundary (ceiling) + retraction (§143) retained.
 
 ## 0d. RVP EVIDENCE (§153–§159) — matched-budget pass@1, all arms from each cell's RFT
 | domain | family | diff | RFT | **RVP** | xrft | shuf | RVP−RFT |
