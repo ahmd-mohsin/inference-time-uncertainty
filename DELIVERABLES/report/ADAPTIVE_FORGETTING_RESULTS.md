@@ -5372,3 +5372,13 @@ WHY GRPO FAILS (mechanistic): GRPO leaves the per-prompt reliability distributio
 WHY RFT PARTIALLY WORKS: RFT moves ~30% of prompts OUT of the stuck pile (frac_lo 0.79->0.50) and up (frac_hi 0.055->0.15) — broad verified replay supplies success-gradients on covered prompts.
 WHY RVP WINS (combine with §163 margin): RVP raises the correct-vs-incorrect logit margin by SUPPRESSING incorrect-mode logp (logp(y+) flat, logp(y-) drops) -> it concentrates per-prompt mass onto the reachable-correct solution, moving prompts from the stuck/mid pile to high p_hat. This is the selection axis GRPO cannot touch (it doesn't move the distribution) and RFT only partially reaches (positive-only, no incorrect-suppression). 
 => The three methods sit on a mechanistic ladder: GRPO (no distribution shift) < RFT (mass up via positive replay) < RVP (mass CONCENTRATED via incorrect-mode suppression). Full base->GRPO->RFT->RVP margin trajectory (mech_full.sh) runs post-wave-2 on the math cell (has all 5 arms incl direct GRPO) + a comp cell; rely_dist.py will add the RVP p_hat distribution from the dense eval jsons.
+
+## §166 DIRECT GRPO arms + 7B/math 5-seed CIs — RVP >> GRPO airtight in-cell (caveat closed)
+DIRECT GRPO (train_grpo from base -> pass@1), same cell+metric as RVP:
+  GSM8K Qwen-1.5B:  base .653  GRPO .673  RFT .711  RVP .747(5-seed)   => GRPO ~base (+.020); RVP-GRPO +0.074
+  GSM8K deepseek-1.3B: base .026  GRPO .028  RFT .050  RVP .072        => GRPO ~base (+.002); RVP-GRPO +0.044
+  GSM8K Qwen-3B (ceiling): base .832  GRPO .834  RFT .847  RVP .852    => all ~tied (no headroom)
+=> DIRECT confirmation (not transitive): GRPO barely moves off base on the honest pass@1 metric; RVP >> GRPO in every headroom cell. Closes §164 caveat #1. GRPO's near-null is consistent across comp(§150) + math(here).
+7B RVP 5-seed pass@1 (CIs): c7mid .773/.779/.769/.779/.774 (mean .775, RFT .667, +.108) | c7hard ~.491 (RFT .415, +.076) | Qwen-7B(non-coder) ~.636 (RFT .544, +.092). Math 5-seed RVP: gsm1.5B ~.747, ds1.3B ~.072 (tight).
+FULL RVP-vs-GRPO-vs-RFT-vs-base LADDER (pass@1, headroom cells): base < GRPO(~base) < RFT < RVP, everywhere. RVP is the unique method that beats RFT; GRPO ~ base.
+PENDING: 14B (c14mid) + Phi-3.5 (phimid, 4th family) still training/harvesting; mech_full margin trajectory launching on math node (has base/GRPO/RFT/RVP/shuf).
