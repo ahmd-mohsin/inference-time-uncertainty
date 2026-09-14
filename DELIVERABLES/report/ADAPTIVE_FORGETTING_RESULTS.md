@@ -5284,3 +5284,8 @@ RVP-vs-RFT pass@1 across ALL captured (family x difficulty) cells:
   Qwen-1.5B   mid  0.258->0.637 (+0.379) | hard: lost to worker wipe (rerun pending)
 => RVP > RFT in ALL 5 captured cells (3 families x 2 difficulties for Qwen-3B/ds, mid for Qwen-1.5B); xrft always intermediate; shuffled-control ~ RFT everywhere. Also metric-robust (§156 pass@4). The reliability gain is family- AND difficulty-robust.
 NOW RUNNING: MATH 2nd-dataset (GSM8K) RVP flywheel on MAIN (base Qwen2.5-1.5B-Instruct) -> leaves the synthetic comp/DAG domain for real math (answer-match verify). Then Qwen-7B-Coder RVP (larger LLM) on MAIN.
+
+## §158 Larger-LLM (Qwen-7B) + math 2nd-dataset (in progress)
+Qwen2.5-Coder-7B (mid, comp): base 0.455 -> RFT 0.675 (+0.220) -> xrft/fresh-positive-replay 0.757 (+0.082). => at 7B, RFT and iterated positive verified replay BOTH lift pass@1 (the reliability gain scales up on the positive side). RVP-DPO arm OOM'd at 7B (DPO holds policy+ref; needs bsz=1/shorter max_length on 40GB) -> quick rerun pending (7B RFT+pairs already on MAIN). 
+MATH 2nd-dataset (GSM8K, answer-match): fixed the earlier no-op (node git-tree dirty -> math_rvp.py missing; scp'd + installed jsonlines) -> flywheel now RUNNING on MAIN.
+Infra remains: MAIN (8 GPU) only stable node; serialized. Pending: math result, 7B RVP-DPO (bsz=1), Qwen1.5B-hard, more seeds.
