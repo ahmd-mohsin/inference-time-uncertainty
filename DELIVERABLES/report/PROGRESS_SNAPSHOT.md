@@ -1,8 +1,21 @@
-# PROGRESS SNAPSHOT v15 — RVP breaks the post-RFT reliability ceiling (positive-method result, 3 families)
-_2026-09-14. Single source of truth. Full detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§154. Method code: rl_training/{rvp_gen,dpo_train,comp_eval,vsf_trainer,cct_*}.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
+# PROGRESS SNAPSHOT v16 — RVP breaks the post-RFT reliability ceiling (2 domains × 3 families × 2 difficulties)
+_2026-09-14. Single source of truth. Full detail: ADAPTIVE_FORGETTING_RESULTS.md §120–§159. Method code: rl_training/{rvp_gen,dpo_train,math_rvp,comp_eval,vsf_trainer,cct_*}.py. Recipe: rl_training/queue/FULL_BOOTSTRAP.sh._
 
 ## 0. STATUS RIGHT NOW
-**POSITIVE METHOD FOUND — RVP beats the RFT ceiling at pass@1, replicated across 3 families (§153–§154).** After the measurement pivot (§150: coverage ≫ pass@1 → the post-RFT gap is *reliability*), a **decoupled verified-preference** objective (DPO on the model's own verified correct-vs-incorrect self-samples) lifts single-attempt pass@1 by **+0.13 to +0.38** over RFT, matched-budget, with label + positive-only controls, all 4 preregistered predictions (§152) holding in every family. This is the first method in the whole program to genuinely beat RFT on the honest metric. Difficulty-axis + more-seed replication running on all 24 GPUs. Infra: 2101/2103 pods dead (48 GPUs); 2102 = 24 GPUs (all busy).
+**POSITIVE METHOD ESTABLISHED — RVP beats the RFT ceiling at pass@1, now across 2 domains × 3 families × 2 difficulties (§153–§159).** Decoupled verified-preference (DPO on the model's own verified correct-vs-incorrect self-samples), from an RFT checkpoint, lifts single-attempt pass@1 above RFT everywhere tested; all 4 preregistered predictions (§152) hold in every cell; metric-robust (pass@4) and β-robust. Larger-LLM: 7B RFT+positive-replay scale up; 7B RVP-DPO finishing (bsz=1). Ready to scale densely when new compute lands (plan in §9). Infra now: only MAIN (2102, 8 GPU) stable; 2102 workers self-wipe; 2101/2103 (48 GPU) dead.
+
+## 0d. RVP EVIDENCE (§153–§159) — matched-budget pass@1, all arms from each cell's RFT
+| domain | family | diff | RFT | **RVP** | xrft | shuf | RVP−RFT |
+|---|---|---|---|---|---|---|---|
+| comp | Qwen-3B | mid | 0.392 | **0.645** | 0.528 | 0.386 | +0.253 |
+| comp | Qwen-3B | hard | 0.215 | **0.415** | 0.305 | 0.205 | +0.200 |
+| comp | Qwen-1.5B | mid | 0.258 | **0.637** | 0.412 | 0.265 | +0.379 |
+| comp | deepseek-1.3B | mid | 0.142 | **0.271** | 0.173 | 0.139 | +0.129 |
+| comp | deepseek-1.3B | hard | 0.083 | **0.149** | 0.091 | 0.081 | +0.066 |
+| **math (GSM8K)** | Qwen-1.5B | — | 0.704 | **0.743** | 0.730 | 0.702 | +0.039 |
+- Ordering **RVP > xrft > RFT ≈ shuf** in every cell. P1–P4 (§152) all hold; effect **tracks reliability headroom** (large at low pass@1, modest at high-baseline GSM8K).
+- **Mechanism:** RFT maximizes coverage; verified *preference* on self ± pairs concentrates mass onto reachable solutions (*selection*) — the axis positive-only imitation can't touch (§150 coverage≫pass@1). Grounded + preregistered.
+- **Larger LLM (Qwen-7B, comp mid):** base 0.455 → RFT 0.675 → xrft 0.757; RVP-DPO rerunning (bsz=1).
 
 ## 0d. THE RVP RESULT (§153–§154, the positive-method headline)
 pass@1, matched-budget (+250 steps from each family's RFT), all arms from that RFT:
@@ -68,3 +81,17 @@ The defensible paper is **characterization + measurement**: RFT is the empirical
 - **Write the characterization+measurement paper** from §120–146 (recommended — the science is done; method search exhausted).
 - Optional: replicate C2 on a 2nd checkpoint when a cluster returns (result already unambiguous); or test CCT in a hard-local-op domain (BigCodeBench) — the only regime where component recovery could carry novel supervision.
 - Will NOT: claim the retracted ceiling theorem, re-fund gate-killed programs, or present the inverted-U closed form as validated.
+
+## 9. DENSE-SCALE RUN PLAN (ready to fire on new compute)
+Goal: turn the RVP result from "shown" into "densely established" for the paper. All scripts exist and are validated: `rvp_gen.py` (verified ± pairs), `dpo_train.py` (decoupled preference; bsz=1 for ≥7B), `sft_train.py` (RFT/xrft positive-only control), `math_rvp.py` (GSM8K), `comp_eval.py` (per-completion pass@1 + coverage), `rvp_family.sh`/`math_flywheel.sh` (self-driving flywheels; take BASE/FAM/TRD/OODD/GEN_GPU_MEM env). Per flywheel ≈ 6 GPUs, ~40–60 min.
+Matrix to run (each cell = base→RFT→{RVP×3 seeds, xrft×2, shuf×1}→pass@1+pass@4 eval, matched-budget):
+- **Sizes/families:** Qwen2.5-Coder {1.5B, 3B, 7B, 14B, 32B} + Qwen2.5 {1.5B,7B} + deepseek-coder {1.3B,6.7B} + Llama/Mistral for cross-lineage (≥6 families).
+- **Difficulties (comp):** mid(7→9), hard(12→14), vhard(16→18) — 3 points per family.
+- **Domains:** compositional-code (comp_dag), GSM8K, MATH-500, + BigCodeBench (real multi-library code; build a contract/test harness) and a code-exec benchmark — ≥3 real domains.
+- **Seeds:** ≥3 per arm for CIs (paired-bootstrap over problems; ≥1000 eval problems for the small-effect math cells per the review's power calc).
+- **β / lr sweep:** β∈{0.05,0.1,0.3}, lr∈{5e-6,1e-5}; confirm robustness + report sensitivity.
+- **Ablations:** pair-count per prompt, on-policy vs decoupled preference, RVP-from-base vs RVP-from-RFT (does coverage-first matter?), iterate RVP→regen pairs→RVP (flywheel rounds).
+- **Controls (mandatory, per review):** shuffled-label, matched-budget positive-only (xrft), matched-token/FLOP accounting, greedy + pass@1 + pass@4/16, frozen decoding, no train/test leakage, unchanged-checkpoint null for any α/β.
+- **Scale test:** does RVP−RFT shrink or hold with model size? (7B/14B/32B) — the "scales with size" question.
+Priority order when compute lands: (1) 7B/14B RVP across 3 comp difficulties + GSM8K (scale × domain); (2) ≥3 seeds + CIs on all existing cells; (3) MATH-500 + BigCodeBench (real 2nd/3rd domain); (4) β/lr + ablations; (5) flywheel-rounds. Fastest disconfirmer first: if RVP−RFT vanishes at 14B/32B or on BigCodeBench, that bounds the claim — run those early.
+Ops: harvest results to the ledger immediately (worker pods self-wipe); push checkpoints off-node; run each flywheel on ONE stable node (don't split RFT/RVP across ephemeral workers).
