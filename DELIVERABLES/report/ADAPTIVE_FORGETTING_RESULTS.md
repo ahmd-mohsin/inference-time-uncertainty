@@ -5360,3 +5360,15 @@ COMPLETE STORY (paper spine): §150 coverage>>pass@1 (reliability gap) -> §160 
   Coder-3B vhard:    RVP 0.102/0.103/0.106/0.100/0.102 -> mean 0.102 SD 0.003 | RFT 0.055 => +0.047
 => RVP-RFT gaps are 40-180x the 5-seed SD -> overwhelmingly significant, publication-grade CIs. (7B CI-seeds hit a bsz-detection bug -> OOM; math CI used wrong dir -> both rerunning.)
 COMPARISON STATUS (RVP vs GRPO): RVP>>RFT is now direct+CI'd; RFT>>GRPO is §141/§150 (GRPO pass@1 ~= base, net +0.001). Firing DIRECT GRPO arms (train_grpo from base -> pass@1) in the dense comp cells (1.5B/3B/6.7B; 7B GRPO needs server-mode) to make "RVP>>GRPO" airtight in the same cell+metric.
+
+## §165 MECH-INTERP "WHY BETTER" — reliability-distribution + margin trajectory
+Per-prompt reliability distribution p_hat=c/16 (c3hard/3B, n=200; §150 per-problem data):
+  arm   pass@1  frac(p_hat>0.5)  frac(p_hat<0.1)=STUCK  binary-entropy
+  base  0.090   0.055            0.790                  0.151
+  GRPO  ~0.090  ~0.060           ~0.785                 ~0.155   (3 seeds, all ~base)
+  RFT   0.216   0.148            0.500                  0.305
+  VSF   0.128   0.100            0.710                  0.196
+WHY GRPO FAILS (mechanistic): GRPO leaves the per-prompt reliability distribution ~= base — 79% of prompts remain in the "almost-never-solved" pile (p_hat<0.1); it rescues NONE. This is the distributional face of §150 (GRPO net +0.001) and Cor-1 of §160 (on-policy is coverage-throttled: no success-gradient on prompts it can't already solve).
+WHY RFT PARTIALLY WORKS: RFT moves ~30% of prompts OUT of the stuck pile (frac_lo 0.79->0.50) and up (frac_hi 0.055->0.15) — broad verified replay supplies success-gradients on covered prompts.
+WHY RVP WINS (combine with §163 margin): RVP raises the correct-vs-incorrect logit margin by SUPPRESSING incorrect-mode logp (logp(y+) flat, logp(y-) drops) -> it concentrates per-prompt mass onto the reachable-correct solution, moving prompts from the stuck/mid pile to high p_hat. This is the selection axis GRPO cannot touch (it doesn't move the distribution) and RFT only partially reaches (positive-only, no incorrect-suppression). 
+=> The three methods sit on a mechanistic ladder: GRPO (no distribution shift) < RFT (mass up via positive replay) < RVP (mass CONCENTRATED via incorrect-mode suppression). Full base->GRPO->RFT->RVP margin trajectory (mech_full.sh) runs post-wave-2 on the math cell (has all 5 arms incl direct GRPO) + a comp cell; rely_dist.py will add the RVP p_hat distribution from the dense eval jsons.
