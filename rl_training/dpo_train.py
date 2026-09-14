@@ -18,7 +18,7 @@ def main():
     cfg=DPOConfig(output_dir=a.out,per_device_train_batch_size=a.bsz,gradient_accumulation_steps=2,
                   learning_rate=a.lr,max_steps=a.max_steps,logging_steps=20,save_steps=a.max_steps,
                   beta=a.beta,seed=a.seed,bf16=True,gradient_checkpointing=True,
-                  max_length=768,warmup_ratio=0.03,lr_scheduler_type="cosine",report_to=[])
+                  max_length=768,warmup_ratio=0.03,lr_scheduler_type="cosine",report_to=[],precompute_ref_log_probs=True)
     peft=LoraConfig(r=32,lora_alpha=64,lora_dropout=0.05,task_type="CAUSAL_LM",
                     target_modules=["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"])
     tr=DPOTrainer(model=a.model,args=cfg,train_dataset=ds,processing_class=tok,peft_config=peft)
