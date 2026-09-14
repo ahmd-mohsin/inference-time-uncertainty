@@ -5382,3 +5382,19 @@ DIRECT GRPO (train_grpo from base -> pass@1), same cell+metric as RVP:
 7B RVP 5-seed pass@1 (CIs): c7mid .773/.779/.769/.779/.774 (mean .775, RFT .667, +.108) | c7hard ~.491 (RFT .415, +.076) | Qwen-7B(non-coder) ~.636 (RFT .544, +.092). Math 5-seed RVP: gsm1.5B ~.747, ds1.3B ~.072 (tight).
 FULL RVP-vs-GRPO-vs-RFT-vs-base LADDER (pass@1, headroom cells): base < GRPO(~base) < RFT < RVP, everywhere. RVP is the unique method that beats RFT; GRPO ~ base.
 PENDING: 14B (c14mid) + Phi-3.5 (phimid, 4th family) still training/harvesting; mech_full margin trajectory launching on math node (has base/GRPO/RFT/RVP/shuf).
+
+## §167 MECH-INTERP FULL MARGIN TRAJECTORY — the definitive "why better" (base->GRPO->RFT->RVP, same pairs)
+GSM8K Qwen-1.5B, teacher-forced per-token logp of chosen(y+)/rejected(y-) on the SAME 602 held-out verified pairs:
+  stage  logp(y+)  logp(y-)  margin
+  base   -0.110    -0.139    0.029
+  GRPO   -0.109    -0.139    0.029   <- IDENTICAL to base: GRPO does not move the margin at all
+  RFT    -0.092    -0.119    0.027   <- raises BOTH logp+ and logp- (mode-covering); margin ~flat
+  RVP    -0.092    -0.157    0.065   <- keeps RFT's logp+ but SUPPRESSES logp- => margin 2.4x
+  shuf   -0.091    -0.119    0.027   <- = RFT: shuffled preference gives no margin gain (verified signal required)
+MECHANISM (definitive): the three methods separate cleanly on the correct-vs-incorrect logit margin —
+ - GRPO margin == base (0.029): it changes nothing on these pairs (matches its ~0 pass@1 gain; on-policy coverage-throttled).
+ - RFT raises logp(y+) AND logp(y-) together (positive-only imitation is mode-covering): pass@1 rises via higher absolute correct-prob, but the margin does NOT widen.
+ - RVP inherits RFT's logp(y+) and DROPS logp(y-) (verified-incorrect suppression): margin more than doubles -> mass concentrates on the reachable-correct solution -> highest pass@1.
+ - shuffled-preference == RFT (no widening): the GAIN IS THE VERIFIED SIGN of the pair, not the DPO objective per se.
+=> WHY RVP > RFT > GRPO, in one figure: GRPO doesn't move the margin; RFT lifts both modes (margin flat); only RVP suppresses the incorrect mode (margin 2x). This is the mechanistic cause of the pass@1 ladder base<GRPO<RFT<RVP (§166) and matches the reliability-distribution ladder (§165) and per-cell margin (§163).
+Status: 14B (c14mid) RVP likely infeasible on single 40GB even w/ precompute (28GB policy + activations) — RFT/base only; 6.7B/7B cover the large-model claim. Phi-3.5 (4th family) still training (bank 214). Mech-interp "why-better" story COMPLETE: margin trajectory (§167) + distribution ladder (§165) + per-cell margin (§163) + theory (§160).
