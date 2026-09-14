@@ -2,7 +2,7 @@
 # GSM8K RVP flywheel (env BASE): base->RFT->RVP pairs->{RVP,xrft,shuf}->pass@1 eval on GSM8K test. GPU0-5.
 export HOME=/home/greenland-user PATH=$HOME/.local/bin:$PATH HF_HOME=$HOME/.cache HF_HUB_DISABLE_XET=1 VLLM_ATTENTION_BACKEND=FLASHINFER WANDB_MODE=disabled PYTHONPATH=$HOME/gu/shim PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 L13=$(find $HOME/.local -name "libcudart.so.13*" 2>/dev/null|head -1); export LD_LIBRARY_PATH="$(dirname $L13):$LD_LIBRARY_PATH"
-cd $HOME/inference-time-uncertainty && git pull --rebase 2>cd $HOME/inference-time-uncertainty && git pull --rebase 2>&1|tail -11|tail -1; pip install --quiet jsonlines 2>/dev/null
+cd $HOME/inference-time-uncertainty && git pull --rebase 2>cd $HOME/inference-time-uncertainty && git pull --rebase 2>&1|tail -11|tail -1; pip install --break-system-packages --quiet jsonlines 2>/dev/null
 G=$HOME/gu; L=$G/logs; V=$G/mrvp; mkdir -p $V; R=$V/RES.md; : >$R; B=${BASE:-Qwen/Qwen2.5-1.5B-Instruct}
 echo "# MATH-RVP (gsm8k) base=$B $(date -u)" >>$R
 CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=0.5 python3 -m rl_training.math_rvp --mode bank --model $B --split train --n 600 --k 8 --out $V/bank.jsonl >$L/mrvp_bank.log 2>&1
