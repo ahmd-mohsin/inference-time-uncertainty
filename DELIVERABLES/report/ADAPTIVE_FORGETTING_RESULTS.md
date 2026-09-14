@@ -5224,3 +5224,21 @@ PREREGISTERED PREDICTIONS (metric = pass@1, §150 estimator; c3hard/3B first, re
  P4 RFT + extra positive-only RFT (matched budget) improves pass@1 LESS than RVP -> the NEGATIVES carry the reliability signal, positives alone plateau.
  [Falsified if RVP <= RFT at pass@1, or the shuffled control matches RVP, or coverage collapses.]
 WHY AWARD-SHAPED (honest): targets the ONE axis (reliability|coverage) with measured headroom that positive-only RFT provably can't touch; if P1-P4 hold it is a method that BEATS the RFT ceiling on the metric that matters (pass@1), grounded in a measurement contribution (§150) and defended against the turnover critique (§151). PRIOR-ART RISK: DPO/RAFT/V-STaR/self-rewarding use verifier-labeled pairs; novelty must be the DECOUPLED reliability framing + beating RFT on pass@1 specifically + the coverage-vs-reliability diagnosis. If a vanilla DPO-on-verified-pairs baseline captures it, report that honestly (still a positive result: "reliability, not coverage, is the post-RFT lever").
+
+## §153 RVP RESULT — decoupled verified preference BEATS the RFT ceiling at pass@1 (all §152 predictions confirmed)
+c3hard/3B, single-attempt pass@1 (§150 estimator, n=200, k=16). Every continued-training arm = +250 steps from the SAME RFT checkpoint (m_c3hard_rft_s1) => MATCHED BUDGET.
+  arm                              pass@1   cov@16   d(RFT)
+  RFT baseline                     0.215    0.615     -
+  xrft (fresh positive-only RFT)   0.301    0.645    +0.086
+  RVP s1 (verified preference/DPO) 0.411    0.675    +0.196
+  RVP s2                           0.415    0.680    +0.200
+  shuffled-pair control (DPO)      0.204    0.645    -0.011
+SCORECARD (preregistered §152):
+ P1 (RVP pass@1 > RFT, target >=+0.03): CONFIRMED, +0.198 mean (nearly 2x; seeds 0.411/0.415 tight).
+ P2 (coverage not worse): CONFIRMED, coverage UP 0.615->0.678 (no positive-collapse).
+ P3 (shuffled control does NOT improve): CONFIRMED, shuf 0.204 ~ RFT 0.215 => the gain is the VERIFIED signal, not exposure.
+ P4 (RVP > extra positive-only RFT at matched budget): CONFIRMED, RVP 0.413 vs xrft 0.301 = +0.112 => the NEGATIVES carry the reliability signal beyond fresh positives.
+=> RVP is a method that genuinely BEATS the RFT ceiling on the honest single-attempt metric (pass@1), the axis §150 showed had large unaddressed headroom (coverage 0.61 >> pass@1 0.215 after RFT). Mechanism: RFT/positive replay raises COVERAGE + modest reliability; verified PREFERENCE on self-generated correct-vs-incorrect pairs concentrates probability mass onto solutions the model can already produce (SELECTION), which positive-only imitation structurally cannot do. Coverage also rises, so it is not a coverage/reliability trade.
+SECONDARY finding: xrft (a 2nd round of positive verified replay on FRESH self-samples) itself lifts pass@1 +0.086 -> iterated positive replay improves reliability (distinct from §139's continued-GRPO null); RVP roughly triples that gain.
+HONEST CAVEATS (before award claims): (1) single cell (c3hard/3B); replicate across sizes/difficulties + a 2nd family (deepseek workers re-bootstrapping; other cells' ckpts on dead 2101/2103). (2) RVP 2 seeds, xrft/shuf 1 seed — add seeds + CIs. (3) prior-art risk: DPO/V-STaR/self-rewarding use verifier-labeled pairs; the contribution is the DIAGNOSIS (post-RFT residual gap is reliability, coverage>>pass@1) + decoupled-preference framing + magnitude (~2x pass@1) + the P3/P4 controls, NOT "we invented preference learning". (4) confirm greedy + pass@4/16 as secondary; frozen decoding; check no train/test leakage in self-pairs (pairs are from TR prompts, eval is held-out OOD d14 - disjoint). (5) beta=0.1, lr5e-6, 250 steps - not tuned; report sensitivity.
+NEXT: replicate RVP across cells + deepseek (2nd family) + more seeds/CIs; sweep beta; greedy+pass@4; then this is the paper's positive-method headline: "verified replay is the coverage ceiling; decoupled verified PREFERENCE breaks the reliability ceiling, ~2x pass@1, with matched-budget + label controls."
