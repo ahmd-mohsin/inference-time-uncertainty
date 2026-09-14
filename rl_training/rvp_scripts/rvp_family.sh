@@ -12,8 +12,8 @@ TRD=${TRD:-7}; OODD=${OODD:-9}; TR=$G/comp_data/w_tr_d${TRD}.jsonl; OOD=$G/comp_
 CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=0.5 python3 -m rl_training.comp_gen --model $BASE --pool $TR --k 8 --n 400 --temperature 1.0 --out $V/wbank.jsonl >$L/rvpfam_harv.log 2>&1
 echo "bank=$(wc -l <$V/wbank.jsonl)" >>$R
 CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $BASE --data $V/wbank.jsonl --out $V/rft --seed 1 --max-steps 250 --bsz 8 >$L/rvpfam_rft.log 2>&1
-python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/rvpfam_rft.log 2>&1
-RFT=$V/rft/merged_full
+python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/rvpfam_rft.log 2>&1; fi
+if [ "${SKIP_RFT:-0}" = 1 ]; then RFT=$B; else RFT=$V/rft/merged_full; fi
 # 2) RVP pairs from RFT + positives + shuffled
 CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=0.5 python3 -m rl_training.rvp_gen --model $RFT --pool $TR --n 400 --k 12 --max-pairs-per 2 --out $V/pairs.jsonl >$L/rvpfam_pairs.log 2>&1 &
 CUDA_VISIBLE_DEVICES=1 GEN_GPU_MEM=0.5 python3 -m rl_training.rvp_gen --model $RFT --pool $TR --n 400 --k 12 --max-pairs-per 2 --shuffle --out $V/shuf.jsonl >$L/rvpfam_shufgen.log 2>&1 &
