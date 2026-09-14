@@ -5275,3 +5275,12 @@ STATUS OF THE CLAIM: RVP-beats-RFT-at-pass@1 is now supported across 3 families 
 pass@4 secondary metric (c3hard/3B): RFT pass@1 0.206 cov@4 0.430 vs RVP pass@1 0.414 cov@4 0.580 => RVP beats RFT at pass@4 coverage (+0.15) too, not just pass@1 => the reliability gain is metric-robust.
 Breadth attempts: (a) larger LLM Qwen-7B-Coder RVP launched on the 2102 WORKERS but they wiped again (busy=0, no results) -> larger-LLM axis must run on stable MAIN. (b) MATH 2nd-dataset: built math_rvp.py (GSM8K bank/pairs/eval via extract_numeric_answer+answers_match) + math_flywheel.sh; launching on MAIN after deepseek-hard. deepseek-hard cell rerun in progress (bank=69, small — deepseek@d12-14 low yield).
 PLAN (only MAIN stable = 8 GPU, serialize): deepseek-hard -> MATH-RVP (2nd dataset, gsm8k) -> Qwen-7B-Coder RVP (larger LLM). Each ~40-60min. Workers ephemeral (harvest-immediately only); 2101/2103 dead.
+
+## §157 RVP difficulty grid complete (5 cells) + math 2nd-dataset launched
+deepseek-hard done: base 0.030 / RFT 0.083 / RVP 0.149 (s1 .148, s2 .151) / xrft 0.091 / shuf 0.081 => RVP +0.066 over RFT (~1.8x), RVP>xrft (+0.058), shuf~RFT. Pattern holds even at the hardest/lowest-yield cell.
+RVP-vs-RFT pass@1 across ALL captured (family x difficulty) cells:
+  Qwen-3B     mid  0.392->0.645 (+0.253) | hard 0.215->0.415 (+0.200)
+  deepseek1.3B mid 0.142->0.271 (+0.129) | hard 0.083->0.149 (+0.066)
+  Qwen-1.5B   mid  0.258->0.637 (+0.379) | hard: lost to worker wipe (rerun pending)
+=> RVP > RFT in ALL 5 captured cells (3 families x 2 difficulties for Qwen-3B/ds, mid for Qwen-1.5B); xrft always intermediate; shuffled-control ~ RFT everywhere. Also metric-robust (§156 pass@4). The reliability gain is family- AND difficulty-robust.
+NOW RUNNING: MATH 2nd-dataset (GSM8K) RVP flywheel on MAIN (base Qwen2.5-1.5B-Instruct) -> leaves the synthetic comp/DAG domain for real math (answer-match verify). Then Qwen-7B-Coder RVP (larger LLM) on MAIN.
