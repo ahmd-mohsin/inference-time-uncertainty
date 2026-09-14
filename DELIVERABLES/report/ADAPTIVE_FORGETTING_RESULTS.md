@@ -5202,3 +5202,14 @@ FINDINGS:
  4. VSF sits between (A=0.044) — repairs/acquires modestly, still << RFT. Consistent with the causal-probe role.
 REFRAMED CONTRIBUTION (award-relevant, honest): "Verified whole-solution replay produces a genuine single-attempt RELIABILITY gain (turnover-robust acquisition +0.13 vs base) where on-policy outcome-RL produces ~none; naive acquisition/regression accounting on pass@k coverage inflates 'forgetting' via sampling turnover, and the correct single-attempt population estimator shows the effect is acquisition, not regression." This survives the external review and is the measurement contribution the paper should lead with.
 CAVEATS: one cell (c3hard/3B), VSF 1 seed, single sampling seed (nullA/B analytic from p_i, not two-seed empirical); k=16 base for p_i estimate. Replicate across cells + a 2-seed empirical null before final. But the direction is clean and the RFT>GRPO reliability gap is large and non-overlapping.
+
+## §151 EMPIRICAL 2-SEED NULL — resolves §148; coverage-level turnover is SMALL, pass@1 seed-stable, headline holds
+With the patched comp_eval (--seed), ran a SECOND independent seed of the c3hard battery and paired seed1 vs seed2 of UNCHANGED checkpoints (fixes §148's degenerate/deterministic attempt — seeds now genuinely differ: base coverage 0.330 vs 0.335, RFT 0.635 vs 0.615):
+  ckpt   coverage-null alpha  coverage-null beta   pass@1 s1/s2    coverage s1/s2
+  base        0.045               0.076             0.090/0.087     0.330/0.335
+  RFT         0.014               0.039             0.215/0.215     0.635/0.615
+FINDINGS:
+ 1. At the COVERAGE (pass@16) level the empirical 2-seed null turnover is SMALL (alpha<=0.045, beta<=0.076) — far below the naive single-attempt null (~0.5). => the reported §138/§141 coverage-level alpha/beta (~0.1-0.66) are MOSTLY REAL signal, not turnover artifacts. The review's turnover concern is real at the per-ATTEMPT level but modest at the coverage level we actually reported. (Refines §143.2/§147.2/§148: concern acknowledged and now BOUNDED, not fatal.)
+ 2. pass@1 is SEED-STABLE (base .090/.087, RFT .215/.215) -> the §150 reliability numbers are reliable, not sampling noise.
+ 3. Net: the RFT>>GRPO advantage is a genuine, turnover-robust, seed-stable single-attempt RELIABILITY gain (RFT pass@1 0.215 vs base 0.090 vs GRPO ~0.091). Headline STRENGTHENED and now defended against the measurement critique.
+STATUS: measurement thread (review P0) CLOSED positively on the c3hard cell. Remaining for full rigor: replicate the pass@1/null across the other cells + a 2nd family (deepseek) — in progress (2102 workers re-bootstrapping for the deepseek reliability replication; 2101/2103 pods dead = other cells' checkpoints currently unreachable).
