@@ -45,6 +45,24 @@ done
     -m rl_training.dpo_train --full --model $RFT --data $V/shuf.jsonl --out $V/shuf --seed 1 --max-steps 300 --bsz 1 >$L/${TAG}_shuf.log 2>&1
 # 4c) xrft positive-only (single-GPU LoRA)
 [ -d $V/xrft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $RFT --data $V/pos.jsonl --out $V/xrft --seed 1 --max-steps 300 --bsz 8 >$L/${TAG}_xrft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/xrft')" >>$L/${TAG}_merge.log 2>&1; }
+# 4d) CONSOLIDATE full-param (ZeRO-3) DPO outputs into canonical HF checkpoints
+# (DeepSpeed-saved dirs don't always load in vLLM; reload+resave + copy a known-good tokenizer)
+for d in rvp_s1 rvp_s2 rvp_s3 rvp_s4 rvp_s5 shuf; do
+  [ -f $V/$d/config.json ] || continue
+  [ -f $V/$d/.consolidated ] && continue
+  CUDA_VISIBLE_DEVICES=0 python3 -c "
+import torch,shutil,os
+from transformers import AutoModelForCausalLM, AutoTokenizer
+d='$V/$d'
+m=AutoModelForCausalLM.from_pretrained(d,torch_dtype=torch.bfloat16,low_cpu_mem_usage=True)
+m.save_pretrained(d,safe_serialization=True)
+AutoTokenizer.from_pretrained('$RFT').save_pretrained(d)
+gc='$RFT/generation_config.json'
+if os.path.exists(gc): shutil.copy(gc, d+'/generation_config.json')
+shutil.rmtree(os.path.join(d,'checkpoint-300'),ignore_errors=True)
+open(d+'/.consolidated','w').close()
+print('consolidated',d)" >>$L/${TAG}_consolidate.log 2>&1
+done
 # 5) eval pass@1 on hard OOD set. RVP/shuf are full dirs; xrft/rft use merged_full.
 declare -A E=( [base]=$B [rft]=$RFT [xrft]=$V/xrft/merged_full [shuf]=$V/shuf )
 for s in $(seq 1 $NSEED); do E[rvp_s$s]=$V/rvp_s$s; done
