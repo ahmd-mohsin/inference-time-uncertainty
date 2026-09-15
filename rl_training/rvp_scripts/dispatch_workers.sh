@@ -9,7 +9,9 @@ case "$CLUSTER" in
   B) W=(10.2.185.207 10.2.70.5)
      S=("deepseek-ai/deepseek-coder-1.3b-instruct:dshard:12:14" "Qwen/Qwen2.5-7B-Instruct:q7Nmid:7:9") ;;
   C) W=(10.2.81.201 10.2.105.252)
-     S=("Qwen/Qwen2.5-Coder-7B-Instruct:c7hard:12:14" "mistralai/Mistral-7B-Instruct-v0.3:mistral:7:9") ;;
+     # NOTE: 7B on workers can't do RVP (single-GPU LoRA DPO OOMs; only mains shard). Keep worker models <=3B.
+     # c7hard replicates paper 7B cell (base/rft/xrft only); 5th family = Llama-3.2-3B (fits worker DPO -> real RVP).
+     S=("Qwen/Qwen2.5-Coder-3B-Instruct:c3hard:12:14" "meta-llama/Llama-3.2-3B-Instruct:llama:7:9") ;;
   *) echo "[dispatch] unknown CLUSTER=$CLUSTER"; exit 0 ;;
 esac
 for i in 0 1; do
