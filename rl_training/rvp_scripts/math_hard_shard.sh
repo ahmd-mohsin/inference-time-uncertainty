@@ -7,6 +7,7 @@ export HOME=/home/greenland-user PATH=$HOME/.local/bin:$PATH HF_HOME=$HOME/.cach
 export MAXLEN=${MAXLEN:-3072} MAXTOK=${MAXTOK:-1024} DPO_MAXLEN=${DPO_MAXLEN:-768} DS_SKIP_CUDA_CHECK=1
 L13=$(find $HOME/.local -name "libcudart.so.13*" 2>/dev/null|head -1); export LD_LIBRARY_PATH="$(dirname $L13):$LD_LIBRARY_PATH"
 cd $HOME/inference-time-uncertainty && git pull --rebase 2>&1|tail -1; pip install --break-system-packages --quiet jsonlines math_verify deepspeed 2>/dev/null
+pip install --break-system-packages --quiet -U nvtx 2>/dev/null  # deepspeed needs nvtx.get_domain() (pytorch-base ships too-old nvtx)
 B=${BASE:-Qwen/Qwen2.5-Math-7B}; BANK=${BANK:-math_full}; EVAL=${EVAL:-math500}; TAG=${TAG:-mhs}
 NBANK=${NBANK:-800}; NEVAL=${NEVAL:-400}; KB=${KB:-8}; KP=${KP:-12}; KE=${KE:-16}; NSEED=${NSEED:-3}
 ACC=${ACC_CFG:-rl_training/accelerate_zero3.yaml}
