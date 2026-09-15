@@ -19,6 +19,6 @@ done
 # 2) launch the (resumable) flywheel on clean GPUs
 FLYWHEEL="${FLYWHEEL:-math_hard.sh}"
 setsid nohup env BASE="$BASE" BANK="${BANK:-math_full}" EVAL="$EVAL" TAG="$TAG" DPO_BSZ="${DPO_BSZ:-1}" \
-  DPO_MAXLEN="${DPO_MAXLEN:-768}" MAXTOK="${MAXTOK:-1024}" MAXLEN="${MAXLEN:-3072}" NSEED="${NSEED:-3}" \
+  DPO_MAXLEN="${DPO_MAXLEN:-768}" MAXTOK="${MAXTOK:-1024}" MAXLEN="${MAXLEN:-3072}" NSEED="${NSEED:-3}" ACC_CFG="${ACC_CFG:-rl_training/accelerate_zero3.yaml}" \
   bash rl_training/rvp_scripts/$FLYWHEEL > $HOME/gu/logs/${TAG}_run.log 2>&1 &
 echo "[reset] launched $TAG pid $!" >> $HOME/gu/logs/${TAG}_reset.log
