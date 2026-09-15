@@ -11,6 +11,15 @@ python3 -c "import vllm" 2>/dev/null || bash rl_training/queue/FULL_BOOTSTRAP.sh
 pip install --break-system-packages -q -U nvtx 2>/dev/null
 pip install --break-system-packages -q math_verify jsonlines deepspeed 2>/dev/null
 git pull --rebase 2>&1 | tail -1
-echo "[boot] deps ready $(date -u); launching matrix_${CLUSTER}" >> $HOME/gu/logs/boot.log
-bash rl_training/rvp_scripts/matrix_${CLUSTER}.sh >> $HOME/gu/logs/matrix_${CLUSTER}.log 2>&1
-echo "[boot] matrix_${CLUSTER} exited rc=$? $(date -u)" >> $HOME/gu/logs/boot.log
+if [ -n "$CELL_BASE" ]; then
+  # single sharded bigger-model math cell (per-pod), reuses the validated ZeRO-3 recipe
+  echo "[boot] deps ready $(date -u); launching CELL $CELL_TAG ($CELL_BASE / $CELL_EVAL)" >> $HOME/gu/logs/boot.log
+  env FLYWHEEL=math_hard_shard.sh BASE="$CELL_BASE" EVAL="$CELL_EVAL" TAG="$CELL_TAG" \
+    NSEED="${NSEED:-3}" ACC_CFG="${ACC_CFG:-rl_training/accelerate_zero3_offload.yaml}" \
+    DPO_MAXLEN="${DPO_MAXLEN:-512}" CONSOLIDATE=0 \
+    bash rl_training/rvp_scripts/reset_and_run.sh >> $HOME/gu/logs/cell_${CELL_TAG}.log 2>&1
+else
+  echo "[boot] deps ready $(date -u); launching matrix_${CLUSTER}" >> $HOME/gu/logs/boot.log
+  bash rl_training/rvp_scripts/matrix_${CLUSTER}.sh >> $HOME/gu/logs/matrix_${CLUSTER}.log 2>&1
+fi
+echo "[boot] done rc=$? $(date -u)" >> $HOME/gu/logs/boot.log
