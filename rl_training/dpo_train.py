@@ -25,8 +25,9 @@ def main():
                   max_length=int(os.environ.get("DPO_MAXLEN","768")),
                   warmup_ratio=0.03,lr_scheduler_type="cosine",report_to=[],
                   precompute_ref_log_probs=(not a.full))
-    peft=None if a.full else LoraConfig(r=32,lora_alpha=64,lora_dropout=0.05,task_type="CAUSAL_LM",
-                    target_modules=["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"])
+    _tm=("all-linear" if any(k in a.model.lower() for k in ["phi","gemma"])
+         else ["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"])
+    peft=None if a.full else LoraConfig(r=32,lora_alpha=64,lora_dropout=0.05,task_type="CAUSAL_LM",target_modules=_tm)
     tr=DPOTrainer(model=a.model,args=cfg,train_dataset=ds,processing_class=tok,peft_config=peft)
     tr.train(); tr.save_model(a.out); tok.save_pretrained(a.out); print(f"saved DPO -> {a.out}")
 if __name__=="__main__": main()

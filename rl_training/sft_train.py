@@ -36,6 +36,8 @@ def main():
     _tm = {"all": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
            "attn": ["q_proj", "k_proj", "v_proj", "o_proj"],
            "mlp": ["gate_proj", "up_proj", "down_proj"]}[a.target_modules]
+    # fused-QKV architectures (Phi-3.x, Gemma) lack q/k/v_proj -> use PEFT all-linear
+    if any(k in base.lower() for k in ["phi", "gemma"]): _tm = "all-linear"
     print(f"[sft] target_modules={a.target_modules}: {_tm}")
     peft = LoraConfig(r=32, lora_alpha=64, lora_dropout=0.0, task_type="CAUSAL_LM", target_modules=_tm)
     cfg = SFTConfig(output_dir=a.out, per_device_train_batch_size=a.bsz, gradient_accumulation_steps=1,
