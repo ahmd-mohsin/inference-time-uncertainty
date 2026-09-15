@@ -313,8 +313,12 @@ is a \emph{null} (RVP$-$RFT within $\pm.01$), even though a coverage$-$pass@1 ga
 exists (e.g.\ AMC $.85$ vs.\ $.51$). Interpretation consistent with the theory:
 a math-tuned model has already concentrated probability near its \emph{capability}
 ceiling, so the residual gap is not an addressable \emph{selection} problem and
-mass-reallocation has nothing to move. RVP therefore delivers where the reliability
-gap is selection-limited (general/coder models, code/reasoning tasks) and fades
-where it is capability-limited (specialised models at their ceiling). We report
-math as this honest boundary rather than forcing it. (MBPP/BigCodeBench with a
-unit-test harness, and a multi-GPU 14B point, remain future work.)
+mass-reallocation has nothing to move. \emph{Scope of this claim (honest):} the
+math null is \textbf{measured at Qwen-Math-1.5B}; the bigger math-specialised point
+(Qwen-Math-7B on AMC/OlympiadBench, sharded ZeRO-3) is \running{} and will confirm
+or revise whether the boundary is capability (base-tuning) or size --- we do
+\emph{not} yet assert it holds at 7B. Provisionally: RVP delivers where the
+reliability gap is selection-limited (general/coder models, code/reasoning tasks)
+and appears to fade where it is capability-limited (math-specialised 1.5B at its
+ceiling). MBPP/BigCodeBench (unit-test harness) and a multi-GPU 14B point remain
+future work.
