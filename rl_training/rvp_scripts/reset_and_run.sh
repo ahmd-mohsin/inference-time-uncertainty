@@ -1,0 +1,21 @@
+#!/bin/bash
+# Detached GPU reset + hard-math flywheel launch. Run under `setsid nohup` so that
+# killing GPU procs (shared-PID namespace) does NOT cut the ssh shell that started it.
+# env: BASE EVAL TAG [BANK DPO_BSZ]
+export HOME=/home/greenland-user
+cd $HOME/inference-time-uncertainty
+mkdir -p $HOME/gu/logs
+# 1) hard-clear all rl/vLLM GPU processes, loop until GPUs are truly free
+for i in 1 2 3 4 5 6; do
+  pkill -9 -f 'rl_training' 2>/dev/null
+  pkill -9 -f 'VLLM' 2>/dev/null
+  for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 "$pid" 2>/dev/null; done
+  sleep 6
+  n=$(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null | wc -l)
+  echo "[reset] attempt $i gpuprocs=$n" >> $HOME/gu/logs/${TAG}_reset.log
+  [ "$n" -eq 0 ] && break
+done
+# 2) launch the (resumable) flywheel on clean GPUs
+setsid nohup env BASE="$BASE" BANK="${BANK:-math_full}" EVAL="$EVAL" TAG="$TAG" DPO_BSZ="${DPO_BSZ:-1}" \
+  bash rl_training/rvp_scripts/math_hard.sh > $HOME/gu/logs/${TAG}_run.log 2>&1 &
+echo "[reset] launched $TAG pid $!" >> $HOME/gu/logs/${TAG}_reset.log
