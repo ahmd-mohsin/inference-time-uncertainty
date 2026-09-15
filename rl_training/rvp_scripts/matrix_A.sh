@@ -1,6 +1,7 @@
 #!/bin/bash
 # Cluster A: COMP placeholder rows — Phi-3.5 (4th family) + RVP-from-base ablation (Coder-1.5B/3B).
 cd $HOME/inference-time-uncertainty
+CLUSTER=A setsid bash rl_training/rvp_scripts/dispatch_workers.sh >$HOME/gu/logs/dispatch_A.log 2>&1 &
 echo "[matrix_A] start $(date -u)"
 # 4th family: Phi-3.5-mini on CompDAG (mid 7->9)
 env BASE=microsoft/Phi-3.5-mini-instruct FAM=phi TRD=7 OODD=9 bash rl_training/rvp_scripts/rvp_family.sh

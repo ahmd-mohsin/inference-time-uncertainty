@@ -1,6 +1,7 @@
 #!/bin/bash
 # Cluster C: size-contrast hard math (Math-1.5B fits single-GPU DPO) + deepseek-math-7B (family) + mech-interp.
 cd $HOME/inference-time-uncertainty
+CLUSTER=C setsid bash rl_training/rvp_scripts/dispatch_workers.sh >$HOME/gu/logs/dispatch_C.log 2>&1 &
 echo "[matrix_C] start $(date -u)"
 # size contrast: Math-1.5B on MATH-500 (single-GPU DPO fits; no sharding needed)
 env BASE=Qwen/Qwen2.5-Math-1.5B-Instruct EVAL=math500 TAG=mhC_q15m_m500 DPO_BSZ=1 DPO_MAXLEN=640 bash rl_training/rvp_scripts/math_hard.sh
