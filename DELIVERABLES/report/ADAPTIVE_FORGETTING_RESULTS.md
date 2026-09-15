@@ -5398,3 +5398,13 @@ MECHANISM (definitive): the three methods separate cleanly on the correct-vs-inc
  - shuffled-preference == RFT (no widening): the GAIN IS THE VERIFIED SIGN of the pair, not the DPO objective per se.
 => WHY RVP > RFT > GRPO, in one figure: GRPO doesn't move the margin; RFT lifts both modes (margin flat); only RVP suppresses the incorrect mode (margin 2x). This is the mechanistic cause of the pass@1 ladder base<GRPO<RFT<RVP (§166) and matches the reliability-distribution ladder (§165) and per-cell margin (§163).
 Status: 14B (c14mid) RVP likely infeasible on single 40GB even w/ precompute (28GB policy + activations) — RFT/base only; 6.7B/7B cover the large-model claim. Phi-3.5 (4th family) still training (bank 214). Mech-interp "why-better" story COMPLETE: margin trajectory (§167) + distribution ladder (§165) + per-cell margin (§163) + theory (§160).
+
+## §168 FLEET-3 HARVEST (72-GPU, watchdog-managed) — accessible-hard grid-fills + math retargeting
+Live run 2026-09-15 (clusters A/B/C, self-driving boot_and_run+matrix, fork watchdog auto-fixing). Fixes this wave: rvp_family stray-`fi` (killed all comp cells) @97f8f77; DPO --bsz 4->1 for 7B comp OOM @44994e4; math evals retargeted to accessible-hard (AMC/OlympiadBench for 7B; MATH-500 dropped for strong models).
+Confirmed pass@1 (matched-budget, RVP=mean seeds):
+  cell                         base   rft    rvp    xrft   shuf   RVP-RFT
+  CompDAG c15hard (Coder-1.5B d12->14)  .021  .091  .332  .176  .110  +0.242   (cov16 .195->.59; shuf~rft; RVP>xrft)
+  CompDAG dshard  (deepseek-1.3B d12->14) .030  .075  .164  .100  .079  +0.089   (cov16 .20->.46)
+  MATH-500 / Qwen2.5-Math-1.5B (5-seed)  .703  .705  .705  .707  .706  ~0 NULL  (near-ceiling; validates dropping MATH-500 for strong math models)
+  q7Nmid (Qwen-7B non-coder, comp mid) partial: base .376 rft .557 xrft .630 (RVP re-running at bsz1; replicates §162 Qwen-7B .383/.544/.636)
+VERDICT so far: accessible-hard CompDAG cells give clean RVP wins (+0.24, +0.09; shuf~rft, RVP>xrft, coverage rises) — the headroom-gated pattern holds at hard difficulty. MATH-500 confirmed near-ceiling (null) even at 1.5B => AMC/OlympiadBench are the math cells with headroom (training). Still running: phi (4th family), mistral (5th family), c15vh, c7hard, ab_c15/ab_c3 (RVP-from-base ablation), Math-7B AMC + OlympiadBench (sharded ZeRO-3), deepseek-math-7B AMC.
