@@ -14,14 +14,14 @@ ACC=${ACC_CFG:-rl_training/accelerate_zero3.yaml}
 G=$HOME/gu; L=$G/logs; V=$G/$TAG; mkdir -p $V $L; R=$V/RES.md; : >$R
 echo "# MATH-HARD-SHARD RVP base=$B bank=$BANK eval=$EVAL zero3-full $(date -u)" >>$R
 # 1) bank
-[ -s $V/bank.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=0.55 python3 -m rl_training.math_rvp --mode bank --model $B --dataset $BANK --split train --n $NBANK --k $KB --out $V/bank.jsonl >$L/${TAG}_bank.log 2>&1
+[ -s $V/bank.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode bank --model $B --dataset $BANK --split train --n $NBANK --k $KB --out $V/bank.jsonl >$L/${TAG}_bank.log 2>&1
 echo "bank=$(wc -l <$V/bank.jsonl)" >>$R
 # 2) RFT (single-GPU LoRA) -> merged full model
 [ -d $V/rft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $B --data $V/bank.jsonl --out $V/rft --seed 1 --max-steps 300 --bsz 8 >$L/${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/${TAG}_rft.log 2>&1; }
 RFT=$V/rft/merged_full
 # 3) pairs + shuffled control
-[ -s $V/pairs.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=0.55 python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1 &
-[ -s $V/shuf.jsonl ] || CUDA_VISIBLE_DEVICES=1 GEN_GPU_MEM=0.55 python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --shuffle --out $V/shuf.jsonl >$L/${TAG}_shufgen.log 2>&1 &
+[ -s $V/pairs.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1 &
+[ -s $V/shuf.jsonl ] || CUDA_VISIBLE_DEVICES=1 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --shuffle --out $V/shuf.jsonl >$L/${TAG}_shufgen.log 2>&1 &
 wait
 python3 -c "import json;seen=set();f=open('$V/pos.jsonl','w')
 [f.write(json.dumps({'prompt':r['prompt'],'completion':r['chosen']})+'\n') for r in (json.loads(l) for l in open('$V/pairs.jsonl')) if not (r['chosen'] in seen or seen.add(r['chosen']))]"
