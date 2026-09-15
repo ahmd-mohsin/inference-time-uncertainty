@@ -63,6 +63,8 @@ shutil.rmtree(os.path.join(d,'checkpoint-300'),ignore_errors=True)
 open(d+'/.consolidated','w').close()
 print('consolidated',d)" >>$L/${TAG}_consolidate.log 2>&1
 done
+# hard-clear GPUs after consolidation (leaves a 7B resident -> vLLM eval memory-profiling assert; killed B/AIME evals)
+for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $pid 2>/dev/null; done; sleep 8
 # 5) eval pass@1 on hard OOD set. RVP/shuf are full dirs; xrft/rft use merged_full.
 declare -A E=( [base]=$B [rft]=$RFT [xrft]=$V/xrft/merged_full [shuf]=$V/shuf )
 for s in $(seq 1 $NSEED); do E[rvp_s$s]=$V/rvp_s$s; done
