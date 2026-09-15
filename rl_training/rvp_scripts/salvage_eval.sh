@@ -25,6 +25,9 @@ if os.path.exists(gc): shutil.copy(gc,d+'/generation_config.json')
 shutil.rmtree(os.path.join(d,'checkpoint-300'),ignore_errors=True)
 open(d+'/.consolidated','w').close(); print('consolidated',d)" >>$L/${TAG}_salvage_consolidate.log 2>&1
 done
+# hard-clear GPUs AGAIN after consolidation (it leaves a 7B resident on GPU0 -> vLLM memory-profiling assert)
+pkill -9 -f 'from_pretrained' 2>/dev/null; pkill -9 -f 'python3 -c' 2>/dev/null
+for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $pid 2>/dev/null; done; sleep 8
 # eval base/rft/xrft + rvp seeds across GPUs
 declare -A E=( [base]=$B [rft]=$RFT [xrft]=$V/xrft/merged_full )
 for s in 1 2 3 4 5; do [ -f $V/rvp_s$s/config.json ] && E[rvp_s$s]=$V/rvp_s$s; done
