@@ -7,7 +7,8 @@ cd $HOME/inference-time-uncertainty
 mkdir -p $HOME/gu/logs
 # 1) hard-clear all rl/vLLM GPU processes, loop until GPUs are truly free
 for i in 1 2 3 4 5 6; do
-  pkill -9 -f 'rl_training' 2>/dev/null
+  pkill -9 -f 'python3 -m rl_training' 2>/dev/null      # NOT '-f rl_training' (that matches this script's own path -> self-kill)
+  pkill -9 -f 'accelerate.commands.launch' 2>/dev/null
   pkill -9 -f 'VLLM' 2>/dev/null
   for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 "$pid" 2>/dev/null; done
   sleep 6
