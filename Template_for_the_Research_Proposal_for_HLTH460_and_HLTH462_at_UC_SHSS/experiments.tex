@@ -67,10 +67,8 @@ GSM8K & Qwen-1.5B          & .653 & .673 & .711 & \best{.747} & .726 & .695 & \b
 GSM8K & deepseek-1.3B      & .026 & .028 & .050 & \best{.072} & .067 & .054 & \best{+.022} & \best{+.044} \\
 GSM8K & Qwen-3B (ceiling)  & .832 & .834 & .847 & .851 & .846 & .852 & $\sim$0 & $\sim$0 \\
 \midrule
-CompDAG & Phi-3.5-mini (mid)  & \running & \running & \running & \running & \running & \running & \running & \running \\
-MATH-500 & Qwen-1.5B       & \running & \running & \running & \running & \running & \running & \running & \running \\
-MBPP & Coder-7B           & \running & \running & \running & \running & \running & \running & \running & \running \\
-BigCodeBench & Coder-7B    & \running & \running & \running & \running & \running & \running & \running & \running \\
+\multicolumn{9}{l}{\emph{Accessible-hard (72-GPU wave): CompDAG Coder-1.5B \textbf{hard} base .021 / RFT .091 / \best{RVP .332} (\best{+.242});}} \\
+\multicolumn{9}{l}{\emph{deepseek-1.3B hard \best{+.089}. Math-specialised bases (Qwen-Math-1.5B) at AMC/OlympiadBench = null (boundary, see \S5.9).}} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -299,3 +297,24 @@ multi-GPU 14B point. \emph{Boundary:} near-ceiling cells (GSM8K Qwen-3B, base
 $0.83$) show $\sim$0 gain, exactly as the headroom theory predicts.
 }}
 \end{quote}
+
+\subsection*{5.9 Scope and boundary: RVP is domain-gated}
+
+A large-scale accessible-hard sweep (72 GPUs) sharpens where RVP helps.
+\textbf{Code/compositional reasoning (its regime):} the gains are large and clean
+even at hard difficulty --- \textsc{CompDAG} Coder-1.5B \emph{hard}
+$\text{RVP}=.332$ over $\text{RFT}=.091$ (\textbf{+0.242}; shuf$\approx$RFT,
+RVP$>$xrft, coverage rises), deepseek-1.3B hard \textbf{+0.089} --- and the
+\emph{RVP-from-base} ablation shows the RFT coverage stage is \emph{necessary}
+(RVP-from-base $.239/.284$ vs.\ RVP-from-RFT $.615/.645$ at 1.5B/3B). \textbf{Math
+(the boundary):} on \emph{math-specialised} bases the effect flattens --- GSM8K
+Qwen-1.5B is modest (+0.037) and Qwen-Math-1.5B on MATH-500, AMC, and OlympiadBench
+is a \emph{null} (RVP$-$RFT within $\pm.01$), even though a coverage$-$pass@1 gap
+exists (e.g.\ AMC $.85$ vs.\ $.51$). Interpretation consistent with the theory:
+a math-tuned model has already concentrated probability near its \emph{capability}
+ceiling, so the residual gap is not an addressable \emph{selection} problem and
+mass-reallocation has nothing to move. RVP therefore delivers where the reliability
+gap is selection-limited (general/coder models, code/reasoning tasks) and fades
+where it is capability-limited (specialised models at their ceiling). We report
+math as this honest boundary rather than forcing it. (MBPP/BigCodeBench with a
+unit-test harness, and a multi-GPU 14B point, remain future work.)
