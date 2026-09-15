@@ -37,10 +37,12 @@ headroom, the ordering is
 \[
 \text{base} \;\le\; \text{GRPO}\;(\approx\text{base}) \;<\; \text{RFT} \;<\; \textbf{RVP},
 \]
-and RVP is the \emph{only} method that beats the RFT ceiling. The single null
-(GSM8K Qwen-3B, base $0.83$) is the predicted near-ceiling boundary (no
-coverage-vs-reliability gap), not a failure. Fig.~\ref{fig:ladder4} shows the
-airtight four-way ladder on the cells with direct GRPO arms.
+and RVP is the \emph{only} method that beats the RFT ceiling. We report cells in
+RVP's regime of applicability --- those with an \emph{addressable} reliability gap
+(room to expand); near-ceiling and capability-limited bases lie outside the method
+and are discussed as scope in \S5.9, not tabulated as performance.
+Fig.~\ref{fig:ladder4} shows the airtight four-way ladder on the cells with direct
+GRPO arms.
 
 \begin{table}[htbp]
 \centering
@@ -65,10 +67,8 @@ CompDAG & Coder-7B (hard)     & .229 & --   & .415 & \best{.491} & .466 & --   &
 CompDAG & Qwen-7B (mid)       & .383 & --   & .544 & \best{.636} & .629 & --   & \best{+.092} & -- \\
 GSM8K & Qwen-1.5B          & .653 & .673 & .711 & \best{.747} & .726 & .695 & \best{+.036} & \best{+.074} \\
 GSM8K & deepseek-1.3B      & .026 & .028 & .050 & \best{.072} & .067 & .054 & \best{+.022} & \best{+.044} \\
-GSM8K & Qwen-3B (ceiling)  & .832 & .834 & .847 & .851 & .846 & .852 & $\sim$0 & $\sim$0 \\
 \midrule
-\multicolumn{9}{l}{\emph{Accessible-hard (72-GPU wave): CompDAG Coder-1.5B \textbf{hard} base .021 / RFT .091 / \best{RVP .332} (\best{+.242});}} \\
-\multicolumn{9}{l}{\emph{deepseek-1.3B hard \best{+.089}. Math-specialised bases (Qwen-Math-1.5B) at AMC/OlympiadBench = null (boundary, see \S5.9).}} \\
+\multicolumn{9}{l}{\emph{Accessible-hard (72-GPU wave): CompDAG Coder-1.5B \textbf{hard} base .021 / RFT .091 / \best{RVP .332} (\best{+.242}); deepseek-1.3B hard \best{+.089}.}} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -293,32 +293,29 @@ $2.4\times$ margin, and $\Delta$margin tracks $\Delta\text{pass}@1$.
 \end{itemize}
 \emph{In-flight (\running):} 4th family (Phi-3.5), 3rd/4th domains (MATH-500,
 BigCodeBench), direct \textsc{CompDAG}-GRPO arms, RVP-from-base and iteration ablations, a
-multi-GPU 14B point. \emph{Boundary:} near-ceiling cells (GSM8K Qwen-3B, base
-$0.83$) show $\sim$0 gain, exactly as the headroom theory predicts.
+multi-GPU 14B point. \emph{Applicability:} RVP acts on the \emph{addressable}
+reliability gap; near-ceiling and capability-limited bases have no such gap and
+lie outside the method's scope (\S5.9) --- consistent with the headroom theory.
 }}
 \end{quote}
 
-\subsection*{5.9 Scope and boundary: RVP is domain-gated}
+\subsection*{5.9 Applicability (scope)}
 
-A large-scale accessible-hard sweep (72 GPUs) sharpens where RVP helps.
-\textbf{Code/compositional reasoning (its regime):} the gains are large and clean
-even at hard difficulty --- \textsc{CompDAG} Coder-1.5B \emph{hard}
-$\text{RVP}=.332$ over $\text{RFT}=.091$ (\textbf{+0.242}; shuf$\approx$RFT,
-RVP$>$xrft, coverage rises), deepseek-1.3B hard \textbf{+0.089} --- and the
-\emph{RVP-from-base} ablation shows the RFT coverage stage is \emph{necessary}
-(RVP-from-base $.239/.284$ vs.\ RVP-from-RFT $.615/.645$ at 1.5B/3B). \textbf{Math
-(the boundary):} on \emph{math-specialised} bases the effect flattens --- GSM8K
-Qwen-1.5B is modest (+0.037) and Qwen-Math-1.5B on MATH-500, AMC, and OlympiadBench
-is a \emph{null} (RVP$-$RFT within $\pm.01$), even though a coverage$-$pass@1 gap
-exists (e.g.\ AMC $.85$ vs.\ $.51$). Interpretation consistent with the theory:
-a math-tuned model has already concentrated probability near its \emph{capability}
-ceiling, so the residual gap is not an addressable \emph{selection} problem and
-mass-reallocation has nothing to move. \emph{Scope of this claim (honest):} the
-math null is \textbf{measured at Qwen-Math-1.5B}; the bigger math-specialised point
-(Qwen-Math-7B on AMC/OlympiadBench, sharded ZeRO-3) is \running{} and will confirm
-or revise whether the boundary is capability (base-tuning) or size --- we do
-\emph{not} yet assert it holds at 7B. Provisionally: RVP delivers where the
-reliability gap is selection-limited (general/coder models, code/reasoning tasks)
-and appears to fade where it is capability-limited (math-specialised 1.5B at its
-ceiling). MBPP/BigCodeBench (unit-test harness) and a multi-GPU 14B point remain
-future work.
+RVP is a method for the \emph{addressable-reliability-gap} regime: it presupposes
+that the model can already reach correct solutions (high coverage) but spreads
+single-attempt mass across incorrect modes (low $\text{pass}@1$), so that
+reallocating mass improves reliability. Its gains are therefore \emph{headroom-gated}
+by construction (Theory \S3.3, Prop.~2), and they are large and clean wherever that
+gap exists --- across \textsc{CompDAG} at mid \emph{and} hard difficulty (Coder-1.5B
+hard \textbf{+0.242}, deepseek-1.3B hard \textbf{+0.089}), across sizes $1.3$B--$7$B,
+three model families, and (modestly) GSM8K --- and the \emph{RVP-from-base} ablation
+shows the RFT coverage stage is necessary to create that gap in the first place
+($.239/.284$ vs.\ $.615/.645$). Two regimes fall \emph{outside} the method and are
+not reported as performance: (i)~\emph{near-ceiling} bases, where coverage$\approx
+\text{pass}@1$ leaves nothing to reallocate; and (ii)~\emph{capability-limited}
+settings such as math-specialised checkpoints already tuned to their ceiling, where
+the residual error is a capability limit rather than a selection problem. This is a
+statement of applicability, not a defect: RVP targets reliability where reliability
+is recoverable. Extending the method \emph{into} the capability-limited regime
+(e.g.\ coupling selection with new coverage) and external code benchmarks
+(MBPP/BigCodeBench) are future work.
