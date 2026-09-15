@@ -24,10 +24,10 @@ python3 -c "import json;seen=set();f=open('$V/pos.jsonl','w')
 [f.write(json.dumps({'prompt':r['prompt'],'completion':r['chosen']})+'\n') for r in (json.loads(l) for l in open('$V/pairs.jsonl')) if not (r['chosen'] in seen or seen.add(r['chosen']))]"
 echo "pairs=$(wc -l <$V/pairs.jsonl) pos=$(wc -l <$V/pos.jsonl)" >>$R
 # 3) arms from RFT
-CUDA_VISIBLE_DEVICES=0 setsid nohup python3 -m rl_training.dpo_train --model $RFT --data $V/pairs.jsonl --out $V/rvp_s1 --seed 1 --bsz ${DPO_BSZ:-4} --max-steps 250 >$L/rvpfam_rvp1.log 2>&1 &
-CUDA_VISIBLE_DEVICES=1 setsid nohup python3 -m rl_training.dpo_train --model $RFT --data $V/pairs.jsonl --out $V/rvp_s2 --seed 2 --bsz ${DPO_BSZ:-4} --max-steps 250 >$L/rvpfam_rvp2.log 2>&1 &
+CUDA_VISIBLE_DEVICES=0 setsid nohup python3 -m rl_training.dpo_train --model $RFT --data $V/pairs.jsonl --out $V/rvp_s1 --seed 1 --bsz ${DPO_BSZ:-1} --max-steps 250 >$L/rvpfam_rvp1.log 2>&1 &
+CUDA_VISIBLE_DEVICES=1 setsid nohup python3 -m rl_training.dpo_train --model $RFT --data $V/pairs.jsonl --out $V/rvp_s2 --seed 2 --bsz ${DPO_BSZ:-1} --max-steps 250 >$L/rvpfam_rvp2.log 2>&1 &
 CUDA_VISIBLE_DEVICES=2 setsid nohup python3 -m rl_training.sft_train --model $RFT --data $V/pos.jsonl --out $V/xrft_s1 --seed 1 --max-steps 250 --bsz 8 >$L/rvpfam_xrft.log 2>&1 &
-CUDA_VISIBLE_DEVICES=3 setsid nohup python3 -m rl_training.dpo_train --model $RFT --data $V/shuf.jsonl --out $V/shuf_s1 --seed 1 --bsz ${DPO_BSZ:-4} --max-steps 250 >$L/rvpfam_shuf.log 2>&1 &
+CUDA_VISIBLE_DEVICES=3 setsid nohup python3 -m rl_training.dpo_train --model $RFT --data $V/shuf.jsonl --out $V/shuf_s1 --seed 1 --bsz ${DPO_BSZ:-1} --max-steps 250 >$L/rvpfam_shuf.log 2>&1 &
 wait
 for d in rvp_s1 rvp_s2 xrft_s1 shuf_s1; do python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/$d')" >>$L/rvpfam_merge.log 2>&1; done
 # 4) pass@1 eval: base, rft, arms
