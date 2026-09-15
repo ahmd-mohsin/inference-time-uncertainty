@@ -25,16 +25,22 @@ wait
 python3 -c "import json;seen=set();f=open('$V/pos.jsonl','w')
 [f.write(json.dumps({'prompt':r['prompt'],'completion':r['chosen']})+'\n') for r in (json.loads(l) for l in open('$V/pairs.jsonl')) if not (r['chosen'] in seen or seen.add(r['chosen']))]"
 echo "pairs=$(wc -l <$V/pairs.jsonl) pos=$(wc -l <$V/pos.jsonl)" >>$R
-# free any lingering vLLM before sharded training
-for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $pid 2>/dev/null; done; sleep 6
+# free ALL lingering vLLM/GPU procs before sharded training (loop until GPUs truly clear)
+export DPO_FULL=1
+for i in 1 2 3 4 5; do
+  pkill -9 -f 'math_rvp --mode' 2>/dev/null; pkill -9 -f 'VLLM' 2>/dev/null
+  for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $pid 2>/dev/null; done
+  sleep 6; n=$(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null|wc -l)
+  echo "[shard] pre-DPO clear attempt $i gpuprocs=$n" >>$R; [ "$n" -eq 0 ] && break
+done
 # 4a) RVP seeds: SEQUENTIAL full-param ZeRO-3 DPO across all 8 GPUs
 for s in $(seq 1 $NSEED); do
   [ -f $V/rvp_s$s/config.json ] && continue
-  CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 \
+  CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 DPO_FULL=1 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 \
     -m rl_training.dpo_train --full --model $RFT --data $V/pairs.jsonl --out $V/rvp_s$s --seed $s --max-steps 300 --bsz 1 >$L/${TAG}_rvp$s.log 2>&1
 done
 # 4b) shuffled-pair control (sharded full-param DPO)
-[ -f $V/shuf/config.json ] || CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 \
+[ -f $V/shuf/config.json ] || CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 DPO_FULL=1 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 \
     -m rl_training.dpo_train --full --model $RFT --data $V/shuf.jsonl --out $V/shuf --seed 1 --max-steps 300 --bsz 1 >$L/${TAG}_shuf.log 2>&1
 # 4c) xrft positive-only (single-GPU LoRA)
 [ -d $V/xrft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $RFT --data $V/pos.jsonl --out $V/xrft --seed 1 --max-steps 300 --bsz 8 >$L/${TAG}_xrft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/xrft')" >>$L/${TAG}_merge.log 2>&1; }

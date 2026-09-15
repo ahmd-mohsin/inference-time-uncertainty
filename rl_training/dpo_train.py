@@ -9,6 +9,7 @@ def main():
     ap.add_argument("--seed",type=int,default=1); ap.add_argument("--lr",type=float,default=5e-6); ap.add_argument("--bsz",type=int,default=4)
     ap.add_argument("--full",action="store_true",help="full-parameter DPO (for ZeRO-3 sharded multi-GPU launch; avoids LoRA+ZeRO-3 crash)")
     a=ap.parse_args()
+    if os.environ.get("DPO_FULL")=="1": a.full=True   # robust to accelerate arg-passing
     from datasets import load_dataset
     from transformers import AutoTokenizer
     from trl import DPOTrainer, DPOConfig
