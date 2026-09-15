@@ -31,10 +31,12 @@ for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/nu
 # eval base/rft/xrft + rvp seeds across GPUs
 declare -A E=( [base]=$B [rft]=$RFT [xrft]=$V/xrft/merged_full )
 for s in 1 2 3 4 5; do [ -f $V/rvp_s$s/config.json ] && E[rvp_s$s]=$V/rvp_s$s; done
-g=0; for tag in "${!E[@]}"; do
+CONC=${EVAL_CONC:-2}; g=0; run=0
+for tag in "${!E[@]}"; do
   [ "$tag" = base ] || [ -e "${E[$tag]}/config.json" ] || continue
-  CUDA_VISIBLE_DEVICES=$((g%8)) GEN_GPU_MEM=0.45 setsid nohup python3 -m rl_training.math_rvp --mode eval --model "${E[$tag]}" --dataset $EVAL --split test --n $NEVAL --k $KE --out $V/ev_$tag.json >$L/${TAG}_salvage_ev_$tag.log 2>&1 &
-  g=$((g+1)); sleep 2; done
+  CUDA_VISIBLE_DEVICES=$((g%8)) GEN_GPU_MEM=${EVAL_GPU_MEM:-0.45} setsid nohup python3 -m rl_training.math_rvp --mode eval --model "${E[$tag]}" --dataset $EVAL --split test --n $NEVAL --k $KE --out $V/ev_$tag.json >$L/${TAG}_salvage_ev_$tag.log 2>&1 &
+  g=$((g+1)); run=$((run+1)); [ $((run % CONC)) -eq 0 ] && wait
+  sleep 2; done
 wait
 for tag in base rft xrft rvp_s1 rvp_s2 rvp_s3 rvp_s4 rvp_s5; do python3 -c "import json;d=json.load(open('$V/ev_$tag.json'));print('$tag pass1=%.4f cov=%.4f'%(d['pass1'],d['coverage_passk']))" >>$R 2>/dev/null; done
 echo "SALVAGE_DONE $(date -u)" >>$R; cat $R

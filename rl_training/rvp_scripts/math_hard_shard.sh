@@ -75,11 +75,16 @@ for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/nu
 declare -A E=( [base]=$B [rft]=$RFT [xrft]=$V/xrft/merged_full [shuf]=$V/shuf )
 for s in $(seq 1 $NSEED); do E[rvp_s$s]=$V/rvp_s$s; done
 ARMS="base rft $(for s in $(seq 1 $NSEED); do echo -n rvp_s$s' '; done) xrft shuf"
-g=0; for tag in $ARMS; do
+# SERIALIZE eval: launching all ~9 vLLM engines at once saturates host RAM -> pod dies (killed B/C/A at finish).
+# Cap concurrent eval engines to EVAL_CONC (default 2).
+CONC=${EVAL_CONC:-2}; g=0; run=0
+for tag in $ARMS; do
   [ "$tag" = base ] || [ -e "${E[$tag]}/config.json" ] || [ -d "${E[$tag]}" ] || continue
   [ -s $V/ev_$tag.json ] && continue
   CUDA_VISIBLE_DEVICES=$((g%8)) GEN_GPU_MEM=${EVAL_GPU_MEM:-0.45} setsid nohup python3 -m rl_training.math_rvp --mode eval --model "${E[$tag]}" --dataset $EVAL --split test --n $NEVAL --k $KE --out $V/ev_$tag.json >$L/${TAG}_ev_$tag.log 2>&1 &
-  g=$((g+1)); sleep 2; done
+  g=$((g+1)); run=$((run+1)); [ $((run % CONC)) -eq 0 ] && wait
+  sleep 2
+done
 wait
 for tag in $ARMS; do python3 -c "import json;d=json.load(open('$V/ev_$tag.json'));print('$tag pass1=%.4f cov=%.4f'%(d['pass1'],d['coverage_passk']))" >>$R 2>/dev/null; done
 echo "MATH_HARD_SHARD_DONE $(date -u)" >>$R
