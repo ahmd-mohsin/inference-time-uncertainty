@@ -45,12 +45,15 @@ done
     -m rl_training.dpo_train --full --model $RFT --data $V/shuf.jsonl --out $V/shuf --seed 1 --max-steps 300 --bsz 1 >$L/${TAG}_shuf.log 2>&1
 # 4c) xrft positive-only (single-GPU LoRA)
 [ -d $V/xrft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $RFT --data $V/pos.jsonl --out $V/xrft --seed 1 --max-steps 300 --bsz 8 >$L/${TAG}_xrft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/xrft')" >>$L/${TAG}_merge.log 2>&1; }
-# 4d) CONSOLIDATE full-param (ZeRO-3) DPO outputs into canonical HF checkpoints
-# (DeepSpeed-saved dirs don't always load in vLLM; reload+resave + copy a known-good tokenizer)
+# 4d) CONSOLIDATE — DISABLED by default. The full-param save (zero3_save_16bit_model + tok.save_pretrained)
+# is already a complete HF dir that vLLM loads; reloading 7B x5 to re-save was UNNECESSARY and OOM-killed
+# the pods (host-memory spike -> B & C died here). Only the pre-eval GPU-clear (below) was actually needed.
+# Set CONSOLIDATE=1 to force it (CPU-safe reload) if a raw save ever fails to load.
+if [ "${CONSOLIDATE:-0}" = 1 ]; then
 for d in rvp_s1 rvp_s2 rvp_s3 rvp_s4 rvp_s5 shuf; do
   [ -f $V/$d/config.json ] || continue
   [ -f $V/$d/.consolidated ] && continue
-  CUDA_VISIBLE_DEVICES=0 python3 -c "
+  python3 -c "
 import torch,shutil,os
 from transformers import AutoModelForCausalLM, AutoTokenizer
 d='$V/$d'
@@ -63,7 +66,8 @@ shutil.rmtree(os.path.join(d,'checkpoint-300'),ignore_errors=True)
 open(d+'/.consolidated','w').close()
 print('consolidated',d)" >>$L/${TAG}_consolidate.log 2>&1
 done
-# hard-clear GPUs after consolidation (leaves a 7B resident -> vLLM eval memory-profiling assert; killed B/AIME evals)
+fi
+# hard-clear GPUs before eval (frees any DPO/consolidation residue -> avoids vLLM memory-profiling assert)
 for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $pid 2>/dev/null; done; sleep 8
 # 5) eval pass@1 on hard OOD set. RVP/shuf are full dirs; xrft/rft use merged_full.
 declare -A E=( [base]=$B [rft]=$RFT [xrft]=$V/xrft/merged_full [shuf]=$V/shuf )
