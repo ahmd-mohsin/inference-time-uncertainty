@@ -10,6 +10,8 @@ cd $HOME/inference-time-uncertainty && git pull --rebase 2>&1|tail -1; pip insta
 pip install --break-system-packages --quiet -U nvtx 2>/dev/null  # deepspeed needs nvtx.get_domain() (pytorch-base ships too-old nvtx)
 B=${BASE:-Qwen/Qwen2.5-Math-7B}; BANK=${BANK:-math_full}; EVAL=${EVAL:-math500}; TAG=${TAG:-mhs}
 NBANK=${NBANK:-800}; NEVAL=${NEVAL:-400}; KB=${KB:-8}; KP=${KP:-12}; KE=${KE:-16}; NSEED=${NSEED:-3}
+# 14B/32B single-GPU LoRA SFT OOMs at bsz 8 (28GB model) -> auto-lower RFT/xrft batch, else no merged_full -> pairs=0
+RFT_BSZ=${RFT_BSZ:-$(echo "$B"|grep -qiE '14b|32b' && echo 1 || echo 8)}
 ACC=${ACC_CFG:-rl_training/accelerate_zero3.yaml}
 G=$HOME/gu; L=$G/logs; V=$G/$TAG; mkdir -p $V $L; R=$V/RES.md; : >$R
 echo "# MATH-HARD-SHARD RVP base=$B bank=$BANK eval=$EVAL zero3-full $(date -u)" >>$R
@@ -17,7 +19,7 @@ echo "# MATH-HARD-SHARD RVP base=$B bank=$BANK eval=$EVAL zero3-full $(date -u)"
 [ -s $V/bank.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode bank --model $B --dataset $BANK --split train --n $NBANK --k $KB --out $V/bank.jsonl >$L/${TAG}_bank.log 2>&1
 echo "bank=$(wc -l <$V/bank.jsonl)" >>$R
 # 2) RFT (single-GPU LoRA) -> merged full model
-[ -d $V/rft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $B --data $V/bank.jsonl --out $V/rft --seed 1 --max-steps 300 --bsz 8 >$L/${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/${TAG}_rft.log 2>&1; }
+[ -d $V/rft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $B --data $V/bank.jsonl --out $V/rft --seed 1 --max-steps 300 --bsz $RFT_BSZ >$L/${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/${TAG}_rft.log 2>&1; }
 RFT=$V/rft/merged_full
 # 3) pairs + shuffled control
 [ -s $V/pairs.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1 &
@@ -44,7 +46,7 @@ done
 [ -f $V/shuf/config.json ] || CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 DPO_FULL=1 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 \
     -m rl_training.dpo_train --full --model $RFT --data $V/shuf.jsonl --out $V/shuf --seed 1 --max-steps 300 --bsz 1 >$L/${TAG}_shuf.log 2>&1
 # 4c) xrft positive-only (single-GPU LoRA)
-[ -d $V/xrft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $RFT --data $V/pos.jsonl --out $V/xrft --seed 1 --max-steps 300 --bsz 8 >$L/${TAG}_xrft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/xrft')" >>$L/${TAG}_merge.log 2>&1; }
+[ -d $V/xrft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $RFT --data $V/pos.jsonl --out $V/xrft --seed 1 --max-steps 300 --bsz $RFT_BSZ >$L/${TAG}_xrft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/xrft')" >>$L/${TAG}_merge.log 2>&1; }
 # 4d) CONSOLIDATE — DISABLED by default. The full-param save (zero3_save_16bit_model + tok.save_pretrained)
 # is already a complete HF dir that vLLM loads; reloading 7B x5 to re-save was UNNECESSARY and OOM-killed
 # the pods (host-memory spike -> B & C died here). Only the pre-eval GPU-clear (below) was actually needed.
