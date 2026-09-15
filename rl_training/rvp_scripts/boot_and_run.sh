@@ -1,0 +1,16 @@
+#!/bin/bash
+# Fresh-node self-driver: clone repo -> bootstrap deps (if needed) -> nvtx/deepspeed -> run $RUNCMD.
+# Chains so a bare pytorch-base pod goes from nothing to running a flywheel unattended.
+export HOME=/home/greenland-user PATH=$HOME/.local/bin:$PATH HF_HOME=$HOME/.cache HF_HUB_DISABLE_XET=1
+cd $HOME
+[ -d inference-time-uncertainty ] || git clone -q https://github.com/ahmd-mohsin/inference-time-uncertainty.git
+cd inference-time-uncertainty
+mkdir -p $HOME/gu/logs
+# bootstrap heavy deps only if vllm missing (survives restarts that keep nvme but wipe home)
+python3 -c "import vllm" 2>/dev/null || bash rl_training/queue/FULL_BOOTSTRAP.sh >$HOME/bootstrap.log 2>&1
+pip install --break-system-packages -q -U nvtx 2>/dev/null
+pip install --break-system-packages -q math_verify jsonlines deepspeed 2>/dev/null
+git pull --rebase 2>&1 | tail -1
+echo "[boot] deps ready $(date -u); launching matrix_${CLUSTER}" >> $HOME/gu/logs/boot.log
+bash rl_training/rvp_scripts/matrix_${CLUSTER}.sh >> $HOME/gu/logs/matrix_${CLUSTER}.log 2>&1
+echo "[boot] matrix_${CLUSTER} exited rc=$? $(date -u)" >> $HOME/gu/logs/boot.log
