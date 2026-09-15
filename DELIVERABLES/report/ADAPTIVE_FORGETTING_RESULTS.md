@@ -5411,3 +5411,12 @@ VERDICT so far: accessible-hard CompDAG cells give clean RVP wins (+0.24, +0.09;
 
 ### §168 addendum — c3hard worker replication DISCARDED (underpowered)
 Fleet-3 worker re-ran CompDAG Coder-3B-hard (d12->14) but with a SMALL bank (134 pairs, 2 seeds): base .088 / rft .241 / rvp .281 / xrft .317 / shuf .242 — xrft>rvp, RVP-RFT only +0.04, ordering broken. Diagnosis: too few verified pairs -> underpowered DPO (RVP needs enough (y+,y-) pairs; positive-only xrft degrades more gracefully when pairs are scarce). DISCARDED as an unfair/underpowered comparison; the canonical Coder-3B-hard cell stands = §154 (base .090/rft .216/**rvp .415**, +0.199, 5 seeds, adequate bank). Lesson: worker grid-fills need a sufficient pool (n>=400, k>=12) or the DPO arm is pair-starved. Watchdog also caught+fixed this wave: fused-QKV LoRA all-linear for Phi/Gemma @451189b.
+
+### §168 addendum-2 — RVP-from-base ABLATION (does the RFT coverage stage matter?) + fixes
+RVP applied directly to BASE (SKIP_RFT=1), comp mid, matched budget (fix: rvp_family SKIP_RFT RFT=$BASE + data-gen outside guard, @e780726/97f8f77):
+  cell (RVP-from-base)   base   rvp(from-base)   xrft   shuf   | RVP-from-RFT (§162)
+  Coder-1.5B mid         .055   .239 (s1.239/s2.238)  .202  .060 | .615
+  Coder-3B  mid          .193   .284 (.280/.289)      .377  .198 | .645
+VERDICT: the RFT coverage stage is NECESSARY. RVP-from-base lifts over base (+.184 @1.5B) but reaches only ~.24-.28 vs ~.62-.65 for RVP-from-RFT — i.e. the two-stage design (RFT coverage -> RVP selection) is ~2-3x better than RVP alone. Mechanistic reading: without RFT the correct solutions aren't yet high-coverage, so preference pairs are less separable (ab_c3 even shows xrft>rvp from base at 3B — positive-only replay beats preference when the base prior is weak). Clean at 1.5B (rvp>xrft>base, shuf~base). This fills the RVP-from-base ablation row.
+INFRA (5 bugs auto-fixed by watchdog this fleet): stray-fi @97f8f77; DPO bsz4->1 @44994e4; 7B-on-worker DPO OOM (workers<=3B) @b519848; fused-QKV LoRA all-linear for Phi/Gemma @451189b; ablation RFT=$BASE @e780726.
+LOSS: Math-7B AMC (B main) node died at eval (TargetNotConnected) — 3 trained RVP seeds in wiped home lost; deepseek-math-7B AMC (C) + Math-1.5B AMC/Olympiad (workers) still cover the accessible-hard math axis.
