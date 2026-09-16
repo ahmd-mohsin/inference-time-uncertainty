@@ -184,3 +184,59 @@ the honest boundary already baked in: where there's **no gap** (near-ceiling cel
 GSM8K-3B), there's nothing to convert — which is exactly why the method's wins are headroom-gated
 (and why our bigger-model matrix deliberately targets medium-difficulty cells that still have this
 gap). This connects straight to the [[rl-focus-moderate-difficulty-benchmarks]] framing.
+
+---
+
+## PASTE (Fact 3 — mechanistic cause: neither recipe suppresses verified-WRONG modes)
+
+> The gap has a mechanistic cause: existing training does not suppress verified-incorrect modes. Why does verified replay stop short? We answer this mechanistically by teacher-forcing each checkpoint over the same held-out set of the model's own verified-correct (y+) and verified-incorrect (y−) samples and measuring the average per-token log-probability of each, together with the correct-vs-incorrect logit margin m = log π_θ(y+) − log π_θ(y−) (Table 3, Fig. 3). Two clean signatures emerge. First, GRPO does not move the margin at all: its log π(y+), log π(y−), and m are identical to the base model—the distributional face of its ≈ 0 pass@1 gain, and consistent with the fact that on-policy signal only reaches prompts the model already solves. Second, RFT is mode-covering: it raises the log-probability of the correct solution (−0.110 → −0.092) but raises the log-probability of the incorrect solution by essentially the same amount (−0.139 → −0.119), so the margin barely changes (0.029 → 0.027). Positive-only imitation lifts correct and incorrect modes together; it structurally cannot down-weight the verified-wrong completions that steal single-attempt mass. This is precisely why the reliability gap in §2 persists: neither dominant recipe touches the selection axis—the reallocation of probability from verified-incorrect to verified-correct on the same prompt.
+
+## EXPLANATION
+
+**One-line takeaway:** they open the hood and find *why* the gap survives — RFT makes the model
+like the correct answer more, but it likes the **wrong** answer *equally* more, so the model is no
+better at *choosing* the right one. GRPO doesn't move anything at all. Neither touches "selection."
+
+### How they measured it (the method)
+- **teacher-forcing** = feed the model a *fixed* answer token-by-token and read off how probable
+  the model thinks that exact answer is. You're not letting it generate — you're asking "how much
+  do you believe THIS string?" Done for two kinds of strings on the same prompts:
+  - **y+ = verified-correct** samples (answers the checker marked right).
+  - **y− = verified-incorrect** samples (answers the checker marked wrong) — the model's *own*
+    past outputs, so it's a fair internal comparison.
+- **log π_θ(y)** = log-probability the model (weights θ) assigns to answer `y`. Higher (closer to
+  0, since logs of probabilities are negative) = the model believes it more. "per-token average"
+  just normalizes for length.
+- **the margin `m = log π_θ(y+) − log π_θ(y−)`** = how much more the model prefers the correct
+  answer over the wrong one. **This is the selection signal.** `m` big and positive → the model
+  reliably puts the right answer first (high pass@1). `m ≈ 0` → correct and wrong are neck-and-neck
+  → a single draw is a coin-flip → low pass@1. **pass@1 lives or dies on the margin.**
+
+### The two findings
+1. **GRPO moves nothing.** Its `log π(y+)`, `log π(y−)`, and `m` are *identical to the base
+   model*. That's the distribution-level explanation of its ≈0 pass@1 gain from Fact 1. Why?
+   On-policy reward only reaches prompts the model *already* solves — so there's no gradient where
+   it matters, and the margin never changes.
+2. **RFT is "mode-covering" — the key finding.** It lifts *both* peaks by nearly the same amount:
+   - correct answer: log-prob **−0.110 → −0.092** (up a bit).
+   - wrong answer:  log-prob **−0.139 → −0.119** (up by *almost the same* amount).
+   - margin: **0.029 → 0.027** (essentially unchanged — even slightly down).
+
+   So RFT raised the model's confidence in the right answer **and in the wrong answer together**.
+   Net effect on *choosing*: zero. "Mode-covering" = it spreads mass to cover all the modes it
+   was trained on (it only trains on positives, but generation still visits nearby wrong modes and
+   they ride up too).
+
+### Why this nails the puzzle (why the paragraph exists)
+- **RFT trains only on positives** → by construction it can *raise* the correct mode but has **no
+  mechanism to push the verified-wrong mode down**. Those wrong completions are what "steal
+  single-attempt mass" (grab probability that should go to the correct answer).
+- Both dominant recipes ignore the **selection axis** = *reallocating probability from
+  verified-incorrect to verified-correct on the same prompt*. GRPO doesn't reach it; RFT lifts
+  both sides equally.
+- **This is the exact hole RVP fills:** RVP does preference training on (y+, y−) pairs, whose
+  gradient *subtracts* the wrong-answer's gradient — it **pushes log π(y−) down** while pulling
+  log π(y+) up, so the **margin `m` grows**. Growing `m` is what finally converts the reachable
+  correct answer into the single most-likely one → the coverage−pass@1 gap closes. The whole
+  method is "move the margin," and this section proves nothing else in the field does. Connects to
+  the RVP gradient-identity theory (Δm = η·β·σ(−u)·‖∇log π(y+) − ∇log π(y−)‖² ≥ 0).
