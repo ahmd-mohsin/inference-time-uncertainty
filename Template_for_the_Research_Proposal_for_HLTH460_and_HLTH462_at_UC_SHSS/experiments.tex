@@ -351,6 +351,39 @@ Omni-MATH      & $.197/.490$ & $.206$ & $.222$ & ---    & $\best{.252}/.415$\qua
 \end{tabular}
 \end{table}
 
+\paragraph{Mechanism: the win is margin ascent via incorrect-mode suppression.}
+To verify RVP wins \emph{for the reason the theory predicts}, we teacher-force the base and the
+RVP checkpoint over each winning cell's own held-out verified pairs and read the mean per-token
+log-probabilities and the logit margin $m=\log\pi(y^{+})-\log\pi(y^{-})$
+(Table~\ref{tab:mech-win}). The signature is exactly Prop.~2's: the base barely separates correct
+from incorrect ($m\approx.015$), while RVP drives the margin up $\sim25$--$30\times$
+($m=.40$--$.49$) --- and the gain is driven by \emph{suppressing the verified-incorrect mode}
+($\log\pi(y^{-})$ falls by $\approx.5$ nats) far more than by moving the correct mode
+($\log\pi(y^{+})$ falls by $\approx.1$). RVP reallocates probability mass $I\!\to\!C$ on the
+selection axis, precisely the lever Prop.~1 shows positive-only replay leaves flat. This mechanism
+panel, together with the constant-coverage pass@1 gains of Table~\ref{tab:genmath}, pins the
+end-to-end story: reachable solutions become selected ones.
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Mechanism panel (Qwen2.5-Math-7B, winning cells).} Teacher-forced mean per-token
+log-prob of verified-correct ($y^{+}$) and verified-incorrect ($y^{-}$) samples, and the logit
+margin $m$, for the base vs.\ the RVP checkpoint on each cell's own pairs. RVP raises $m$ by
+$\sim25$--$30\times$, driven by $\log\pi(y^{-})$ suppression --- the exact Prop.~2 signature.}
+\label{tab:mech-win}
+\begin{tabular}{lccc@{\hskip 1.5em}ccc}
+\toprule
+ & \multicolumn{3}{c}{base} & \multicolumn{3}{c}{RVP} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Cell & $\log\pi(y^{+})$ & $\log\pi(y^{-})$ & $m$ & $\log\pi(y^{+})$ & $\log\pi(y^{-})$ & $m$ \\
+\midrule
+MATH-500       & $-.084$ & $-.099$ & $.015$ & $-.194$ & $-.630$ & $\best{.436}$ \\
+Olympiad-Bench & $-.086$ & $-.101$ & $.015$ & $-.133$ & $-.620$ & $\best{.487}$ \\
+Omni-MATH      & $-.084$ & $-.101$ & $.018$ & $-.107$ & $-.502$ & $\best{.395}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \paragraph{Scope: base-class dependence (honest boundary).}
 The win is specific to math-specialized pretrained bases. On a \emph{general} base
 (Qwen2.5-7B), RVP helps only where the base is weakest (Omni-MATH $+.040$), is null on Olympiad
