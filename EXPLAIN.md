@@ -459,3 +459,49 @@ RFT–GRPO gap in the wild is just this scalar." That restraint is the same hone
 the project: prove the mechanism, don't inflate it. Connects to [[rl-routing-vs-competence]] (RL
 sharpens what's already there rather than acquiring new mass) and the broader
 [[rl-award-paper-master-plan]] theory.
+
+---
+
+## FOLLOW-UP (How exactly do GRPO and RFT differ, if they point the same direction?)
+
+They point the same *direction* per prompt, so the difference is entirely in **two weighting
+choices** — and those choices flip the outcome on hard prompts.
+
+### The two differences
+
+**1. The per-prompt multiplier `p_θ(x)`**
+- **GRPO** scales each prompt's improvement push by `p_θ(x)` = how often the model *currently*
+  solves it.
+- **RFT** normalizes it away (the "÷ p_θ(x)" in `∇log p_θ = (1/p_θ)∇p_θ`), so every prompt gets a
+  **full-strength** push regardless of current success rate.
+
+**2. Which prompts even get a push (nonzero gradient)**
+- **GRPO is on-policy:** to get *any* signal on a prompt, it must actually sample a correct answer
+  during training. On a prompt it almost never solves, it almost never draws a `V=1`, so it sees
+  ≈ no gradient there.
+- **RFT is decoupled + multi-epoch:** the correct answers were collected once into a fixed bank
+  `B`, then replayed every epoch. So a hard prompt that got even one banked correct answer is
+  trained on every pass, forever, no matter what the current model does.
+
+### Concrete example
+Two prompts: easy (`p_θ=0.8`) and hard (`p_θ=0.02`).
+
+| | easy prompt push | hard prompt push |
+|---|---|---|
+| **GRPO** (× p_θ) | 0.8 · dir | 0.02 · dir ≈ nothing |
+| **RFT** (normalized) | 1 · dir | 1 · dir (full) |
+
+Same `dir`, opposite treatment of the hard prompt. GRPO pours its effort into prompts it already
+gets right (0.8) and starves the ones it's failing (0.02). RFT spends equally on both.
+
+### Why this is the whole story
+- **Same direction** ⇒ neither method changes what "getting better" means — they both climb the
+  same hill.
+- **Different weighting** ⇒ they climb it on different prompts. GRPO only sharpens the
+  already-solved (→ pass@1 barely moves, since those were already near-solved). RFT lifts the
+  unsolved (→ broad acquisition).
+
+So "not distinct gradient families" doesn't mean "identical" — it means the gap is **not** because
+RL and imitation optimize different things. It's a pure **coverage-weighting** artifact: GRPO's
+`p_θ(x)` multiplier chokes off exactly the prompts with the most headroom. That's the mechanism
+behind GRPO ≈ base and RFT acquiring broadly.
