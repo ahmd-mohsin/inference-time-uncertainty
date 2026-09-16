@@ -3,7 +3,11 @@
 # One sharded cell per pod (main + 2 workers). env CLUSTER=Cnew|Dnew. Spec = HF_MODEL:TAG:EVAL:NEVAL
 export HOME=/home/greenland-user
 which sshpass >/dev/null 2>&1 || sudo apt-get install -y sshpass >/dev/null 2>&1
-COMMON="SKIP_RFT=1 DPO_BETA=0.3 DPO_STEPS=150 NSEED=1 ACC_CFG=rl_training/accelerate_zero3_offload.yaml DPO_MAXLEN=512 EVAL_CONC=2 FLYWHEEL=math_hard_shard.sh"
+# GENUINELY gentle DPO: beta 0.1 (match CompDAG's winning recipe, NOT 0.3 which pushes harder),
+# 40 steps (<1 epoch over ~400-800 pairs) so the policy stays NEAR base instead of over-optimizing.
+# Prior 0.3/150 = 3 epochs -> margins blew to 47 nats, logp(rejected) -182->-306: off-distribution
+# collapse of pass@1 that was a training artifact, not a strong-base property.
+COMMON="SKIP_RFT=1 DPO_BETA=0.1 DPO_STEPS=40 NSEED=1 ACC_CFG=rl_training/accelerate_zero3_offload.yaml DPO_MAXLEN=512 EVAL_CONC=2 FLYWHEEL=math_hard_shard.sh"
 case "$CLUSTER" in
   Cnew) WK=(10.2.81.201 10.2.105.252)
         MAIN="Qwen/Qwen2.5-14B-Instruct:mh14cp_amc:amc:40"
