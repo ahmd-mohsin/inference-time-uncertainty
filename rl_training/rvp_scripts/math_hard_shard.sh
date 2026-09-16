@@ -80,20 +80,24 @@ open(d+'/.consolidated','w').close()
 print('consolidated',d)" >>$L/${TAG}_consolidate.log 2>&1
 done
 fi
+# DEATH-PROOF: sync trained checkpoints to S3 BEFORE eval. The eval stage is where pods keep
+# dying (host saturation at the DPO->multi-engine-eval transition killed A-workers, C-main, B-main).
+# Syncing here means a pod death during eval no longer loses the rvp/shuf/xrft checkpoints.
+SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG 2>&1 | tail -1
 # hard-clear GPUs before eval (frees any DPO/consolidation residue -> avoids vLLM memory-profiling assert)
 for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $pid 2>/dev/null; done; sleep 8
 # 5) eval pass@1 on hard OOD set. RVP/shuf are full dirs; xrft/rft use merged_full.
 declare -A E=( [base]=$B [rft]=$RFT [xrft]=$V/xrft/merged_full [shuf]=$V/shuf )
 for s in $(seq 1 $NSEED); do E[rvp_s$s]=$V/rvp_s$s; done
 ARMS="base rft $(for s in $(seq 1 $NSEED); do echo -n rvp_s$s' '; done) xrft shuf"
-# SERIALIZE eval: launching all ~9 vLLM engines at once saturates host RAM -> pod dies (killed B/C/A at finish).
-# Cap concurrent eval engines to EVAL_CONC (default 2).
-CONC=${EVAL_CONC:-2}; g=0; run=0
+# SERIALIZE eval FULLY (EVAL_CONC default 1): even 2 concurrent vLLM engines saturate host RAM at
+# the DPO->eval transition and kill the pod (3x observed). One engine at a time + per-arm S3 sync.
+CONC=${EVAL_CONC:-1}; g=0; run=0
 for tag in $ARMS; do
   [ "$tag" = base ] || [ -e "${E[$tag]}/config.json" ] || [ -d "${E[$tag]}" ] || continue
   [ -s $V/ev_$tag.json ] && continue
   CUDA_VISIBLE_DEVICES=$((g%8)) GEN_GPU_MEM=${EVAL_GPU_MEM:-0.45} setsid nohup python3 -m rl_training.math_rvp --mode eval --model "${E[$tag]}" --dataset $EVAL --split test --n $NEVAL --k $KE --out $V/ev_$tag.json >$L/${TAG}_ev_$tag.log 2>&1 &
-  g=$((g+1)); run=$((run+1)); [ $((run % CONC)) -eq 0 ] && wait
+  g=$((g+1)); run=$((run+1)); [ $((run % CONC)) -eq 0 ] && { wait; python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1; }
   sleep 2
 done
 wait
