@@ -5,11 +5,22 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.data.dataset import (load_gsm8k, load_math500, load_math_full, load_competition_math,
     load_deepmath, load_aime_all, load_amc, load_omni_math, load_olympiad_bench,
     format_prompt, extract_numeric_answer, extract_boxed_answer, answers_match)
+import signal as _signal
+class _VerifyTimeout(Exception): pass
+def _verify_alarm(signum, frame): raise _VerifyTimeout()
 def verify(text, gold):
-    # try boxed-latex extraction first (MATH/Olympiad), then numeric (GSM8K/AIME/AMC)
+    # try boxed-latex extraction first (MATH/Olympiad), then numeric (GSM8K/AIME/AMC).
+    # answers_match uses sympy, which can HANG forever on pathological Olympiad expressions;
+    # guard every match with a hard SIGALRM timeout so one bad problem can't stall the whole eval.
     for extract in (extract_boxed_answer, extract_numeric_answer):
         try:
-            if answers_match(extract(text), gold): return True
+            old = _signal.signal(_signal.SIGALRM, _verify_alarm)
+            _signal.setitimer(_signal.ITIMER_REAL, 2.0)
+            try:
+                if answers_match(extract(text), gold): return True
+            finally:
+                _signal.setitimer(_signal.ITIMER_REAL, 0)
+                _signal.signal(_signal.SIGALRM, old)
         except Exception: pass
     return False
 LOADERS = {
