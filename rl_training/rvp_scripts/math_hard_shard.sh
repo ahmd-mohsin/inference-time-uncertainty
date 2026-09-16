@@ -96,3 +96,4 @@ wait
 for tag in $ARMS; do python3 -c "import json;d=json.load(open('$V/ev_$tag.json'));print('$tag pass1=%.4f cov=%.4f'%(d['pass1'],d['coverage_passk']))" >>$R 2>/dev/null; done
 echo "MATH_HARD_SHARD_DONE $(date -u)" >>$R
 cat $R
+SYNC_CKPT=${SYNC_CKPT:-1} python3 rl_training/rvp_scripts/s3_sync.py $TAG 2>&1|tail -1

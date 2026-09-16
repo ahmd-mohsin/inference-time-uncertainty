@@ -16,3 +16,4 @@ for arm in base rft rvp; do
   for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $pid 2>/dev/null; done; sleep 4
 done
 echo "DIRECT_DONE $(date -u)" >>$R; cat $R
+python3 rl_training/rvp_scripts/s3_sync.py $TAG 2>&1|tail -1
