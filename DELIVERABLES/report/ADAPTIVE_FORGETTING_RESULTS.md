@@ -5463,3 +5463,14 @@ Infra notes: C-new cluster (mi-021e6f667cd72f6f1) died mid-run — lost the two 
 bigger-model cells (Qwen-14B/AMC, Qwen-14B/Olympiad) and Yi-9B/AMC before eval. Fixed a
 real bug: math_rvp.verify() had no timeout around sympy answers_match → Olympiad eval hung
 forever (SIGALRM 2s guard added, committed).
+
+## §169 CORRECTION — coverage-preserving RVP-from-base null was CONFOUNDED (over-optimized DPO)
+The §168 "tested negative" for coverage-preserving RVP-from-base on 9B/14B is WITHDRAWN as a finding.
+Coverage headroom is REAL (Yi-9B Olympiad gap .271 = .407-.135; Yi-9B MATH-500 gap .296 = .750-.454).
+Root cause of the pass@1 collapse was NOT a strong-base property but an over-optimized DPO:
+config was beta=0.3 / 150 steps ≈ 3 epochs over a few hundred pairs. Training trace:
+rewards/margins 14.9→32→47 nats; logps/rejected -182→-306; loss →0.03; acc →0.99 → policy driven far off-distribution.
+xrft (positive-only) stayed at base (.453 vs .454) — clean control, data/model-touch harmless.
+FIX: genuinely gentle DPO beta=0.1 / 40 steps (<1 epoch, matches CompDAG winning recipe). Re-running mh9cp_olymp + mh9cp_m500.
+14B MATH-500 near-ceiling (.716) + full-param DPO OOMs on 40GB cards → not the informative case. High-headroom 14B/AMC lost with C-new pod.
+Do NOT bank the confounded null; report the re-test when clean.
