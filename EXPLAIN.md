@@ -298,3 +298,79 @@ headroom; at ceiling there's nothing to claim), which is exactly why our 72-GPU 
 medium-difficulty cells with a live gap, and why SKIP-RFT / near-ceiling runs are *expected* to
 show little. RVP is a selection method for the reachable-but-not-reliable regime — no more, and
 no less. See [[rl-focus-moderate-difficulty-benchmarks]].
+
+---
+
+## PASTE (Theory setup — definitions, symbols, the three operators)
+
+> A policy π_θ(y | x) generates a solution y to a problem x. A verifier V(x, y) ∈ {0, 1} is parameter-independent: an executor or exact-match checker that does not depend on θ (A1). Define the per-prompt success mass and the population objective (single-attempt reliability), p_θ(x) = E_{y∼π_θ(·|x)}[V(x, y)], J(θ) = E_{x∼D}[p_θ(x)] = pass@1, and coverage cov_k(θ) = E_x[1 − (1 − p_θ(x))^k]. Write C(x) = {y : V(x, y) = 1} (verified-correct) and I(x) (verified-incorrect). From a base checkpoint θ0 define headroom h(x) = 1 − p_θ0(x) and, at sampling budget C, accessibility a(x; C) = 1 − (1 − p_θ0(x))^C. For a self-generated pair (y+ ∈ C, y− ∈ I) the logit margin is m_θ(x) = log π_θ(y+ | x) − log π_θ(y− | x). Three operators are trained from the shared θ0: GRPO (on-policy policy-gradient on V), RFT (multi-epoch cross-entropy on a verified bank B = {(x, y) : V = 1} sampled from π_θ0), and VSF (GRPO plus a persistent prompt-balanced replay floor over B, used as a causal probe).
+
+## EXPLANATION
+
+**One-line takeaway:** this is the paper's dictionary — it defines every symbol precisely so the
+theorems can be stated. Nothing surprising happens here; it's naming the pieces. Below, each
+symbol in words.
+
+### The actors
+- **π_θ(y | x)** = the model ("policy"), with weights **θ** (theta). Given a problem **x**, it
+  produces a solution **y**. `π_θ(y|x)` = the probability the model assigns to producing solution
+  `y` for problem `x`.
+- **V(x, y) ∈ {0, 1}** = the **verifier**: checks solution `y` to problem `x`, returns `1`
+  (correct) or `0` (wrong). An executor (run the code) or exact-match checker (does the final
+  answer match).
+- **(A1) "parameter-independent … does not depend on θ"** = Assumption 1: the verifier is a fixed
+  external judge — it does **not** change as the model trains. This matters for the theory: the
+  reward signal is a constant function, not something the model can game by shifting θ. (It's what
+  makes the gradient identities clean.)
+- **x ∼ D** = problems `x` are drawn from a distribution/dataset **D**.
+
+### The quantities being optimized
+- **p_θ(x) = E_{y∼π_θ(·|x)}[V(x, y)]** = **per-prompt success mass**: for one problem `x`, the
+  probability a single sampled answer is correct. (Average the verifier's 0/1 over the answers the
+  model samples → a number in [0,1].) `E[...]` = expected value = average.
+- **J(θ) = E_{x∼D}[p_θ(x)] = pass@1** = the **objective**: average per-prompt success over all
+  problems = single-attempt reliability. This is what the paper wants to raise. `J` is the score
+  the whole method is trying to maximize.
+- **cov_k(θ) = E_x[1 − (1 − p_θ(x))^k]** = **coverage** = pass@k = chance at least one of `k`
+  samples is correct, averaged over problems. (Same formula as before: `(1−p)^k` = all k wrong;
+  `1 −` that = at least one right.) This is the flattering number; `J` (pass@1) is the honest one.
+
+### Sets of solutions
+- **C(x) = {y : V(x, y) = 1}** = the set of all **verified-correct** solutions to `x`.
+- **I(x)** = the set of **verified-incorrect** solutions to `x`. (C for Correct, I for Incorrect.)
+
+### Two headroom notions (measured at the *base* model θ0)
+- **h(x) = 1 − p_θ0(x)** = **headroom** = how much room there is to improve on problem `x` at the
+  start. If the base already nails it (p_θ0 ≈ 1), headroom ≈ 0; if the base is weak, headroom is
+  large. (This is the "gap scales with headroom" quantity from Fact 2.)
+- **a(x; C) = 1 − (1 − p_θ0(x))^C** = **accessibility** at sampling budget **C** = the chance the
+  base model produces *at least one* correct solution if you let it sample `C` times. In words:
+  "can we even *find* a correct y+ to train on, within C tries?" A problem the base never solves
+  in C samples has accessibility ≈ 0 → no verified-correct example → nothing for replay/preference
+  to use. (Note: here **C** is a sampling budget number; **C(x)** is the correct-set — same letter,
+  different role.)
+
+### The selection signal (the star of the theory)
+- **m_θ(x) = log π_θ(y+ | x) − log π_θ(y− | x)** = the **logit margin** for a self-generated pair,
+  where **y+ ∈ C(x)** is a verified-correct sample and **y− ∈ I(x)** is a verified-incorrect one.
+  It's how much more log-probability the model gives the right answer than the wrong one — the
+  same margin from Fact 3. Growing `m_θ` is exactly what RVP does and what pass@1 needs.
+  "Self-generated pair" = both y+ and y− come from the model's *own* samples (not an external
+  dataset).
+
+### The three training methods being compared (all start from the SAME base θ0)
+- **GRPO** = on-policy policy-gradient on `V`: attempt problems live, use the verifier's reward to
+  nudge θ. (The near-null arm.)
+- **RFT** = multi-epoch cross-entropy on a **verified bank B = {(x, y) : V = 1}** sampled from the
+  base π_θ0: collect the base model's own correct answers, imitate them for several passes. (The
+  winning-but-incomplete arm; mode-covering.)
+- **VSF** = GRPO **plus** a "persistent prompt-balanced replay floor" over B — i.e. keep mixing in
+  the verified replay signal during GRPO, balanced across prompts. It's a **causal probe**, not a
+  product: it isolates whether *adding replay* is the active ingredient. ("Floor" = a baseline
+  signal always present under the RL loss.)
+
+### Why this paragraph matters
+It's scaffolding, but load-bearing: by nailing down `J` (pass@1) vs `cov_k`, the sets `C/I`,
+`headroom` vs `accessibility`, and the `margin m_θ`, the paper can now state its theorems precisely
+— e.g. "RFT raises both modes so `m_θ` barely moves," "gains are gated by headroom×accessibility,"
+and "RVP's gradient increases `m_θ`." Every later claim is phrased in these symbols.
