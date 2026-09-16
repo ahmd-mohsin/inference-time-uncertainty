@@ -643,3 +643,87 @@ hinge between §2–3 (why the gap exists) and §4 (RVP). It also encodes the pr
 guarantee is scoped to **covered prompts** (high coverage after RFT) — i.e. the headroom-gated
 regime our 72-GPU matrix deliberately targets. Ties to the RVP margin-ascent proposition
 (Δm = η·β·σ(−u)·‖∇log π(y+) − ∇log π(y−)‖² ≥ 0) and [[rl-operator-mass-placing-result]].
+
+---
+
+## PASTE (RVP defined — the single lever, and how it operationalises the theory)
+
+> The theory isolates a single actionable lever. On-policy outcome RL cannot reach prompts the model does not already solve (Cor. 1.1); positive-only verified replay is mode-covering and does not widen the correct-vs-incorrect margin (Prop. 1); and no ceiling forbids an accuracy-directed objective from exceeding RFT (Thm. 3). Proposition 2 then identifies the exact quantity to optimise: on covered prompts, single-attempt reliability p_θ(x) = σ(m_θ(x)+c(x)) is strictly increasing in the logit margin m_θ(x) = log π_θ(y+ | x) − log π_θ(y− | x). Reliability via Verified Preference (RVP) is the method that operationalises this: a decoupled preference objective trained on the model's own verified-correct/verified-incorrect self-samples that raises m_θ by suppressing the verified-incorrect mode, reallocating probability mass I → C on prompts the model can already reach. RVP does not try to acquire new coverage—RFT already maximises that—it converts reachable solutions into selected ones.
+
+## EXPLANATION
+
+**One-line takeaway:** the three theory results eliminate every other option and leave exactly one
+thing worth optimizing — the **margin** — and **RVP** is the minimal method that raises it:
+DPO-style preference training on the model's own verifier-labeled right/wrong samples, run after
+RFT, to turn reachable-correct answers into the *chosen* one.
+
+### The elimination argument (why there's only one lever)
+- **Cor. 1.1:** on-policy RL (GRPO) can't touch prompts the model doesn't already solve → dead end
+  for the prompts with headroom.
+- **Prop. 1:** positive-only replay (RFT) is mode-covering → lifts correct *and* wrong together,
+  never widens the margin → can't do selection.
+- **Thm. 3:** there's no theoretical "ceiling" that forbids beating RFT with an accuracy-directed
+  objective → the door is open; the gain is real, not blocked.
+- **Prop. 2:** names the precise target — on covered prompts, `p_θ(x) = σ(m_θ(x)+c(x))` is
+  **strictly increasing in the margin `m_θ`**, so raising `m_θ` *must* raise pass@1.
+
+Put together: the only unclaimed, unblocked, provably-effective lever is **the margin**. RVP is
+built to pull exactly that lever — nothing more.
+
+### What RVP is, concretely
+- **decoupled** = a stage *after* RFT (RFT first makes the correct answer reachable / high-coverage).
+- **preference objective on the model's own verified self-samples** = collect the model's own
+  generations, label each with the verifier (`y+` = passed, `y−` = failed), and train on `(y+, y−)`
+  pairs.
+- **raises `m_θ` by suppressing the verified-incorrect mode** = its gradient pushes `log π(y−)`
+  **down** (and `log π(y+)` up) → the margin grows → the reachable-correct answer becomes the
+  single most-likely one.
+- **`I → C`** = it reallocates probability mass from the Incorrect set to the Correct set, *on
+  prompts the model can already reach* (coverage stays fixed).
+- **"does not acquire new coverage — converts reachable → selected"** = the one-sentence identity
+  of the method. RFT = acquisition (reachability). RVP = selection (reliability).
+
+---
+
+## How RVP differs from DPO — properly and concretely
+
+**The honest headline:** RVP *uses the DPO loss*. The optimizer, the `−log σ(β·(Δ_chosen −
+Δ_rejected))` objective, the frozen reference-KL anchor — all identical to DPO. So mechanically
+"it's DPO." The contribution is **everything around the loss**: what the pairs are, where they
+come from, when it runs, what it optimizes for, and the theory that says it's the unique fix. Point
+by point:
+
+| Axis | Standard DPO | RVP |
+|---|---|---|
+| **Pair labels** | human preference / reward-model ranking (subjective "A is nicer than B") | **automatic verifier** `V∈{0,1}` — ground truth (code passes tests / answer matches). No humans, no reward model. |
+| **Where pairs come from** | a fixed external preference dataset (often other models' outputs) | the **model's own self-samples** (`y+`=verified-correct, `y−`=verified-incorrect) from its *own* generations |
+| **Goal / what moves** | **alignment** — shift tone/values/helpfulness toward preferred behavior | **reliability/selection** — widen the correct-vs-incorrect **margin** so pass@1 rises |
+| **Metric it targets** | preference win-rate / human eval | **pass@1** on verified tasks (single-attempt correctness) |
+| **Pipeline placement** | one alignment pass on an SFT/instruct model | **decoupled two-stage: RFT (create coverage) → RVP (sharpen selection)**; RVP directly on a strong base *fails* (we proved it — SKIP-RFT collapsed) |
+| **What it's for, conceptually** | teach *new preferred behavior* | **re-rank behavior the model already has** (convert reachable→selected; no new coverage) |
+| **Theoretical framing** | none specific to reliability | positioned by Thm 1 / Cor 1.1 / Prop 1 / Prop 2 as the **unique operator that moves the selection axis** the field's two recipes leave open |
+
+### The concrete differences that matter to a reviewer
+1. **Ground-truth, self-generated pairs.** DPO's signal is a *learned/annotated* preference (noisy,
+   external, about style). RVP's is a *verifier* on the model's *own* outputs — the negative `y−`
+   is a specific wrong solution *this model actually produces and would emit at test time*. That's
+   why suppressing it directly buys pass@1; you're removing mass from an error the model really
+   makes.
+2. **It's a selection stage, not an alignment stage.** DPO is usually the whole post-training step.
+   RVP is explicitly the *second* stage after RFT, and it only works there — because RFT first
+   creates the high-margin, reachable gap that RVP then sharpens. Order matters and is part of the
+   method.
+3. **Different target ⇒ different eval.** DPO is judged on win-rate; RVP is judged on pass@1 at
+   fixed coverage. The paper's whole point (coverage vs pass@1) is invisible to standard DPO
+   evaluation.
+4. **The novelty is the framing + regime, not the loss.** The paper says so plainly: verifier-
+   labeled preference pairs exist in the literature, but nobody framed them against the
+   *post-replay reliability residual* (the coverage−pass@1 gap after RFT) or evaluated them in
+   pass@1. RVP = "point DPO's machinery at that specific residual, after RFT, and prove it's the
+   only thing that closes it."
+
+### The one-liner for a reviewer who says "isn't this just DPO?"
+> Yes, the *update rule* is DPO. RVP is the recipe and the theory around it: a **decoupled,
+> verifier-labeled, self-generated selection stage after RFT**, aimed at **pass@1** rather than
+> alignment, with results (Prop 2 + the Qwen-Math-7B sweep) showing it is the unique lever for the
+> coverage−pass@1 gap that on-policy RL can't reach and positive-only replay can't widen.
