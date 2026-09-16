@@ -5495,3 +5495,18 @@ Yi-1.5-9B-Chat (RLHF'd instruct base) — RVP COLLAPSES:
 
 VERDICT (honest): RVP's verified-preference SELECTION delivers large single-attempt gains on a math-specialized pretrained base (Qwen2.5-Math-7B: +.055 to +.137 across 3 diverse math sets, beating base/RFT/xrft/shuf — controls pin the mechanism). On a general base it only helps where the base is weak (Omni), regresses where already-strong (MATH-500). On an RLHF'd instruct base the DPO negative gradient drives the aligned model off-distribution and collapses pass@1. Positive-only xrft is the safe fallback that never catastrophically fails.
 CLAIM FOR PAPER: RVP generalizes across diverse math ON THE RIGHT BASE CLASS (math-specialized). NOT best-everywhere. Report Cluster A as the generalization headline; B/C as the honest scope boundary. Do NOT bank B/C as wins.
+
+## §171 — Complementary-experiments wave (2026-09-16) + infra hardening
+IN PAPER (verified):
+- Generalization now spans 2 math-specialized bases × 2 sizes: Qwen2.5-Math-7B (RVP top arm all 3: +.137/.058/.055) + Qwen2.5-Math-1.5B (+.125 MATH-500, +.040 Omni top arm; +.039 marginal Olympiad). RVP best on 5/6 cells.
+- Mechanism panel (Qwen2.5-Math-7B): teacher-forced margin base→RVP up 25–30× (m .015→.40–.49), driven by logp(y−) suppression (Δ≈−.5) ≫ logp(y+) (Δ≈−.1) — exact Prop-2 signature.
+- β-robustness (Qwen2.5-Math-1.5B): RVP net-positive across β∈{0.1,0.2,0.5} all 3 datasets, optimum β≈0.1–0.2, no collapse at 0.5; only extreme-low β=0.03 over-optimizes (Olympiad −.055). Framed as pass@1-vs-β (its margin col is a train-pair FIT metric, inverse to β — NOT the held-out Prop-2 margin).
+
+HARVESTED, NOT verified / NOT in paper:
+- 2-seed CIs (Qwen2.5-Math-1.5B, β=0.1): MATH-500 +.126±.001, Omni +.043±.003, Olympiad +.066±.027 (both seeds positive). seed-3 lost (cluster C died). Cannot re-verify (C dead, S3 cross-account read denied to laptop). Hold until re-confirmable.
+
+NULL / INCONCLUSIVE (honest):
+- DeepSeek-Math-7B: DUD base for this pipeline — after 3+h never past pair-gen (long-CoT gen too slow, verified bank only ~324). Killed. Data-side base limitation, not an RVP result.
+- Qwen2.5-Math-7B-INSTRUCT scope test: INCONCLUSIVE — healthy bank (1299, unlike DeepSeek) + RVP/shuf DPOs completed, but pod died at eval → no pass@1. The "math-specialized-instruct wins vs instruct-tuning-collapses" discriminator is UNANSWERED. Needs fresh pod + re-run.
+
+INFRA (recurring, 3×: A-workers, C-main, B-main): pods die at the sustained-DPO→multi-engine-eval transition (host saturation). FIX shipped in math_hard_shard.sh: (1) SYNC_CKPT=1 to S3 BEFORE eval; (2) EVAL_CONC default 2→1 everywhere (one vLLM engine at a time); (3) per-arm result sync in eval loop. All 3 clusters now dead → needs fresh nodes to resume.
