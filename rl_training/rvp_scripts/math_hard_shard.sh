@@ -15,12 +15,19 @@ RFT_BSZ=${RFT_BSZ:-$(echo "$B"|grep -qiE '14b|32b' && echo 1 || echo 8)}
 ACC=${ACC_CFG:-rl_training/accelerate_zero3.yaml}
 G=$HOME/gu; L=$G/logs; V=$G/$TAG; mkdir -p $V $L; R=$V/RES.md; : >$R
 echo "# MATH-HARD-SHARD RVP base=$B bank=$BANK eval=$EVAL zero3-full $(date -u)" >>$R
-# 1) bank
-[ -s $V/bank.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode bank --model $B --dataset $BANK --split train --n $NBANK --k $KB --out $V/bank.jsonl >$L/${TAG}_bank.log 2>&1
-echo "bank=$(wc -l <$V/bank.jsonl)" >>$R
-# 2) RFT (single-GPU LoRA) -> merged full model
-[ -d $V/rft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $B --data $V/bank.jsonl --out $V/rft --seed 1 --max-steps 300 --bsz $RFT_BSZ >$L/${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/${TAG}_rft.log 2>&1; }
-RFT=$V/rft/merged_full
+# SKIP_RFT=1 (coverage-preserving mode for strong/big bases): base already has coverage, RFT collapses it
+# -> skip bank+RFT, do RVP DIRECTLY from base (pairs from base's own correct/incorrect).
+if [ "${SKIP_RFT:-0}" = 1 ]; then
+  echo "SKIP_RFT=1: RVP-from-base (no RFT; preserve base coverage)" >>$R
+  RFT=$B
+else
+  # 1) bank
+  [ -s $V/bank.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode bank --model $B --dataset $BANK --split train --n $NBANK --k $KB --out $V/bank.jsonl >$L/${TAG}_bank.log 2>&1
+  echo "bank=$(wc -l <$V/bank.jsonl)" >>$R
+  # 2) RFT (single-GPU LoRA) -> merged full model
+  [ -d $V/rft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $B --data $V/bank.jsonl --out $V/rft --seed 1 --max-steps 300 --bsz $RFT_BSZ >$L/${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/${TAG}_rft.log 2>&1; }
+  RFT=$V/rft/merged_full
+fi
 # 3) pairs + shuffled control
 [ -s $V/pairs.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1 &
 [ -s $V/shuf.jsonl ] || CUDA_VISIBLE_DEVICES=1 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --shuffle --out $V/shuf.jsonl >$L/${TAG}_shufgen.log 2>&1 &
@@ -40,11 +47,11 @@ done
 for s in $(seq 1 $NSEED); do
   [ -f $V/rvp_s$s/config.json ] && continue
   CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 DPO_FULL=1 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 --main_process_port $((29500+RANDOM%2000)) \
-    -m rl_training.dpo_train --full --model $RFT --data $V/pairs.jsonl --out $V/rvp_s$s --seed $s --max-steps 300 --bsz 1 >$L/${TAG}_rvp$s.log 2>&1
+    -m rl_training.dpo_train --full --model $RFT --data $V/pairs.jsonl --out $V/rvp_s$s --seed $s --beta ${DPO_BETA:-0.1} --max-steps ${DPO_STEPS:-300} --bsz 1 >$L/${TAG}_rvp$s.log 2>&1
 done
 # 4b) shuffled-pair control (sharded full-param DPO)
 [ -f $V/shuf/config.json ] || CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 DPO_FULL=1 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 --main_process_port $((29500+RANDOM%2000)) \
-    -m rl_training.dpo_train --full --model $RFT --data $V/shuf.jsonl --out $V/shuf --seed 1 --max-steps 300 --bsz 1 >$L/${TAG}_shuf.log 2>&1
+    -m rl_training.dpo_train --full --model $RFT --data $V/shuf.jsonl --out $V/shuf --seed 1 --beta ${DPO_BETA:-0.1} --max-steps ${DPO_STEPS:-300} --bsz 1 >$L/${TAG}_shuf.log 2>&1
 # 4c) xrft positive-only (single-GPU LoRA)
 [ -d $V/xrft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $RFT --data $V/pos.jsonl --out $V/xrft --seed 1 --max-steps 300 --bsz $RFT_BSZ >$L/${TAG}_xrft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/xrft')" >>$L/${TAG}_merge.log 2>&1; }
 # 4d) CONSOLIDATE — DISABLED by default. The full-param save (zero3_save_16bit_model + tok.save_pretrained)
