@@ -5474,3 +5474,24 @@ xrft (positive-only) stayed at base (.453 vs .454) — clean control, data/model
 FIX: genuinely gentle DPO beta=0.1 / 40 steps (<1 epoch, matches CompDAG winning recipe). Re-running mh9cp_olymp + mh9cp_m500.
 14B MATH-500 near-ceiling (.716) + full-param DPO OOMs on 40GB cards → not the informative case. High-headroom 14B/AMC lost with C-new pod.
 Do NOT bank the confounded null; report the re-test when clean.
+
+## §170 — 72-GPU 9-cell MATH GENERALIZATION MATRIX (full RFT→RVP, β=0.1/300 steps) — 2026-09-16
+3 model families × {MATH-500, OlympiadBench, Omni-MATH}. Full control suite (base/rft/rvp_s1/xrft/shuf). pass@1 (cov). Δ=rvp−base. All S3-synced (+ckpt) to greenland-intern-artifacts-703671891219-us-east-2-an/cmohsinm-rvp/.
+
+Qwen2.5-Math-7B (math-specialized base) — CLEAN SWEEP, rvp is the top arm every cell:
+- MATH-500 : base .597/.870 | rft .635 | rvp .734/.855 | xrft .660           → Δ +.137 WIN
+- Olympiad : base .295/.680 | rft .312 | rvp .353/.640 | xrft .328 | shuf .337 → Δ +.058 WIN
+- Omni-MATH: base .197/.490 | rft .206 | rvp .252/.415 | xrft .222           → Δ +.055 WIN
+
+Qwen2.5-7B (general base) — MIXED:
+- MATH-500 : base .501/.860 | rft .578 | rvp .463/.730 | xrft .615 | shuf .338 → Δ −.038 regression (xrft wins)
+- Olympiad : base .250/.613 | rft .283 | rvp .248/.587 | xrft .298 | shuf .218 → Δ −.002 null (xrft wins)
+- Omni-MATH: base .155/.360 | rft .183 | rvp .195/.360 | xrft .204 | shuf .073 → Δ +.040 win vs base (xrft edges rvp)
+
+Yi-1.5-9B-Chat (RLHF'd instruct base) — RVP COLLAPSES:
+- MATH-500 : base .446/.770 | rft .463 | rvp .321/.675 | xrft .458 → Δ −.125 regression
+- Olympiad : base .177/.487 | rft .169 | rvp .013/.153 | xrft .170 → Δ −.164 CATASTROPHIC (cov .49→.15)
+- Omni-MATH: base .121/.320 | rft .125 | rvp .071/.220 | xrft .126 → Δ −.051 regression
+
+VERDICT (honest): RVP's verified-preference SELECTION delivers large single-attempt gains on a math-specialized pretrained base (Qwen2.5-Math-7B: +.055 to +.137 across 3 diverse math sets, beating base/RFT/xrft/shuf — controls pin the mechanism). On a general base it only helps where the base is weak (Omni), regresses where already-strong (MATH-500). On an RLHF'd instruct base the DPO negative gradient drives the aligned model off-distribution and collapses pass@1. Positive-only xrft is the safe fallback that never catastrophically fails.
+CLAIM FOR PAPER: RVP generalizes across diverse math ON THE RIGHT BASE CLASS (math-specialized). NOT best-everywhere. Report Cluster A as the generalization headline; B/C as the honest scope boundary. Do NOT bank B/C as wins.
