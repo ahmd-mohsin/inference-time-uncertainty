@@ -36,13 +36,37 @@ LOADERS = {
 }
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument("--mode",required=True,choices=["bank","pairs","eval"])
+    ap.add_argument("--mode",required=True,choices=["bank","pairs","eval","margin"])
     ap.add_argument("--model",required=True); ap.add_argument("--split",default="train")
     ap.add_argument("--dataset",default="gsm8k",choices=list(LOADERS.keys()))
     ap.add_argument("--n",type=int,default=500); ap.add_argument("--k",type=int,default=8)
     ap.add_argument("--temperature",type=float,default=0.8); ap.add_argument("--max-pairs-per",type=int,default=2)
     ap.add_argument("--shuffle",action="store_true"); ap.add_argument("--out",required=True); ap.add_argument("--seed",type=int,default=1)
+    ap.add_argument("--data",default=None)  # margin mode: pairs.jsonl with prompt/chosen/rejected
     a=ap.parse_args()
+    # --- margin mode: teacher-force y+/y- under the model, report mean per-token logp + logit margin ---
+    # (mechanism panel: Prop 2 signature = margin up via logp(y-) down, no generation, HF not vLLM)
+    if a.mode=="margin":
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        tok=AutoTokenizer.from_pretrained(a.model); tok.pad_token=tok.pad_token or tok.eos_token
+        model=AutoModelForCausalLM.from_pretrained(a.model,torch_dtype=torch.bfloat16,device_map="cuda").eval()
+        def comp_logp(prompt,completion):
+            pids=tok(prompt,return_tensors="pt",add_special_tokens=True).input_ids
+            fids=tok(prompt+completion,return_tensors="pt",add_special_tokens=True).input_ids[:, :int(os.environ.get("DPO_MAXLEN","1024"))]
+            with torch.no_grad(): logits=model(fids.to("cuda")).logits[0,:-1].float()
+            lp=torch.log_softmax(logits,-1); tgt=fids[0,1:].to("cuda")
+            tl=lp.gather(-1,tgt.unsqueeze(-1)).squeeze(-1); cs=max(pids.shape[1]-1,0)
+            seg=tl[cs:]; return seg.mean().item() if seg.numel() else 0.0
+        pairs=[json.loads(l) for l in open(a.data)][:a.n]
+        sp=sn=sm=0.0; nn=0
+        for r in pairs:
+            lp_pos=comp_logp(r["prompt"],r["chosen"]); lp_neg=comp_logp(r["prompt"],r["rejected"])
+            sp+=lp_pos; sn+=lp_neg; sm+=(lp_pos-lp_neg); nn+=1
+        res={"model":a.model,"n_pairs":nn,"logp_pos":sp/max(nn,1),"logp_neg":sn/max(nn,1),"margin":sm/max(nn,1)}
+        json.dump(res,open(a.out,"w"),indent=2)
+        print(f"[margin] n={nn} logp_pos={res['logp_pos']:.4f} logp_neg={res['logp_neg']:.4f} margin={res['margin']:.4f}")
+        return
     rows=LOADERS[a.dataset](a)
     from vllm import LLM, SamplingParams
     llm=LLM(model=a.model,trust_remote_code=True,dtype="bfloat16",gpu_memory_utilization=float(os.environ.get("GEN_GPU_MEM","0.5")),max_model_len=int(os.environ.get("MAXLEN","2048")),tensor_parallel_size=int(os.environ.get("VLLM_TP","1")),enforce_eager=True)
