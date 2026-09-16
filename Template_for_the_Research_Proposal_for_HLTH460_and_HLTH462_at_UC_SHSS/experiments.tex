@@ -350,13 +350,18 @@ positive-only control (\emph{xrft}) stays at base, confirming the data/model-tou
 harmless. Two higher-headroom 14B cells (AMC, Olympiad) were lost to a cluster failure
 before eval.}
 \label{tab:bigmath}
-\begin{tabular}{llccc}
+% NOTE: base columns are FINAL (measured). RVP / xrft / Delta columns are PLACEHOLDERS
+% (\tbd) to be filled once the gentle-DPO re-run (beta=0.1, <1 epoch) completes.
+\newcommand{\tbd}{{\color{gray}\textsc{tbd}}}
+\begin{tabular}{llcccccc}
 \toprule
-Base & Eval & base $\text{p}@1$ & base cov & headroom (cov$-$p@1) \\
+ & & \multicolumn{3}{c}{base (measured)} & \multicolumn{2}{c}{RVP gentle} & \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-7}
+Base & Eval & $\text{p}@1$ & cov & headroom & $\text{p}@1$ & cov & $\Delta_{\text{p}@1}$ \\
 \midrule
-Yi-1.5-9B  & Olympiad-Bench & $.135$ & $.407$ & $.271$ \\
-Yi-1.5-9B  & MATH-500       & $.454$ & $.750$ & $.296$ \\
-Qwen2.5-14B & MATH-500      & $.716$ & $.865$ & $.149$ \\
+Yi-1.5-9B  & Olympiad-Bench & $.135$ & $.407$ & $.271$ & \tbd & \tbd & \tbd \\
+Yi-1.5-9B  & MATH-500       & $.454$ & $.750$ & $.296$ & \tbd & \tbd & \tbd \\
+Qwen2.5-14B & MATH-500      & $.716$ & $.865$ & $.149$ & \tbd & \tbd & \tbd \\
 \bottomrule
 \end{tabular}
 \end{table}
