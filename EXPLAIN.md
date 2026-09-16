@@ -240,3 +240,61 @@ better at *choosing* the right one. GRPO doesn't move anything at all. Neither t
   correct answer into the single most-likely one → the coverage−pass@1 gap closes. The whole
   method is "move the margin," and this section proves nothing else in the field does. Connects to
   the RVP gradient-identity theory (Δm = η·β·σ(−u)·‖∇log π(y+) − ∇log π(y−)‖² ≥ 0).
+
+---
+
+## PASTE (The Opportunity — the three facts converge into the method's thesis)
+
+> The opportunity. These three facts define the gap our work targets. (i) On-policy outcome RL acquires almost no single-attempt reliability (Table 1); (ii) even the best recipe, decoupled verified replay, leaves a large coverage−pass@1 gap that scales with headroom (Table 2); and (iii) the mechanistic reason is that both recipes fail to suppress the verified-incorrect modes—they optimise coverage (reachability) and leave selection (reliability) untouched (Table 3). Existing preference methods use verifier-labelled pairs for alignment [7, 6, 9] but have not been framed against, or evaluated on, this post-replay reliability residual. This motivates the theory and methodology developed next: a decoupled, verified-preference objective that directly reallocates probability mass from verified-incorrect to verified-correct solutions the model can already reach, targeting the single axis—selection—that positive-only imitation and on-policy reward provably leave open.
+
+## EXPLANATION
+
+**One-line takeaway:** this paragraph is the "so here's the plan" — it stacks the three findings
+into one argument (there's leftover reliability, and nobody's method goes after it the right way)
+and names the fix: a method that **pushes wrong answers down and right answers up on the same
+prompt** — the one thing the field has left untouched.
+
+### The three facts, restated as a chain
+- **(i)** On-policy RL (GRPO) → almost no pass@1 gain. *Rewarding* correct rollouts doesn't build
+  single-attempt reliability. (Fact 1 / Table 1.)
+- **(ii)** The winning method (RFT) → still leaves a big **coverage − pass@1 gap**, and that gap
+  is *bigger where there's more room to improve* ("scales with headroom"). The model can reach the
+  answer but doesn't reliably pick it. (Fact 2 / Table 2.)
+- **(iii)** The reason, mechanistically: both methods **optimise coverage (reachability) but leave
+  selection (reliability) untouched** — neither pushes the verified-*wrong* answers down. (Fact 3 /
+  Table 3.)
+
+Read together: **there is a real, measurable pile of reliability sitting unclaimed after RFT, and
+it exists specifically because no standard recipe moves the selection axis.**
+
+### The gap in the literature (why this is novel)
+- **"Existing preference methods use verifier-labelled pairs for alignment [7,6,9]"** = yes, DPO
+  and friends already train on (good, bad) pairs — but for *alignment* (helpfulness, safety,
+  human-preference tuning).
+- **"…have not been framed against, or evaluated on, this post-replay reliability residual"** =
+  nobody has pointed those preference tools *at this specific leftover* — the coverage−pass@1 gap
+  that remains **after** an RFT replay stage, measured in **pass@1**. That framing (and eval) is
+  the paper's claim to newness: same tool, unclaimed target.
+
+### The method it sets up (RVP, in one breath)
+- **"decoupled"** = a separate stage after RFT (not fused into on-policy RL). RFT first makes the
+  correct answer *reachable*; then this stage runs.
+- **"verified-preference objective"** = preference training (DPO-style) on **verifier-labelled**
+  pairs from the model's *own* samples: y+ = verified-correct, y− = verified-incorrect.
+- **"directly reallocates probability mass from verified-incorrect to verified-correct solutions
+  the model can already reach"** = the exact mechanism from Fact 3 — push `log π(y−)` **down**,
+  pull `log π(y+)` **up**, so the margin grows and the reachable-correct answer becomes the single
+  most-likely one. "Can already reach" is the crucial guard: it only re-ranks solutions RFT made
+  available — it isn't trying to acquire new ones.
+- **"targeting the single axis—selection—that positive-only imitation and on-policy reward
+  provably leave open"** = it aims at the one lever the other two methods structurally can't move
+  (RFT lifts both modes equally; GRPO moves nothing), and the next section *proves* this (the
+  gradient-identity theory).
+
+### Why the paragraph matters
+It's the hinge of the paper: motivation → method. It also bakes in the honesty that runs through
+this whole project — the opportunity is **headroom-gated** (fact ii says the gap scales with
+headroom; at ceiling there's nothing to claim), which is exactly why our 72-GPU matrix targets
+medium-difficulty cells with a live gap, and why SKIP-RFT / near-ceiling runs are *expected* to
+show little. RVP is a selection method for the reachable-but-not-reliable regime — no more, and
+no less. See [[rl-focus-moderate-difficulty-benchmarks]].
