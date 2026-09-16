@@ -374,3 +374,88 @@ It's scaffolding, but load-bearing: by nailing down `J` (pass@1) vs `cov_k`, the
 `headroom` vs `accessibility`, and the `margin m_θ`, the paper can now state its theorems precisely
 — e.g. "RFT raises both modes so `m_θ` barely moves," "gains are gated by headroom×accessibility,"
 and "RVP's gradient increases `m_θ`." Every later claim is phrased in these symbols.
+
+---
+
+## PASTE (Theorem 1 — the gradient-family identity: why on-policy reward acquires little)
+
+> Theorem 1 (Gradient-family identity). Under (A1), for every prompt x, ∇_θ p_θ(x) = p_θ(x) · E_{y∼π_θ(·|x)}[∇_θ log π_θ(y | x) | V(x, y) = 1]. Consequently (i) the within-prompt-normalised RFT gradient on current-policy successes equals ∇_θ log p_θ(x), and (ii) the binary-reward policy gradient equals p_θ(x) times the same direction. RFT and outcome-RL are therefore not distinct gradient families; they differ only by a positive per-prompt scalar and by which prompts carry a nonzero success-gradient.
+> Proof. Score-function identity ∇_θ p_θ(x) = E[V ∇ log π]; condition on V = 1 (the V = 0 term vanishes as V ∈ {0,1}) and normalise by p_θ(x) = Pr(V=1). The policy gradient of E[V] is E[V ∇ log π] = p_θ(x)·(that conditional mean).
+> Corollary 1.1 (coverage throttling). Because the on-policy update weights each prompt's success-gradient by p_θ(x), a prompt the base model almost never solves (p_θ0(x) ≈ 0) receives ≈ 0 update: outcome-RL cannot acquire base-failed prompts. RFT's decoupled multi-epoch replay over B supplies those gradients regardless of current success mass. This predicts GRPO pass@1 ≈ base while RFT acquires broadly.
+> [Confirmed: GRPO turnover-robust acquisition A=0.010 (net +0.001) vs RFT A=0.132 (net +0.126), Table 4; GRPO leaves the per-prompt histogram identical — 79% of prompts stay p̂<0.1 — while RFT rescues a third, Fig. 4.]
+> Scope (honest). Eq.(1) is an exact per-prompt identity for current-policy expectations. A stale multi-epoch bank, clipped/group-normalised GRPO, and cross-prompt reweighting each perturb the aggregate direction; we do not claim "all RFT–GRPO gaps are procedural" in general—only the identity and the coverage-throttling mechanism it exposes.
+
+## EXPLANATION
+
+**One-line takeaway:** GRPO and RFT are secretly pushing the model in the **same direction** — but
+GRPO multiplies that push by `p_θ(x)` (how often the model already solves the prompt), so on hard
+prompts (where it solves ≈ never) the push is ≈ **zero**. RFT has no such multiplier, so it learns
+the hard prompts too. That's the mathematical reason for Fact 1's GRPO null.
+
+### First, the notation
+- **∇_θ** ("nabla-theta") = the **gradient** = "the direction in weight-space that increases this
+  quantity fastest." Training = take a step along a gradient. `∇_θ (something)` = "how to change
+  the weights θ to raise `something`."
+- **∇_θ p_θ(x)** = the direction that raises the per-prompt success `p_θ(x)` (getting problem `x`
+  right more often).
+- **∇_θ log π_θ(y|x)** = the direction that raises the model's log-probability of a *specific*
+  answer `y`. (The "score function" — the basic building block of policy gradients.)
+- **E[ … | V=1]** = average **conditioned on** the answer being correct — i.e. average only over
+  the answers that pass the verifier.
+
+### What the theorem says (Eq. 1), in words
+> ∇_θ p_θ(x) = p_θ(x) · E[ ∇_θ log π_θ(y|x) | V=1 ]
+
+"The direction that makes the model solve problem `x` more often = **(how often it currently
+solves it)** × **(the average direction that boosts its correct answers)**."
+
+Two consequences fall out:
+- **(i) RFT's gradient** (imitate current-policy correct answers, normalized per prompt) = the
+  average direction that boosts correct answers = **∇_θ log p_θ(x)** (the *un-scaled* improvement
+  direction).
+- **(ii) GRPO's gradient** (binary-reward policy gradient) = **p_θ(x) × the same direction**.
+
+So **they point the same way**; they differ only by a **positive scalar `p_θ(x)`** (per prompt)
+and by **which prompts get a nonzero push**. "Not distinct gradient families" = they're the same
+underlying update, just weighted differently. This is a genuinely clarifying result — it says the
+GRPO-vs-RFT difference isn't about *direction*, it's about *weighting*.
+
+### The proof, in one line
+It's just the **score-function identity** (a standard calculus fact: ∇E[f] = E[f ∇log π]) applied
+to `f = V`. Since `V` is 0 or 1, the "wrong" answers (V=0) contribute nothing to the sum, so the
+whole gradient comes from the correct answers, scaled by how many there are, `p_θ(x) = Pr(V=1)`.
+Nothing exotic — it's an exact rearrangement.
+
+### The killer consequence — Corollary 1.1 ("coverage throttling")
+Because GRPO's push is **multiplied by `p_θ(x)`**:
+- On a prompt the base **almost never solves** (`p_θ0(x) ≈ 0`) → push ≈ 0 × direction = **≈ 0**.
+  GRPO **cannot learn the prompts the model is currently failing** — the exact prompts you'd most
+  want to fix. It only sharpens what the model already gets right.
+- **RFT** replays a **fixed bank** of verified-correct answers over multiple epochs, so it delivers
+  the improvement gradient **regardless** of current success mass — including for hard prompts.
+- Prediction: **GRPO pass@1 ≈ base** (stuck), **RFT acquires broadly** (improves across the board).
+
+"Coverage throttling" = the update is throttled (choked) in proportion to how little coverage the
+model has on a prompt — precisely backwards from what you want.
+
+### The confirmation (numbers)
+- **"turnover-robust acquisition A"** = a robust measure of how many prompts genuinely moved from
+  failing→solving (robust to noisy prompts that flip by luck — "turnover"). GRPO **A=0.010** (net
+  pass@1 +0.001) vs RFT **A=0.132** (net +0.126). RFT acquires ~13× more.
+- **Distributionally (Fig. 4):** GRPO leaves the per-prompt reliability histogram **identical** to
+  base — **79%** of prompts stay in the "almost never solved" pile (estimated success `p̂ < 0.1`)
+  — while **RFT rescues about a third** of them. `p̂` = the empirical (measured) per-prompt
+  success rate.
+
+### The honesty caveat (Scope) — important
+The authors explicitly **do not overclaim**. Eq.(1) is exact only for *current-policy* expectations
+(sampling from the model right now). Real GRPO/RFT differ from the clean identity because of:
+- a **stale multi-epoch bank** (RFT replays old samples, not current-policy),
+- **clipped / group-normalised GRPO** (real GRPO isn't the raw policy gradient),
+- **cross-prompt reweighting** (aggregating across prompts shifts the direction).
+
+So they claim **only** the identity + the coverage-throttling *mechanism* — **not** that "every
+RFT–GRPO gap in the wild is just this scalar." That restraint is the same honesty running through
+the project: prove the mechanism, don't inflate it. Connects to [[rl-routing-vs-competence]] (RL
+sharpens what's already there rather than acquiring new mass) and the broader
+[[rl-award-paper-master-plan]] theory.
