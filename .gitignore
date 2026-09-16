@@ -39,3 +39,5 @@ zero_pp_rank_*
 checkpoints_pulled/
 runs_pulled/
 DELIVERABLES/harvest_2102/
+.DS_Store
+*.blg

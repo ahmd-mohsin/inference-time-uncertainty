@@ -1,0 +1,196 @@
+\section*{Proposed Method: Reliability via Verified Preference (RVP)}
+
+The theory isolates a single actionable lever. On-policy outcome RL cannot reach
+prompts the model does not already solve (Cor.~1.1); positive-only verified replay
+is mode-covering and does not widen the correct-vs-incorrect margin (Prop.~1); and
+no ceiling forbids an accuracy-directed objective from exceeding RFT (Thm.~3).
+Proposition~2 then identifies the exact quantity to optimise: on covered prompts,
+single-attempt reliability $p_\theta(x)=\sigma(m_\theta(x)+c(x))$ is strictly
+increasing in the logit margin $m_\theta(x)=\log\pi_\theta(y^{+}\!\mid x)-
+\log\pi_\theta(y^{-}\!\mid x)$. \textbf{Reliability via Verified Preference (RVP)}
+is the method that operationalises this: a \emph{decoupled preference objective}
+trained on the model's own verified-correct/verified-incorrect self-samples that
+raises $m_\theta$ by \emph{suppressing} the verified-incorrect mode, reallocating
+probability mass $\mathcal{I}\!\to\!\mathcal{C}$ on prompts the model can already
+reach. RVP does not try to acquire new coverage---RFT already maximises that---it
+converts reachable solutions into \emph{selected} ones.
+
+\subsection*{4.1 Pipeline}
+
+RVP is a third training stage applied \emph{after} decoupled verified replay
+(Fig.~\ref{fig:pipeline}). Stage~1 (RFT) fixes coverage: it fine-tunes the base
+model on a bank of verified-correct solutions, pushing $\mathrm{cov}_k$ high while
+leaving the reliability gap open (Motivation \S2). Stage~2 (RVP) fixes selection:
+from the frozen RFT checkpoint we sample, verify, and build a preference bank of
+$(y^{+},y^{-})$ pairs, then optimise the decoupled preference loss below. Both
+stages share the same design principle---\emph{decouple the training signal from
+the current policy's success mass}---which is precisely why RFT beats GRPO on
+coverage (Cor.~1.1) and, we argue, why RVP beats RFT on selection: the contrastive
+gradient is applied broadly across all covered prompts rather than being throttled
+to the ones the live policy happens to sample correctly.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 9mm,
+  box/.style={draw, rounded corners, align=center, minimum height=10mm,
+              inner sep=3pt, font=\small, text width=22mm},
+  data/.style={draw, align=center, font=\footnotesize, text width=24mm,
+               minimum height=9mm, fill=gray!8},
+  ar/.style={-latex, thick},
+]
+\node[box, fill=blue!8]  (base) {Base model $\pi_{\theta_0}$};
+\node[box, fill=green!12, right=of base] (rft) {\textbf{Stage 1: RFT}\\ verified replay\\ (coverage)};
+\node[data, right=of rft] (bank) {sample $K$, verify $V$\\ $y^{+}\!\in\!\mathcal{C},\,y^{-}\!\in\!\mathcal{I}$\\ preference bank};
+\node[box, fill=orange!18, right=of bank] (rvp) {\textbf{Stage 2: RVP}\\ decoupled\\ verified preference\\ (selection)};
+\node[box, fill=blue!8, right=of rvp] (dep) {Deployed\\ policy $\pi_\theta$\\ ($\uparrow\text{pass}@1$)};
+\draw[ar] (base) -- (rft);
+\draw[ar] (rft) -- (bank);
+\draw[ar] (bank) -- (rvp);
+\draw[ar] (rvp) -- (dep);
+\draw[ar, dashed] (rft.south) to[out=-90,in=-90] node[below, font=\scriptsize]
+  {frozen reference $\pi_{\text{ref}}$} (rvp.south);
+\end{tikzpicture}
+\caption{RVP pipeline. Stage~1 (RFT) maximises coverage; Stage~2 (RVP) trains a
+decoupled preference objective on the RFT model's own verified $(y^{+},y^{-})$
+pairs, using the frozen RFT checkpoint as the reference. RVP targets selection
+(mass concentration), the axis Stage~1 leaves open.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection*{4.2 Preference-bank construction}
+
+Let $\pi_{\text{ref}}=\pi_{\theta_{\text{RFT}}}$ be the frozen RFT checkpoint. For
+each training prompt $x$ in a held-in set (disjoint from all evaluation prompts),
+we draw $K$ completions $y_1,\dots,y_K\sim\pi_{\text{ref}}(\cdot\mid x)$ at
+temperature $T$ and label each with the verifier $V$. A prompt is \emph{usable}
+iff it yields at least one verified-correct and one verified-incorrect completion,
+i.e.\ $\mathcal{C}(x)\neq\varnothing$ and $\mathcal{I}(x)\neq\varnothing$; this
+restricts RVP to exactly the covered-but-unreliable prompts where
+$0<p_{\text{ref}}(x)<1$---the region Prop.~2 predicts is movable and where the
+reliability gap lives. From each usable prompt we form preference pairs
+$(x,y^{+},y^{-})$ with $y^{+}\!\in\!\mathcal{C}(x)$, $y^{-}\!\in\!\mathcal{I}(x)$,
+capping pairs per prompt to keep the bank prompt-balanced (so no easy prompt
+dominates the gradient, mirroring RFT's prompt-balancing). The bank
+$\mathcal{D}_{\text{pref}}$ is built \emph{once} and reused for multiple epochs:
+the signal is \emph{decoupled} from the evolving policy.
+
+\subsection*{4.3 The RVP objective}
+
+RVP minimises a direct preference objective~\cite{rafailov2023dpo} on
+$\mathcal{D}_{\text{pref}}$ with the frozen RFT model as reference:
+\begin{equation}
+\mathcal{L}_{\text{RVP}}(\theta)=
+-\,\mathbb{E}_{(x,y^{+},y^{-})\sim\mathcal{D}_{\text{pref}}}
+\Big[\log\sigma\!\Big(\beta\,\big(\Delta_\theta(x,y^{+})-\Delta_\theta(x,y^{-})\big)\Big)\Big],
+\quad
+\Delta_\theta(x,y)=\log\frac{\pi_\theta(y\mid x)}{\pi_{\text{ref}}(y\mid x)} ,
+\label{eq:rvp}
+\end{equation}
+where $\beta>0$ is the preference temperature and $\sigma$ the logistic function.
+The bracketed term is the model's \emph{implicit reward margin}
+$\hat r_\theta(x)=\beta\,(\Delta_\theta(x,y^{+})-\Delta_\theta(x,y^{-}))$, which is
+$\beta$ times the change in the logit margin $m_\theta(x)$ relative to the RFT
+reference. Minimising Eq.~\eqref{eq:rvp} therefore \emph{directly maximises the
+margin} Prop.~2 shows governs single-attempt reliability.
+
+\paragraph{Gradient (why the incorrect mode is suppressed).}
+Writing $u=\beta(\Delta_\theta(x,y^{+})-\Delta_\theta(x,y^{-}))$, the gradient is
+\begin{equation}
+\nabla_\theta\mathcal{L}_{\text{RVP}}
+=-\,\beta\,\mathbb{E}\Big[\underbrace{\sigma(-u)}_{\text{weight}}
+\big(\nabla_\theta\log\pi_\theta(y^{+}\!\mid x)
+-\nabla_\theta\log\pi_\theta(y^{-}\!\mid x)\big)\Big].
+\label{eq:grad}
+\end{equation}
+Two properties follow, both of which distinguish RVP from RFT. (i) The update
+contains an explicit \emph{negative} term $-\nabla_\theta\log\pi_\theta(y^{-}\mid x)$
+that pushes probability \emph{down} on the verified-incorrect completion---the term
+positive-only cross-entropy structurally lacks (Prop.~1). (ii) The per-pair weight
+$\sigma(-u)$ is largest exactly when the current model still \emph{under}-prefers
+the correct solution ($u$ small or negative), so gradient budget concentrates on
+the prompts whose margin most needs widening, and vanishes once a pair is already
+well-ordered---a self-limiting, mass-conserving reallocation rather than unbounded
+sharpening. The predicted signature is: margin $\uparrow$ via $\log\pi(y^{-})$
+$\downarrow$ with $\log\pi(y^{+})$ roughly flat, $\text{pass}@1$ $\uparrow$ at
+coverage held fixed (verified in the Experiments).
+
+\paragraph{Proposition 3 (RVP ascends the reliability-governing margin).}
+Let $m_\theta(x)=\log\pi_\theta(y^{+}\!\mid x)-\log\pi_\theta(y^{-}\!\mid x)$ be the
+logit margin of a training pair. A gradient step $\theta'=\theta-\eta\nabla_\theta
+\mathcal{L}_{\text{RVP}}$ with step size $\eta>0$ changes that pair's margin, to
+first order, by
+\[
+\Delta m(x)=\eta\,\beta\,\sigma(-u)\,\big\|\nabla_\theta\log\pi_\theta(y^{+}\!\mid x)
+-\nabla_\theta\log\pi_\theta(y^{-}\!\mid x)\big\|^{2}+O(\eta^{2})\ \ge\ 0,
+\]
+since $\beta,\sigma(-u)>0$. Thus RVP \emph{monotonically increases} the margin on
+every not-yet-well-ordered pair (strictly, unless the two log-prob gradients
+coincide), with the largest increase on the pairs the current policy most
+mis-ranks. Composing with Proposition~2 (Theory \S3.5), where
+$p_\theta(x)=\sigma(m_\theta(x)+c(x))$ is strictly increasing in $m_\theta$, RVP
+raises single-attempt reliability $p_\theta(x)$ on covered prompts \emph{by
+construction}, at fixed support (coverage). This is the formal chain
+Eq.~\eqref{eq:grad} $\Rightarrow$ $\uparrow m_\theta$ $\Rightarrow$
+$\uparrow\text{pass}@1$ that the mechanism experiments (\S5.7) then confirm
+empirically.
+
+\subsection*{4.4 Algorithm and budget accounting}
+
+\begin{quote}
+\framebox{\parbox{0.93\textwidth}{
+\small
+\textbf{Algorithm 1: RVP} \\[2pt]
+\textbf{Require:} base $\pi_{\theta_0}$; verifier $V$; held-in prompts
+$\mathcal{X}$; samples $K$; temperature $T$; preference temperature $\beta$;
+budget $S$ steps. \\[3pt]
+1.\ \textbf{Stage 1 (RFT).} Sample verified-correct solutions from
+$\pi_{\theta_0}$ on $\mathcal{X}$; fine-tune by cross-entropy to obtain
+$\pi_{\text{ref}}=\pi_{\theta_{\text{RFT}}}$ (fixes coverage). \\[2pt]
+2.\ \textbf{Sample \& verify.} For each $x\in\mathcal{X}$, draw
+$y_{1:K}\sim\pi_{\text{ref}}(\cdot\mid x)$ at $T$; label with $V$; keep $x$ if it
+has $\geq 1$ correct and $\geq 1$ incorrect. \\[2pt]
+3.\ \textbf{Build pairs.} Form prompt-balanced
+$\mathcal{D}_{\text{pref}}=\{(x,y^{+},y^{-})\}$ with
+$y^{+}\!\in\!\mathcal{C}(x),\,y^{-}\!\in\!\mathcal{I}(x)$. \\[2pt]
+4.\ \textbf{Stage 2 (RVP).} Initialise $\theta\!\leftarrow\!\theta_{\text{RFT}}$;
+for $S$ steps minimise $\mathcal{L}_{\text{RVP}}$ (Eq.~\ref{eq:rvp}) over
+$\mathcal{D}_{\text{pref}}$ with frozen $\pi_{\text{ref}}$ (fixes selection). \\[2pt]
+\textbf{Return} $\pi_\theta$.
+}}
+\end{quote}
+
+\noindent\textbf{Matched-budget comparison.} So that any gain is attributable to
+the \emph{verified preference signal} and not to extra compute, RVP is compared to
+baselines that receive the same additional post-RFT budget $S$: (a) \emph{xrft}, a
+further round of positive-only verified replay on fresh self-samples (matched
+steps, positives only); and (b) a \emph{shuffled-pair} control that runs
+Eq.~\eqref{eq:rvp} verbatim but with the correct/incorrect labels assigned at
+random (same objective, same exposure, verification signal destroyed). RVP,
+$\pi_{\text{ref}}$ (RFT), xrft, and the shuffled control all branch from the
+\emph{same} RFT checkpoint with the same step budget. Preference pairs come only
+from held-in prompts; all evaluation is on disjoint out-of-distribution problems,
+so the bank carries no test information.
+
+\subsection*{4.5 Relation to prior preference and self-training methods}
+
+RVP reuses a standard preference objective~\cite{rafailov2023dpo} and, like
+rejection sampling / STaR / RAFT~\cite{zelikman2022star,dong2023raft} and
+verifier-guided methods such as V-STaR and self-rewarding
+models~\cite{hosseini2024vstar,yuan2024selfreward}, learns from
+automatically-verified samples. Our contribution is not the objective but its
+\emph{placement and purpose}, which follow directly from the theory:
+(i) the \textbf{diagnosis} that the residual after decoupled verified replay is a
+\emph{selection}/reliability gap (coverage $\gg\text{pass}@1$, Motivation \S2), not
+a coverage gap; (ii) framing decoupled verified \emph{preference} as the lever for
+that specific residual, applied \emph{on top of} the RFT coverage ceiling rather
+than as a general alignment step; (iii) the mechanistic prediction, from
+Eq.~\eqref{eq:grad} and Prop.~2, that the gain arises by \emph{suppressing
+verified-incorrect modes} to widen the margin---distinguishing RVP from
+positive-only self-training, which cannot; and (iv) the matched-budget label and
+positive-only controls (\S4.4) that isolate the verified sign as the causal
+ingredient. Prior verifier-preference work targets human-preference alignment or
+first-pass bootstrapping; none is posed against, or evaluated on, the post-replay
+single-attempt reliability residual that Thm.~3 shows is reachable. The empirical
+validation of this method---across model sizes, families, domains, and the three
+controls---is presented in the Experiments section.

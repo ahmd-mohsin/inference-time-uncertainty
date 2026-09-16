@@ -316,6 +316,15 @@ not reported as performance: (i)~\emph{near-ceiling} bases, where coverage$\appr
 settings such as math-specialised checkpoints already tuned to their ceiling, where
 the residual error is a capability limit rather than a selection problem. This is a
 statement of applicability, not a defect: RVP targets reliability where reliability
-is recoverable. Extending the method \emph{into} the capability-limited regime
-(e.g.\ coupling selection with new coverage) and external code benchmarks
-(MBPP/BigCodeBench) are future work.
+is recoverable. \emph{Bigger-model math is an open case, not a settled boundary:}
+9B/14B bases retain a large coverage$-$pass@1 gap on hard math (e.g.\ Qwen2.5-14B on
+AMC: coverage $.65$ vs.\ pass@1 $.29$), so the headroom exists --- but our
+default two-stage recipe did \emph{not} capture it: RFT on a generic MATH-train bank
+degraded these already-strong bases (RFT $<$ base) and \emph{collapsed} coverage
+($.65\!\to\!.53\!\to\!.40$ through RFT then RVP), so preference training built on a
+damaged, off-distribution model. Capturing bigger-model coverage therefore requires
+a coverage-preserving variant --- RVP directly from the base (skip the damaging RFT),
+in-distribution preference pairs, and gentler DPO (higher $\beta$/fewer steps) so
+mass concentrates \emph{within} the reachable set instead of narrowing it --- which
+we are running. Extending the method to external code benchmarks (MBPP/BigCodeBench)
+is likewise future work.
