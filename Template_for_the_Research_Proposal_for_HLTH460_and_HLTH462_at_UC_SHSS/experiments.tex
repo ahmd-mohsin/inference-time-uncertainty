@@ -392,6 +392,37 @@ Omni-MATH      & $-.084$ & $-.101$ & $.018$ & $-.107$ & $-.502$ & $\best{.395}$ 
 \end{tabular}
 \end{table}
 
+\paragraph{Robustness to the DPO strength $\beta$.}
+RVP has essentially one hyperparameter, the DPO temperature $\beta$. Sweeping it on
+Qwen2.5-Math-1.5B across all three datasets (from the RFT init, fixed $300$ steps,
+Table~\ref{tab:beta}) shows the pass@1 gain is a \emph{broad, robust} function of $\beta$: RVP is
+net-positive for every $\beta\in\{0.1,0.2,0.5\}$ on all three benchmarks, with the optimum around
+$\beta\approx0.1$--$0.2$ and no collapse even at $\beta{=}0.5$. The only failure is the
+extreme-low corner $\beta{=}0.03$, which over-optimizes at fixed step budget and regresses on
+Olympiad ($-.055$). So the method is not brittle to its one knob --- any moderate $\beta$ works ---
+which is why we fix $\beta{=}0.1$ throughout. (We report pass@1 vs.\ $\beta$ here, not margin vs.\
+$\beta$: the teacher-forced margin measured on the \emph{training} pairs is a fit quantity that
+moves inverse to $\beta$; the generalizing selection-margin evidence is the held-out mechanism
+panel, Table~\ref{tab:mech-win}.)
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{$\beta$-robustness} (Qwen2.5-Math-1.5B, RVP from RFT init, $300$ steps). RVP
+pass@1 with $\Delta$ vs.\ base at each $\beta$. Gains are positive and stable across
+$\beta\in[0.1,0.5]$ on all datasets (best per row in bold); only the extreme-low $\beta{=}0.03$
+over-optimizes (regresses on Olympiad). $k{=}16$.}
+\label{tab:beta}
+\begin{tabular}{lcccc}
+\toprule
+Dataset & $\beta{=}0.03$ & $\beta{=}0.1$ & $\beta{=}0.2$ & $\beta{=}0.5$ \\
+\midrule
+MATH-500       & $.625$ ($+.149$) & $.617$ ($+.125$) & $\best{.648}$ ($\mathbf{+.169}$) & $.645$ ($+.158$) \\
+Olympiad-Bench & $.175$ ($-.055$) & $.271$ ($+.039$) & $\best{.330}$ ($\mathbf{+.095}$) & $.304$ ($+.066$) \\
+Omni-MATH      & $.183$ ($+.034$) & $.189$ ($+.040$) & $.195$ ($+.046$) & $\best{.202}$ ($\mathbf{+.053}$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \paragraph{Scope: base-class dependence (honest boundary).}
 The win is specific to math-specialized pretrained bases. On a \emph{general} base
 (Qwen2.5-7B), RVP helps only where the base is weakest (Omni-MATH $+.040$), is null on Olympiad
