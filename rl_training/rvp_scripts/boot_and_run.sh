@@ -18,7 +18,7 @@ if [ -n "$CELL_BASE" ]; then
     NSEED="${NSEED:-3}" ACC_CFG="${ACC_CFG:-rl_training/accelerate_zero3_offload.yaml}" \
     DPO_MAXLEN="${DPO_MAXLEN:-512}" CONSOLIDATE=0 \
     SKIP_RFT="${SKIP_RFT:-0}" DPO_BETA="${DPO_BETA:-0.1}" DPO_STEPS="${DPO_STEPS:-300}" \
-    NEVAL="${NEVAL:-400}" EVAL_CONC="${EVAL_CONC:-2}" MAXLEN="${MAXLEN:-3072}" \
+    NEVAL="${NEVAL:-400}" EVAL_CONC="${EVAL_CONC:-1}" MAXLEN="${MAXLEN:-3072}" \
     GEN_GPU_MEM="${GEN_GPU_MEM:-0.55}" EVAL_GPU_MEM="${EVAL_GPU_MEM:-0.45}" VLLM_TP="${VLLM_TP:-1}" \
     bash rl_training/rvp_scripts/reset_and_run.sh >> $HOME/gu/logs/cell_${CELL_TAG}.log 2>&1
 else

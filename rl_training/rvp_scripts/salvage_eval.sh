@@ -31,7 +31,7 @@ for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/nu
 # eval base/rft/xrft + rvp seeds across GPUs
 declare -A E=( [base]=$B [rft]=$RFT [xrft]=$V/xrft/merged_full )
 for s in 1 2 3 4 5; do [ -f $V/rvp_s$s/config.json ] && E[rvp_s$s]=$V/rvp_s$s; done
-CONC=${EVAL_CONC:-2}; g=0; run=0
+CONC=${EVAL_CONC:-1}; g=0; run=0
 for tag in "${!E[@]}"; do
   [ "$tag" = base ] || [ -e "${E[$tag]}/config.json" ] || continue
   CUDA_VISIBLE_DEVICES=$((g%8)) GEN_GPU_MEM=${EVAL_GPU_MEM:-0.45} setsid nohup python3 -m rl_training.math_rvp --mode eval --model "${E[$tag]}" --dataset $EVAL --split test --n $NEVAL --k $KE --out $V/ev_$tag.json >$L/${TAG}_salvage_ev_$tag.log 2>&1 &
