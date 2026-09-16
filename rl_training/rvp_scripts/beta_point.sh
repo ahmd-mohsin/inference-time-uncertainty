@@ -20,7 +20,7 @@ echo "pairs=$(wc -l <$V/pairs.jsonl)" >>$R
 for p in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $p 2>/dev/null; done; sleep 5
 # DPO at this beta (full-param, 8-GPU sharded) FROM the RFT init
 [ -f $V/rvp/config.json ] || CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 DPO_FULL=1 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 --main_process_port $((29500+RANDOM%2000)) \
-  -m rl_training.dpo_train --full --model $INIT --data $V/pairs.jsonl --out $V/rvp --seed 1 --beta $BETA --max-steps ${DPO_STEPS:-300} --bsz 1 >$V/dpo.log 2>&1
+  -m rl_training.dpo_train --full --model $INIT --data $V/pairs.jsonl --out $V/rvp --seed ${SEED:-1} --beta $BETA --max-steps ${DPO_STEPS:-300} --bsz 1 >$V/dpo.log 2>&1
 for p in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null); do kill -9 $p 2>/dev/null; done; sleep 8
 # eval base + rvp, and teacher-forced margin of rvp
 [ -s $V/ev_base.json ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=0.5 python3 -m rl_training.math_rvp --mode eval --model $BASE --dataset $EVAL --split test --n $NEVAL --k 16 --out $V/ev_base.json >$V/ev_base.log 2>&1
