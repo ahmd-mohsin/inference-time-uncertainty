@@ -135,3 +135,52 @@ reliability, GRPO doesn't. **Why does *replaying* a verified success teach the m
 that *rewarding* the very same success does not?** That "first motivating puzzle" is what the
 theory section goes on to answer (the gradient-identity results: RL's gradient can be near-zero
 exactly where it should be learning, while replay's cross-entropy gradient is not).
+
+---
+
+## PASTE (Fact 2 — the coverage−pass@1 gap, "reachability is not reliability")
+
+> The second, and central, motivating fact is that even the winning recipe leaves most of the achievable reliability on the table. After RFT the model can almost always produce a correct solution within k samples (high coverage), yet a single sample is correct far less often (low pass@1). Table 2 and Fig. 2 report this coverage−pass@1 gap across nine cells spanning three model families (Qwen-Coder, Qwen, deepseek-coder), sizes from 1.3B to 7B, and two domains. The gap is large and systematic (often 0.20–0.50), and it tracks the reliability headroom: it is widest where the base model is weak and shrinks toward zero only when the model is already near-ceiling (GSM8K-3B, base 0.83). In other words, the correct solution is reachable but the post-RFT model still spreads probability mass across incorrect completions, so it will not be selected on the single attempt that matters. Reachability is not reliability.
+>
+> Table 2: The reliability gap after decoupled verified replay: coverage (pass@k, k=8–16) greatly exceeds single-attempt reliability (pass@1) for the same RFT checkpoint, across families, sizes, and domains. The gap tracks headroom—large for weak/hard cells, near zero only at ceiling. This residual is the opportunity our method targets.
+
+## EXPLANATION
+
+**One-line takeaway:** even after the *winning* method (RFT), the model **knows** the right answer
+(it produces it within a few tries) but **won't say it first** (one shot is often wrong). That
+leftover gap — "reachable but not reliable" — is exactly what this paper's method goes after.
+
+### The core idea in everyday terms
+Imagine a student who, given 8 attempts, almost always gets the problem right somewhere in those
+8 — but if you demand a single answer, they're right less than half the time. They *have* the
+knowledge; they just don't reliably put it first. That's the post-RFT model.
+
+- **coverage (pass@k)** = "within `k` tries, at least one correct" — here **high**.
+- **pass@1** = "the single answer is correct" — here **much lower**.
+- **coverage − pass@1 gap** = the difference between the two. A big gap means: the correct
+  solution is *in there* (reachable) but the model spreads its probability across many wrong
+  completions too, so a single draw often lands on a wrong one.
+
+### The evidence (what Table 2 / Fig. 2 show)
+- **9 cells** = every combination of {3 model families: Qwen-Coder, Qwen, deepseek-coder} ×
+  {sizes 1.3B → 7B} × {2 domains: code, math}. "Cell" = one such combination.
+- **Gap is large and systematic: often 0.20–0.50.** I.e. pass@1 is 20–50 percentage points below
+  coverage — not a fluke, it shows up everywhere.
+- **"It tracks the reliability headroom"** = the gap is *biggest* where the base model is *weak*
+  (lots of room to improve) and *shrinks to ~zero* only when the model is already almost perfect
+  — their example **GSM8K-3B, base 0.83**: base already gets 83% single-shot right, so there's
+  little headroom and almost no gap left to close.
+
+### Why this is the "central" fact (why the paragraph exists)
+It reframes the problem. The bottleneck after RFT is **not** "the model can't solve it"
+(it can — coverage is high). The bottleneck is **selection**: the model doesn't concentrate its
+probability on the correct solution, so the one attempt that actually gets deployed is often
+wrong. **"Reachability is not reliability."**
+
+This is the precise opening for the paper's method (RVP): don't try to *acquire* new solutions
+(RFT already made them reachable) — instead **sharpen selection** so the reachable-correct answer
+becomes the *single most likely* answer, converting that 0.20–0.50 headroom into pass@1. And note
+the honest boundary already baked in: where there's **no gap** (near-ceiling cells like
+GSM8K-3B), there's nothing to convert — which is exactly why the method's wins are headroom-gated
+(and why our bigger-model matrix deliberately targets medium-difficulty cells that still have this
+gap). This connects straight to the [[rl-focus-moderate-difficulty-benchmarks]] framing.
