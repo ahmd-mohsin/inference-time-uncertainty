@@ -5428,3 +5428,38 @@ Qwen2.5-Math-1.5B (math-specialized), single-GPU, banks healthy (~1300, not star
   OlympiadBench   .391   .400   .398         --     .395   ~0     NULL
 Both NULL despite a coverage-pass@1 gap (AMC cov .85 vs .51; Olymp .645 vs .39). Interpretation: on a MATH-SPECIALIZED base the per-attempt reliability is already near the model's capability ceiling — RFT barely moves it (+.01) and self-preference (RVP) cannot reallocate mass it has already concentrated; the residual gap is a CAPABILITY limit, not an addressable SELECTION problem. Matches MATH-500/Math-1.5B null.
 => RVP IS DOMAIN-GATED. Strong wins in the CODE/reasoning-gap regime (CompDAG c15hard +.242, dense comp grid 1.5B-7B, RVP-from-base ablation shows RFT-stage necessary); MATH is modest (GSM8K-1.5B +.037) to BOUNDARY (MATH-500/AMC/Olympiad null on math-tuned bases). Honest paper framing: report math as the headroom/capability boundary, not a win. Corollary: recovering the dead 7B-math-AMC nodes (B/C) is NOT worth it — Qwen-Math-7B is even more tuned -> higher base -> null. Campaign conclusion: all clean-landable new cells have been harvested; the code-domain wins + mechanism + theory + ablation are the deliverable.
+
+---
+## Addendum (2026-09-16): Coverage-preserving RVP-from-base on bigger-model hard math — TESTED, NEGATIVE
+
+Directive: test whether a coverage-preserving variant (SKIP_RFT=1 RVP-directly-from-base,
+gentle DPO β=0.3 / 150 steps, NSEED=1, in-distribution pairs) captures the bigger-model
+coverage−pass@1 gap without collapsing coverage. Result: it does NOT. RVP-from-base
+degrades single-attempt pass@1 on strong/big bases, sometimes catastrophically.
+
+| Cell (SKIP_RFT, β=.3, 150 steps) | base p1 / cov | RVP-from-base p1 / cov | Δpass@1 | note |
+|---|---|---|---|---|
+| Yi-1.5-9B / Olympiad-Bench (n=150) | .135 / .407 | .080 / .367 | **−.055** | coverage also dropped |
+| Yi-1.5-9B / MATH-500 (n=200)       | .454 / .750 | .194 / .700 | **−.260** | coverage ~held, pass@1 collapsed |
+| Qwen2.5-14B / MATH-500 (n=200)     | .716 / .865 | — (DPO crashed) | — | near-ceiling; pairs-gen produced too few negatives |
+
+Control that localizes the cause: on 9B/MATH-500 the positive-only **xrft** arm
+(matched-budget LoRA on the base's own correct samples) = **.453 / .755 ≈ base** — it
+does NOT hurt. So the pass@1 collapse is driven by DPO's **negative** gradient, not by
+touching the model or by the data: on a strong base the model's own y+/y− pairs are
+low-margin, and suppressing logπ(y−) pushes probability mass off the already-reasonable
+base distribution, wrecking single-attempt accuracy while coverage@k survives.
+
+Interpretation (honest): the bigger-model coverage−pass@1 gap is real, but RVP's
+preference mechanism cannot repair it directly from a strong general base. RVP works when
+an RFT coverage stage first *creates* an addressable, high-margin gap (the code/CompDAG
+regime, where RVP wins +.08..+.37). Direct preference training on a strong base's own
+low-margin pairs is off-distribution and collapses pass@1. This confirms — by
+construction and now by direct test of the proposed fix — that RVP is a method for the
+RFT-created addressable-gap regime, not a universal repair for strong-base hard-math
+reliability.
+
+Infra notes: C-new cluster (mi-021e6f667cd72f6f1) died mid-run — lost the two highest-headroom
+bigger-model cells (Qwen-14B/AMC, Qwen-14B/Olympiad) and Yi-9B/AMC before eval. Fixed a
+real bug: math_rvp.verify() had no timeout around sympy answers_match → Olympiad eval hung
+forever (SIGALRM 2s guard added, committed).
