@@ -79,3 +79,59 @@ instead of the flattering many-tries number (coverage). Doing that reveals **thr
 the next section) that motivate the paper's whole theory and method (RVP). In one line: *the
 field has been grading on coverage, which hides that single-attempt reliability barely moved —
 and closing that specific gap is what this paper is about.*
+
+---
+
+## PASTE (Fact 1 — GRPO ≈ null, RFT wins)
+
+> We trained matched base / GRPO / RFT checkpoints (and VSF, a verified-replay floor added to the GRPO loss as a causal probe) from identical initialisations and evaluated pass@1 with an unbiased per-attempt estimator (k samples per problem, temperature 0.8; the same held-out problems for every arm). Across domains and model sizes the ranking is stark and repeatable (Table 1, Fig. 1): GRPO moves single-attempt reliability almost nothing off the base model (+0.001 on compositional code, +0.02 on GSM8K, +0.002 on the weak deepseek model), whereas decoupled verified replay (RFT) delivers a large, genuine acquisition gain (2.4× base on the code cell). The near-null of outcome RL is not a tuning artefact—it holds under doubled group size and across three independent recipients—and it is the first motivating puzzle: why does replaying verified successes acquire reliability that rewarding the very same successes on-policy does not?
+
+## EXPLANATION
+
+**One-line takeaway:** in a fair head-to-head, **on-policy RL (GRPO) barely improves the
+one-shot answer, while copying verified-correct solutions (RFT) improves it a lot** — and the
+paper's whole puzzle is *why*.
+
+### The setup, decoded
+- **"matched checkpoints from identical initialisations"** = they took one starting model and
+  made several copies, then trained each copy a different way, so any difference is caused by the
+  *method*, not by luck in where they started. Fair fight.
+- The arms (the different training methods being compared):
+  - **base** = the untrained starting model (the control).
+  - **GRPO** = on-policy outcome RL: let the model attempt problems live and reward the attempts
+    the verifier marks correct.
+  - **RFT** = decoupled verified replay: collect a pile of the model's *already-correct* answers,
+    then plain supervised-train on them (copy them).
+  - **VSF** = "verified-replay floor" — a diagnostic arm: they bolt the replay signal onto the
+    GRPO loss to test *causally* whether adding replay is what helps. It's a probe, not a product.
+- **"unbiased per-attempt estimator (k samples per problem, temperature 0.8)"** = how they
+  measure pass@1 honestly. For each problem they draw `k` sample answers at sampling temperature
+  0.8 (0.8 = moderately random, so samples vary), and estimate the true single-attempt success
+  probability from those `k` draws without bias. `k` here is just for *measuring* reliability
+  accurately — not giving the model `k` tries to win (that would be coverage, the flattering
+  number from the last paragraph).
+- **"the same held-out problems for every arm"** = all methods graded on the identical unseen
+  test set → apples-to-apples.
+
+### The result (the numbers)
+- **GRPO ≈ does nothing to pass@1:** +0.001 on compositional code, +0.02 on GSM8K, +0.002 on
+  the weak DeepSeek model. Those are essentially zero — rewarding correct rollouts on-policy did
+  **not** make the single shot more reliable.
+- **RFT wins big:** "2.4× base on the code cell" = single-attempt success rate is **2.4 times**
+  the base model's. Copying verified-correct solutions genuinely *acquired* reliability.
+
+### "Not a tuning artefact" — why they trust it
+Two robustness checks so nobody can dismiss the GRPO null as "you just tuned it badly":
+- **"holds under doubled group size"** — GRPO compares a *group* of sampled answers per problem
+  to judge which are better; they doubled that group size (a key GRPO knob) and GRPO still did
+  nothing. So it's not an under-powered-group issue.
+- **"across three independent recipients"** — they saw the same null on three different base
+  models. So it's not one quirky model.
+
+### The puzzle this sets up (why the paragraph exists)
+Here's the strange part: **GRPO and RFT learn from the *same* correct solutions.** GRPO rewards
+them on-policy; RFT replays them by imitation. Same successes, opposite outcomes — RFT acquires
+reliability, GRPO doesn't. **Why does *replaying* a verified success teach the model something
+that *rewarding* the very same success does not?** That "first motivating puzzle" is what the
+theory section goes on to answer (the gradient-identity results: RL's gradient can be near-zero
+exactly where it should be learning, while replay's cross-entropy gradient is not).
