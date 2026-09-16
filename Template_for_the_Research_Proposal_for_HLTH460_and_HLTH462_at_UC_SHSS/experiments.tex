@@ -316,15 +316,44 @@ not reported as performance: (i)~\emph{near-ceiling} bases, where coverage$\appr
 settings such as math-specialised checkpoints already tuned to their ceiling, where
 the residual error is a capability limit rather than a selection problem. This is a
 statement of applicability, not a defect: RVP targets reliability where reliability
-is recoverable. \emph{Bigger-model math is an open case, not a settled boundary:}
-9B/14B bases retain a large coverage$-$pass@1 gap on hard math (e.g.\ Qwen2.5-14B on
-AMC: coverage $.65$ vs.\ pass@1 $.29$), so the headroom exists --- but our
-default two-stage recipe did \emph{not} capture it: RFT on a generic MATH-train bank
-degraded these already-strong bases (RFT $<$ base) and \emph{collapsed} coverage
-($.65\!\to\!.53\!\to\!.40$ through RFT then RVP), so preference training built on a
-damaged, off-distribution model. Capturing bigger-model coverage therefore requires
-a coverage-preserving variant --- RVP directly from the base (skip the damaging RFT),
-in-distribution preference pairs, and gentler DPO (higher $\beta$/fewer steps) so
-mass concentrates \emph{within} the reachable set instead of narrowing it --- which
-we are running. Extending the method to external code benchmarks (MBPP/BigCodeBench)
-is likewise future work.
+is recoverable.
+
+\paragraph{Bigger-model hard math: the coverage-preserving fix, tested.}
+9B/14B bases do retain a coverage$-$pass@1 gap on hard math, so the headroom exists;
+the question is whether \emph{RVP's preference mechanism} can capture it. Our default
+two-stage recipe cannot: RFT on a generic MATH-train bank degrades these already-strong
+bases (RFT $<$ base) and collapses coverage, so preference training is built on a damaged,
+off-distribution model. We therefore built and ran the natural coverage-preserving
+variant --- RVP \emph{directly} from the base (skip the damaging RFT), in-distribution
+preference pairs, and gentler DPO ($\beta{=}0.3$, $150$ steps) so mass concentrates
+\emph{within} the reachable set. It does \emph{not} work: on strong/big bases RVP-from-base
+\emph{degrades} single-attempt pass@1 (Table~\ref{tab:bigmath}), catastrophically on
+MATH-500 ($.454\!\to\!.194$). The matched-budget positive-only control (\emph{xrft}) stays
+at base ($.453$), which localizes the cause to DPO's \emph{negative} gradient: on a strong
+base the model's own $y^{+}/y^{-}$ pairs are low-margin, so suppressing $\log\pi(y^{-})$
+pushes mass off the already-reasonable base distribution --- collapsing pass@1 while
+coverage@k survives. This is the mirror image of the CompDAG regime: RVP helps precisely
+when an RFT coverage stage first \emph{creates} an addressable, high-margin gap, and hurts
+when asked to manufacture one from a strong base's own low-margin samples. It confirms, now
+by direct test of the proposed fix rather than by assumption, that RVP is a method for the
+RFT-created addressable-gap regime. Extending to external code benchmarks
+(MBPP/BigCodeBench) remains future work.
+
+\begin{table}[htbp]
+\centering
+\caption{Coverage-preserving RVP-from-base (SKIP-RFT, $\beta{=}0.3$, $150$ steps) on
+bigger-model hard math. RVP \emph{degrades} pass@1 on strong bases; the positive-only
+\emph{xrft} control stays at base, pinning the cause on the DPO negative gradient rather
+than on the data or on touching the model. (Two higher-headroom 14B cells---AMC and
+Olympiad---were lost to a cluster failure before eval.)}
+\label{tab:bigmath}
+\begin{tabular}{llcccc}
+\toprule
+Base & Eval & base $\text{p}@1$/cov & RVP $\text{p}@1$/cov & xrft $\text{p}@1$/cov & $\Delta_{\text{base}}$ \\
+\midrule
+Yi-1.5-9B & Olympiad-Bench & $.135/.407$ & $.080/.367$ & --- & $-.055$ \\
+Yi-1.5-9B & MATH-500       & $.454/.750$ & $.194/.700$ & $.453/.755$ & $-.260$ \\
+Qwen2.5-14B & MATH-500     & $.716/.865$ & \multicolumn{3}{l}{near-ceiling; RVP pairs-gen found too few negatives} \\
+\bottomrule
+\end{tabular}
+\end{table}
