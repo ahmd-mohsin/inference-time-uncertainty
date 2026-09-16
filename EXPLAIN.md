@@ -505,3 +505,72 @@ So "not distinct gradient families" doesn't mean "identical" — it means the ga
 RL and imitation optimize different things. It's a pure **coverage-weighting** artifact: GRPO's
 `p_θ(x)` multiplier chokes off exactly the prompts with the most headroom. That's the mechanism
 behind GRPO ≈ base and RFT acquiring broadly.
+
+---
+
+## PASTE (Theorem 2 + Prop 1 — positive-only replay is mode-covering; selection untouched)
+
+> Theorem 2 (support-boundedness, scoped). Under (A1), the verified-only cross-entropy objective contributes zero example-specific gradient on any prompt absent from the bank; any change there is transfer through shared parameters. (We state this as an identity about the example-specific term, not as an upper bound on out-of-distribution improvement: shared-parameter updates can move off-support predictions, so no generalisation ceiling is claimed.)
+> Proposition 1 (no margin control). The RFT gradient ∇_θ Σ_{y∈C(x)} log π_θ(y | x) contains no term that decreases log π_θ(y− | x) for a verified-incorrect y−; it therefore does not directly increase the margin m_θ(x). Positive-only imitation is mode-covering: it can raise the probability of correct completions without suppressing the incorrect ones the model also samples.
+> This is the mechanistic origin of the reliability gap (Motivation §2). On the same held-out verified pairs, RFT raises log π(y+) from −0.110 to −0.092 but raises log π(y−) almost identically (−0.139 → −0.119), leaving the margin flat (0.029 → 0.027); GRPO moves neither. Coverage rises, single-attempt selection does not.
+
+## EXPLANATION
+
+**One-line takeaway:** RFT only ever trains on *correct* answers, so its gradient has **no term
+that pushes wrong answers down**. It can lift the correct answer's probability, but the wrong one
+often rides up with it — the margin (the selection signal) doesn't grow. That's the *proof* that
+positive-only replay structurally can't close the reliability gap.
+
+### Theorem 2 (support-boundedness) — decoded, carefully
+- **"verified-only cross-entropy objective"** = RFT's loss: imitate the banked correct answers
+  (standard next-token / cross-entropy training on `y+` only).
+- **"zero example-specific gradient on any prompt absent from the bank"** = for a prompt that
+  **isn't in the training bank**, RFT's loss has literally no term about it → no *direct* gradient
+  for that prompt. Makes sense: you can't imitate an example you never included.
+- **"any change there is transfer through shared parameters"** = the model *can* still change its
+  behavior on unseen prompts, but only as a **side effect** — because all prompts share the same
+  weights θ, so updating θ for banked prompts spills over. That spillover is "transfer," not a
+  direct push.
+- **The parenthetical is the honesty guard (important):** they call it an **identity about the
+  example-specific term**, *not* an upper bound on out-of-distribution gains. In plain words:
+  "we are NOT claiming RFT can't generalize to unseen prompts — shared-parameter transfer can
+  genuinely help off-support. We only claim there's no *direct* per-example gradient there." This
+  deliberately avoids the overclaim "RFT has a generalization ceiling." ("Scoped" in the title =
+  narrowly stated on purpose.)
+
+### Proposition 1 (no margin control) — the core structural fact
+- RFT's gradient is **∇_θ Σ_{y∈C(x)} log π_θ(y|x)** = "raise the log-probability of every
+  **correct** solution `y ∈ C(x)`." Every term in that sum *pushes a correct answer up*.
+- **What's missing:** there is **no term of the form "decrease `log π_θ(y−|x)`"** for a
+  verified-wrong `y−`. RFT never sees wrong answers in its loss, so it has no lever to push them
+  down.
+- Recall the margin **m_θ(x) = log π_θ(y+|x) − log π_θ(y−|x)**. To grow the margin you must raise
+  `y+` **and/or** lower `y−`. RFT only does the first, and only for the specific banked correct
+  strings — it **does not directly increase `m_θ`**.
+- **"Mode-covering"** = the precise term for this behavior: imitation spreads probability to
+  *cover* the modes it's trained on (the correct completions), but because generation still visits
+  nearby wrong completions and they share parameters, those wrong modes get lifted too. It covers;
+  it doesn't *separate*.
+
+### The evidence (why we believe it, not just assert it)
+Measured on the same held-out verified pairs (Motivation Table 3 / Fig. 3):
+- RFT: `log π(y+)` −0.110 → **−0.092** (correct answer up a bit).
+- RFT: `log π(y−)` −0.139 → **−0.119** (wrong answer up by *almost the same amount*).
+- margin: 0.029 → **0.027** (essentially flat — even a hair down).
+- GRPO: moves **neither** (frozen, per Theorem 1's throttling).
+
+So numerically: **coverage rises** (both modes more probable → more likely to reach a correct one
+in k tries) but **single-attempt selection does not** (the model is no better at putting the
+correct one *first*). That is the mechanistic origin of the coverage−pass@1 gap from §2.
+
+### How Theorem 2 and Prop 1 fit together
+- **Theorem 2:** RFT's *direct* influence is confined to the banked (correct) examples — it has no
+  direct handle on anything else, including wrong completions.
+- **Proposition 1:** even *within* the prompts it does train, it only lifts correct answers and
+  never suppresses wrong ones, so the *margin* — the thing pass@1 depends on — doesn't move.
+- **Together:** positive-only imitation is structurally a **coverage/acquisition** tool, blind to
+  the **selection** axis. This is the theoretical complement to Theorem 1 (which killed GRPO):
+  neither dominant recipe touches selection — exactly the opening RVP is built to fill (its
+  preference gradient *does* contain the missing "push `y−` down" term, so `m_θ` grows). Connects
+  to [[rl-operator-mass-placing-result]] (RFT/SFT place mass; only a contrastive step separates
+  it) and the RVP margin-ascent proposition.
