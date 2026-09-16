@@ -727,3 +727,57 @@ by point:
 > verifier-labeled, self-generated selection stage after RFT**, aimed at **pass@1** rather than
 > alignment, with results (Prop 2 + the Qwen-Math-7B sweep) showing it is the unique lever for the
 > coverage−pass@1 gap that on-policy RL can't reach and positive-only replay can't widen.
+
+---
+
+## PASTE (Figure 5 / Theorem 3 — the "no ceiling" counterexample)
+
+> Figure 5: Theorem 3 (no ceiling). RFT minimises the bank cross-entropy (red), converging to θ⋆ = 2/3; but mean accuracy (blue) keeps rising past it, so J(2/3) = 0.583 < J(0.9) = 0.613 on the same support. Sharing a gradient span does not imply sharing an optimum—an accuracy/selection-directed objective can exceed RFT.
+
+## EXPLANATION
+
+**One-line takeaway:** RFT stops where its *cross-entropy* loss bottoms out, but that spot is
+**not** where *accuracy* peaks — accuracy keeps climbing past it. So there's no wall stopping an
+accuracy-directed method (RVP) from beating RFT. This is the theorem that says "the headroom is
+real and reachable," not just apparent.
+
+### What the figure shows (two curves over one knob θ)
+It's a clean analytic model with a single scalar parameter **θ** (think: how much probability the
+model concentrates on the correct mode). Plot two things against θ:
+- **Red = bank cross-entropy** — RFT's training objective (match the verified-correct bank). It's
+  minimized at **θ⋆ = 2/3**. That's where RFT *converges and stops*.
+- **Blue = mean accuracy J(θ) = pass@1** — what we actually care about. It **keeps rising past
+  θ = 2/3**, peaking further along (θ = 0.9).
+
+The punchline numbers: at RFT's stopping point, **J(2/3) = 0.583**; but at the accuracy-optimal
+point, **J(0.9) = 0.613**. Same support (same reachable solutions) — yet accuracy is higher at a θ
+that RFT would never reach, because RFT's loss (red) was already minimized back at 2/3.
+
+### Why CE-minimum ≠ accuracy-maximum
+Cross-entropy is a *distribution-matching* objective: it wants the model's probabilities to match
+the empirical mix in the bank, which keeps mass spread (mode-covering — the Prop 1 story).
+Single-attempt accuracy is a *selection* objective: it only cares that the correct answer is the
+argmax, so it rewards **concentrating** mass past what CE prefers. The two objectives peak at
+**different θ**. RFT halts at the CE minimum (2/3, less concentrated); accuracy would prefer more
+concentration (0.9). The gap `.583 → .613` is exactly the selection headroom RFT leaves on the
+table.
+
+### "Sharing a gradient span does not imply sharing an optimum"
+This is the crucial logical point tying back to Theorem 1. Theorem 1 showed RFT and GRPO move
+along the **same gradient direction** (the same "span"). A natural worry: if everything shares that
+direction, maybe they all hit the same wall — maybe RFT's optimum *is* the best achievable, and
+RVP can't beat it. Theorem 3 kills that worry with an explicit counterexample: **pointing in the
+same direction does not mean stopping at the same place, and the CE-optimum is not the
+accuracy-optimum.** An objective aimed at accuracy/selection (RVP, which raises the margin) can
+travel past RFT's CE-stopping point to strictly higher pass@1.
+
+### Why it matters for the paper
+It's the **"no ceiling" guarantee** — the third leg that makes RVP well-posed:
+- Cor 1.1: GRPO can't reach the headroom.
+- Prop 1: RFT can't widen the margin.
+- **Thm 3: and RFT's own optimum is *not* an accuracy ceiling — there is provably room above it.**
+- Prop 2: raising the margin is the way to claim that room.
+
+Without Thm 3, a reviewer could argue "RFT already maximizes what's achievable on this support."
+Figure 5 is the explicit disproof: `J(0.9) > J(2/3)` on the same support. The empirical
+counterpart is the Qwen2.5-Math-7B sweep, where RVP indeed exceeds RFT on every cell.
