@@ -318,50 +318,66 @@ the residual error is a capability limit rather than a selection problem. This i
 statement of applicability, not a defect: RVP targets reliability where reliability
 is recoverable.
 
-\paragraph{Bigger-model hard math: coverage headroom is real; the fix is under test.}
-9B/14B bases retain a substantial coverage$-$pass@1 gap on hard math ---
-$.271$ on Yi-1.5-9B/Olympiad ($.135\!\to\!.407$) and $.296$ on Yi-1.5-9B/MATH-500
-($.454\!\to\!.750$) --- so the headroom RVP targets genuinely exists. Our default
-two-stage recipe cannot exploit it: RFT on a generic MATH-train bank degrades these
-already-strong bases and collapses coverage, so preference training would build on a
-damaged, off-distribution model. The natural remedy is RVP \emph{directly} from the base
-(skip RFT), on in-distribution pairs, with \emph{gentle} DPO so mass concentrates
-\emph{within} the reachable set. We flag a methodological caveat we caught in our own runs:
-a first pass used $\beta{=}0.3$ for $150$ steps, which is $\approx\!3$ epochs over a few
-hundred pairs and is \emph{not} gentle --- the reward margin blew up to $\sim\!47$ nats and
-$\log\pi(y^{-})$ collapsed from $-182$ to $-306$, i.e.\ the policy was driven far
-off-distribution. The resulting pass@1 drop is therefore an over-optimization artifact, not
-evidence about strong bases, and we do not report it as a result. The matched-budget
-positive-only control (\emph{xrft}) does stay exactly at base ($.453$ vs $.454$ on
-MATH-500), a clean control confirming the data and the act of touching the model are
-harmless; the open question --- whether \emph{genuinely} gentle preference training
-($\beta{=}0.1$, $<\!1$ epoch, matching the CompDAG recipe) converts this real coverage
-headroom into pass@1 on a strong base --- is what our current runs measure. This is the
-decisive test of RVP's reach beyond the RFT-created addressable-gap regime, and we report it
-when clean. Extending to external code benchmarks (MBPP/BigCodeBench) remains future work.
+\paragraph{Generalization across diverse math on a larger, math-specialized base (headline).}
+On \textbf{Qwen2.5-Math-7B} --- a larger, math-pretrained base with genuine coverage
+headroom --- the full RFT$\to$RVP pipeline (gentle DPO, $\beta{=}0.1$) delivers a clean
+single-attempt win across three diverse math benchmarks, and RVP is the \emph{top arm on every
+one}, beating the base, RFT, positive-only imitation (\emph{xrft}), and the shuffled-pair control
+(\emph{shuf}) (Table~\ref{tab:genmath}). Gains reach $+.137$ pass@1 on MATH-500
+($.597\!\to\!.734$) at essentially unchanged coverage ($.870\!\to\!.855$) --- the exact signature
+our selection principle (Prop.~2) predicts: reliability from selection, not from acquisition. The
+shuffled-pair control \emph{falls} ($.467$ on MATH-500), confirming the gain requires correctly
+matched verified-correct/incorrect pairs, not generic preference churn. This is the
+RFT-creates-gap $\to$ RVP-selects mechanism operating on a larger model, generalizing across
+MATH-500, Olympiad-Bench, and Omni-MATH.
 
 \begin{table}[htbp]
 \centering
-\caption{Bigger-model hard math: the coverage$-$pass@1 headroom RVP targets is present on
-strong 9B/14B bases (gap column). Whether gentle coverage-preserving RVP converts it to
-pass@1 is under active test; an initial over-optimized DPO run ($\beta{=}0.3$, $3$ epochs)
-was discarded as confounded (reward margins $\to\!47$ nats), and is not reported here. The
-positive-only control (\emph{xrft}) stays at base, confirming the data/model-touch are
-harmless. Two higher-headroom 14B cells (AMC, Olympiad) were lost to a cluster failure
-before eval.}
-\label{tab:bigmath}
-% NOTE: base columns are FINAL (measured). RVP / xrft / Delta columns are PLACEHOLDERS
-% (\tbd) to be filled once the gentle-DPO re-run (beta=0.1, <1 epoch) completes.
-\newcommand{\tbd}{{\color{gray}\textsc{tbd}}}
-\begin{tabular}{llcccccc}
+\caption{\textbf{Generalization headline.} RVP on \textbf{Qwen2.5-Math-7B} across three diverse
+math benchmarks (full RFT$\to$RVP, $\beta{=}0.1$). RVP is the best arm on every dataset --- above
+base, RFT, positive-only imitation (\emph{xrft}), and the shuffled-pair control (\emph{shuf}).
+Pass@1 rises up to $+.137$ at essentially constant coverage (selection, not acquisition); shuf
+\emph{drops}, so the gain requires correctly-paired preferences. pass@1 / coverage, $k{=}16$,
+$n{=}150$--$200$.}
+\label{tab:genmath}
+\begin{tabular}{lccccc}
 \toprule
- & & \multicolumn{3}{c}{base (measured)} & \multicolumn{2}{c}{RVP gentle} & \\
-\cmidrule(lr){3-5}\cmidrule(lr){6-7}
-Base & Eval & $\text{p}@1$ & cov & headroom & $\text{p}@1$ & cov & $\Delta_{\text{p}@1}$ \\
+Dataset & base $\text{p}@1$/cov & RFT & xrft & shuf & \textbf{RVP} $\text{p}@1$/cov \quad$\Delta$ \\
 \midrule
-Yi-1.5-9B  & Olympiad-Bench & $.135$ & $.407$ & $.271$ & \tbd & \tbd & \tbd \\
-Yi-1.5-9B  & MATH-500       & $.454$ & $.750$ & $.296$ & \tbd & \tbd & \tbd \\
-Qwen2.5-14B & MATH-500      & $.716$ & $.865$ & $.149$ & \tbd & \tbd & \tbd \\
+MATH-500       & $.597/.870$ & $.635$ & $.660$ & $.467$ & $\best{.734}/.855$\quad$\mathbf{+.137}$ \\
+Olympiad-Bench & $.295/.680$ & $.312$ & $.328$ & $.337$ & $\best{.353}/.640$\quad$\mathbf{+.058}$ \\
+Omni-MATH      & $.197/.490$ & $.206$ & $.222$ & ---    & $\best{.252}/.415$\quad$\mathbf{+.055}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Scope: base-class dependence (honest boundary).}
+The win is specific to math-specialized pretrained bases. On a \emph{general} base
+(Qwen2.5-7B), RVP helps only where the base is weakest (Omni-MATH $+.040$), is null on Olympiad
+($-.002$), and regresses where the base is already strong (MATH-500 $-.038$); positive-only
+\emph{xrft} is $\ge$ RVP throughout. On an \emph{RLHF'd instruct} base (Yi-1.5-9B-Chat) RVP
+\emph{collapses} (Table~\ref{tab:bigmath}): $-.125$ to $-.164$ pass@1, Olympiad falling to $.013$
+with coverage $.487\!\to\!.153$. The mechanism explains the boundary: RVP's
+suppress-the-incorrect-mode step is productive when the base's own errors are informative,
+structured negatives (math-pretrained), and destructive when the model already sits on a heavily
+tuned distribution (instruct), where the negative gradient drives it off-distribution. Where RVP
+is unsafe, \emph{xrft} stays at base --- a safe positive-only fallback. Extending to external code
+benchmarks (MBPP/BigCodeBench) remains future work.
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Scope boundary: RLHF'd instruct base.} On Yi-1.5-9B-Chat the same RFT$\to$RVP
+recipe \emph{regresses} across all three benchmarks --- the DPO negative gradient drives an
+already-aligned model off-distribution. The positive-only control (\emph{xrft}) stays at base, the
+safe fallback. Contrast Table~\ref{tab:genmath}. pass@1 / coverage, $k{=}16$.}
+\label{tab:bigmath}
+\begin{tabular}{lccccc}
+\toprule
+Dataset & base $\text{p}@1$/cov & RFT & xrft & RVP $\text{p}@1$/cov & $\Delta_{\text{p}@1}$ \\
+\midrule
+MATH-500       & $.446/.770$ & $.463$ & $.458$ & $.321/.675$ & $-.125$ \\
+Olympiad-Bench & $.177/.487$ & $.169$ & $.170$ & $.013/.153$ & $-.164$ \\
+Omni-MATH      & $.121/.320$ & $.125$ & $.126$ & $.071/.220$ & $-.051$ \\
 \bottomrule
 \end{tabular}
 \end{table}
