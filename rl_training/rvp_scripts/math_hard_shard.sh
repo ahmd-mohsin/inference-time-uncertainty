@@ -28,9 +28,13 @@ else
   [ -d $V/rft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $B --data $V/bank.jsonl --out $V/rft --seed 1 --max-steps 300 --bsz $RFT_BSZ >$L/${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/${TAG}_rft.log 2>&1; }
   RFT=$V/rft/merged_full
 fi
-# 3) pairs + shuffled control
-[ -s $V/pairs.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1 &
-[ -s $V/shuf.jsonl ] || CUDA_VISIBLE_DEVICES=1 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --shuffle --out $V/shuf.jsonl >$L/${TAG}_shufgen.log 2>&1 &
+# 3) pairs + shuffled control. Gen is TP-aware: 14B (28GB bf16) does NOT fit single 40GB card
+# with KV cache -> vLLM EngineCore OOMs at gen start. VLLM_TP>1 splits weights across GPUs.
+# pairs uses GPUs [0..TP-1], shuf uses [TP..2TP-1] so both run in parallel without collision.
+TP=${GEN_TP:-1}   # gen-only TP; eval stays single-GPU (VLLM_TP) to avoid TP-on-1-visible-GPU crash
+GENDEV_A=$(seq -s, 0 $((TP-1))); GENDEV_B=$(seq -s, $TP $((2*TP-1)))
+[ -s $V/pairs.jsonl ] || CUDA_VISIBLE_DEVICES=$GENDEV_A VLLM_TP=$TP GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1 &
+[ -s $V/shuf.jsonl ] || CUDA_VISIBLE_DEVICES=$GENDEV_B VLLM_TP=$TP GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --shuffle --out $V/shuf.jsonl >$L/${TAG}_shufgen.log 2>&1 &
 wait
 python3 -c "import json;seen=set();f=open('$V/pos.jsonl','w')
 [f.write(json.dumps({'prompt':r['prompt'],'completion':r['chosen']})+'\n') for r in (json.loads(l) for l in open('$V/pairs.jsonl')) if not (r['chosen'] in seen or seen.add(r['chosen']))]"
