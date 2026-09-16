@@ -574,3 +574,72 @@ correct one *first*). That is the mechanistic origin of the coverage−pass@1 ga
   preference gradient *does* contain the missing "push `y−` down" term, so `m_θ` grows). Connects
   to [[rl-operator-mass-placing-result]] (RFT/SFT place mass; only a contrastive step separates
   it) and the RVP margin-ascent proposition.
+
+---
+
+## PASTE (Proposition 2 — margin ⇒ reliability; the selection principle behind the method)
+
+> Proposition 2 (margin ⇒ reliability). Restrict attention to a covered prompt whose reachable set is dominated by one correct mode y+ and one incorrect mode y− (the empirically relevant regime after RFT, where coverage is high). With logits s+, s− and p_θ(x) = σ(m_θ(x) + c(x)) for a prompt constant c(x) and the logistic σ, the single-attempt success mass is strictly increasing in the margin m_θ(x): ∂p_θ(x)/∂m_θ(x) = σ′(m_θ(x) + c(x)) > 0. Thus an objective that raises m_θ(x) on covered prompts increases pass@1 without expanding the support (coverage held fixed)—it acts on selection, the axis positive-only CE leaves flat (Prop. 1) and on-policy reward cannot reach (Cor. 1.1), and which Thm. 3 shows no ceiling forbids.
+> This proposition is the pivot to our methodology: a decoupled, verified-preference objective trained on the model's own (y+, y−) pairs increases m_θ by suppressing the verified-incorrect mode, reallocating probability mass I → C. Its predicted signature (margin up via log π(y−) down, pass@1 up at constant coverage) is the last row of Table 5.
+
+## EXPLANATION
+
+**One-line takeaway:** this is the little theorem that *licenses the whole method*. It proves that
+**raising the margin (pushing the correct answer above the wrong one) mathematically raises pass@1
+— without needing any new coverage.** So "improve selection" isn't a hope; it's guaranteed to move
+the metric we care about.
+
+### The setup (the simplifying assumption)
+- **"covered prompt … dominated by one correct mode y+ and one incorrect mode y−"** = focus on a
+  prompt where, after RFT, the model's probability sits mostly on **two** competing answers: one
+  right (`y+`) and one wrong (`y−`). This is the realistic post-RFT picture (coverage is high →
+  the correct answer is reachable; it's just fighting a wrong one for the single-shot slot). It's
+  a 2-outcome simplification so the algebra is clean.
+- **s+, s−** = the model's **logits** (pre-softmax scores) for the correct and incorrect modes.
+- **σ (logistic/sigmoid)** = the squashing function `σ(z) = 1/(1+e^−z)` that turns a score into a
+  probability between 0 and 1. **σ′** = its derivative, which is **always positive**.
+
+### The claim (Eq.), decoded
+- **`p_θ(x) = σ(m_θ(x) + c(x))`** = for this prompt, the single-attempt success probability is a
+  logistic function of the **margin** `m_θ(x) = s+ − s−` (how much the correct logit beats the
+  wrong one), plus a **prompt constant `c(x)`** (everything else about the prompt that doesn't
+  depend on the correct-vs-wrong contest — treated as fixed).
+- **`∂p_θ(x)/∂m_θ(x) = σ′(m_θ(x)+c(x)) > 0`** = the derivative of success w.r.t. the margin is
+  `σ′`, which is **strictly positive**. In words: **whenever you increase the margin, pass@1 goes
+  up. Always. Monotonically.** No exceptions in this regime.
+
+### Why this is the pivotal result
+It connects the *mechanism* (margin) to the *metric* (pass@1) with a hard inequality:
+- **Raising `m_θ` on covered prompts increases pass@1** — guaranteed.
+- **"without expanding the support (coverage held fixed)"** = you don't need to make *new* answers
+  reachable. You just re-rank the ones already there. Coverage can stay exactly the same while
+  pass@1 climbs. This is "selection, not acquisition" made precise.
+
+And it slots the three theory results into one picture — it acts on the **selection axis** that:
+- **Prop. 1** showed positive-only imitation (RFT) leaves *flat* (RFT can't lower `y−`),
+- **Cor. 1.1** showed on-policy reward (GRPO) *cannot reach* (its `p_θ` multiplier zeroes out
+  hard prompts),
+- **Thm. 3** shows no "ceiling" forbids (there's no theoretical wall stopping margin gains —
+  raising the margin is genuinely available headroom).
+
+So all four theorems converge: selection is real, untouched by the incumbents, and unblocked.
+
+### The pivot to the method (RVP)
+This is where theory becomes the algorithm:
+- A **decoupled, verified-preference objective** (DPO on the model's own `(y+, y−)` pairs) is
+  exactly an objective that **raises `m_θ`** — its gradient contains the missing "**push
+  `log π(y−)` down**" term.
+- Mechanically: it **suppresses the verified-incorrect mode**, moving probability mass from the
+  wrong set to the right set — written **`I → C`** (Incorrect → Correct).
+- **The predicted, falsifiable signature** (stated in advance, then tested — "last row of Table
+  5"): **margin up, driven specifically by `log π(y−)` going down, and pass@1 up while coverage
+  stays constant.** If the experiment shows margin rising via `y−` suppression with flat coverage
+  and higher pass@1, the theory is confirmed on its own terms.
+
+### Why it matters for the paper
+It converts the motivation ("there's a selection gap") into a *provable lever* ("raising the
+margin must raise pass@1") and names the tool that pulls it (verified-preference DPO). It's the
+hinge between §2–3 (why the gap exists) and §4 (RVP). It also encodes the project's honesty: the
+guarantee is scoped to **covered prompts** (high coverage after RFT) — i.e. the headroom-gated
+regime our 72-GPU matrix deliberately targets. Ties to the RVP margin-ascent proposition
+(Δm = η·β·σ(−u)·‖∇log π(y+) − ∇log π(y−)‖² ≥ 0) and [[rl-operator-mass-placing-result]].
