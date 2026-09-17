@@ -4,6 +4,8 @@
 # env: GPU BASE EVAL TAG [HARDNEG SEED NEVAL NBANK GEN_GPU_MEM]
 export HOME=/home/greenland-user PATH=$HOME/.local/bin:$PATH HF_HOME=$HOME/.cache HF_HUB_DISABLE_XET=1 VLLM_ATTENTION_BACKEND=FLASHINFER WANDB_MODE=disabled PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export CUDA_VISIBLE_DEVICES=${GPU:?}
+# vLLM _C needs libcudart.so.13 on the loader path (pytorch-base image quirk; same fix as math_hard_shard)
+L13=$(find $HOME/.local -name "libcudart.so.13*" 2>/dev/null|head -1); [ -n "$L13" ] && export LD_LIBRARY_PATH="$(dirname $L13):$LD_LIBRARY_PATH"
 cd $HOME/inference-time-uncertainty
 BASE=${BASE:?}; EVAL=${EVAL:?}; TAG=${TAG:?}; SEED=${SEED:-1}; NEVAL=${NEVAL:-200}; NBANK=${NBANK:-500}; GM=${GEN_GPU_MEM:-0.45}
 export MAXLEN=${MAXLEN:-3072} MAXTOK=${MAXTOK:-1024}
