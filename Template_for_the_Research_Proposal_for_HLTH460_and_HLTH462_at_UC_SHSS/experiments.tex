@@ -439,7 +439,27 @@ productive when the model's own errors are informative, structured negatives (ma
 pretraining --- \emph{base or instruct}) and destructive when the model sits on a heavily
 RLHF-tuned general distribution, where suppressing $\log\pi(y^{-})$ pushes mass off that tuned
 distribution. Where RVP is unsafe, positive-only \emph{xrft} stays at base --- a safe fallback.
-Extending to external code benchmarks (MBPP/BigCodeBench) remains future work.
+
+A second, sharper boundary comes from a different math \emph{family}: on \textbf{Mathstral-7B-v0.1}
+(Mistral-based, math-specialized) RVP \emph{collapses} (MATH-500 $.455\!\to\!.014$, coverage
+$.785\!\to\!.14$; Olympiad $-.174$; Omni-MATH $-.119$). The cause is diagnostic, not
+contradictory: the RFT stage barely moved Mathstral ($+.002/+.020/+.007$ vs.\ $+.04$--$.10$ on the
+Qwen-Math family), so it never created the high-margin addressable gap RVP requires --- and
+without that gap the DPO negative gradient simply drives the model off-distribution (the
+positive-only \emph{xrft} control stays healthy, $.490\!\ge\!$ base, localising the collapse to
+the negative gradient exactly as the theory predicts). This refines the claim precisely:
+\emph{RVP's precondition is a successful RFT gap-creation stage}, which held across the Qwen-Math
+family (7B, 1.5B, and 7B-Instruct) but not Mathstral. RVP is a selection method for the
+RFT-created-gap regime, and its transfer is gated by whether RFT first opens that gap on a given
+base --- not by ``math-specialized'' alone. Making RFT reliably open the gap on more families, and
+extending to external code benchmarks (MBPP/BigCodeBench), remain future work.
+
+\paragraph{Seed robustness.}
+A 3-seed re-run of the Qwen2.5-Math-1.5B cells (fresh banks, $\beta{=}0.1$) confirms the gains are
+robust to seed and dominate every control: pass@1 gains over base of $+.172{\pm}.019$ (MATH-500),
+$+.089{\pm}.003$ (Olympiad), and $+.046{\pm}.008$ (Omni-MATH), where every individual seed beats
+base, RFT, \emph{xrft}, and \emph{shuf} on all three datasets (Olympiad is essentially
+seed-invariant, ${\pm}.003$).
 
 \begin{table}[htbp]
 \centering

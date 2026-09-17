@@ -5517,3 +5517,15 @@ Qwen2.5-Math-7B-Instruct (math-specialized INSTRUCT), full RFT→RVP β=0.1, ver
 - Omni-MATH: base .2225 → rvp .2509 (+.028), rvp TOP arm (rft .234, xrft .238, shuf .230), cov .415→.435
 - MATH-500: still training (not harvested)
 CONCLUSION: RVP WINS on a math-specialized instruct base → the scope boundary is MATH-SPECIALIZATION, not instruct-vs-base. The Yi-1.5-9B-Chat collapse (§170/§171) was because Yi is a GENERAL RLHF-chat model, not math-specialized. Paper §scope rewritten accordingly. Death-proofed flywheel held (no pod deaths this wave). Still training: 1.5B NSEED=3 CIs (A), Mathstral-7B 3rd family (C, healthy banks ~1170).
+
+## §173 — Seed-CIs (win, in paper) + Mathstral cross-family collapse (honest limitation, in paper)
+1.5B seed-CIs (3 seeds, fresh banks, β=0.1; q15c_m500 verified from raw ev, olymp/omni watchdog-verified):
+- MATH-500: base .480, rvp .652±.019 (.656/.631/.668) → +.172; beats rft .578/xrft .592/shuf .580
+- Olympiad: base .235, rvp .324±.003 → +.089
+- Omni-MATH: base .149, rvp .195±.008 → +.046
+Every seed beats every control on all 3. Publishable error bars → "Seed robustness" paragraph added.
+
+Mathstral-7B-v0.1 (Mistral-family, math-specialized) — RVP COLLAPSES (verified mstl_m500 raw ev):
+- MATH-500: base .4547, rft .4569 (+.002!), xrft .4897 (healthy), rvp .0138 (−.441), cov .785→.14
+- Olympiad −.174, Omni-MATH −.119 (same off-distribution signature)
+CAUSE: RFT barely moved Mathstral (Δ +.002/.020/.007) → no RFT-created gap → RVP neg-gradient drives off-distribution; xrft stays healthy (localizes to neg gradient). REFINES claim: RVP's precondition is a SUCCESSFUL RFT gap-creation stage (held across Qwen-Math family 7B/1.5B/instruct, NOT Mathstral). Consistent with core thesis; honest cross-family boundary. Paper §scope updated.
