@@ -44,6 +44,7 @@ def main():
     ap.add_argument("--shuffle",action="store_true"); ap.add_argument("--out",required=True); ap.add_argument("--seed",type=int,default=1)
     ap.add_argument("--data",default=None)  # margin mode: pairs.jsonl with prompt/chosen/rejected
     ap.add_argument("--hard-neg",action="store_true")  # pairs: pick hardest (highest model-logprob) y-, best y+
+    ap.add_argument("--num-shards",type=int,default=1); ap.add_argument("--shard-index",type=int,default=0)  # data-parallel gen
     a=ap.parse_args()
     # --- margin mode: teacher-force y+/y- under the model, report mean per-token logp + logit margin ---
     # (mechanism panel: Prop 2 signature = margin up via logp(y-) down, no generation, HF not vLLM)
@@ -69,6 +70,7 @@ def main():
         print(f"[margin] n={nn} logp_pos={res['logp_pos']:.4f} logp_neg={res['logp_neg']:.4f} margin={res['margin']:.4f}")
         return
     rows=LOADERS[a.dataset](a)
+    if a.num_shards>1: rows=rows[a.shard_index::a.num_shards]  # data-parallel gen: this GPU's slice
     from vllm import LLM, SamplingParams
     llm=LLM(model=a.model,trust_remote_code=True,dtype="bfloat16",gpu_memory_utilization=float(os.environ.get("GEN_GPU_MEM","0.5")),max_model_len=int(os.environ.get("MAXLEN","2048")),tensor_parallel_size=int(os.environ.get("VLLM_TP","1")),enforce_eager=True)
     sp=SamplingParams(n=a.k,temperature=(0.0 if a.mode=="eval" and a.k==1 else a.temperature),top_p=0.95,max_tokens=int(os.environ.get("MAXTOK","640")),seed=a.seed,logprobs=(1 if a.hard_neg else None))

@@ -22,7 +22,10 @@ if [ "${SKIP_RFT:-0}" = 1 ]; then
   RFT=$B
 else
   # 1) bank
-  [ -s $V/bank.jsonl ] || CUDA_VISIBLE_DEVICES=0 GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode bank --model $B --dataset $BANK --split train --n $NBANK --k $KB --out $V/bank.jsonl >$L/${TAG}_bank.log 2>&1
+  if [ ! -s $V/bank.jsonl ]; then   # DATA-PARALLEL bank-gen across all 8 GPUs (was 1) -> ~8x less idle
+    for g in 0 1 2 3 4 5 6 7; do CUDA_VISIBLE_DEVICES=$g GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode bank --model $B --dataset $BANK --split train --n $NBANK --k $KB --num-shards 8 --shard-index $g --out $V/bank.s$g.jsonl >$L/${TAG}_bank$g.log 2>&1 & sleep 3; done
+    wait; cat $V/bank.s*.jsonl > $V/bank.jsonl 2>/dev/null; rm -f $V/bank.s*.jsonl
+  fi
   echo "bank=$(wc -l <$V/bank.jsonl)" >>$R
   # 2) RFT (single-GPU LoRA) -> merged full model
   [ -d $V/rft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $B --data $V/bank.jsonl --out $V/rft --seed 1 --max-steps 300 --bsz $RFT_BSZ >$L/${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/${TAG}_rft.log 2>&1; }
@@ -31,11 +34,16 @@ fi
 # 3) pairs + shuffled control. Gen is TP-aware: 14B (28GB bf16) does NOT fit single 40GB card
 # with KV cache -> vLLM EngineCore OOMs at gen start. VLLM_TP>1 splits weights across GPUs.
 # pairs uses GPUs [0..TP-1], shuf uses [TP..2TP-1] so both run in parallel without collision.
-TP=${GEN_TP:-1}   # gen-only TP; eval stays single-GPU (VLLM_TP) to avoid TP-on-1-visible-GPU crash
-GENDEV_A=$(seq -s, 0 $((TP-1))); GENDEV_B=$(seq -s, $TP $((2*TP-1)))
-[ -s $V/pairs.jsonl ] || CUDA_VISIBLE_DEVICES=$GENDEV_A VLLM_TP=$TP GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 ${HARDNEG:+--hard-neg} --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1 &
-[ -s $V/shuf.jsonl ] || CUDA_VISIBLE_DEVICES=$GENDEV_B VLLM_TP=$TP GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --shuffle --out $V/shuf.jsonl >$L/${TAG}_shufgen.log 2>&1 &
+# DATA-PARALLEL pair-gen: pairs sharded across GPUs 0-3, shuf across GPUs 4-7 -> all 8 busy, concurrent
+if [ ! -s $V/pairs.jsonl ]; then
+  for s in 0 1 2 3; do CUDA_VISIBLE_DEVICES=$s GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 ${HARDNEG:+--hard-neg} --num-shards 4 --shard-index $s --out $V/pairs.s$s.jsonl >$L/${TAG}_pairs$s.log 2>&1 & sleep 3; done
+fi
+if [ ! -s $V/shuf.jsonl ]; then
+  for s in 0 1 2 3; do g=$((s+4)); CUDA_VISIBLE_DEVICES=$g GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --shuffle --num-shards 4 --shard-index $s --out $V/shuf.s$s.jsonl >$L/${TAG}_shuf$s.log 2>&1 & sleep 3; done
+fi
 wait
+[ -s $V/pairs.jsonl ] || { cat $V/pairs.s*.jsonl > $V/pairs.jsonl 2>/dev/null; rm -f $V/pairs.s*.jsonl; }
+[ -s $V/shuf.jsonl ]  || { cat $V/shuf.s*.jsonl  > $V/shuf.jsonl  2>/dev/null; rm -f $V/shuf.s*.jsonl; }
 python3 -c "import json;seen=set();f=open('$V/pos.jsonl','w')
 [f.write(json.dumps({'prompt':r['prompt'],'completion':r['chosen']})+'\n') for r in (json.loads(l) for l in open('$V/pairs.jsonl')) if not (r['chosen'] in seen or seen.add(r['chosen']))]"
 echo "pairs=$(wc -l <$V/pairs.jsonl) pos=$(wc -l <$V/pos.jsonl)" >>$R
