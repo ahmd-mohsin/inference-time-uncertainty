@@ -5533,3 +5533,12 @@ CAUSE: RFT barely moved Mathstral (Δ +.002/.020/.007) → no RFT-created gap �
 ## §174 — Instruct discriminator COMPLETE (3/3) + wave-4 infra loss
 qm7i_m500 (Qwen2.5-Math-7B-Instruct, MATH-500): base .7522, rft .7622, xrft .7647, shuf .7625, rvp .7719 → Δ+.020, rvp TOP arm (near-ceiling base, headroom-gated small gain). Completes instruct discriminator: RVP WINS on all 3 (m500 +.020, olymp +.052, omni +.028) → boundary confirmed = math-specialization, not instruct-tuning. Paper §scope updated.
 WAVE-4 LOSS: hard-neg ablation (7B q7s/q7h ×3) + 1.5B hard-neg (q15h) all DIED at bank-generation (~1h post-launch, all 3 pods TargetNotConnected) before any S3 sync → unanswered, needs fresh fleet. NEW death mode: bank-gen stage (~1h), distinct from the eval-transition death the prior fix (EVAL_CONC=1) addressed — likely pod TTL/reclaim. Mitigation shipped: early S3 sync of bank+pairs jsonl right after pairs-gen. hard-neg code (math_rvp --hard-neg + HARDNEG flywheel env) is committed and ready to re-run.
+
+## §175 — Hard-negative-mining ablation: PRELIMINARY (hard-neg HURTS) + fleet note
+Salvaged from wave-5 watchdog (1.5B, direct_eval verified). hard-neg RVP = reject highest-logprob wrong answers; standard = random negatives (banked 3-seed).
+- MATH-500: hard-neg .543 (+.137) vs standard .652 (+.172) -> hard-neg WORSE
+- Olympiad: hard-neg .156 (< RFT .173) vs standard .324 -> hard-neg WORSE
+- Omni-MATH: hard-neg .094 (< RFT .131) vs standard .195 -> hard-neg WORSE
+FINDING: hard-negative mining underperforms random negatives across the board (naive "harder negatives" backfires — most-believed wrong answers are near-correct/adversarial; suppressing them over-optimizes + shrinks negative diversity). RANDOM negatives win. To be confirmed by the 72-cell pack (matched std-vs-hard, 3 models x 4 datasets x 3 seeds).
+Also fixed: --hard-neg None-crash (cumulative_logprob None in gen) -> lazy+None-guarded score, logprobs=1 only when hard-neg (commit 2fddc5b).
+Wave-5 7B hard-neg/mech/beta-sweep were NOT completed (multi-agent pkill contention during the 72-cell repack); superseded by the 72-cell pack.
