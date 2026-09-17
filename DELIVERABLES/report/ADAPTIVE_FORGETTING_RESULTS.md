@@ -5542,3 +5542,9 @@ Salvaged from wave-5 watchdog (1.5B, direct_eval verified). hard-neg RVP = rejec
 FINDING: hard-negative mining underperforms random negatives across the board (naive "harder negatives" backfires — most-believed wrong answers are near-correct/adversarial; suppressing them over-optimizes + shrinks negative diversity). RANDOM negatives win. To be confirmed by the 72-cell pack (matched std-vs-hard, 3 models x 4 datasets x 3 seeds).
 Also fixed: --hard-neg None-crash (cumulative_logprob None in gen) -> lazy+None-guarded score, logprobs=1 only when hard-neg (commit 2fddc5b).
 Wave-5 7B hard-neg/mech/beta-sweep were NOT completed (multi-agent pkill contention during the 72-cell repack); superseded by the 72-cell pack.
+
+## §176 — CORRECTION to §175 + 1.5B pack results (verified)
+72-cell pack (1.5B fully done, 3-seed, LoRA-DPO 1-GPU). Generalization (base->rvp, Δ, ±CI):
+ GSM8K .513->.703 (+.190 ±.005) | MATH-500 .478->.590 (+.112 ±.005) | Olympiad .236->.279 (+.043 ±.005) | Omni .150->.170 (+.020 ±.003). RVP wins all 4, rvp>=rft everywhere.
+HARD-NEG (matched, same pipeline, only neg-selection differs) = TIE with random negatives: GSM8K +.190 vs +.194, MATH-500 +.112 vs +.113, Olympiad +.043 vs +.044, Omni +.020 vs +.026. => §175's "hard-neg HURTS" was an UNMATCHED artifact (compared to a different banked run); the MATCHED result is NO meaningful difference at 1.5B. Honest verdict: hard-neg ≈ random at 1.5B.
+7B/7B-Instruct pack cells OOM'd in 1-GPU LoRA-DPO (bsz4/maxlen768). FIX: auto bsz1/DPO_MAXLEN512 for >=7B; relaunching B+C. 7B RVP also exists from sharded full-param (paper q7m +.137/.058/.055). Note LoRA-1GPU 1.5B (+.112) reads below full-param sharded (+.172) — expected.

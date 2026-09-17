@@ -43,7 +43,7 @@ node_script() { local n=$1; local out=""
 
 echo "=== killing wave-5 + launching 72-cell pack ==="
 declare -A DONEPORT
-for n in 0 1 2 3 4 5 6 7 8; do
+for n in ${NODES_RANGE:-0 1 2 3 4 5 6 7 8}; do
   IFS=: read port host <<< "${NODES[$n]}"; B=$(node_script $n)
   if [ "$host" = LOCAL ]; then
     SSH_ASKPASS=$AP SSH_ASKPASS_REQUIRE=force DISPLAY=:0 ssh -p $port "${SSHM[@]}" greenland-user@localhost "echo $B | base64 -d | bash" 2>&1 | grep -vE "Warning|Permanently|Pseudo"

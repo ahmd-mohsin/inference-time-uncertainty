@@ -9,6 +9,10 @@ L13=$(find $HOME/.local -name "libcudart.so.13*" 2>/dev/null|head -1); [ -n "$L1
 cd $HOME/inference-time-uncertainty
 BASE=${BASE:?}; EVAL=${EVAL:?}; TAG=${TAG:?}; SEED=${SEED:-1}; NEVAL=${NEVAL:-200}; NBANK=${NBANK:-500}; GM=${GEN_GPU_MEM:-0.45}
 export MAXLEN=${MAXLEN:-3072} MAXTOK=${MAXTOK:-1024}
+# 7B+ LoRA-DPO OOMs on a 40GB GPU at bsz4/maxlen768 (TRL entropy reshape seq*vocab). Auto-shrink for big models.
+BIG=$(echo "$BASE"|grep -qiE '7b|8b|9b|14b' && echo 1 || echo 0)
+DPO_BSZ=${DPO_BSZ:-$([ "$BIG" = 1 ] && echo 1 || echo 4)}
+export DPO_MAXLEN=${DPO_MAXLEN:-$([ "$BIG" = 1 ] && echo 512 || echo 768)}
 G=$HOME/gu; V=$G/$TAG; L=$G/logs; mkdir -p $V $L; R=$V/RES.md; : >$R
 echo "# CELL1GPU base=$BASE eval=$EVAL hardneg=${HARDNEG:-0} seed=$SEED gpu=$GPU $(date -u)" >>$R
 # 1) bank (verified-correct self-samples)
@@ -23,7 +27,7 @@ RFT=$V/rft/merged_full
 echo "pairs=$(wc -l <$V/pairs.jsonl 2>/dev/null)" >>$R
 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 # 4) RVP = LoRA DPO (single-GPU, precomputes ref logps so only policy in memory) -> merged
-[ -d $V/rvp/merged_full ] || { python3 -m rl_training.dpo_train --model $RFT --data $V/pairs.jsonl --out $V/rvp --seed $SEED --beta 0.1 --max-steps 300 --bsz 4 >$L/${TAG}_dpo.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rvp')" >>$L/${TAG}_dpo.log 2>&1; }
+[ -d $V/rvp/merged_full ] || { python3 -m rl_training.dpo_train --model $RFT --data $V/pairs.jsonl --out $V/rvp --seed $SEED --beta 0.1 --max-steps 300 --bsz $DPO_BSZ >$L/${TAG}_dpo.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rvp')" >>$L/${TAG}_dpo.log 2>&1; }
 RVP=$V/rvp/merged_full
 # 5) eval base / rft / rvp (pass@1 + coverage)
 for arm in base rft rvp; do
