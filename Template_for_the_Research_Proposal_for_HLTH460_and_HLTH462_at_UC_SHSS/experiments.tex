@@ -427,10 +427,10 @@ Omni-MATH      & $.183$ ($+.034$) & $.189$ ($+.040$) & $.195$ ($+.046$) & $\best
 A natural worry is that RVP only works on raw pretrained bases and breaks under instruct-tuning.
 A controlled discriminator shows the opposite: the deciding axis is \emph{math-specialized
 pretraining}, and instruct-tuning per se is fine. On the math-specialized \emph{instruct} model
-\textbf{Qwen2.5-Math-7B-Instruct}, RVP still \emph{wins} and is the top arm --- Olympiad
-$.371\!\to\!.423$ ($+.052$) and Omni-MATH $.223\!\to\!.251$ ($+.028$), beating base, RFT,
-positive-only imitation (\emph{xrft}), and the shuffled-pair control (\emph{shuf}), at essentially
-constant coverage. By contrast RVP \emph{collapses} on the \emph{general} RLHF-chat base
+\textbf{Qwen2.5-Math-7B-Instruct}, RVP \emph{wins on all three benchmarks} and is the top arm ---
+MATH-500 $.752\!\to\!.772$ ($+.020$, near-ceiling), Olympiad $.371\!\to\!.423$ ($+.052$), and
+Omni-MATH $.223\!\to\!.251$ ($+.028$), beating base, RFT, positive-only imitation (\emph{xrft}),
+and the shuffled-pair control (\emph{shuf}), at essentially constant coverage. By contrast RVP \emph{collapses} on the \emph{general} RLHF-chat base
 Yi-1.5-9B-Chat (Table~\ref{tab:bigmath}: $-.125$ to $-.164$ pass@1, Olympiad falling to $.013$,
 coverage $.487\!\to\!.153$), and is only mixed on a general \emph{base} (Qwen2.5-7B: helps where
 the base is weakest, Omni-MATH $+.040$; null on Olympiad; regresses on the already-strong

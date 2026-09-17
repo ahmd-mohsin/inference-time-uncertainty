@@ -5529,3 +5529,7 @@ Mathstral-7B-v0.1 (Mistral-family, math-specialized) — RVP COLLAPSES (verified
 - MATH-500: base .4547, rft .4569 (+.002!), xrft .4897 (healthy), rvp .0138 (−.441), cov .785→.14
 - Olympiad −.174, Omni-MATH −.119 (same off-distribution signature)
 CAUSE: RFT barely moved Mathstral (Δ +.002/.020/.007) → no RFT-created gap → RVP neg-gradient drives off-distribution; xrft stays healthy (localizes to neg gradient). REFINES claim: RVP's precondition is a SUCCESSFUL RFT gap-creation stage (held across Qwen-Math family 7B/1.5B/instruct, NOT Mathstral). Consistent with core thesis; honest cross-family boundary. Paper §scope updated.
+
+## §174 — Instruct discriminator COMPLETE (3/3) + wave-4 infra loss
+qm7i_m500 (Qwen2.5-Math-7B-Instruct, MATH-500): base .7522, rft .7622, xrft .7647, shuf .7625, rvp .7719 → Δ+.020, rvp TOP arm (near-ceiling base, headroom-gated small gain). Completes instruct discriminator: RVP WINS on all 3 (m500 +.020, olymp +.052, omni +.028) → boundary confirmed = math-specialization, not instruct-tuning. Paper §scope updated.
+WAVE-4 LOSS: hard-neg ablation (7B q7s/q7h ×3) + 1.5B hard-neg (q15h) all DIED at bank-generation (~1h post-launch, all 3 pods TargetNotConnected) before any S3 sync → unanswered, needs fresh fleet. NEW death mode: bank-gen stage (~1h), distinct from the eval-transition death the prior fix (EVAL_CONC=1) addressed — likely pod TTL/reclaim. Mitigation shipped: early S3 sync of bank+pairs jsonl right after pairs-gen. hard-neg code (math_rvp --hard-neg + HARDNEG flywheel env) is committed and ready to re-run.

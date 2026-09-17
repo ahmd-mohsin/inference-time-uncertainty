@@ -39,6 +39,9 @@ wait
 python3 -c "import json;seen=set();f=open('$V/pos.jsonl','w')
 [f.write(json.dumps({'prompt':r['prompt'],'completion':r['chosen']})+'\n') for r in (json.loads(l) for l in open('$V/pairs.jsonl')) if not (r['chosen'] in seen or seen.add(r['chosen']))]"
 echo "pairs=$(wc -l <$V/pairs.jsonl) pos=$(wc -l <$V/pos.jsonl)" >>$R
+# EARLY S3 sync of bank+pairs (jsonl) — pods have died during/after bank-gen (~1h in) losing all
+# work; syncing the generated data here means a re-run can reuse it instead of regenerating.
+python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 # free ALL lingering vLLM/GPU procs before sharded training (loop until GPUs truly clear)
 export DPO_FULL=1
 for i in 1 2 3 4 5; do
