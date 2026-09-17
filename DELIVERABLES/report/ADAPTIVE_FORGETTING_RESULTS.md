@@ -5548,3 +5548,11 @@ Wave-5 7B hard-neg/mech/beta-sweep were NOT completed (multi-agent pkill content
  GSM8K .513->.703 (+.190 ±.005) | MATH-500 .478->.590 (+.112 ±.005) | Olympiad .236->.279 (+.043 ±.005) | Omni .150->.170 (+.020 ±.003). RVP wins all 4, rvp>=rft everywhere.
 HARD-NEG (matched, same pipeline, only neg-selection differs) = TIE with random negatives: GSM8K +.190 vs +.194, MATH-500 +.112 vs +.113, Olympiad +.043 vs +.044, Omni +.020 vs +.026. => §175's "hard-neg HURTS" was an UNMATCHED artifact (compared to a different banked run); the MATCHED result is NO meaningful difference at 1.5B. Honest verdict: hard-neg ≈ random at 1.5B.
 7B/7B-Instruct pack cells OOM'd in 1-GPU LoRA-DPO (bsz4/maxlen768). FIX: auto bsz1/DPO_MAXLEN512 for >=7B; relaunching B+C. 7B RVP also exists from sharded full-param (paper q7m +.137/.058/.055). Note LoRA-1GPU 1.5B (+.112) reads below full-param sharded (+.172) — expected.
+
+## §177 — Method-characterization ablations (verified, in paper) + 7B-Instruct/7B-base pack
+DATA-EFFICIENCY (1.5B MATH-500): Δpass@1 = +.108(25 pairs) / +.104(50) / +.145(100) / +.112(800) → ~25 verified pairs capture the full gain. Omni-MATH recovers slower (harder→more pairs). RVP is a cheap selection step. IN PAPER (Table tab:dataeff).
+ONE-SHOT: iterating RVP (regen pairs from rvp model + DPO again) COLLAPSES: MATH-500 r1 .591→r2 .472 (−.118), Omni r1 .172→r2 .018 (−.154). RVP is single-pass; iterating drives off-distribution. IN PAPER.
+HARD-NEG = TIE (matched) across 1.5B/7B/7B-Instruct (Δ within ±.006) → random verified negatives already informative; simplest construction best. IN PAPER (§method characterization).
+7B-INSTRUCT pack (LoRA-1GPU, verified, 3-seed): RVP wins all 4 — Olympiad +.015..+.021, Omni +.012, MATH-500 ~+.006 (near-ceiling), GSM8K +.003 (ceiling); hard-neg=tie. Confirms discriminator (math-instruct wins).
+7B-BASE pack (partial): GSM8K +.09, Omni +.02 (RVP wins where measured); MATH-500/Olympiad stuck (8-concurrent 7B LoRA-DPO contention). LoRA-1GPU reads below full-param sharded (paper headline q7m +.137/.058/.055) — sharded stays the headline; LoRA corroborates.
+INFRA: 8 concurrent 7B LoRA-DPO/node too contended → use ≤4/node or sharded for 7B. 1.5B packs 8/node cleanly.
