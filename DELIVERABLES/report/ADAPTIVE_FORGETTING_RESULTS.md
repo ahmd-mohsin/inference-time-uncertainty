@@ -5510,3 +5510,10 @@ NULL / INCONCLUSIVE (honest):
 - Qwen2.5-Math-7B-INSTRUCT scope test: INCONCLUSIVE — healthy bank (1299, unlike DeepSeek) + RVP/shuf DPOs completed, but pod died at eval → no pass@1. The "math-specialized-instruct wins vs instruct-tuning-collapses" discriminator is UNANSWERED. Needs fresh pod + re-run.
 
 INFRA (recurring, 3×: A-workers, C-main, B-main): pods die at the sustained-DPO→multi-engine-eval transition (host saturation). FIX shipped in math_hard_shard.sh: (1) SYNC_CKPT=1 to S3 BEFORE eval; (2) EVAL_CONC default 2→1 everywhere (one vLLM engine at a time); (3) per-arm result sync in eval loop. All 3 clusters now dead → needs fresh nodes to resume.
+
+## §172 — Instruct-base discriminator RESOLVED (2026-09-17)
+Qwen2.5-Math-7B-Instruct (math-specialized INSTRUCT), full RFT→RVP β=0.1, verified from raw ev JSONs:
+- Olympiad: base .3713 → rvp .4233 (+.052), rvp TOP arm (rft .390, xrft .395, shuf .395), cov .647→.667
+- Omni-MATH: base .2225 → rvp .2509 (+.028), rvp TOP arm (rft .234, xrft .238, shuf .230), cov .415→.435
+- MATH-500: still training (not harvested)
+CONCLUSION: RVP WINS on a math-specialized instruct base → the scope boundary is MATH-SPECIALIZATION, not instruct-vs-base. The Yi-1.5-9B-Chat collapse (§170/§171) was because Yi is a GENERAL RLHF-chat model, not math-specialized. Paper §scope rewritten accordingly. Death-proofed flywheel held (no pod deaths this wave). Still training: 1.5B NSEED=3 CIs (A), Mathstral-7B 3rd family (C, healthy banks ~1170).

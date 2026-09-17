@@ -423,18 +423,23 @@ Omni-MATH      & $.183$ ($+.034$) & $.189$ ($+.040$) & $.195$ ($+.046$) & $\best
 \end{tabular}
 \end{table}
 
-\paragraph{Scope: base-class dependence (honest boundary).}
-The win is specific to math-specialized pretrained bases. On a \emph{general} base
-(Qwen2.5-7B), RVP helps only where the base is weakest (Omni-MATH $+.040$), is null on Olympiad
-($-.002$), and regresses where the base is already strong (MATH-500 $-.038$); positive-only
-\emph{xrft} is $\ge$ RVP throughout. On an \emph{RLHF'd instruct} base (Yi-1.5-9B-Chat) RVP
-\emph{collapses} (Table~\ref{tab:bigmath}): $-.125$ to $-.164$ pass@1, Olympiad falling to $.013$
-with coverage $.487\!\to\!.153$. The mechanism explains the boundary: RVP's
-suppress-the-incorrect-mode step is productive when the base's own errors are informative,
-structured negatives (math-pretrained), and destructive when the model already sits on a heavily
-tuned distribution (instruct), where the negative gradient drives it off-distribution. Where RVP
-is unsafe, \emph{xrft} stays at base --- a safe positive-only fallback. Extending to external code
-benchmarks (MBPP/BigCodeBench) remains future work.
+\paragraph{Scope: the boundary is math-specialization, not instruct-tuning.}
+A natural worry is that RVP only works on raw pretrained bases and breaks under instruct-tuning.
+A controlled discriminator shows the opposite: the deciding axis is \emph{math-specialized
+pretraining}, and instruct-tuning per se is fine. On the math-specialized \emph{instruct} model
+\textbf{Qwen2.5-Math-7B-Instruct}, RVP still \emph{wins} and is the top arm --- Olympiad
+$.371\!\to\!.423$ ($+.052$) and Omni-MATH $.223\!\to\!.251$ ($+.028$), beating base, RFT,
+positive-only imitation (\emph{xrft}), and the shuffled-pair control (\emph{shuf}), at essentially
+constant coverage. By contrast RVP \emph{collapses} on the \emph{general} RLHF-chat base
+Yi-1.5-9B-Chat (Table~\ref{tab:bigmath}: $-.125$ to $-.164$ pass@1, Olympiad falling to $.013$,
+coverage $.487\!\to\!.153$), and is only mixed on a general \emph{base} (Qwen2.5-7B: helps where
+the base is weakest, Omni-MATH $+.040$; null on Olympiad; regresses on the already-strong
+MATH-500, $-.038$). The mechanism explains the axis: RVP's suppress-the-incorrect-mode step is
+productive when the model's own errors are informative, structured negatives (math-specialized
+pretraining --- \emph{base or instruct}) and destructive when the model sits on a heavily
+RLHF-tuned general distribution, where suppressing $\log\pi(y^{-})$ pushes mass off that tuned
+distribution. Where RVP is unsafe, positive-only \emph{xrft} stays at base --- a safe fallback.
+Extending to external code benchmarks (MBPP/BigCodeBench) remains future work.
 
 \begin{table}[htbp]
 \centering
