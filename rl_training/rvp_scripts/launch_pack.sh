@@ -35,8 +35,8 @@ node_script() { local n=$1; local out=""
   out+="cd \$HOME/inference-time-uncertainty && git pull --rebase 2>&1|tail -1\n"
   out+="pkill -9 -f math_hard_shard 2>/dev/null; pkill -9 -f accelerate.commands 2>/dev/null; pkill -9 -f 'math_rvp --mode' 2>/dev/null; pkill -9 -f sft_train 2>/dev/null; pkill -9 -f dpo_train 2>/dev/null; sleep 4\n"
   for g in 0 1 2 3 4 5 6 7; do local idx=$((n*8+g)); IFS='|' read m e nv h s tag <<< "${SPECS[$idx]}"
-    out+="setsid nohup env GPU=$g BASE=$m EVAL=$e NEVAL=$nv SEED=$s TAG=$tag ${h:+HARDNEG=$h} bash rl_training/rvp_scripts/math_cell_1gpu.sh >\$HOME/gu/logs/cell_${tag}.log 2>&1 & echo launched-${tag}-g$g\n"
-    out+="sleep 8\n"
+    out+="setsid nohup env GPU=$g BASE=$m EVAL=$e NEVAL=$nv SEED=$s TAG=$tag GEN_GPU_MEM=${PACK_GEN_MEM:-0.45} ${h:+HARDNEG=$h} bash rl_training/rvp_scripts/math_cell_1gpu.sh >\$HOME/gu/logs/cell_${tag}.log 2>&1 & echo launched-${tag}-g$g\n"
+    out+="sleep ${PACK_STAGGER:-8}\n"
   done
   printf "%b" "$out" | base64 | tr -d '\n'
 }
