@@ -43,6 +43,7 @@ def main():
     ap.add_argument("--temperature",type=float,default=0.8); ap.add_argument("--max-pairs-per",type=int,default=2)
     ap.add_argument("--shuffle",action="store_true"); ap.add_argument("--out",required=True); ap.add_argument("--seed",type=int,default=1)
     ap.add_argument("--data",default=None)  # margin mode: pairs.jsonl with prompt/chosen/rejected
+    ap.add_argument("--hard-neg",action="store_true")  # pairs: pick hardest (highest model-logprob) y-, best y+
     a=ap.parse_args()
     # --- margin mode: teacher-force y+/y- under the model, report mean per-token logp + logit margin ---
     # (mechanism panel: Prop 2 signature = margin up via logp(y-) down, no generation, HF not vLLM)
@@ -86,6 +87,8 @@ def main():
     with open(a.out,"w") as f:
         for r,o in zip(rows,outs):
             P=format_prompt(r,a.model); texts=[x.text for x in o.outputs]
+            # length-normalised model logprob per sample (for hard-negative mining)
+            score={x.text: (x.cumulative_logprob/max(len(x.token_ids),1)) for x in o.outputs}
             corr=[t for t in texts if verify(t,r["gold_answer"])]; inc=[t for t in texts if not verify(t,r["gold_answer"])]
             if a.mode=="bank":
                 for t in corr[:a.max_pairs_per]: f.write(json.dumps({"prompt":P,"completion":t})+"\n"); nbank+=1
@@ -95,7 +98,15 @@ def main():
                         for _ in range(min(a.max_pairs_per,len(texts)//2)):
                             x,y=rng.sample(texts,2); f.write(json.dumps({"prompt":P,"chosen":x,"rejected":y})+"\n"); npairs+=1
                 elif corr and inc:
-                    for _ in range(min(a.max_pairs_per,len(corr),len(inc))):
-                        f.write(json.dumps({"prompt":P,"chosen":rng.choice(corr),"rejected":rng.choice(inc)})+"\n"); npairs+=1
+                    if a.hard_neg:
+                        # hardest negatives = highest-logprob wrong answers (steal the most single-attempt mass);
+                        # best positives = highest-logprob correct. Deterministic top-k.
+                        ci=sorted(corr,key=lambda t:score.get(t,-1e9),reverse=True)
+                        ii=sorted(inc, key=lambda t:score.get(t,-1e9),reverse=True)
+                        for j in range(min(a.max_pairs_per,len(ci),len(ii))):
+                            f.write(json.dumps({"prompt":P,"chosen":ci[j%len(ci)],"rejected":ii[j]})+"\n"); npairs+=1
+                    else:
+                        for _ in range(min(a.max_pairs_per,len(corr),len(inc))):
+                            f.write(json.dumps({"prompt":P,"chosen":rng.choice(corr),"rejected":rng.choice(inc)})+"\n"); npairs+=1
     print(f"[math_{a.mode}] {'bank='+str(nbank) if a.mode=='bank' else 'pairs='+str(npairs)} -> {a.out}")
 if __name__=="__main__": main()

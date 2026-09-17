@@ -33,7 +33,7 @@ fi
 # pairs uses GPUs [0..TP-1], shuf uses [TP..2TP-1] so both run in parallel without collision.
 TP=${GEN_TP:-1}   # gen-only TP; eval stays single-GPU (VLLM_TP) to avoid TP-on-1-visible-GPU crash
 GENDEV_A=$(seq -s, 0 $((TP-1))); GENDEV_B=$(seq -s, $TP $((2*TP-1)))
-[ -s $V/pairs.jsonl ] || CUDA_VISIBLE_DEVICES=$GENDEV_A VLLM_TP=$TP GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1 &
+[ -s $V/pairs.jsonl ] || CUDA_VISIBLE_DEVICES=$GENDEV_A VLLM_TP=$TP GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 ${HARDNEG:+--hard-neg} --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1 &
 [ -s $V/shuf.jsonl ] || CUDA_VISIBLE_DEVICES=$GENDEV_B VLLM_TP=$TP GEN_GPU_MEM=${GEN_GPU_MEM:-0.55} python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset $BANK --split train --n $NBANK --k $KP --max-pairs-per 2 --shuffle --out $V/shuf.jsonl >$L/${TAG}_shufgen.log 2>&1 &
 wait
 python3 -c "import json;seen=set();f=open('$V/pos.jsonl','w')
