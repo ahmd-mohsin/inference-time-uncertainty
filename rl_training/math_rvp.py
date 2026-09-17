@@ -71,7 +71,7 @@ def main():
     rows=LOADERS[a.dataset](a)
     from vllm import LLM, SamplingParams
     llm=LLM(model=a.model,trust_remote_code=True,dtype="bfloat16",gpu_memory_utilization=float(os.environ.get("GEN_GPU_MEM","0.5")),max_model_len=int(os.environ.get("MAXLEN","2048")),tensor_parallel_size=int(os.environ.get("VLLM_TP","1")),enforce_eager=True)
-    sp=SamplingParams(n=a.k,temperature=(0.0 if a.mode=="eval" and a.k==1 else a.temperature),top_p=0.95,max_tokens=int(os.environ.get("MAXTOK","640")),seed=a.seed)
+    sp=SamplingParams(n=a.k,temperature=(0.0 if a.mode=="eval" and a.k==1 else a.temperature),top_p=0.95,max_tokens=int(os.environ.get("MAXTOK","640")),seed=a.seed,logprobs=(1 if a.hard_neg else None))
     prompts=[format_prompt(r,a.model) for r in rows]
     outs=llm.generate(prompts,sp)
     if a.mode=="eval":
@@ -87,8 +87,6 @@ def main():
     with open(a.out,"w") as f:
         for r,o in zip(rows,outs):
             P=format_prompt(r,a.model); texts=[x.text for x in o.outputs]
-            # length-normalised model logprob per sample (for hard-negative mining)
-            score={x.text: (x.cumulative_logprob/max(len(x.token_ids),1)) for x in o.outputs}
             corr=[t for t in texts if verify(t,r["gold_answer"])]; inc=[t for t in texts if not verify(t,r["gold_answer"])]
             if a.mode=="bank":
                 for t in corr[:a.max_pairs_per]: f.write(json.dumps({"prompt":P,"completion":t})+"\n"); nbank+=1
@@ -100,7 +98,8 @@ def main():
                 elif corr and inc:
                     if a.hard_neg:
                         # hardest negatives = highest-logprob wrong answers (steal the most single-attempt mass);
-                        # best positives = highest-logprob correct. Deterministic top-k.
+                        # best positives = highest-logprob correct. Deterministic top-k. Guard None logprob.
+                        score={x.text: ((x.cumulative_logprob or 0.0)/max(len(x.token_ids),1)) for x in o.outputs}
                         ci=sorted(corr,key=lambda t:score.get(t,-1e9),reverse=True)
                         ii=sorted(inc, key=lambda t:score.get(t,-1e9),reverse=True)
                         for j in range(min(a.max_pairs_per,len(ci),len(ii))):
