@@ -5556,3 +5556,9 @@ HARD-NEG = TIE (matched) across 1.5B/7B/7B-Instruct (Δ within ±.006) → rando
 7B-INSTRUCT pack (LoRA-1GPU, verified, 3-seed): RVP wins all 4 — Olympiad +.015..+.021, Omni +.012, MATH-500 ~+.006 (near-ceiling), GSM8K +.003 (ceiling); hard-neg=tie. Confirms discriminator (math-instruct wins).
 7B-BASE pack (partial): GSM8K +.09, Omni +.02 (RVP wins where measured); MATH-500/Olympiad stuck (8-concurrent 7B LoRA-DPO contention). LoRA-1GPU reads below full-param sharded (paper headline q7m +.137/.058/.055) — sharded stays the headline; LoRA corroborates.
 INFRA: 8 concurrent 7B LoRA-DPO/node too contended → use ≤4/node or sharded for 7B. 1.5B packs 8/node cleanly.
+
+## §178 — Wave-7 breadth (verified) + 2 infra blockers
+Qwen2.5-Math-1.5B (base) NEW datasets, 3-seed LoRA-1GPU: DeepMath .283->.360 (+.077), AMC .266->.376 (+.110), AIME .020->.041 (+.021, near-floor). RVP generalizes to competition-level AMC + DeepMath. IN PAPER.
+Qwen2.5-Math-1.5B-INSTRUCT: FLAT on all new datasets (DeepMath/AMC/AIME Δ≈0) despite headroom (base≈.50) -> small instruct model already selection-sharpened; RVP adds little. Finer base-vs-tuned nuance. IN PAPER.
+hard-neg = TIE (3rd confirmation).
+BLOCKERS handed back: (1) competition_math loader DEAD — hendrycks/competition_math removed from HF (DatasetNotFoundError); 12 cm cells wasted; drop cm / use math500+deepmath (did not guess a mirror). (2) 7B LoRA-DPO (1-GPU) fails NOT on OOM but TRL precompute_ref_log_probs -> NotImplementedError "Cannot copy out of meta tensor" at 7B (1.5B fine); route 7B via SHARDED full-param (paper headline q7m +.137/.058/.055). 0 p_m7 rvp from pack.
