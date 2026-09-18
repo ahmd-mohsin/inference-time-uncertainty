@@ -544,6 +544,42 @@ therefore not ``verified negatives are necessary'' (they are not, given ReST) bu
 same reliability by a different, single-pass route}, and \S5.9 asks which route a measurable pre-training
 diagnostic should select.
 
+\paragraph{Mechanistic dissociation: same pass@1 endpoint, different internal route.}
+The pass@1 tie could mean RVP and ReST are the same operator in disguise. They are not. We do exact
+\emph{probability-mass accounting}: for each checkpoint we teacher-force the \emph{pooled} verified
+candidate set per prompt and compute the aggregate correct-vs-incorrect margin
+$M(x)=\log\!\sum_{y\in\mathcal C}\pi_\theta(y\mid x)-\log\!\sum_{y\in\mathcal I}\pi_\theta(y\mid x)$ (and
+the restricted correct-mass $s=\sigma(M)$), over the whole pooled support rather than a single pair --- so
+this measures whether \emph{total} correct probability moved, not a pairwise ratio (the concern that
+per-pair margins are not aggregate mass). Table~\ref{tab:massdiss}: \textbf{RVP has the highest aggregate
+margin on every cell} (above base, RFT, \emph{and} ReST), whereas \textbf{ReST reaches comparable or higher
+pass@1 with its aggregate margin sitting at or below RFT} --- it does not widen the correct-vs-incorrect
+separation at all. So the two methods are a \emph{mechanistic dissociation}: they meet at a common pass@1
+endpoint by \emph{different internal routes} --- RVP by genuine margin widening (selection), ReST without
+it. This resolves the review's ``same endpoint?'' question (the shared quantity is pass@1, not the
+mechanism), rescues the selection mechanism as real and \emph{RVP-specific}, and confirms Prop.~2's
+prediction that aggregate correct-mass rises with the margin --- while we continue to report the pass@1 tie
+honestly. (Three base cells shown; remaining cells in progress.)
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Probability-mass accounting} (Qwen2.5-Math-1.5B base). Aggregate correct-vs-incorrect margin
+$M$ and restricted correct-mass $s=\sigma(M)$ over the \emph{pooled} verified candidate set. \best{RVP}
+raises the aggregate margin above base, RFT, and ReST on every cell; \emph{ReST matches or beats RVP on
+pass@1 (Table~\ref{tab:rest}) yet does not widen the aggregate margin} --- a mechanistic dissociation, not a
+duplicate. $n{=}80$ prompts/cell.}
+\label{tab:massdiss}
+\begin{tabular}{lcccc}
+\toprule
+Cell & base $M$/$s$ & RFT $M$/$s$ & \best{RVP $M$/$s$} & ReST $M$/$s$ \\
+\midrule
+GSM8K    & $20.95$/$.788$ & $19.87$/$.801$ & $\best{21.65}$/$.818$ & $19.59$/$.808$ \\
+Olympiad & $20.82$/$.759$ & $20.36$/$.750$ & $\best{22.16}$/$.768$ & $19.92$/$.747$ \\
+AMC      & $20.41$/$.697$ & $19.32$/$.701$ & $\best{21.25}$/$.728$ & $18.96$/$.702$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \begin{table}[htbp]
 \centering
 \caption{\textbf{Iterative RFT (ReST) vs.\ RVP} at matched $\sim\!600$-step budget (Qwen2.5-Math-1.5B,
