@@ -27,9 +27,11 @@ else
     wait; cat $V/bank.s*.jsonl > $V/bank.jsonl 2>/dev/null; rm -f $V/bank.s*.jsonl
   fi
   echo "bank=$(wc -l <$V/bank.jsonl)" >>$R
+  SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
   # 2) RFT (single-GPU LoRA) -> merged full model
   [ -d $V/rft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $B --data $V/bank.jsonl --out $V/rft --seed 1 --max-steps 300 --bsz $RFT_BSZ >$L/${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/${TAG}_rft.log 2>&1; }
   RFT=$V/rft/merged_full
+  SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 fi
 # 3) pairs + shuffled control. Gen is TP-aware: 14B (28GB bf16) does NOT fit single 40GB card
 # with KV cache -> vLLM EngineCore OOMs at gen start. VLLM_TP>1 splits weights across GPUs.
@@ -49,7 +51,7 @@ python3 -c "import json;seen=set();f=open('$V/pos.jsonl','w')
 echo "pairs=$(wc -l <$V/pairs.jsonl) pos=$(wc -l <$V/pos.jsonl)" >>$R
 # EARLY S3 sync of bank+pairs (jsonl) — pods have died during/after bank-gen (~1h in) losing all
 # work; syncing the generated data here means a re-run can reuse it instead of regenerating.
-python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
+SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 # free ALL lingering vLLM/GPU procs before sharded training (loop until GPUs truly clear)
 export DPO_FULL=1
 for i in 1 2 3 4 5; do
@@ -63,12 +65,15 @@ for s in $(seq 1 $NSEED); do
   [ -f $V/rvp_s$s/config.json ] && continue
   CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 DPO_FULL=1 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 --main_process_port $((29500+RANDOM%2000)) \
     -m rl_training.dpo_train --full --model $RFT --data $V/pairs.jsonl --out $V/rvp_s$s --seed $s --beta ${DPO_BETA:-0.1} --max-steps ${DPO_STEPS:-300} --bsz 1 >$L/${TAG}_rvp$s.log 2>&1
+  SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 done
 # 4b) shuffled-pair control (sharded full-param DPO)
 [ -f $V/shuf/config.json ] || CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 DPO_FULL=1 python3 -m accelerate.commands.launch --config_file $ACC --num_processes 8 --main_process_ip 127.0.0.1 --main_process_port $((29500+RANDOM%2000)) \
     -m rl_training.dpo_train --full --model $RFT --data $V/shuf.jsonl --out $V/shuf --seed 1 --beta ${DPO_BETA:-0.1} --max-steps ${DPO_STEPS:-300} --bsz 1 >$L/${TAG}_shuf.log 2>&1
+SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 # 4c) xrft positive-only (single-GPU LoRA)
 [ -d $V/xrft/merged_full ] || { CUDA_VISIBLE_DEVICES=0 python3 -m rl_training.sft_train --model $RFT --data $V/pos.jsonl --out $V/xrft --seed 1 --max-steps 300 --bsz $RFT_BSZ >$L/${TAG}_xrft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/xrft')" >>$L/${TAG}_merge.log 2>&1; }
+SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 # 4d) CONSOLIDATE — DISABLED by default. The full-param save (zero3_save_16bit_model + tok.save_pretrained)
 # is already a complete HF dir that vLLM loads; reloading 7B x5 to re-save was UNNECESSARY and OOM-killed
 # the pods (host-memory spike -> B & C died here). Only the pre-eval GPU-clear (below) was actually needed.
