@@ -77,10 +77,20 @@ def main():
     prompts=[format_prompt(r,a.model) for r in rows]
     outs=llm.generate(prompts,sp)
     if a.mode=="eval":
+        save_samples=os.environ.get("SAVE_SAMPLES")=="1"  # also store per-sample answer+correctness (self-consistency / best-of-n analysis)
         per=[]; cov=0
         for r,o in zip(rows,outs):
-            c=sum(1 for x in o.outputs if verify(x.text,r["gold_answer"])); kk=len(o.outputs); cov+=int(c>0)
-            per.append({"c":c,"k":kk})
+            g=r["gold_answer"]; oks=[1 if verify(x.text,g) else 0 for x in o.outputs]
+            c=sum(oks); kk=len(o.outputs); cov+=int(c>0)
+            rec={"c":c,"k":kk}
+            if save_samples:
+                anss=[]
+                for x in o.outputs:
+                    ans=extract_boxed_answer(x.text)
+                    if ans is None or str(ans).strip()=="": ans=extract_numeric_answer(x.text)
+                    anss.append(("" if ans is None else str(ans).strip()))
+                rec["ans"]=anss; rec["ok"]=oks; rec["gold"]=str(g)
+            per.append(rec)
         n=len(rows); p1=sum(p["c"]/p["k"] for p in per)/n
         json.dump({"model":a.model,"n":n,"k":a.k,"pass1":p1,"coverage_passk":cov/n,"per_problem":per},open(a.out,"w"),indent=2)
         print(f"[math_eval] n={n} k={a.k} pass1={p1:.4f} cov={cov/n:.4f}")
