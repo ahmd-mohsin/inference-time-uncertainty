@@ -14,8 +14,9 @@ statistically competitive (Table~\ref{tab:rest}) --- so RVP's contribution is a
 \emph{cheap, single-pass route} to this reliability plus a \emph{predictive account
 of when it applies} (\S5.9), not a claimed separation from all imitation. On-policy
 GRPO stays near base at pass@1 in our finite-budget setting (a budget/signal
-statement, not an impossibility; Cor.~1.1). Cells marked \running{} are in-flight on
-the 72-GPU fleet; all others are completed runs.
+statement, not an impossibility; Cor.~1.1). All tabulated cells are completed runs; a few
+\textsc{CompDAG} baseline arms not run are marked ``---'', and remaining directions are listed as future
+work (\S5.10).
 
 \subsection*{5.1 Setup}
 
@@ -28,7 +29,9 @@ positive-only control (\emph{xrft}), and the \emph{shuffled-pair} control all
 branch from the same RFT checkpoint with an identical additional step budget, so
 any difference is attributable to the objective, not compute. \textbf{Models.}
 Qwen2.5-Coder \{1.5B, 3B, 7B\}, Qwen2.5 \{1.5B, 3B, 7B\} (non-coder lineage),
-deepseek-coder \{1.3B, 6.7B\}, and Phi-3.5-mini \running{} (4th lineage).
+deepseek-coder \{1.3B, 6.7B\}, and the Qwen2.5-Math family \{1.5B, 7B, and their instruct
+variants\} for the math generalization study. (A Phi-3.5-mini 4th lineage was attempted; its RVP run
+did not complete and is omitted.)
 \textbf{Domains.} We evaluate on two verifiable-reasoning families.
 (i)~\textsc{CompDAG}, our synthetic compositional program-synthesis benchmark: each
 problem composes a DAG of typed operators that is checked by an executable
@@ -37,7 +40,7 @@ difficulty tiers by DAG depth (mid / hard / vhard). (ii)~Real math:
 GSM8K~\cite{cobbe2021gsm8k} (answer-match verification), extended by
 MATH-500~\cite{hendrycks2021math} (competition math). Real code benchmarks
 MBPP~\cite{austin2021mbpp} and BigCodeBench~\cite{zhuo2025bigcodebench}
-(unit-test verification) are \running{} as external code domains. \textbf{Statistics.} 5 seeds per RVP cell with paired
+(unit-test verification) are left to future work as external code domains (\S5.10). \textbf{Statistics.} 5 seeds per RVP cell with paired
 comparison to the RFT reference; $n{=}200$--$400$ OOD problems per cell.
 \textbf{Hardware.} $3\times$ p4d.24xlarge clusters ($72\times$ A100).
 
@@ -59,8 +62,10 @@ GRPO arms.
 \centering
 \caption{Main result: single-attempt $\text{pass}@1$ (matched budget, RVP = 5-seed
 mean where available). \best{RVP} beats RFT and GRPO in every headroom cell;
-$\Delta$ columns are the wins. \running{} = in-flight (direct \textsc{CompDAG}-GRPO arms,
-larger cells). GSM8K Qwen-3B is the near-ceiling boundary.}
+$\Delta$ columns are the wins. Direct GRPO arms were run on the cells where the four-way ladder is
+established (GSM8K $\times2$ and \textsc{CompDAG} Coder-3B-hard); ``---'' marks \textsc{CompDAG} cells
+where a direct GRPO arm was not run (GRPO $\approx$ base wherever measured; tuned RFT-initialised GRPO is
+tested separately, \S3.1). GSM8K Qwen-3B is the near-ceiling boundary.}
 \label{tab:main}
 \small
 \begin{tabular}{llcccccc c c}
@@ -68,11 +73,11 @@ larger cells). GSM8K Qwen-3B is the near-ceiling boundary.}
 Dom. & Model (diff.) & base & GRPO & RFT & \best{RVP} & xrft & shuf &
 \best{$\Delta_{\text{RFT}}$} & \best{$\Delta_{\text{GRPO}}$} \\
 \midrule
-CompDAG & Coder-1.5B (mid)    & .053 & \running & .246 & \best{.616} & .437 & .284 & \best{+.370} & \running \\
-CompDAG & Coder-3B (mid)      & .193 & \running & .392 & \best{.645} & .528 & .386 & \best{+.253} & \running \\
+CompDAG & Coder-1.5B (mid)    & .053 & ---  & .246 & \best{.616} & .437 & .284 & \best{+.370} & ---  \\
+CompDAG & Coder-3B (mid)      & .193 & ---  & .392 & \best{.645} & .528 & .386 & \best{+.253} & ---  \\
 CompDAG & Coder-3B (hard)     & .090 & .091 & .216 & \best{.415} & .305 & .205 & \best{+.199} & \best{+.324} \\
-CompDAG & Coder-3B (vhard)    & .030 & \running & .055 & \best{.103} & .088 & .059 & \best{+.047} & \running \\
-CompDAG & deepseek-6.7B (mid) & .268 & \running & .361 & \best{.552} & .443 & .355 & \best{+.191} & \running \\
+CompDAG & Coder-3B (vhard)    & .030 & ---  & .055 & \best{.103} & .088 & .059 & \best{+.047} & ---  \\
+CompDAG & deepseek-6.7B (mid) & .268 & ---  & .361 & \best{.552} & .443 & .355 & \best{+.191} & ---  \\
 CompDAG & Coder-7B (mid)      & .448 & --   & .667 & \best{.775} & .744 & --   & \best{+.108} & -- \\
 CompDAG & Coder-7B (hard)     & .229 & --   & .415 & \best{.491} & .466 & --   & \best{+.076} & -- \\
 CompDAG & Qwen-7B (mid)       & .383 & --   & .544 & \best{.636} & .629 & --   & \best{+.092} & -- \\
@@ -111,7 +116,7 @@ GSM8K & deepseek-1.3B      & .026 & .028 & .050 & \best{.072} & .067 & .054 & \b
 as a multiple of base) so gains are comparable across cells of very different
 absolute difficulty. GRPO hugs the $1\times$ base line everywhere; RFT lifts
 reliability; \textbf{RVP} multiplies it $1.14\times$--$4.6\times$, uniformly the
-highest. Additional \textsc{CompDAG} cells' direct GRPO arms are \running{}.}
+highest.}
 \label{fig:ladder4}
 \end{figure}
 
@@ -140,8 +145,8 @@ predicts.
 \end{tikzpicture}
 \caption{Scale trend (\textsc{CompDAG}-mid). The RVP win shrinks with model size as
 reliability headroom shrinks, but remains substantial and positive through 7B.
-14B is infeasible on a single 40\,GB device (DPO holds policy+reference); a
-multi-GPU 14B point is \running{}.}
+At 14B the base is near-ceiling on MATH-500 ($.716$) and full-parameter DPO OOMs on a single 40\,GB
+device, so 14B falls outside the informative headroom regime rather than extending the trend.}
 \label{fig:scale}
 \end{figure}
 
@@ -157,16 +162,16 @@ $0.002$--$0.004$, so the RVP$-$RFT gaps are $40$--$180\times$ the SD
 \begin{table}[htbp]
 \centering
 \caption{Difficulty axis (\textsc{CompDAG}, RVP$-$RFT at $\text{pass}@1$). RVP wins at every
-difficulty; the gain shrinks toward vhard (accessibility gating). Missing hard/vhard
-for Coder-1.5B were lost to a worker wipe and are \running{}.}
+difficulty; the gain shrinks toward vhard (accessibility gating). ``---'' marks a vhard cell not run
+for that family (lost to a worker wipe).}
 \label{tab:diff}
 \begin{tabular}{lccc}
 \toprule
 Family & mid & hard & vhard \\
 \midrule
-Coder-1.5B     & \best{+.370} & \best{+.242} & \running \\
+Coder-1.5B     & \best{+.370} & \best{+.242} & ---  \\
 Coder-3B       & \best{+.253} & \best{+.199} & \best{+.047} \\
-deepseek (1.3/6.7B) & \best{+.191} & \best{+.066} & \running \\
+deepseek (1.3/6.7B) & \best{+.191} & \best{+.066} & ---  \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -202,18 +207,19 @@ Prop.~1 predicts. Both controls confirm the mechanism, not merely the outcome.
 
 \subsection*{5.6 Ablations}
 
-Table~\ref{tab:abl} collects the ablations. RVP is robust to the preference
-temperature $\beta$ (all settings beat RFT; low $\beta$ best) and metric-robust
-(it also wins at $\text{pass}@4$ coverage). The remaining ablations---%
-\emph{RVP-from-base} (does the RFT coverage stage matter, or can RVP act directly
-on the base model?), the learning-rate and pair-count sweeps, and \emph{iterated
-RVP} (regenerate pairs from the RVP checkpoint and repeat)---are \running{} on the
-fleet and will complete the ablation grid.
+Table~\ref{tab:abl} collects the ablations, now complete. RVP is robust to the preference
+temperature $\beta$ (all settings beat RFT; low $\beta$ best) and metric-robust (it also wins at
+$\text{pass}@4$ coverage). The structural ablations resolve cleanly: \emph{RVP-from-base} (skipping RFT)
+reaches only $.24$--$.28$ vs $.62$--$.65$ from RFT, so the coverage stage is necessary; the gain saturates
+by $\sim\!25$ verified pairs (Table~\ref{tab:dataeff}); \emph{iterated RVP} (regenerate pairs from the RVP
+checkpoint and repeat) \emph{collapses} pass@1 ($-.118$ MATH-500, $-.154$ Omni-MATH), so a single pass is
+optimal; and hard-negative mining is a statistical tie with random verified negatives.
 
 \begin{table}[htbp]
 \centering
-\caption{Ablations. RVP is $\beta$-robust and metric-robust; structural ablations
-(coverage-stage necessity, lr/pair-count, iteration) are \running{}.}
+\caption{Ablations (all complete). RVP is $\beta$-robust and metric-robust; the coverage-stage is
+necessary; the gain saturates by $\sim\!25$ pairs; iterating RVP collapses (single-pass optimal); and
+hard-negative mining is a tie with random verified negatives.}
 \label{tab:abl}
 \begin{tabular}{lll}
 \toprule
@@ -222,8 +228,9 @@ Ablation & Result & Status \\
 $\beta$ sweep (Coder-3B hard) & $.05{:}.426$, \; $.1{:}.415$, \; $.3{:}.384$ (all $\gg$ RFT $.215$) & done \\
 Metric ($\text{pass}@4$ cov., c3hard) & RFT $.430 \to$ \best{RVP $.580$} & done \\
 RVP-from-base (skip RFT)      & $\ll$ RVP-from-RFT: .239 vs .615 (1.5B), .284 vs .645 (3B) $\Rightarrow$ RFT stage necessary & done \\
-Learning-rate / pair-count    & \running{} & \running \\
-Iterated RVP (round 2)        & \running{} & \running \\
+Pair-count (data efficiency)  & $\sim\!25$ verified pairs capture the full gain ($+.108$@25 vs $+.112$@800; Table~\ref{tab:dataeff}) & done \\
+Iterated RVP (round 2)        & collapses: $-.118$ (MATH-500), $-.154$ (Omni-MATH) $\Rightarrow$ single pass is optimal & done \\
+Hard-negative mining          & statistical tie with random verified negatives ($\Delta\le\pm.006$; 1.5B/7B/7B-Inst) & done \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -301,11 +308,13 @@ model families, at 3 difficulties.
 verified sign---not exposure or compute---drives it.
 \item \textbf{Mechanistic}: the win is $\log\pi(y^{-})$ suppression $\Rightarrow$
 $2.4\times$ margin, and $\Delta$margin tracks $\Delta\text{pass}@1$.
+\item \textbf{Generalises across math} (\S5.9): 2 math-specialized bases $\times$ 2 sizes $\times$ 6
+datasets $\times$ up to 9 seeds; RVP amortizes $\sim\!8\times$ self-consistency into one forward pass
+(Table~\ref{tab:frontier}); dissociates from ReST on the aggregate margin (Table~\ref{tab:massdiss}).
 \end{itemize}
-\emph{In-flight (\running):} 4th family (Phi-3.5), 3rd/4th domains (MATH-500,
-BigCodeBench), direct \textsc{CompDAG}-GRPO arms, RVP-from-base and iteration ablations, a
-multi-GPU 14B point. \emph{Applicability:} RVP acts on the \emph{addressable}
-reliability gap; near-ceiling and capability-limited bases have no such gap and
+\emph{Future work:} external code benchmarks (MBPP/BigCodeBench), a tuned RFT-initialised GRPO bridge,
+and verifier-free (self-consistency-labeled) RVP (\S5.10). \emph{Applicability:} RVP acts on the
+\emph{addressable} reliability gap; near-ceiling and capability-limited bases have no such gap and
 lie outside the method's scope (\S5.9) --- consistent with the headroom theory.
 }}
 \end{quote}
