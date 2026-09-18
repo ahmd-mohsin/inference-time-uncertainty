@@ -44,11 +44,11 @@ def probe(tok, model, prompt, completion, maxlen):
     tgt = fids[0, cs + 1:]                       # actual completion token ids to predict
     per_layer = []
     for h in hs[1:]:                             # skip embedding layer
-        logits = lm(norm(h[0, cs:-1].float()))   # [Tc, V] logit-lens at this layer
+        logits = lm(norm(h[0, cs:-1])).float()   # [Tc, V] logit-lens (keep model dtype into matmul, float logits)
         lp = torch.log_softmax(logits, -1)
         per_layer.append(lp.gather(-1, tgt.unsqueeze(-1)).squeeze(-1).mean().item())
     # decisiveness: entropy of the FINAL-layer next-token dist over completion positions
-    flog = torch.log_softmax(lm(norm(hs[-1][0, cs:-1].float())), -1)
+    flog = torch.log_softmax(lm(norm(hs[-1][0, cs:-1])).float(), -1)
     ent = (-(flog.exp() * flog).sum(-1)).mean().item()
     return per_layer, ent, [h[0, cs:-1].float().mean(0) for h in hs[1:]]  # + per-layer mean resid (for drift)
 
