@@ -475,6 +475,73 @@ Omni-MATH  & $\best{+.035}$ ($.148\!\to\!.183$) & $+.011$ & $+.014$ \\
 \end{tabular}
 \end{table}
 
+\paragraph{RVP amortizes inference-time selection into the weights (vs.\ best-of-$n$ / self-consistency).}
+A natural challenge to any pass@1 method is: \emph{why not just sample $n$ times at inference and select
+(self-consistency / best-of-$n$)?} Table~\ref{tab:frontier} answers it directly. RVP runs at $n{=}1$ (a
+single forward pass); we compare its accuracy to the \emph{base} model spending $n$ samples via
+majority-vote self-consistency, on Qwen2.5-Math-1.5B. Across datasets, \textbf{RVP@1 matches base
+self-consistency at $n\approx4$--$16$ samples (median $8$)} --- i.e.\ RVP bakes roughly an $8\times$
+inference-time selection budget into the weights, recoverable at single-shot cost. RVP@1 remains below
+the \emph{oracle} best-of-$n$ (a perfect verifier that always picks a correct sample if one exists),
+exactly as it should: RVP is a realistic, verifier-free single-shot selector, not a coverage upper bound.
+The gains also \emph{compose} --- self-consistency on top of the RVP model climbs further --- so RVP is a
+strictly cheaper operating point on the reliability--compute frontier, not a replacement for sampling
+where sampling is affordable.
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Reliability--compute frontier} (Qwen2.5-Math-1.5B, $k{=}16$). RVP@1 is a single forward
+pass; base columns spend $n$ samples. $n^{\star}$ is the number of self-consistency samples the base needs
+to \emph{reach} RVP@1. RVP@1 $\approx$ base self-consistency at $n\approx4$--$16$ (median $8$) --- an
+$\sim\!8\times$ inference budget amortized into the weights --- while staying below oracle best-of-$n$
+(perfect verifier). On Olympiad the RVP gain is small so self-consistency catches it by $n{\approx}4$.}
+\label{tab:frontier}
+\begin{tabular}{lccccc c}
+\toprule
+Dataset & base@1 & \best{RVP@1} & base maj@4 & base maj@8 & oracle bo@4/@8 & \best{$n^{\star}$} \\
+\midrule
+GSM8K    & .517 & \best{.718} & .642 & .723 & .860/.926 & $\sim$8 \\
+MATH-500 & .487 & \best{.591} & .578 & .629 & .728/.792 & $\sim$8 \\
+AMC      & .280 & \best{.362} & .354 & .433 & .588/.718 & $\sim$8 \\
+DeepMath & .279 & \best{.364} & .325 & .361 & .544/.649 & $\sim$16 \\
+Olympiad & .235 & \best{.273} & .287 & .326 & .427/.500 & $\sim$4 \\
+Omni-MATH& .149 & \best{.182} & .171 & .184 & .265/.326 & $\sim$8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Comparison to iterative RFT (ReST): honest near-tie, with an efficiency and hard-set edge.}
+The strongest ``just do more imitation'' baseline is iterative rejection-sampling FT
+(ReST/STaR): regenerate a verified bank from the RFT model and SFT again. At \emph{matched} training budget
+($\text{rft2}$: fresh bank $+600$ SFT steps; RVP: $300$ SFT $+300$ DPO, both $\sim\!600$ steps from base),
+the two are a \emph{statistical tie} (Table~\ref{tab:rest}): RVP edges ReST on the four harder,
+lower-ceiling sets (MATH-500/Omni/AMC/DeepMath, $+.002$ to $+.009$) and ties on GSM8K/Olympiad ($\pm.003$).
+We report this plainly: a second imitation round closes most of the pass@1 gap on easy/mid problems. RVP's
+residual advantages are (i) a small consistent edge where headroom is hardest, and (ii) efficiency --- one
+pass, no second bank-generation round --- consistent with the margin mechanism (RVP's selection lever is
+already saturated by $\sim\!25$ pairs, Table~\ref{tab:dataeff}, whereas ReST pays for a full extra
+sampling+SFT round).
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Iterative RFT (ReST) vs.\ RVP} at matched $\sim\!600$-step budget (Qwen2.5-Math-1.5B,
+$k{=}16$, seed s1). A near-tie: RVP edges ReST on the harder sets and ties on the easier ones. Honest
+baseline --- ``more imitation'' is competitive; RVP wins on efficiency (single pass) and hard-set margin.}
+\label{tab:rest}
+\begin{tabular}{lcccc}
+\toprule
+Dataset & RFT ($300$) & ReST ($600$) & \best{RVP} & $\Delta$ (RVP$-$ReST) \\
+\midrule
+MATH-500 & .570 & .581 & \best{.585} & $+.004$ \\
+Olympiad & .268 & \best{.284} & .283 & $-.001$ \\
+GSM8K    & .672 & \best{.720} & .718 & $-.003$ \\
+Omni-MATH& .175 & .175 & \best{.185} & $+.009$ \\
+AMC      & .330 & .361 & \best{.363} & $+.002$ \\
+DeepMath & .338 & .354 & \best{.359} & $+.006$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \paragraph{Scope: the boundary is math-specialization, not instruct-tuning.}
 A natural worry is that RVP only works on raw pretrained bases and breaks under instruct-tuning.
 A controlled discriminator shows the opposite: the deciding axis is \emph{math-specialized

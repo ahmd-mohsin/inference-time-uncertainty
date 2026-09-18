@@ -5577,3 +5577,27 @@ HEADLINE (honest, headroom-gated): RVP gain scales with the addressable RFT gap.
 MECH (2 panels, f24_m15_m500_s1 + f24_m7i_m500_s1): max margin-gain concentrates in LATE layers — 26/28 (1.5B), 21/28 (7B). RVP sharpens the final decision, not early features (consistent with §165/§167 late-layer decisiveness).
 FIXES applied live + shipped: (1) launch_final24 GEN_GPU_MEM 0.30→0.85 for 7B (0.30 too low → vLLM ValueError, all C cells died at bank-gen; script edited). (2) HF 429 when 8 cells/node hit HF at once (~2/node → RFT_FAILED); recovered from on-node cache; consider stagger/HF_TOKEN. (3) mech_interp.py logit-lens dtype crash (float vs BFloat16) fixed+pushed (commit 2b63203: keep bf16 into norm+lm_head, float the logits).
 CAVEATS: olympiad(A)+deepmath(A/C) landed 2 seeds not 4 (429/straggler); a few tags may have run on 2 nodes from the 0.30→0.85 re-dispatch (S3 last-writer-wins; harmless, seed variance tight). All per-stage S3-synced under cmohsinm-rvp/f24_*.
+
+## §181 — Award-push wave (2026-09-18): inference-time-selection frontier (P0.1, WIN) + iterative-RFT/ReST baseline (P0.3, honest tie)
+Cluster A (Qwen2.5-Math-1.5B base), k=16, seed s1, using the on-node final-24 RVP checkpoints. All S3-synced (frontier_*.json, ev_rft2.json). New code: SAVE_SAMPLES eval + selectbench.py + run_5h.sh (committed 704ada0).
+
+**P0.1 cost-reliability frontier — RVP@1 vs base inference-time selection (closes "why not best-of-n / self-consistency?"):**
+RVP@1 is ONE forward pass; base columns spend n samples. n* = samples where base majority-vote self-consistency reaches RVP@1.
+ dataset  base@1  RVP@1  base maj@4  maj@8  oracle-bestof@4/@8  n*
+ GSM8K    .517    .718   .642        .723   .860/.926           ~8
+ MATH-500 .487    .591   .578        .629   .728/.792           ~8
+ AMC      .280    .362   .354        .433   .588/.718           ~8
+ DeepMath .279    .364   .325        .361   .544/.649           ~16
+ Olympiad .235    .273   .287        .326   .427/.500           ~4  (small RVP gain → SC catches it fast)
+ Omni     .149    .182   .171        .184   .265/.326           ~8
+FINDING: RVP@1 ≈ base self-consistency at ~4–16 samples (median 8) → RVP amortizes ~8× inference-time selection into the weights (one forward pass). Stays below oracle-best-of-n (perfect verifier) as expected — RVP is a realistic verifier-free single-shot selector, not a coverage cheat. HERO figure/table for the paper.
+
+**P0.3 iterative-RFT (ReST) baseline, matched ~600 training steps (rft2 = fresh bank from RFT model + 600 SFT; rvp = 300 SFT + 300 DPO):**
+ dataset  rft(300)  rft2(ReST,600)  rvp   rvp-rft2
+ MATH-500 .570      .581            .585  +.004
+ Olympiad .268      .284            .283  -.001
+ GSM8K    .672      .720            .718  -.003
+ Omni     .175      .175            .185  +.009
+ AMC      .330      .361            .363  +.002
+ DeepMath .338      .354            .359  +.006
+HONEST FINDING (null-leaning tie): iterative-RFT/ReST roughly MATCHES RVP at matched compute — RVP edges it on 4/6 (hard/low-ceiling sets, +.002..+.009) and ties on GSM8K/Olympiad (±.003). "Just do more RFT" closes most of the gap on easy/mid sets. RVP's residual advantage = (a) small consistent edge on hard sets, (b) one-pass efficiency (no 2nd bank-gen round). Report honestly, NOT as RVP≫ReST. Caveat: single-seed (s1); 4-seed CIs already exist from final-24 (§180).
