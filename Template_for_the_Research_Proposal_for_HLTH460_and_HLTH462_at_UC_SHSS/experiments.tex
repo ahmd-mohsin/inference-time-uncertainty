@@ -671,3 +671,40 @@ Omni-MATH      & $.121/.320$ & $.125$ & $.126$ & $.071/.220$ & $-.051$ \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection*{5.10 Limitations, reproducibility, and a note on training configurations}
+
+\paragraph{Two training configurations (why the Qwen2.5-Math-1.5B numbers differ across tables).}
+We report RVP under two implementations and label them so the reader does not read a contradiction.
+\textbf{Full-parameter sharded} DPO (ZeRO-3, the reliable path at $\ge\!7$B) gives the strongest 1.5B
+MATH-500 gain ($+.172{\pm}.019$, 3-seed, \S``Seed robustness''); \textbf{single-GPU LoRA-DPO} (the
+resilient 1-GPU ``cell'' used for the large fleet sweeps) is a few points lower on the same cell
+($+.125$ in Table~\ref{tab:genmath}, $+.100$ in the $4$-seed final-24 matrix Table~\ref{tab:final24}) ---
+expected, since LoRA updates a low-rank slice. All cross-table 1.5B differences are this
+sharded-vs-LoRA gap, not seed noise; the 7B headline (Table~\ref{tab:genmath}) is full-param sharded.
+Each table's caption states its configuration ($\beta$, steps, $k$, $n$).
+
+\paragraph{Limitations (stated as scope, not hidden).}
+(i) \textbf{Applicability is headroom-gated} (\S5.9): RVP needs an RFT-created addressable gap; it is
+near-flat once instruction-tuning has consumed that gap (both instruct variants) and \emph{regresses} on
+a general RLHF-chat base (Yi-1.5-9B-Chat, Table~\ref{tab:bigmath}) and where RFT fails to open a gap
+(Mathstral) --- so RVP is a targeted operator, not a universal post-training step; the safe fallback where
+it is unsafe is positive-only \emph{xrft}. (ii) \textbf{RVP is not uniquely necessary for the pass@1 gain}:
+a matched-compute second imitation round (ReST) is statistically competitive (Table~\ref{tab:rest}); RVP's
+distinct value is a single-pass route \emph{and} a genuine, ReST-absent widening of the aggregate margin
+(the mechanistic dissociation, Table~\ref{tab:massdiss}). (iii) \textbf{Statistical power}: several
+head-to-head cells are single-seed at $n{=}150$--$200$; per-dataset RVP-vs-ReST differences ($\le.009$) are
+within noise, so we treat them as equivalent pending a powered test ($\pm1$-pt equivalence margin needs
+$\sim\!1.8$k problems and $\ge\!3$ seeds; a multi-seed run is in progress). (iv) \textbf{Compute accounting}:
+``$300$ SFT $+300$ DPO $\approx\!600$ SFT steps'' equates step count, not tokens/verifier-calls/GPU-hours;
+the honest efficiency claim is only that RVP avoids a second reject-sample+SFT round. (v) \textbf{Domain}:
+verified evidence is math + synthetic \textsc{CompDAG}; an external code benchmark is future work. (vi)
+\textbf{Verifier dependence}: RVP presumes a parameter-independent verifier for self-labeling; verifier-free
+(self-consistency-labeled) RVP is untested.
+
+\paragraph{Reproducibility.}
+All results are per-stage checkpointed to S3 and reproducible from the released scripts
+(\texttt{math\_rvp.py}, \texttt{sft\_train.py}, \texttt{dpo\_train.py}, \texttt{mech\_interp.py},
+\texttt{mass\_accounting.py}, \texttt{selectbench.py}); $\text{pass}@1$ is the unbiased $k{=}16$ estimate at
+temperature $0.8$, coverage reported alongside, on OOD test splits disjoint from every training and
+preference-bank prompt. RVP uses one hyperparameter ($\beta{=}0.1$) throughout.
