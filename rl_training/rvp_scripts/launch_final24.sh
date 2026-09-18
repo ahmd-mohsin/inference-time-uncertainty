@@ -33,7 +33,7 @@ run_cluster() { local port=$1 w1=$2 w2=$3 base=$4 gm=$5
     echo -n 'W2 '; sshpass -p '' ssh $WSSH greenland-user@$w2 \"echo $B2 | base64 -d | bash\" </dev/null 2>&1 | grep -vaE 'Warning|Permanently|Pseudo'
   " 2>&1 | grep -vE "Warning|Permanently|Pseudo"
 }
-echo "=== A(4210) Qwen2.5-Math-1.5B ==="; build m15;  run_cluster 4210 10.2.88.179 10.2.140.204 Qwen/Qwen2.5-Math-1.5B 0.45
-echo "=== B(4211) Qwen2.5-Math-1.5B-Instruct ==="; build m15i; run_cluster 4211 10.2.110.65 10.2.68.155 Qwen/Qwen2.5-Math-1.5B-Instruct 0.45
-echo "=== C(4212) Qwen2.5-Math-7B-Instruct ==="; build m7i; run_cluster 4212 10.2.80.244 10.2.226.121 Qwen/Qwen2.5-Math-7B-Instruct 0.30
+echo "=== A(4210) Qwen2.5-Math-1.5B ==="; build m15;  run_cluster 4210 10.2.254.117 10.2.125.214 Qwen/Qwen2.5-Math-1.5B 0.45
+echo "=== B(4211) Qwen2.5-Math-1.5B-Instruct ==="; build m15i; run_cluster 4211 10.2.168.153 10.2.187.8 Qwen/Qwen2.5-Math-1.5B-Instruct 0.45
+echo "=== C(4212) Qwen2.5-Math-7B-Instruct ==="; build m7i; run_cluster 4212 10.2.2.198 10.2.122.243 Qwen/Qwen2.5-Math-7B-Instruct 0.30
 echo "[launch_final24] 72 cells dispatched $(date -u)"
