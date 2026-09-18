@@ -425,14 +425,19 @@ Omni-MATH      & $.183$ ($+.034$) & $.189$ ($+.040$) & $.195$ ($+.046$) & $\best
 
 \paragraph{Further breadth, and a finer instruct nuance.}
 On additional held-out sets RVP keeps generalizing on the \emph{base} math model
-(Qwen2.5-Math-1.5B): DeepMath $+.077$ ($.283\!\to\!.360$) and AMC $+.110$ ($.266\!\to\!.376$);
+(Qwen2.5-Math-1.5B): the largest gain is on \textbf{GSM8K} ($.508\!\to\!.714$, $+.206$),
+with DeepMath $+.077$ ($.283\!\to\!.360$) and AMC $+.110$ ($.266\!\to\!.376$);
 AIME sits near the model's floor ($.020\!\to\!.041$, little headroom). On the small \emph{instruct}
 variant (Qwen2.5-Math-1.5B-Instruct), by contrast, RVP is \emph{flat} on these harder sets even
 where headroom remains (AMC/DeepMath base $\approx.50$): a small instruct model's output
 distribution is already selection-sharpened, so the margin step adds little. This refines the
 base-vs-tuned picture --- math-specialized \emph{pretraining} is what RVP needs, and heavy
 instruction-tuning at small scale can pre-empt the selection headroom RVP would otherwise capture.
-Hard-negative mining remains a tie throughout.
+A completed $3\text{ models}\times 6\text{ datasets}\times 4\text{ seeds}$ matrix confirms this
+split at scale: on the base, RVP wins on \emph{all six} datasets (GSM8K, MATH-500, AMC, DeepMath,
+Olympiad, Omni-MATH; $+.04$ to $+.21$, per-seed spread ${\le}.006$), while both the 1.5B and 7B
+\emph{instruct} variants stay near-flat, with their only residual gains on the highest-headroom set
+(Olympiad). Hard-negative mining remains a tie throughout.
 
 \paragraph{Scope: the boundary is math-specialization, not instruct-tuning.}
 A natural worry is that RVP only works on raw pretrained bases and breaks under instruct-tuning.
