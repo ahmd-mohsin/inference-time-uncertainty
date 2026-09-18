@@ -176,18 +176,113 @@ so the laptop/tunnel can drop, with **per-stage S3 sync**.
 
 ---
 
-## 8. Experiment log (ledger § map)
+## 8. Experiments — the full record
 
-`ADAPTIVE_FORGETTING_RESULTS.md` records every wave honestly (wins, nulls, infra losses):
+Every experiment is logged in `DELIVERABLES/report/ADAPTIVE_FORGETTING_RESULTS.md` (referenced § numbers
+below). All pass@1 (single-attempt), matched compute budget, with a full control suite per cell:
+**base** (untrained), **rft** (imitation), **rvp** (ours), **xrft** (positive-only imitation ablation —
+LoRA on correct samples, *no* preference), **shuf** (shuffled-preference control — DPO on randomly
+signed pairs, isolates whether the *verified sign* matters). `Δ = rvp − base`.
 
-- **§170** 9-cell base×dataset generalization matrix (sharded, β=0.1/300).
-- **§172–§174** instruct-base discriminator resolved: math-instruct wins (boundary = math-specialization).
-- **§173** seed-CIs (in paper) + Mathstral cross-family collapse (honest limitation; requires a successful RFT gap).
-- **§175→§176** hard-neg "HURTS" was an **unmatched artifact**; the **matched** result is a **tie** — corrected in the ledger.
-- **§177** method characterization: data-efficiency, one-shot collapse, hard-neg=tie.
-- **§178** breadth (AMC +.110, DeepMath +.077 on base) + `competition_math` loader dead (dropped, not guessed) + 7B LoRA-DPO meta-tensor blocker (→ route sharded).
-- **§179** detached-run + S3 handoff protocol.
-- **§180** **final-24 matrix complete** (3×6×4, 71/72 cells, 0 failures) + late-layer mech panels + the 7B `GEN_GPU_MEM 0.30→0.85` fix.
+### 8.1 Measurement & motivation (§150, §160)
+The gap RVP attacks: models have **coverage (pass@k) ≫ reliability (pass@1)** — they *can* produce the
+correct answer but don't *select* it at one shot. Theory (§160, Prop 2) says a decoupled verified
+preference step reallocates probability mass from incorrect modes (I) to correct (C), i.e. raises the
+margin `m = logπ(y+) − logπ(y-)`, which lifts pass@1 without needing new capability.
+
+### 8.2 Dense method-validation grid — RVP > RFT across scale × family × domain (§161–§164)
+Original grid on competition-programming (CompDAG) + GSM8K, matched budget:
+
+| Cell | base | RFT | **RVP** | Δ (RVP−RFT) |
+|---|---|---|---|---|
+| Coder-1.5B, comp-mid | — | .246 | **.616** | +.370 |
+| deepseek-6.7B, comp-mid | — | .361 | **.552** | +.191 |
+| Coder-7B, comp-mid | — | .667 | **.775** | +.108 |
+| Qwen-7B (non-coder), comp-mid | .383 | .544 | **.636** | +.092 |
+| Coder-3B, comp-vhard | — | .055 | **.102** | +.047 |
+| GSM8K, Qwen-1.5B | .653 | .711 | **.747** | +.036 |
+| GSM8K, deepseek-1.3B | .026 | .050 | **.072** | +.022 |
+| GSM8K, Qwen-3B (ceiling) | .832 | .847 | .852 | ~0 (no headroom — predicted null) |
+
+- **Scale trend:** gain *shrinks* with size (1.5B +.37 → 6.7B +.19 → 7B +.11) but stays clearly positive at 7B — RVP does not wash out with scale; it tracks the headroom.
+- **Multi-axis:** holds across 3+ model lineages (Qwen-Coder, Qwen, deepseek), 2 domains (code + math), 3 difficulties; `shuf ≈ rft` and `rvp > xrft` wherever headroom exists.
+- **5-seed CIs (§164):** RVP−RFT gaps are **40–180× the 5-seed SD** (e.g. Coder-1.5B RVP .615/.615/.619/.616/.614) → publication-grade significance.
+
+### 8.3 The reliability ladder: base < GRPO(≈base) < RFT < RVP (§165–§167)
+Direct GRPO arms (`train_grpo` from base, same cell + metric as RVP):
+
+| Cell | base | GRPO | RFT | **RVP** |
+|---|---|---|---|---|
+| GSM8K Qwen-1.5B | .653 | .673 | .711 | **.747** |
+| GSM8K deepseek-1.3B | .026 | .028 | .050 | **.072** |
+| GSM8K Qwen-3B (ceiling) | .832 | .834 | .847 | .852 |
+
+GRPO barely moves off base on honest pass@1 — its update is coverage-throttled (Cor 1.1): 79% of
+prompts stay in the "almost-never-solved" pile, it rescues none. RFT moves ~30% out of that pile; RVP
+concentrates the mass. **This is a direct (not transitive) confirmation that RVP ≫ GRPO.**
+
+### 8.4 Mechanism — *why* it wins (§163, §167, §180)
+Teacher-forced per-token logp on the **same** held-out verified pairs, GSM8K Qwen-1.5B (§167):
+
+| stage | logp(y+) | logp(y−) | margin | reading |
+|---|---|---|---|---|
+| base | −0.110 | −0.139 | 0.029 | — |
+| GRPO | −0.109 | −0.139 | 0.029 | **identical to base** — moves nothing |
+| RFT | −0.092 | −0.119 | 0.027 | raises *both* modes (mode-covering); margin flat |
+| **RVP** | −0.092 | **−0.157** | **0.065** | keeps RFT's y+, **suppresses y−** → margin 2.4× |
+| shuf | −0.091 | −0.119 | 0.027 | = RFT → the gain is the **verified sign**, not the DPO objective |
+
+- On the 7B base the margin rises **25–30×** (m .015→.40–.49), driven by logp(y−) suppression (Δ≈−.5) ≫ logp(y+) (Δ≈−.1) — the exact Prop-2 signature (§171).
+- **Layer localization (§180 logit-lens panels):** the margin-gain concentrates in **late layers** (26/28 for 1.5B, 21/28 for 7B) — RVP sharpens the *final decision*, not early features, and not via longer chains-of-thought.
+
+### 8.5 Generalization matrix — 3 model classes × 3 math datasets (§170–§171, sharded full-param, β=0.1/300)
+
+| Base | MATH-500 | Olympiad | Omni-MATH | verdict |
+|---|---|---|---|---|
+| **Qwen2.5-Math-7B** (math base) | .597→.734 (**+.137**) | .295→.353 (**+.058**) | .197→.252 (**+.055**) | **RVP top arm all 3** |
+| **Qwen2.5-Math-1.5B** (math base) | .480→.652 (**+.172**, 3-seed ±.019) | .235→.324 (+.089) | .149→.195 (+.046) | RVP top arm |
+| Qwen2.5-7B (general base) | .501→.463 (−.038) | .250→.248 (−.002) | .155→.195 (+.040) | mixed (helps only where weak) |
+| Yi-1.5-9B-Chat (RLHF chat) | .446→.321 (−.125) | .177→.013 (−.164) | .121→.071 (−.051) | **collapses** |
+
+Headline = the two math-specialized bases; B/C are the honest **scope boundary**, not banked as wins.
+
+### 8.6 Scope boundary — the deciding axis is *math-specialized pretraining* (§172–§174, §173)
+- **Math-specialized instruct wins:** Qwen2.5-Math-7B-Instruct — Olympiad +.052, Omni +.028, MATH-500 +.020 (near-ceiling), RVP top arm all 3 ⇒ instruct-tuning per se is *fine*; the boundary is math-specialization, not instruct-vs-base.
+- **General RLHF-chat collapses:** Yi-1.5-9B-Chat (above) — suppressing logπ(y−) pushes mass off the aligned distribution.
+- **Precondition = a *successful* RFT gap (§173):** Mathstral-7B collapses (MATH-500 .455→.014) *because* RFT barely moved it (Δ+.002) → no addressable gap for RVP to convert. xrft stays healthy, localizing the cause to the DPO negative gradient. Honest cross-family limitation, in the paper.
+
+### 8.7 Ablations
+| Ablation | § | Result |
+|---|---|---|
+| **RFT stage necessary?** (RVP-from-base, `SKIP_RFT=1`) | §168-2 | Yes — RVP-from-base reaches only ~.24–.28 vs ~.62–.65 for RVP-from-RFT; the two-stage design is 2–3× better |
+| **Data efficiency** | §177 | ~**25** verified pairs capture the full gain (Δ+.108 @25 vs +.112 @800 on 1.5B/MATH-500); RVP is a cheap selection step |
+| **One-shot?** | §177 | Yes — *iterating* RVP collapses it (−.118 MATH-500, −.154 Omni); one selection pass is optimal |
+| **Hard-negative mining** | §175→§176→§177 | **Tie** with random verified negatives (matched, Δ within ±.006). §175's "hard-neg HURTS" was an *unmatched artifact* — corrected; simplest construction wins |
+| **β-robustness** | §171 | Net-positive across β∈{0.1,0.2,0.5} on all 3 datasets; optimum β≈0.1–0.2; only extreme-low β=0.03 over-optimizes |
+| **Seed CIs** | §173 | +.172±.019 / +.089±.003 / +.046±.008 (MATH-500/Olympiad/Omni); every seed beats every control |
+
+### 8.8 Final-24 matrix — the largest, cleanest confirmation (§180)
+Fresh fleet, resilient 1-GPU pack, **3 models × 6 datasets × 4 seeds = 72 cells, 71/72 done, 0 failures**, per-stage S3-synced.
+
+| dataset | base | **rvp** | Δ | seeds |
+|---|---|---|---|---|
+| gsm8k | .508 | .714 | **+.206** | 4 |
+| math500 | .485 | .585 | **+.100** | 4 |
+| amc | .281 | .370 | **+.089** | 4 |
+| deepmath | .282 | .356 | **+.074** | 2 |
+| olympiad | .235 | .273 | **+.039** | 4 |
+| omni_math | .148 | .183 | **+.035** | 4 |
+*(A = Qwen2.5-Math-1.5B base — wins all 6; per-seed spread ≤.006, e.g. gsm .718/.711/.715/.712.)*
+
+- **B = Qwen2.5-Math-1.5B-Instruct:** flat (m500 +.005, gsm −.004 @ceiling, amc +.025).
+- **C = Qwen2.5-Math-7B-Instruct:** small positive (olymp +.025, amc +.016, omni +.014, m500 +.010, gsm +.002 @ceiling); rvp≈rft.
+- **Mechanism panels** for `f24_m15_m500_s1` + `f24_m7i_m500_s1` (late-layer, §8.4).
+
+### 8.9 Infrastructure story & honesty log
+- **Recurring pod death** (every few hours) at two stages: the DPO→eval transition (host saturation) and bank-gen (~1h, TTL/reclaim). **Fixes:** per-stage S3 sync (bank/pairs early, ckpt before eval, per-arm results), `EVAL_CONC=1` (one vLLM engine at a time), detached `setsid` runs, resilient 1-GPU packing.
+- **Bugs found & fixed live:** sympy `answers_match` infinite hang (SIGALRM 2s guard); DPO bsz4→1 OOM for 7B; fused-QKV LoRA for Phi/Gemma; 7B LoRA-DPO meta-tensor error → route via sharded full-param; `mech_interp` bf16/float logit-lens crash; 7B `GEN_GPU_MEM 0.30→0.85` (0.30 killed all C cells at bank-gen); HF 429 rate-limiting when 8 cells/node hit HF at once (recover from on-node cache).
+- **Honest retractions/corrections:** §169 withdrew a confounded RVP-from-base "null" (over-optimized DPO β=0.3/150 → re-run gentle β=0.1); §176 corrected the hard-neg "HURTS" artifact to a tie. `competition_math` HF loader is dead (removed upstream) → dropped, not guessed.
+- **Nulls kept as findings:** GSM8K-3B (no headroom), general-base and RLHF-chat scope boundaries, Mathstral cross-family collapse — none hidden.
 
 ---
 
