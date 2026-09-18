@@ -127,3 +127,27 @@ tightness, external-domain validity, and writing**.
 
 Everything runs detached + per-stage S3-synced (nodes cycle); harvest immediately; report honestly
 (nulls stay). The paper is already solid — items 1–3 are what turn "solid" into "award contender."
+
+---
+
+# Astra-informed revision (GPT-6 Astra review, 2026-09-18 — see ASTRA_REVIEW_GPT6.md)
+
+Astra's verdict: strong empirics, but **not award-competitive as written** because the *conceptual* claim (RVP uniquely opens a selection axis; verified negatives are necessary) is (a) partly false theoretically and (b) undermined by the ReST near-tie. The award path is to **reframe around a predictive science result**, not a new objective.
+
+## MUST-FIX before any submission (biggest threat)
+- **Theory is wrong as stated.** (1) Prop 1 ("positive-only CE can't suppress incorrect modes") is FALSE for a softmax: ∂logπ(y⁺)/∂z_{y⁻} = −π(y⁻), so positive-only CE *does* lower incorrect logits via normalization. Rescope to a scoped empirical observation about our checkpoints. (2) The gradient-family identity does NOT imply GRPO "can't learn" (zero observed successes ≠ zero success probability; shared params transfer). Rewrite Thm-1 corollary as budget/signal-availability, not impossibility.
+- **Margin ≠ correct-mass.** Pairwise teacher-forced margin growth does not prove total correct probability rose. → probability-mass accounting (launched).
+- **Efficiency accounting inconsistent.** 300 SFT + 300 DPO ≠ 600 SFT steps (DPO does pos+neg+ref). Report GPU-hours, training/generation tokens, verifier calls, wall time. Clarify RVP's bank reuse vs ReST's.
+- **Stats underpowered.** 150–200 problems / 1 seed cannot support 0.2–0.9pt hard-set edges. Need ~1764 problems for a 1pt effect (7056 for 0.5pt), ≥3 bank seeds, explicit equivalence margin (±1pt).
+
+## REFRAME (turn the ReST tie into the contribution)
+"Different post-training objectives reach similar single-attempt reliability, but a **measurable pre-training diagnostic predicts which route is efficient and safe**, and RVP amortizes ~8× inference-time selection into one forward pass." Predictive/prospective, not a claimed separation.
+
+## The 5 Astra experiments (ranked), mapped to our fleet
+1. **Probability-mass accounting** (aggregate correct-mass, RVP vs ReST endpoints) — *LAUNCHED* on cluster B (mass_accounting.py). Kills the margin≠mass threat.
+2. **Counterfactual verifier surgery** — is RVP learning correctness or format/length? Same candidate strings, two executable semantics + format-/length-matched negatives; ≥6 independent banks for the 25-pair claim. ~900 A100h.
+3. **Prospective apply/abstain gate + controlled instruct-tuning trajectory (0/25/100% SFT) + collapse rescue with matched-KL** — makes "headroom-gated" measurable *before* training; separates instruct-tuning from family confound. ~1000 A100h.
+4. **Frontier vs strongest alternatives (base/RFT/ReST/RVP) with decoding search + proper power** (equivalence test, ~1764 problems, 3 seeds, one public code benchmark). ~1300 A100h.
+5. **On-policy/replay bridge** — tuned GRPO *from the RFT checkpoint* vs RVP; is the GRPO-null an implementation artifact? Log fraction-of-groups-with-both-rewards, KL, advantages. ~700 A100h.
+
+## Fleet status (2026-09-18): A & C pods CYCLED (TargetNotConnected) — need fresh SDB JSONs to use all 72. B alive; mass-accounting + base-model rebuild running there.
