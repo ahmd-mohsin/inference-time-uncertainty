@@ -35,6 +35,29 @@
 \begin{document}
 \maketitle
 
+\begin{abstract}
+Language models often \emph{can} reach a correct solution (high coverage, pass@$k$) yet fail to
+\emph{select} it in one shot (low single-attempt reliability, pass@1). We study \textbf{Reliability via
+Verified Preference (RVP)}: after rejection-sampling fine-tuning (RFT), a single decoupled
+preference pass on the model's \emph{own} verifier-labeled correct/incorrect samples, which raises the
+correct-vs-incorrect logit margin by suppressing incorrect modes and thereby lifts pass@1 at
+\emph{constant coverage} --- reliability by selection, not new capability. Across Qwen2.5-Math
+$\{1.5\text{B},7\text{B}\}$ bases and six math benchmarks, RVP delivers headroom-gated gains of $+.04$
+to $+.21$ pass@1; the improvement amortizes inference-time selection into the weights (RVP at a single
+sample matches base majority-vote self-consistency at $\sim\!8$ samples), and a layer-wise analysis
+localizes it to late-layer margin ascent. We are deliberately careful about what is \emph{not} shown: a
+matched-compute second imitation round (ReST) is statistically competitive on pass@1, so verified
+negatives are not \emph{necessary} for the accuracy gain --- but exact probability-mass accounting reveals
+a \emph{mechanistic dissociation}: only RVP widens the aggregate correct-vs-incorrect margin, so the two
+methods reach a common endpoint by different internal routes. RVP's contribution is therefore a cheap,
+single-pass selection operator together with a \emph{predictive, headroom-gated account} of when verified
+post-training converts coverage into single-attempt reliability --- and where it does not (near-ceiling
+instruct models; catastrophically on general RLHF-chat bases). We correct two theoretical claims from an
+earlier draft (positive-only cross-entropy does exert diffuse softmax pressure on incorrect logits; the
+GRPO shortfall is a finite-budget, not an impossibility, statement) and report all nulls and scope
+boundaries honestly.
+\end{abstract}
+
 \input{motivation}
 \input{theory}
 \input{methodology}
