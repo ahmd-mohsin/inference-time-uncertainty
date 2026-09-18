@@ -1,10 +1,21 @@
 \section*{Experiments}
 
-We test one claim: \textbf{RVP raises single-attempt reliability ($\text{pass}@1$)
-beyond both the RFT ceiling and on-policy outcome RL (GRPO)}, across model sizes,
-families, domains, and difficulties, and the gain is caused by the verified
-preference signal (not exposure or extra compute). Cells marked \running{} are
-in-flight on the 72-GPU fleet; all others are completed runs.
+We test a focused set of claims. \textbf{(1)} A single decoupled verified-preference
+pass raises single-attempt reliability ($\text{pass}@1$) at \emph{constant coverage}
+by selection, with large headroom-gated gains ($+.04$ to $+.21$) across model sizes,
+families, and datasets, and the gain requires the \emph{verified sign} of the pair
+(shuffled-pair and positive-only controls do not reproduce it). \textbf{(2)} The
+mechanism is margin ascent via incorrect-mode suppression, localized to late layers.
+\textbf{(3)} The gain amortizes inference-time selection into the weights: RVP@1
+matches base self-consistency at $\sim\!8$ samples (Table~\ref{tab:frontier}). We are
+explicit about what we do \emph{not} claim: verified negatives are not shown to be
+\emph{uniquely necessary} --- at matched compute a second imitation round (ReST) is
+statistically competitive (Table~\ref{tab:rest}) --- so RVP's contribution is a
+\emph{cheap, single-pass route} to this reliability plus a \emph{predictive account
+of when it applies} (\S5.9), not a claimed separation from all imitation. On-policy
+GRPO stays near base at pass@1 in our finite-budget setting (a budget/signal
+statement, not an impossibility; Cor.~1.1). Cells marked \running{} are in-flight on
+the 72-GPU fleet; all others are completed runs.
 
 \subsection*{5.1 Setup}
 
@@ -520,7 +531,18 @@ We report this plainly: a second imitation round closes most of the pass@1 gap o
 residual advantages are (i) a small consistent edge where headroom is hardest, and (ii) efficiency --- one
 pass, no second bank-generation round --- consistent with the margin mechanism (RVP's selection lever is
 already saturated by $\sim\!25$ pairs, Table~\ref{tab:dataeff}, whereas ReST pays for a full extra
-sampling+SFT round).
+sampling+SFT round). \textbf{We are deliberately conservative about both the edge and the efficiency
+claim.} First, these are single-seed, $150$--$200$-problem cells; the per-dataset differences ($\le\!.009$)
+are within sampling noise, so we treat RVP-vs-ReST as \emph{statistically equivalent} pending a powered test
+(equivalence margin $\pm1$ pt, which at a per-problem paired SD of $\sim\!.15$ needs $\sim\!1.8$k problems
+and $\ge\!3$ bank seeds). Second, ``$300$ SFT $+300$ DPO $\approx600$ SFT steps'' equates \emph{step count},
+not compute: a DPO step scores a positive, a negative, and a reference likelihood, so a rigorous comparison
+must report training/generation tokens, verifier calls, and GPU-hours; RVP and ReST both draw a fresh bank
+from the RFT checkpoint, so the honest efficiency claim is only that RVP needs \emph{no second
+reject-sample+SFT round}, which we will quantify in wall-clock and token terms. The scientific content is
+therefore not ``verified negatives are necessary'' (they are not, given ReST) but that \emph{RVP reaches the
+same reliability by a different, single-pass route}, and \S5.9 asks which route a measurable pre-training
+diagnostic should select.
 
 \begin{table}[htbp]
 \centering

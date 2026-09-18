@@ -53,13 +53,21 @@ condition on $V=1$ (the $V=0$ term vanishes as $V\in\{0,1\}$) and normalise by
 $p_\theta(x)=\Pr(V{=}1)$. The policy gradient of $\mathbb{E}[V]$ is
 $\mathbb{E}[V\nabla\log\pi]=p_\theta(x)\cdot(\text{that conditional mean})$. $\square$
 
-\paragraph{Corollary 1.1 (coverage throttling).}
+\paragraph{Corollary 1.1 (coverage throttling; finite-budget claim).}
 Because the on-policy update weights each prompt's success-gradient by
 $p_\theta(x)$, a prompt the base model almost never solves ($p_{\theta_0}(x)\!\approx\!0$)
-receives $\approx\!0$ update: outcome-RL cannot acquire base-failed prompts. RFT's
-\emph{decoupled} multi-epoch replay over $B$ supplies those gradients regardless
-of current success mass. This predicts GRPO $\text{pass}@1\!\approx\!$ base while
-RFT acquires broadly.
+contributes a \emph{vanishing direct success-gradient}, so under a finite rollout
+budget it is rarely updated toward success. We deliberately do \emph{not} claim
+impossibility: (i) $p_{\theta_0}(x)\!\approx\!0$ is not $0$---with enough
+exploration a success can surface and inject signal; and (ii) shared parameters let
+updates on solvable prompts transfer to base-failed ones. The corollary is thus a
+statement about \emph{expected direct signal per prompt at finite budget}, and it
+predicts the \emph{empirical} outcome GRPO $\text{pass}@1\!\approx\!$ base, not a
+theorem that outcome-RL can never acquire hard prompts. RFT's \emph{decoupled}
+multi-epoch replay over $B$ supplies those gradients regardless of current success
+mass, so it acquires broadly. (Whether a \emph{tuned}, RFT-initialised GRPO with a
+larger rollout budget closes this gap is an empirical question we test directly, not
+one the identity settles.)
 
 The prediction is confirmed twice over. Numerically, the turnover-robust
 population acquisition of GRPO is $A=0.010$ (net $+0.001$) versus RFT $A=0.132$
@@ -74,7 +82,7 @@ GRPO, and cross-prompt reweighting each perturb the aggregate direction; we do
 \emph{not} claim ``all RFT--GRPO gaps are procedural'' in general---only the
 identity and the coverage-throttling mechanism it exposes.
 
-\subsection*{3.2 Positive-only replay is mode-covering: the selection axis is untouched}
+\subsection*{3.2 Positive-only replay is mode-covering: the selection axis is left flat}
 
 \paragraph{Theorem 2 (support-boundedness, scoped).}
 Under (A1), the verified-only cross-entropy objective contributes \emph{zero
@@ -84,20 +92,32 @@ example-specific term, not as an upper bound on out-of-distribution improvement:
 shared-parameter updates \emph{can} move off-support predictions, so no
 generalisation ceiling is claimed.)
 
-\paragraph{Proposition 1 (no margin control).}
-The RFT gradient $\nabla_\theta \sum_{y\in\mathcal{C}(x)}\log\pi_\theta(y\mid x)$
-contains no term that \emph{decreases} $\log\pi_\theta(y^{-}\mid x)$ for a
-verified-incorrect $y^{-}$; it therefore does not directly increase the margin
-$m_\theta(x)$. Positive-only imitation is \emph{mode-covering}: it can raise the
-probability of correct completions without suppressing the incorrect ones the
-model also samples.
+\paragraph{Proposition 1 (no \emph{targeted} margin control; scoped).}
+We are careful here, because a naive reading is false. Positive-only cross-entropy
+$\sum_{y\in\mathcal{C}(x)}\log\pi_\theta(y\mid x)$ \emph{does} exert downward
+pressure on a verified-incorrect logit through the softmax normaliser: for a single
+correct target $y^{+}$,
+$\partial\log\pi_\theta(y^{+})/\partial z_{y^{-}}=-\pi_\theta(y^{-})<0$. So RFT is
+\emph{not} incapable of lowering $\log\pi(y^{-})$. The precise, and weaker, claim is
+that this pressure is \textbf{untargeted and uncontrolled}: it has no
+\emph{explicit labeled-negative term}, so the normaliser pushes down \emph{every}
+competing mode in proportion to its current probability---verified-incorrect modes,
+unsampled modes, and \emph{other correct} modes alike---rather than specifically
+widening $m_\theta(x)$. Whether the margin actually rises is then an empirical
+question about which pressure dominates: the shared-feature lift that raises correct
+\emph{and} incorrect completions together, or the normaliser's diffuse suppression.
 
-This is the mechanistic origin of the reliability gap (Motivation \S2). On the
-same held-out verified pairs, RFT raises $\log\pi(y^{+})$ from $-0.110$ to
-$-0.092$ but raises $\log\pi(y^{-})$ almost identically ($-0.139\!\to\!-0.119$),
-leaving the margin flat ($0.029\!\to\!0.027$); GRPO moves neither
-(Motivation Table~3, Fig.~3). Coverage rises, single-attempt \emph{selection} does
-not.
+Empirically the former dominates and the net margin is flat, which is the
+mechanistic origin of the reliability gap (Motivation \S2): on the same held-out
+verified pairs RFT raises $\log\pi(y^{+})$ from $-0.110$ to $-0.092$ but raises
+$\log\pi(y^{-})$ almost identically ($-0.139\!\to\!-0.119$), leaving the margin flat
+($0.029\!\to\!0.027$); GRPO moves neither (Motivation Table~3, Fig.~3). We therefore
+state Prop.~1 as a \emph{scoped empirical regularity}, not an impossibility: RFT is
+mode-covering---on our checkpoints and banks it raises correct-completion
+probability \emph{without controllably widening the margin}---and an objective with
+an explicit verified-negative term (RVP) is what turns diffuse, dominated
+suppression into targeted margin ascent. Coverage rises; single-attempt
+\emph{selection} does not.
 
 \subsection*{3.3 Accessibility gating: gains are non-monotone in difficulty}
 
@@ -237,10 +257,10 @@ Thm.~1 identity + Cor.~1.1 coverage throttling &
 GRPO acquires $\approx\!0$ on base-failed prompts; RFT $\gg$ GRPO at $\text{pass}@1$ &
 $A$: GRPO $0.010$ vs RFT $0.132$; GRPO $79\%$ stuck (Fig.~\ref{fig:reldist}) &
 \textbf{Confirmed} \\
-Prop.~1 mode-covering &
-RFT lifts $\log\pi(y^{+})$ \emph{and} $\log\pi(y^{-})$; margin flat &
+Prop.~1 mode-covering (no \emph{targeted} margin control; softmax lowers $y^-$ only diffusely) &
+RFT lifts $\log\pi(y^{+})$ \emph{and} $\log\pi(y^{-})$; net margin flat &
 $0.029\!\to\!0.027$ (Motiv.\ Tab.~3) &
-\textbf{Confirmed} \\
+\emph{Emp. (scoped)} \\
 Emp.~Reg.~1 accessibility gating &
 gain non-monotone in headroom; $\beta$ grows with difficulty &
 $\beta_{\text{G}}{:}\,.28/.37/.47$ (Fig.~\ref{fig:beta}) &
