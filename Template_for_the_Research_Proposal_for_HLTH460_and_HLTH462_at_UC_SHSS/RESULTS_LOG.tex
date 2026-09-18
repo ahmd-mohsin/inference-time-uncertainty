@@ -121,6 +121,16 @@ impossibility). Cor.~1.1 softened to a finite-budget/signal statement (GRPO $\ap
 a theorem that outcome-RL can never acquire hard prompts). Contribution reframed: large headroom-gated
 selection gain + amortization + \emph{predictive} scope, not ``verified negatives uniquely necessary.''
 
+\section{Config note + limitations (honest)}
+\textbf{Two configs (why 1.5B MATH-500 differs across tables):} full-param sharded DPO gives $+.172$
+(3-seed); single-GPU LoRA-DPO gives $+.125$ / $+.100$ (4-seed final-24) --- LoRA updates a low-rank slice,
+a few points lower; not seed noise. 7B headline is sharded. \textbf{Limitations:} (i) headroom-gated ---
+near-flat on instruct, regresses on RLHF-chat (Yi) and where RFT opens no gap (Mathstral); (ii) not
+uniquely necessary for pass@1 (ReST competitive) but uniquely widens the aggregate margin (dissociation,
+$\S$183); (iii) several head-to-heads single-seed / $n{=}150$--$200$ (powered multi-seed run in progress);
+(iv) compute accounting is step-count not tokens/GPU-h; (v) verified evidence is math + CompDAG (external
+code pending); (vi) verifier-free RVP untested.
+
 \section*{Pending (2026-09-18, 72 GPUs live)}
 Multi-seed base-model CIs (bx\_m15 seeds 2--4+, A-new/C-new) for powered stats; full 6-cell mass table
 (m500/om/dm ReST+mass on B). Queued: on-policy/replay bridge (tuned GRPO-from-RFT), verifier surgery
