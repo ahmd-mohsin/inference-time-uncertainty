@@ -51,5 +51,6 @@ run_cluster() { local port=$1 w1=$2 w2=$3 base=$4 gm=$5
 }
 echo "=== A(4210) Qwen2.5-Math-1.5B ==="; build m15;  run_cluster 4210 10.2.254.117 10.2.125.214 Qwen/Qwen2.5-Math-1.5B 0.45
 echo "=== B(4211) Qwen2.5-Math-1.5B-Instruct ==="; build m15i; run_cluster 4211 10.2.168.153 10.2.187.8 Qwen/Qwen2.5-Math-1.5B-Instruct 0.45
-echo "=== C(4212) Qwen2.5-Math-7B-Instruct ==="; build m7i; run_cluster 4212 10.2.2.198 10.2.122.243 Qwen/Qwen2.5-Math-7B-Instruct 0.30
+# NOTE: 7B needs GEN_GPU_MEM ~0.85 to fit weights+KV on a 40GB A100; 0.30 makes vLLM raise ValueError at bank-gen (all C cells died).
+echo "=== C(4212) Qwen2.5-Math-7B-Instruct ==="; build m7i; run_cluster 4212 10.2.2.198 10.2.122.243 Qwen/Qwen2.5-Math-7B-Instruct 0.85
 echo "[launch_final24] 72 cells dispatched $(date -u)"
