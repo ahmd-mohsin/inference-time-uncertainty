@@ -392,6 +392,15 @@ Omni-MATH      & $-.084$ & $-.101$ & $.018$ & $-.107$ & $-.502$ & $\best{.395}$ 
 \end{tabular}
 \end{table}
 
+\paragraph{Where in the network: RVP sharpens the final decision, not early features.}
+A layer-wise logit-lens analysis localizes the effect in depth. We unembed every layer's residual
+stream and measure the per-layer correct-vs-incorrect margin for base vs.\ RVP on the same verified
+pairs; the margin-gain is concentrated in the \emph{late} layers --- layer $26/28$ on
+Qwen2.5-Math-1.5B and $21/28$ on Qwen2.5-Math-7B-Instruct --- with early and middle layers
+essentially unchanged. RVP thus re-weights the model's \emph{final} decision among solutions it
+already represents, rather than editing early features or lengthening the chain-of-thought; this is
+the depth-resolved counterpart of the mass-reallocation-by-selection story.
+
 \paragraph{Robustness to the DPO strength $\beta$.}
 RVP has essentially one hyperparameter, the DPO temperature $\beta$. Sweeping it on
 Qwen2.5-Math-1.5B across all three datasets (from the RFT init, fixed $300$ steps,
@@ -433,11 +442,38 @@ where headroom remains (AMC/DeepMath base $\approx.50$): a small instruct model'
 distribution is already selection-sharpened, so the margin step adds little. This refines the
 base-vs-tuned picture --- math-specialized \emph{pretraining} is what RVP needs, and heavy
 instruction-tuning at small scale can pre-empt the selection headroom RVP would otherwise capture.
-A completed $3\text{ models}\times 6\text{ datasets}\times 4\text{ seeds}$ matrix confirms this
+A completed $3\text{ models}\times 6\text{ datasets}\times 4\text{ seeds}$ matrix
+(Table~\ref{tab:final24}, $71/72$ cells) confirms this
 split at scale: on the base, RVP wins on \emph{all six} datasets (GSM8K, MATH-500, AMC, DeepMath,
 Olympiad, Omni-MATH; $+.04$ to $+.21$, per-seed spread ${\le}.006$), while both the 1.5B and 7B
 \emph{instruct} variants stay near-flat, with their only residual gains on the highest-headroom set
 (Olympiad). Hard-negative mining remains a tie throughout.
+
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Full generalization matrix} ($3$ models $\times$ $6$ datasets $\times$ $4$ seeds
+$=72$ cells, $71$ completed; seed-averaged $\Delta$pass@1 $=$ rvp$-$base, per-stage checkpointed).
+The headroom-gated split is clean: the math-specialized \emph{base} (Qwen2.5-Math-1.5B) wins on
+\emph{all six} datasets ($+.04$ to $+.21$; per-seed spread ${\le}.006$), while both \emph{instruct}
+variants --- whose selection headroom is already consumed by instruction-tuning --- stay near-flat,
+with residual gains only on the highest-headroom / lowest-ceiling sets. Ceiling cells marked
+$^{\dagger}$ (base pass@1 ${>}.85$). $k{=}16$.}
+\label{tab:final24}
+\begin{tabular}{lccc}
+\toprule
+ & \multicolumn{1}{c}{\emph{base}} & \multicolumn{2}{c}{\emph{instruct}} \\
+\cmidrule(lr){2-2}\cmidrule(lr){3-4}
+Dataset & Math-1.5B & Math-1.5B-Inst & Math-7B-Inst \\
+\midrule
+GSM8K      & $\best{+.206}$ ($.508\!\to\!.714$) & $-.004^{\dagger}$ & $+.002^{\dagger}$ \\
+MATH-500   & $\best{+.100}$ ($.485\!\to\!.585$) & $+.005$ & $+.010$ \\
+AMC        & $\best{+.089}$ ($.281\!\to\!.370$) & $+.025$ & $+.016$ \\
+DeepMath   & $\best{+.074}$ ($.282\!\to\!.356$) & $-.003$ & $+.014$ \\
+Olympiad   & $\best{+.039}$ ($.235\!\to\!.273$) & $+.002$ & $+.025$ \\
+Omni-MATH  & $\best{+.035}$ ($.148\!\to\!.183$) & $+.011$ & $+.014$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \paragraph{Scope: the boundary is math-specialization, not instruct-tuning.}
 A natural worry is that RVP only works on raw pretrained bases and breaks under instruct-tuning.
