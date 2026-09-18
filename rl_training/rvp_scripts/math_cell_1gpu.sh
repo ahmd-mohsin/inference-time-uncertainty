@@ -18,10 +18,12 @@ echo "# CELL1GPU base=$BASE eval=$EVAL hardneg=${HARDNEG:-0} seed=$SEED gpu=$GPU
 # 1) bank (verified-correct self-samples)
 [ -s $V/bank.jsonl ] || GEN_GPU_MEM=$GM python3 -m rl_training.math_rvp --mode bank --model $BASE --dataset math_full --split train --n $NBANK --k 8 --out $V/bank.jsonl >$L/${TAG}_bank.log 2>&1
 echo "bank=$(wc -l <$V/bank.jsonl 2>/dev/null)" >>$R
+SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 # 2) RFT (LoRA single-GPU) -> merged
 [ -d $V/rft/merged_full ] || { python3 -m rl_training.sft_train --model $BASE --data $V/bank.jsonl --out $V/rft --seed 1 --max-steps 300 --bsz 8 >$L/${TAG}_rft.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rft')" >>$L/${TAG}_rft.log 2>&1; }
 RFT=$V/rft/merged_full
 [ -f $RFT/config.json ] || { echo "RFT_FAILED" >>$R; cat $R; exit 1; }
+SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 # 3) pairs (verified y+/y- from RFT; optional hard-negative mining)
 [ -s $V/pairs.jsonl ] || GEN_GPU_MEM=$GM python3 -m rl_training.math_rvp --mode pairs --model $RFT --dataset math_full --split train --n $NBANK --k 12 --max-pairs-per 2 ${HARDNEG:+--hard-neg} --out $V/pairs.jsonl >$L/${TAG}_pairs.log 2>&1
 echo "pairs=$(wc -l <$V/pairs.jsonl 2>/dev/null)" >>$R
@@ -29,6 +31,7 @@ python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 # 4) RVP = LoRA DPO (single-GPU, precomputes ref logps so only policy in memory) -> merged
 [ -d $V/rvp/merged_full ] || { python3 -m rl_training.dpo_train --model $RFT --data $V/pairs.jsonl --out $V/rvp --seed $SEED --beta 0.1 --max-steps 300 --bsz $DPO_BSZ >$L/${TAG}_dpo.log 2>&1; python3 -c "from rl_training.model_utils import merge_adapter_if_needed as m;m('$V/rvp')" >>$L/${TAG}_dpo.log 2>&1; }
 RVP=$V/rvp/merged_full
+SYNC_CKPT=1 python3 rl_training/rvp_scripts/s3_sync.py $TAG >/dev/null 2>&1 || true
 # 5) eval base / rft / rvp (pass@1 + coverage)
 for arm in base rft rvp; do
   case $arm in base) M=$BASE;; rft) M=$RFT;; rvp) M=$RVP;; esac
