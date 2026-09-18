@@ -1,0 +1,128 @@
+\documentclass[a4paper,10pt]{article}
+% Standalone, compilable running LOG of every RVP experiment (LaTeX mirror of
+% DELIVERABLES/report/ADAPTIVE_FORGETTING_RESULTS.md). Compile: `tectonic RESULTS_LOG.tex`.
+% Kept in sync with the .md ledger; each block tagged with its ledger section.
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{booktabs,amsmath,amssymb,longtable}
+\newcommand{\best}[1]{\textbf{#1}}
+\title{RVP --- Running Experiment Log (all results, honest)}
+\author{cmohsinm}\date{updated 2026-09-18}
+\begin{document}
+\maketitle
+\noindent All metrics are single-attempt $\text{pass}@1$ (unbiased from $k{=}16$) unless noted; coverage held
+$\approx$ constant. Controls per cell: base, RFT, RVP (ours), \emph{xrft} (positive-only), \emph{shuf}
+(shuffled-pair). Nulls and ties are reported as findings. Ledger $\S$ tags reference
+\texttt{ADAPTIVE\_FORGETTING\_RESULTS.md}.
+
+\section{Generalization: final-24 matrix ($\S$180) --- 3 models $\times$ 6 datasets $\times$ 4 seeds}
+Seed-averaged $\Delta\text{pass}@1=$ rvp$-$base; ceiling cells $^{\dagger}$ (base ${>}.85$).
+\begin{longtable}{lccc}
+\toprule
+Dataset & Math-1.5B (base) & Math-1.5B-Inst & Math-7B-Inst \\
+\midrule
+GSM8K     & \best{+.206} ($.508\!\to\!.714$) & $-.004^{\dagger}$ & $+.002^{\dagger}$ \\
+MATH-500  & \best{+.100} ($.485\!\to\!.585$) & $+.005$ & $+.010$ \\
+AMC       & \best{+.089} ($.281\!\to\!.370$) & $+.025$ & $+.016$ \\
+DeepMath  & \best{+.074} ($.282\!\to\!.356$) & $-.003$ & $+.014$ \\
+Olympiad  & \best{+.039} ($.235\!\to\!.273$) & $+.002$ & $+.025$ \\
+Omni-MATH & \best{+.035} ($.148\!\to\!.183$) & $+.011$ & $+.014$ \\
+\bottomrule
+\end{longtable}
+\textbf{Verdict:} math-specialized \emph{base} wins all 6 ($+.04$ to $+.21$, per-seed spread $\le.006$);
+both \emph{instruct} variants near-flat (gap consumed by instruction-tuning). Headroom-gated scope boundary.
+
+\section{7B full-param sharded headline ($\S$170) + generalization across sizes}
+Qwen2.5-Math-7B (sharded ZeRO-3 DPO), RVP top arm all 3: MATH-500 $.597\!\to\!.734$ (\best{+.137}),
+Olympiad $.295\!\to\!.353$ (+.058), Omni $.197\!\to\!.252$ (+.055). Qwen2.5-Math-1.5B: +.172/.089/.046
+(3-seed). \emph{General} base (Qwen2.5-7B) mixed; RLHF-chat (Yi-1.5-9B-Chat) collapses ($-.125$ to $-.164$).
+Discriminator: axis is \textbf{math-specialized pretraining}, not instruct-tuning (Qwen2.5-Math-7B-Instruct
+wins all 3).
+
+\section{Reliability ladder ($\S$166--167): base $<$ GRPO$\approx$base $<$ RFT $<$ RVP}
+Direct GRPO arms (finite-budget): GSM8K Qwen-1.5B base .653 / GRPO .673 / RFT .711 / \best{RVP .747};
+deepseek-1.3B .026/.028/.050/\best{.072}. GRPO stays near base at pass@1 (Cor.~1.1, a budget/signal
+statement, not impossibility).
+
+\section{Mechanism ($\S$163/167/180): margin ascent via incorrect-mode suppression}
+Teacher-forced $\log\pi$ on the SAME held-out verified pairs (GSM8K Qwen-1.5B):
+\begin{longtable}{lccc}
+\toprule
+stage & $\log\pi(y^{+})$ & $\log\pi(y^{-})$ & margin $m$ \\
+\midrule
+base & $-.110$ & $-.139$ & $.029$ \\
+GRPO & $-.109$ & $-.139$ & $.029$ (=base) \\
+RFT  & $-.092$ & $-.119$ & $.027$ (both up; flat) \\
+\best{RVP} & $-.092$ & \best{$-.157$} & \best{$.065$} (suppress $y^-$; $2.4\times$) \\
+shuf & $-.091$ & $-.119$ & $.027$ (=RFT) \\
+\bottomrule
+\end{longtable}
+7B margin rises $25$--$30\times$. Layer-wise logit-lens: margin-gain concentrates in \textbf{late layers}
+(26/28 for 1.5B, 21/28 for 7B) --- RVP sharpens the final decision, not early features.
+
+\section{Reliability--compute frontier ($\S$181): RVP amortizes inference-time selection}
+RVP@1 (one forward pass) vs base majority-vote self-consistency@$n$. $n^{\star}$ = samples base needs to
+reach RVP@1.
+\begin{longtable}{lcccc}
+\toprule
+Dataset & base@1 & \best{RVP@1} & base maj@8 & $n^{\star}$ \\
+\midrule
+GSM8K & .517 & \best{.718} & .723 & $\sim$8 \\
+MATH-500 & .487 & \best{.591} & .629 & $\sim$8 \\
+AMC & .280 & \best{.362} & .433 & $\sim$8 \\
+DeepMath & .279 & \best{.364} & .361 & $\sim$16 \\
+Olympiad & .235 & \best{.273} & .326 & $\sim$4 \\
+Omni-MATH & .149 & \best{.182} & .184 & $\sim$8 \\
+\bottomrule
+\end{longtable}
+RVP@1 $\approx$ base self-consistency at $\sim\!8$ samples (median) --- an $\sim\!8\times$ inference budget
+baked into the weights; stays below oracle best-of-$n$ (a realistic verifier-free single-shot selector).
+
+\section{Iterative-RFT (ReST) baseline + mechanistic dissociation ($\S$181/183)}
+\textbf{pass@1 (base Qwen2.5-Math-1.5B):} RVP beats base+RFT on all cells; RVP-vs-ReST is a \emph{near-tie}
+(ReST edges GSM8K, RVP edges Olympiad/AMC). Single-seed, $150$--$200$ problems: treated as statistically
+equivalent pending a powered test ($\pm1$pt margin $\Rightarrow \sim\!1.8$k problems, $\ge3$ seeds).
+\textbf{Probability-mass accounting} (aggregate margin $M=\log\sum_{\mathcal C}\pi-\log\sum_{\mathcal I}\pi$,
+correct-mass $s=\sigma(M)$, pooled support):
+\begin{longtable}{lcccc}
+\toprule
+cell & base $M$/$s$ & RFT $M$/$s$ & \best{RVP $M$/$s$} & ReST $M$/$s$ \\
+\midrule
+GSM8K & 20.95/.788 & 19.87/.801 & \best{21.65}/.818 & 19.59/.808 \\
+Olympiad & 20.82/.759 & 20.36/.750 & \best{22.16}/.768 & 19.92/.747 \\
+AMC & 20.41/.697 & 19.32/.701 & \best{21.25}/.728 & 18.96/.702 \\
+\bottomrule
+\end{longtable}
+\textbf{Dissociation:} RVP has the highest aggregate margin on every cell; ReST matches/beats pass@1 but does
+\emph{not} widen the aggregate margin (at/below RFT). Same pass@1 endpoint, different internal route --- RVP
+via genuine selection, ReST without it. Rescues the mechanism (RVP-specific) while conceding the pass@1 tie.
+Instruct-model mass ($\S$182): RVP raises aggregate margin $2$--$4\times$ on all 6 cells even though pass@1
+is flat $\Rightarrow$ aggregate-margin$\uparrow$ is \emph{necessary but not sufficient} (needs decode-time
+selection headroom the instruct model lacks) --- deepens the mechanism and explains the instruct-flat result.
+
+\section{Ablations ($\S$171/177)}
+\textbf{Data efficiency:} $\sim\!25$ verified pairs capture the full gain ($\Delta+.108$@25 vs $+.112$@800).
+\textbf{One-shot:} iterating RVP collapses it ($-.118$ MATH-500, $-.154$ Omni) --- single-pass is optimal.
+\textbf{Hard-neg mining:} statistical tie with random verified negatives ($\Delta\le\pm.006$).
+\textbf{$\beta$-robustness:} net-positive for $\beta\in\{.1,.2,.5\}$ all datasets; only $\beta{=}.03$
+over-optimizes. \textbf{RVP-from-base:} reaches only $.24$--$.28$ vs $.62$--$.65$ from RFT $\Rightarrow$ the
+RFT coverage stage is necessary.
+
+\section{Scope boundaries + honest retractions}
+Wins: math-specialized base \emph{and} instruct. Boundaries: general base mixed; RLHF-chat (Yi) collapses;
+Mathstral collapses because RFT created no gap (precondition = a successful RFT gap). Retractions: $\S$169
+withdrew a confounded RVP-from-base null (over-optimized DPO); $\S$176 corrected the hard-neg ``HURTS''
+artifact to a tie. \texttt{competition\_math} loader dead upstream $\Rightarrow$ dropped, not guessed.
+
+\section{Theory corrections (Astra review, $\S$182)}
+Prop.~1 rescoped: positive-only CE \emph{does} lower $\log\pi(y^-)$ diffusely via the softmax normaliser
+($\partial\log\pi(y^+)/\partial z_{y^-}=-\pi(y^-)$); the honest claim is \emph{untargeted} suppression,
+empirically dominated by the shared-feature lift $\Rightarrow$ net margin flat (scoped-empirical, not
+impossibility). Cor.~1.1 softened to a finite-budget/signal statement (GRPO $\approx$ base empirically, not
+a theorem that outcome-RL can never acquire hard prompts). Contribution reframed: large headroom-gated
+selection gain + amortization + \emph{predictive} scope, not ``verified negatives uniquely necessary.''
+
+\section*{Pending (2026-09-18, 72 GPUs live)}
+Multi-seed base-model CIs (bx\_m15 seeds 2--4+, A-new/C-new) for powered stats; full 6-cell mass table
+(m500/om/dm ReST+mass on B). Queued: on-policy/replay bridge (tuned GRPO-from-RFT), verifier surgery
+(correctness vs format), instruct-tuning trajectory (0/25/100\%), external code benchmark.
+\end{document}
